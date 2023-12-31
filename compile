@@ -20,6 +20,8 @@ makeindex "$OUTPUT/$PDF_NAME"
 biber "$OUTPUT/$PDF_NAME"
 pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
 # Compile glossary
-makeglossaries "$OUTPUT/$PDF_NAME"
+cd "$OUTPUT"
+makeglossaries "$PDF_NAME"
+cd ..
 pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
 pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
