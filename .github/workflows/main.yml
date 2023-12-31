@@ -8,24 +8,19 @@ on: [push]
 jobs:
   paper:
     runs-on: ubuntu-latest
-    env:
-      # Edit here with the names of your latex file and directory (can use ".")
-      DIR: pdf
-      FILE: thesis
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install TeXlive
         run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science latexmk cm-super
       - name: LaTeX compile
-        working-directory: ${{ env.DIR }}
-        run: ./r ${{ env.DIR }} ${{ env.FILE }}
+        run: ./compile
       - name: Move
-        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/${{ env.FILE }}.pdf ./github_artifacts/
+        run: mkdir -p github_artifacts && mv pdf/thesis.pdf ./github_artifacts/
       - name: Upload pdf as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.FILE }}.pdf
+          name: thesis.pdf
           path: ./github_artifacts
   deploy:
     # Edit here if compiling multiple papers
