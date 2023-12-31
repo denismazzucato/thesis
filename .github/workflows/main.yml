@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install TeXlive
-        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science latexmk texlive-fonts-extra cm-super texlive-bibtex-extra biber
+        run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science latexmk texlive-fonts-extra cm-super texlive-bibtex-extra biber xindy
       - name: LaTeX compile
         run: ./compile
       - name: Move
