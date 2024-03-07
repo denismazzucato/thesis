@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+# Output directory
+OUTPUT=pdf
+# PDF name (without extension)
+PDF_NAME=thesis
+
+# Create the pdf directory if it doesn't exist
+if [ ! -d "$OUTPUT" ]; then
+  mkdir "$OUTPUT"
+fi
+
+pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"

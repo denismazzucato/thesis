@@ -1,0 +1,26 @@
+{
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "Compile Thesis",
+      "tools": [
+          "compileThesis"
+      ]
+    },
+    {
+      "name": "Fast Compile Thesis",
+      "tools": [
+          "fastCompileThesis"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "compileThesis",
+      "command": "./compile"
+    },
+    {
+      "name": "fastCompileThesis",
+      "command": "./fast"
+    }
+  ]
+}

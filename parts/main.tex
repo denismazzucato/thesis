@@ -1,0 +1,37 @@
+%----------------------------------------------------------------------------------------
+%	MAIN BODY
+%----------------------------------------------------------------------------------------
+
+\mainmatter % Denotes the start of the main document content, resets page numbering and uses arabic numbers
+\setchapterstyle{kao} % Choose the default chapter heading style
+
+\input{parts/introduction.tex}
+
+\pagelayout{wide} % No margins
+\addpart{Class Options, Commands and Environments}
+\pagelayout{margin} % Restore margins
+
+\input{parts/options.tex}
+\input{parts/textnotes.tex}
+\input{parts/figsntabs.tex}
+\input{parts/references.tex}
+
+\pagelayout{wide} % No margins
+\addpart{Design and Additional Features}
+\pagelayout{margin} % Restore margins
+
+\input{parts/layout.tex}
+\input{parts/mathematics.tex}
+
+\appendix % From here onwards, chapters are numbered with letters, as is the appendix convention
+
+\pagelayout{wide} % No margins
+\addpart{Appendix}
+\pagelayout{margin} % Restore margins
+
+\input{parts/appendix.tex}
+
+%----------------------------------------------------------------------------------------
+
+\backmatter % Denotes the end of the main document content
+\setchapterstyle{plain} % Output plain chapters from this point onwards
