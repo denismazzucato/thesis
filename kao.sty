@@ -60,10 +60,10 @@
 %	PAGE LAYOUT
 %----------------------------------------------------------------------------------------
 
-% Define lengths to set the scale of the document. Changing these 
-% lengths should affect all the other pagesize-dependent elements in the 
-% layout, such as the geometry of the page, the spacing between 
-% paragraphs, and so on. (As of now, not all the elements rely on hscale 
+% Define lengths to set the scale of the document. Changing these
+% lengths should affect all the other pagesize-dependent elements in the
+% layout, such as the geometry of the page, the spacing between
+% paragraphs, and so on. (As of now, not all the elements rely on hscale
 % and vscale; future work will address this shortcoming.)
 \newlength{\hscale}
 \newlength{\vscale}
@@ -330,7 +330,7 @@
     }%
   \else%
     \begin{addmargin}[-1in-\hoffset-\oddsidemargin]{-\paperwidth+1in+\hoffset+\oddsidemargin+\textwidth}%
-  \fi% 
+  \fi%
 }{%
     \end{addmargin}%
 }
@@ -860,7 +860,7 @@
 \newlength{\mtocshift} % Length of the vertical offset used for margin tocs
 \setlength{\mtocshift}{1\vscale}% \mtocshift is overridden by \setchapterstyle
 
-% Optional title for margintoc (by hCarlFelix, 
+% Optional title for margintoc (by hCarlFelix,
 % https://github.com/fmarotta/kaobook/issues/101)
 % We want to create an additional entries in the toc which is to be used for the margintoc
 % We define these as mtocsection and mtocsubsection for section and subsection`
@@ -1042,7 +1042,7 @@
     \RequirePackage{morewrites} % Fix some errors related to floats
 \fi
 
-% When using the Palatino (newpxtext) font, it is better to use a 
+% When using the Palatino (newpxtext) font, it is better to use a
 % slightly larger stretch.
 %\setstretch{1.10}
 \linespread{1.07} % Give Palatino more leading (space between lines)
@@ -1299,7 +1299,7 @@
 
 % Verbatim
 %\RequirePackage{fancyvrb} % Customization of verbatim environments
-%\fvset{fontsize=\normalsize} % Change here the font size of all 
+%\fvset{fontsize=\normalsize} % Change here the font size of all
 %verbatim \preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
 
 % Algorithms
@@ -1345,6 +1345,6 @@
 \newcommand{\hangstar}{\makebox[0pt][l]{*}} % Create asterisks in tables which take up no horizontal space - this improves column spacing
 
 % A command to print the current month and year (from tufte-latex)
-\newcommand{\monthyear}{\ifcase\month\or January\or February\or March\or 
-April\or May\or June\or July\or August\or September\or October\or 
+\newcommand{\monthyear}{\ifcase\month\or January\or February\or March\or
+April\or May\or June\or July\or August\or September\or October\or
 November\or December\fi\space\number\year}

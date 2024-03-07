@@ -1,0 +1,53 @@
+%----------------------------------------------------------------------------------------
+%	MAIN BODY
+%----------------------------------------------------------------------------------------
+
+\mainmatter % Denotes the start of the main document content, resets page numbering and uses arabic numbers
+\setchapterstyle{kao} % Choose the default chapter heading style
+
+\pagelayout{wide} % No margins
+\addpart{Background}
+\pagelayout{margin} % Restore margins
+
+\setchapterpreamble[u]{\margintoc}
+
+\input{src/chapters/introduction}
+\input{src/chapters/mathematical_background}
+
+\pagelayout{wide} % No margins
+\addpart{Safety Program Properties}
+\pagelayout{margin} % Restore margins
+
+\input{src/chapters/safety/safety}
+
+\pagelayout{wide} % No margins
+\addpart{Verification of Extensional Properties}
+\pagelayout{margin} % Restore margins
+
+\input{src/chapters/extensional/framework}
+\input{src/chapters/extensional/fairness}
+
+\pagelayout{wide} % No margins
+\addpart{Verification of Intensional Properties}
+\pagelayout{margin} % Restore margins
+
+\input{src/chapters/intensional/timing}
+
+\pagelayout{wide} % No margins
+\addpart{Experimental Implementations}
+\pagelayout{margin} % Restore margins
+
+\input{src/chapters/tools/libra}
+\input{src/chapters/tools/impatto}
+\input{src/chapters/tools/timesec}
+
+\pagelayout{wide} % No margins
+\addpart{Conclusion}
+\pagelayout{margin} % Restore margins
+
+\input{src/chapters/conclusion}
+
+%----------------------------------------------------------------------------------------
+
+\backmatter % Denotes the end of the main document content
+\setchapterstyle{plain} % Output plain chapters from this point onwards

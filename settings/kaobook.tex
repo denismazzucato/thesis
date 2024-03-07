@@ -1,0 +1,36 @@
+
+% Choose the language
+\ifxetexorluatex
+	\usepackage{polyglossia}
+	\setmainlanguage{english}
+\else
+	\usepackage[english]{babel} % Load characters and hyphenation
+\fi
+\usepackage[english=british]{csquotes}	% English quotes
+
+% Load packages for testing
+\usepackage{blindtext}
+%\usepackage{showframe} % Uncomment to show boxes around the text area, margin, header and footer
+%\usepackage{showlabels} % Uncomment to output the content of \label commands to the document where they are used
+
+% Load the bibliography package
+\usepackage{kaobiblio}
+\addbibresource{export.bib} % Bibliography file
+
+% Load mathematical packages for theorems and related environments
+\usepackage[framed=true]{kaotheorems}
+
+% Load the package for hyperreferences
+\usepackage{kaorefs}
+
+\graphicspath{{images/}} % Paths in which to look for images
+
+\makeindex[columns=3, title=Alphabetical Index, intoc] % Make LaTeX produce the files required to compile the index
+
+\makeglossaries % Make LaTeX produce the files required to compile the glossary
+\input{settings/glossary} % Include the glossary definitions
+
+\makenomenclature % Make LaTeX produce the files required to compile the nomenclature
+
+% Reset sidenote counter at chapters
+%\counterwithin*{sidenote}{chapter}
