@@ -1,0 +1,109 @@
+\section{Quantitative Input Data Usage}
+\labsec{quantitative-input-data-usage}
+\newcommand*{\x}{\texttt{angle}}
+\newcommand*{\y}{\texttt{speed}}
+\newcommand*{\z}{\texttt{risk}}
+\newcommand*{\lc}{\texttt{landing\_coeff}}
+
+In this section we present some preliminaries on program computations, then we introduce our quantitative framework with the formal definitions of \rangename{} and \outcomesname.
+
+
+Our goal is to quantify the impact of a specific input variable on the computation of the program.
+To this end, we introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
+We implicitly assume the use of an \textit{output descriptor} $\outputdesc\in \stateandbottom \to \valuesinf$ to determine the desired output of a program by observations on program states\sidenote{The option of returning $\pm\infty$  from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}.
+The output descriptor $\outputdesc$ is generic enough to cover plenty of use cases, providing the end-user the flexibility to choose the interpretation and meaning of program outputs.
+
+\begin{marginlisting}
+\begin{lstlisting}[language=customPython]
+landing_coeff =
+  abs(angle) + speed
+if landing_coeff < 2:
+  risk = 0
+else if landing_coeff > 5:
+  risk = 3
+else:
+  risk =
+    floor(landing_coeff) - 2
+\end{lstlisting}
+\end{marginlisting}
+
+\begin{example}
+  Consider the~\refprog{landing-alarm-system} for the landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\x$, $b$ of $\y$, $c$ of $\lc$, and $d$ of $\z$.
+  Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
+  The output descriptor is instantiated with
+  \[
+  \reader(x) \DefeQ \begin{cases}
+    d & \text{if } x = \langle a, b, c, d \rangle \\
+    +\infty & \text{otherwise}
+  \end{cases}
+  \]
+  In other words, we are interested in the value of $\z$ for terminating traces.
+\end{example}
+
+Given an impact definition of interest, we define the \textit{$\defbound$-bounded impact property} $\bounded\in\setofsetof\pairofstates$ as the set of dependency semantics with impact with respect to the input variable $\definputvariable$ below the threshold $\defbound\in\valuesposplus$. Formally,
+\begin{align}\label{eq:bounded}
+  \BOUNDED \DefeQ \seTDef
+  {\dependencysemanticsnoparam \in \setof\pairofstates}
+  {\impactwrapper(\dependencysemanticsnoparam) \impactsubseteq \defbound}
+\end{align}
+
+We require $\impactwrapper$ to be monotonic, \ie, for any $\defsetoftraces, \defsetoftraces'\in \setof\pairofstates$,
+it holds that:
+\[
+  \defsetoftraces \subseteq \defsetoftraces' \ImplieS \impactwrapper(\defsetoftraces) \le \impactwrapper(\defsetoftraces')
+\]
+Intuitively, this ensures that an impact applied to an over-approximation of the program semantics can only produce a higher quantity,
+allowing for a sound $\defbound$-bounded impact verification.
+Next, we formalize the already introduced impact metrics \outcomesname{} and \rangename.
+
+\subsection{The \outcomesname{} impact definition}
+\labsec{outcomes}
+%
+Formally $\outcomes\in\setof\pairofstates\to\Nplus$ counts the number of different output values reachable by varying the input variable $\definputvariable\in\inputvariables$.
+Intuitively,
+for any possible input configuration $\definputvariable\in\reducedstate$, we gather the set $\defsetoftraces\in\setof\pairofstates$ of all input-output state dependencies with an input configuration that is a variation of $\definputvariable$ on the input variable $\definputvariable$, \ie, $\setdef{
+  \inputoutputtuple{\defstate}\in \defsetoftraces
+}{
+  \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definputvariable
+}$.
+Then, $\outcomes$ is the maximal cardinality of the output values $\setdef{
+  \reader(\retrieveoutput\defstate)
+}{
+  \inputoutputtuple{\defstate} \in \defsetoftraces \land
+    \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definputvariable
+}$.
+%
+Formally,
+%
+\begin{align}
+  \label{eq:outcomes}
+\outcomes(\defsetoftraces) &\DefeQ
+  \sup_{\definputvariable\in\reducedstate}
+  \cardinality{\seTDef{\reader(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\defsetoftraces\land\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable
+  }
+  }
+\end{align}
+where $\cardinality{\cdot}$ is the cardinality operator,
+and $\sup(X)$ is the supremum operator, \ie, the smallest $q$ such that $q\ge x$ for all $x\in X$.
+From the definition above, it is easy to note that $\outcomes(\defsetoftraces)$ is monotone in the amount of dependencies $\defsetoftraces$. That is, the more dependencies in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
+
+\subsection{The \rangename{} impact definition}
+\labsec{range}
+%
+The quantity $\range\in\setof\pairofstates\to\Rposplus$ determines the
+length of the range of output values from all the possible variations in the input variable $\definputvariable\in\inputvariables$.
+%
+This definition employs the auxiliary function $\length\in\setof\valuesinf\to\valuesposplus$, defined as follows:
+ $\length(X) \defeq \sup\;{X} - \inf\;{X}$ if $X\neq\emptyset$, where $\sup$ and $\inf$ are the supremum and infimum operators, while $\length(X)\defeq0$ otherwise.
+  Formally,
+  \begin{align}
+    \label{eq:range}
+    \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+      \length(\seTDef{
+        \reader(\retrieveoutput{\defstate})
+      }{
+        \inputoutputtuple\defstate \in \defsetoftraces \land \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definput
+      })
+  \end{align}
+
+Similarly to $\outcomesname$, $\rangename$ is monotone in the amount of dependencies $\defsetoftraces$.

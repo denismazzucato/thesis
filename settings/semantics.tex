@@ -1,0 +1,57 @@
+
+
+\newcommand*{\semanticsof}[1]{\llbracket #1 \rrbracket}
+\newcommand*{\semanticsletter}{\Lambda}
+\newcommand*{\transformer}{\textup{F}}
+
+%% trace semantics
+\newcommand*{\tracesym}{}
+\newcommand*{\tracetype}{\setof\finiteinfinitesequences}
+\newsemantics{trace}
+
+% collecting
+\newcommand*{\collectingsym}{c}
+\newcommand*{\collectingtype}{\setofsetof\pairofstates}
+\newcommand*{\collectingsubseteq}{\subseteq}
+\newcommand*{\collectingjoin}{\setjoin}
+\newcommand*{\collectingmeet}{\setmeet}
+\newcommand*{\collectingtop}{\emptyset}
+\newcommand*{\collectingbottom}{\setof\pairofstates}
+\newsemantics{collecting}
+\renewcommand*{\collectingsubseteq}{\subseteq}
+
+%% dependency semantics
+\newcommand*{\dependencysym}{\rightsquigarrow}
+\newcommand*{\dependencytype}{\setofsetof{\pairofstates}}
+\newsemantics{dependency}
+\renewcommand*{\dependencysubseteq}{\subseteq}
+\newcommandx{\reduce}[2][1=\dependencysemantics]{\restr{#1}{#2}}
+\newcommandx{\reducenoparam}[2][1=\dependencysemanticsnoparam]{\restr{#1}{#2}}
+\newcommand*{\reduceddependencysemantics}{\reduce[\dependencysemantics]{\abstractdomainconcretization(\bucket)}}
+\newcommand*{\reduceddependencysemanticsnoparam}{\reduce[\dependencysemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
+\newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
+
+%% backward
+\newcommand*{\backwardsym}{\leftarrow}
+\newcommand*{\backwardtype}{\abstractdomain\to\abstractdomain}
+\newsemantics{backward}
+
+
+\newcommand*{\multisym}{\times}
+\newcommand*{\multitype}{\vectorbuckets\to\vectorbuckets}
+\newsemantics{multi}
+
+\newcommand*{\abstractdomain}{\mathbb{D}^\natural}
+\newcommand*{\abstractdomainconcretization}{\concretization^\natural}
+\newcommand*{\abstractdomainsubseteq}{\sqsubseteq}
+\newcommand*{\abstractdomaintop}{\top^\natural}
+\newcommand*{\abstractdomainbottom}{\bottom^\natural}
+\newcommand*{\abstractdomainjoin}{\join}
+\newcommand*{\abstractdomainmeet}{\meet}
+\newcommand*{\abstractdomainproject}{\resize{\textup{\texttt{Project}}}{\definputvariable}[\natural]}
+\newcommand*{\abstractdomainlattice}{\langle \abstractdomain,\abstractdomainsubseteq, \abstractdomainbottom, \abstractdomaintop, \abstractdomainjoin, \abstractdomainmeet \rangle}
+\newcommand*{\abstractdomainlength}{\textsc{Length}^\natural}
+
+\newcommand*{\lengthfunction}{\textup{\texttt{Length}}}
+\newcommand*{\rangefunction}{\textup{\texttt{Range}}}
+\newcommand*{\intersectallfunction}{\textup{\texttt{IntersectAll}}}

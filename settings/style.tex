@@ -1,0 +1,9 @@
+% Hyperreferences %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\labprog}[1]{\label{lst:#1}}
+\newcommand*{\labline}[1]{\label{line:#1}}
+
+\newcommand*{\refprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1}}}
+\newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
+
+\newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}

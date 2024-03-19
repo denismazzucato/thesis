@@ -1,4 +1,208 @@
-
+%
 
 \chapter{Quantitative Input Data Usage}
 \labch{quantitative-input-data-usage}
+
+In this chapter we present the quantitative framework used to measure the contributions of the input variables to the outcome of a program. First, we introduce a leading example of a landing-risk alarm system to illustrate the concepts. Then, we present the framework and its properties. Finally, since the framework depends on the notion of impact, we show a few possible definitions of impact.
+
+\onlysectioncommands{\x,\y,\z,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle}
+\section{Landing Alarm System}
+\labsec{landing-alarm-system}
+\newcommand*{\x}{\texttt{angle}}
+\newcommand*{\y}{\texttt{speed}}
+\newcommand*{\z}{\texttt{risk}}
+
+
+\begin{lstlisting}[language=customPython,escapechar=\%,label={lst:landing-alarm-system},caption={Program for the landing-risk alarm system.}]
+landing_coeff = abs(angle) + speed %\labline{compute-risk}%
+if landing_coeff < 2 then %\labline{low-risk-cond}%
+  risk = 0 %\labline{low-risk}%
+else if landing_coeff > 5 then %\labline{high-risk-cond}%
+  risk = 3 %\labline{high-risk}%
+else %\labline{medium-risk-branch}%
+  risk = floor(landing_coeff) - 2 %\labline{medium-risk}%
+\end{lstlisting}
+
+
+The goal of \refprog{landing-alarm-system}, referred to as \landingprogram, is to inform the pilot about the level of risk associated with the landing approach.
+It takes two input variables, denoted as \x and \y, for the aircraft-airstrip alignment angle and the aircraft speed, respectively.
+A value of 1 represents a good alignment while -4 a non-aligned angle, whereas 1, 2, 3 denote low, medium, and high speed.
+A safer approach is indicated by lower speed.
+The landing risk coefficient combines the absolute landing angle and speed.
+The output variable $\z{}$ is the danger level with possible values $\{0, 1, 2, 3\}$, where 0 represents low danger and 3 high danger.
+
+\begin{marginfigure}
+\centering
+\begin{tikzpicture}
+  % Grid
+  \draw[help lines, color=gray!30, dashed] (0,0) grid (2.9,3.9);
+  % x-axis
+  \draw[->,ultra thick] (0,0)--(3,0) node[right]{\x};
+  % y-axis
+  \draw[->,ultra thick] (0,0)--(0,4) node[above]{\y};
+  % x-axis ticks
+  \draw (0+1,0.1) -- (0+1,-0.1) node[below] {-4};
+  \draw (1+1,0.1) -- (1+1,-0.1) node[below] {1};
+  % y-axis ticks
+  \foreach \y in {1,2,3}
+  \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+  % Nodes
+  \fill[color=seabornRed]   (0+1,0+1) circle[radius=2pt];
+  \node[above right] at (0+1,0+1) {$3$};
+  \fill[color=seabornRed]   (0+1,1+1) circle[radius=2pt];
+  \node[above right] at (0+1,1+1) {$3$};
+  \fill[color=seabornRed]   (0+1,2+1) circle[radius=2pt];
+  \node[above right] at (0+1,2+1) {$3$};
+  \fill[color=seabornGreen] (1+1,0+1) circle[radius=2pt];
+  \node[above right] at (1+1,0+1) {$0$};
+  \fill[color=seabornYellow] (1+1,1+1) circle[radius=2pt];
+  \node[above right] at (1+1,1+1) {$1$};
+  \fill[color=seabornOrange]    (1+1,2+1) circle[radius=2pt];
+  \node[above right] at (1+1,2+1) {$2$};
+\end{tikzpicture}
+\caption{Input space composition of \refprog{landing-alarm-system}.}
+\labfig{input-space-composition}
+\end{marginfigure}
+
+\reffig{input-space-composition} shows the input space composition of this system, where the label near each input represents the degree of risk assigned to the corresponding input configuration.
+It is easy to note that a nonaligned angle of approach corresponds to a considerably higher level of risk, whereas the risk with a correct angle depends mostly on the aircraft speed.
+Our goal is to develop a static analysis capable of quantifying the contribution of each input variable to the computation of the output variable $\z{}$.
+
+
+\newcommand{\exampleinput}[1][\defaultprogramexampleletter]{\textsc{Input}_{#1}}
+
+We propose two impact definitions which, from value variations of the input variable under consideration, respectively focus on
+\textit{the number of} resulting reachable outputs, and \textit{the distance of} extreme reachable outputs.
+The column $\exampleinput[\landingprogram]$ in \reftab{outcome-count} shows all the possible input configurations $\tuple{angle}{speed}$ for the program $\landingprogram$.
+For each input configuration, column \textsc{Relevant Traces} groups together the program traces resulting from value variation of the input variable of interest (in column $\textsc{variable}$), and column $\textsc{Outputs}$ collects the set of all reachable outputs.
+
+\newcommand{\highlight}[1]{\textcolor{seabornBlue}{#1}}
+\newcommand{\inputa}{\tuple{-4}{1}}
+\newcommand{\inputax}{\tuple{\highlight{-4}}{1}}
+\newcommand{\inputay}{\tuple{-4}{\highlight{1}}}
+\newcommand{\outputa}{\langle \outputvaluea\rangle} \newcommand{\outputvaluea}{3}
+\newcommand{\inputb}{\tuple{-4}{2}}
+\newcommand{\inputbx}{\tuple{\highlight{-4}}{2}}
+\newcommand{\inputby}{\tuple{-4}{\highlight{2}}}
+\newcommand{\outputb}{\langle \outputvalueb\rangle} \newcommand{\outputvalueb}{3}
+\newcommand{\inputc}{\tuple{-4}{3}}
+\newcommand{\inputcx}{\tuple{\highlight{-4}}{3}}
+\newcommand{\inputcy}{\tuple{-4}{\highlight{3}}}
+\newcommand{\outputc}{\langle \outputvaluec\rangle} \newcommand{\outputvaluec}{3}
+\newcommand{\inputd}{\tuple{ 1}{1}}
+\newcommand{\inputdx}{\tuple{\highlight{ 1}}{1}}
+\newcommand{\inputdy}{\tuple{ 1}{\highlight{1}}}
+\newcommand{\outputd}{\langle \outputvalued\rangle} \newcommand{\outputvalued}{0}
+\newcommand{\inpute}{\tuple{ 1}{2}}
+\newcommand{\inputex}{\tuple{\highlight{ 1}}{2}}
+\newcommand{\inputey}{\tuple{ 1}{\highlight{2}}}
+\newcommand{\outpute}{\langle \outputvaluee\rangle} \newcommand{\outputvaluee}{1}
+\newcommand{\inputf}{\tuple{ 1}{3}}
+\newcommand{\inputfx}{\tuple{\highlight{ 1}}{3}}
+\newcommand{\inputfy}{\tuple{ 1}{\highlight{3}}}
+\newcommand{\outputf}{\langle \outputvaluef\rangle} \newcommand{\outputvaluef}{2}
+\newcommand{\tracea}{\inputa\to\outputa}
+\newcommand{\traceax}{\inputax\to\outputa}
+\newcommand{\traceay}{\inputay\to\outputa}
+\newcommand{\traceb}{\inputb\to\outputb}
+\newcommand{\tracebx}{\inputbx\to\outputb}
+\newcommand{\traceby}{\inputby\to\outputb}
+\newcommand{\tracec}{\inputc\to\outputc}
+\newcommand{\tracecx}{\inputcx\to\outputc}
+\newcommand{\tracecy}{\inputcy\to\outputc}
+\newcommand{\traced}{\inputd\to\outputd}
+\newcommand{\tracedx}{\inputdx\to\outputd}
+\newcommand{\tracedy}{\inputdy\to\outputd}
+\newcommand{\tracee}{\inpute\to\outpute}
+\newcommand{\traceex}{\inputex\to\outpute}
+\newcommand{\traceey}{\inputey\to\outpute}
+\newcommand{\tracef}{\inputf\to\outputf}
+\newcommand{\tracefx}{\inputfx\to\outputf}
+\newcommand{\tracefy}{\inputfy\to\outputf}
+
+\subsection{First Impact Definition {\normalfont(\texorpdfstring{$\outcomesname$}{Outcomes})}}[Outcomes]
+%
+The first impact definition that we consider is
+ $\outcomes(\defprogram)$, %(derived from $\outcomesentropy$),
+where $\definputvariable$ is the input variable of interest and $\defprogram$ the program under analysis. Intuitively (the formal definition is given in \refsec{quantitative-input-feature-usage}), $\outcomes$ returns the maximum number of outputs that are reachable from value variations of the input variable $\definputvariable$.
+For the program
+$\landingprogram$, the result is shown in column $\outcomesname(\landingprogram)$~of \reftab{outcome-count}:
+we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingprogram)=3$.
+
+\newcommand{\labelrotationangle}{30}
+\begin{table*}[t]
+  \centering
+  \caption{Impact of for $\outcomesname(\landingprogram)$  and $\rangename(\landingprogram)$ definitions for both $\x$ and $\y$ variables. Computational features are \highlight{highlighted in blue}.}
+  \label{tab:outcome-count}
+  \begin{tabular}{c|c|c|c|c|c}
+  \rotatebox[origin=c]{\labelrotationangle}{\textsc{Variable}}~ & ~\rotatebox[origin=c]{\labelrotationangle}{$\exampleinput[\landingprogram]$}~ & ~\textsc{Relevant Traces}~ & ~\rotatebox[origin=c]{\labelrotationangle}{\textsc{Outputs}}~ & ~\rotatebox[origin=c]{\labelrotationangle}{$\outcomesname$}~ & ~\rotatebox[origin=c]{\labelrotationangle}{$\rangename$}~ \\
+  \toprule
+  \multirow{6}{*}{\x}
+   & $\inputax$ & $\traceax, \tracedx$ & $\{\outputvaluea,\outputvalued\}$ & \multirow{6}{*}{$2$} & \multirow{6}{*}{$3$} \\
+  \cline{2-4}
+   & $\inputbx$ & $\tracebx, \traceex$ & $\{\outputvalueb,\outputvaluee\}$ & & \\
+  \cline{2-4}
+   & $\inputcx$ & $\tracecx, \tracefx$ & $\{\outputvaluec,\outputvaluef\}$ & & \\
+   \cline{2-4}
+   & $\inputdx$ & $\tracedx, \traceax$ & $\{\outputvalued,\outputvaluea\}$ & & \\
+   \cline{2-4}
+   & $\inputex$ & $\traceex, \tracebx$ & $\{\outputvaluee,\outputvalueb\}$ & & \\
+   \cline{2-4}
+   & $\inputfx$ & $\tracefx, \tracecx$ & $\{\outputvaluef,\outputvaluec\}$ & & \\
+  \midrule
+  \multirow{12}{*}{\y}
+   & \multirow{2}{*}{$\inputay$} & $\traceay, \traceby,$ & \multirow{2}{*}{$\{\outputvaluea\}$} & \multirow{12}{*}{$3$} & \multirow{12}{*}{$2$} \\
+   & & $\tracecy$ & & & \\
+  \cline{2-4}
+   & \multirow{2}{*}{$\inputby$} & $\traceay, \traceby,$ & \multirow{2}{*}{$\{\outputvaluea\}$} & & \\
+   & & $\tracecy$ & & & \\
+  \cline{2-4}
+   & \multirow{2}{*}{$\inputcy$} & $\traceay, \traceby,$ & \multirow{2}{*}{$\{\outputvaluea\}$} & & \\
+   & & $\tracecy$ & & & \\
+   \cline{2-4}
+   & \multirow{2}{*}{$\inputdy$} & $\tracedy, \traceey,$ & \multirow{2}{*}{$\{\outputvalued,\outputvaluee, \outputvaluef\}$} & & \\
+   & & $\tracefy$ & & & \\
+   \cline{2-4}
+   & \multirow{2}{*}{$\inputey$} & $\tracedy, \traceey,$ & \multirow{2}{*}{$\{\outputvalued,\outputvaluee, \outputvaluef\}$} & & \\
+   & & $\tracefy$ & & & \\
+   \cline{2-4}
+   & \multirow{2}{*}{$\inputfy$} & $\tracedy, \traceey,$ & \multirow{2}{*}{$\{\outputvalued,\outputvaluee, \outputvaluef\}$} & & \\
+   & & $\tracefy$ & & \\
+   \bottomrule
+  \end{tabular}
+\end{table*}
+The conclusion is that $\y$ has a greater influence than $\x$ on the output of the program.
+
+\subsection{Second Impact Definition {\normalfont(\texorpdfstring{$\rangename$}{Range})}}[Range]
+%
+The second impact definition is $\rangename_\definputvariable$, which yields the maximum difference between the maximum and the minimum outputs that are reachable from value variations of the input variable $\definputvariable$.
+The result for program $\landingprogram$ is shown in column $\rangename(\landingprogram)$~of \reftab{outcome-count}:
+%Following again \reftab{outcome-count}, we can see that
+the range of reachable outputs from variations of $\x$ is, at most, the interval $[0, 3]$, with a length of 3. Instead, the range of reachable outputs from variations of $\y$ is, at most, the interval $[0, 2]$, with a length of 2. Therefore, we obtain $\rangename_\x(\landingprogram)=3$ and $\rangename_\y(\landingprogram)=2$.
+In other words, varying the angle of approach might drastically alter the landing risk, whereas the speed has less influence.
+%
+This is in contrast to the conclusion of \outcomesname{} where $\y$ has a greater impact than $\x$.
+Although it may seem counterintuitive at first, the difference between the two impact instances is due to the different program traits they explore.
+$\rangename$ quantifies over the variance in the extreme values of the set of output values, while $\outcomesname$ quantifies over the variance in the number of unique output values.
+Consequently, changes in $\x$ yield a bigger variation in the degree of risk compared to $\y$, while changes in $\y$ reach far more risk levels compared to $\x$.
+%
+Note that, the impact definitions presented above are not computationally practical as they rely on a complete enumeration of all possible input configurations.
+% Note that, enumerating all possible input configurations is not computationally practical.
+Specifically, when dealing with more complex input space compositions, this approach is highly inefficient or even infeasible (as in the case of continuous input spaces).
+As a consequence, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
+
+\subsection{Abstract Analysis}
+
+The analysis starts with a set of output abstractions called \textit{output buckets}.
+A bucket is an abstract element representing a set of output states.
+While this abstraction may limit the ability to precisely reason about the impact of output values within the same bucket, it permits automatic reasoning across different buckets.
+Afterwards, an abstract interpretation-based static analyzer propagates each output bucket backward through the program under consideration.
+The analyzer returns an abstract element for each output bucket, representing an over-approximation of the set of input configurations that lead to the output values inside the starting bucket.
+This result contains also spurious input configurations that may not lead to a value inside the output bucket.
+Based on the chosen impact definition \impactwrappername{} (e.g., \rangename{} or \outcomesname), we perform computations and comparisons on the abstract elements returned by the analysis to obtain an upper bound $\defbound'$. This upper bound is sound by construction of the theoretical framework, meaning that if $\defbound$ is the real (concrete) impact quantity obtained by \impactwrappername, then $\defbound\le\defbound'$.
+
+The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \denis{(as outlined by the use cases shown in~\\Section{experiments} and~\\Appendixfullexperimentaloverview)}
+
+\input{src/chapters/extensional/quantitative-input-data-usage}
+\input{src/chapters/extensional/static-analysis}
+\input{src/chapters/extensional/impatto}

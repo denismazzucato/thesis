@@ -1,0 +1,128 @@
+% meta macros are macros to create other macros at runtime
+
+\NewDocumentCommand{\newoperator}{mmO{#2}}{%
+  % #1 is the symbol, #2 is the operator, #3 is the new operator name
+  \ifcsname #1#3\endcsname {} \else
+    \expandafter\newcommand\csname #1#3\endcsname{%
+      \ifcsname #1sym\endcsname
+        {
+          \ifcsname #2\endcsname
+            {\csname #2\endcsname^{\csname #1sym\endcsname}}%
+          \else
+            Missing operator macro for {#2}
+          \fi
+        }%
+      \else
+        Missing symbol macro for {#1}
+      \fi
+    }%
+  \fi
+}
+
+\NewDocumentCommand{\newoperatorsubscript}{mmmO{#2}}{%
+  % #1 is the symbol, #2 is the subscript, #3 is the operator,
+  % #4 is the new operator name
+  \expandafter\newcommand\csname #1#3\endcsname{%
+    \ifcsname #1sym\endcsname
+      {
+        \ifcsname #3\endcsname
+          {\csname #3\endcsname^{\csname #1sym\endcsname}_{#2}}%
+        \else
+          Missing operator macro for {#3}
+        \fi
+      }%
+    \else
+      Missing symbol macro for {#1}
+    \fi
+  }%
+}
+
+\newcommand{\newlattice}[1]{%
+  % #1 is the semantic symbol
+  \expandafter\newcommand\csname #1completelattice\endcsname{%
+    \ifcsname #1type\endcsname
+    {\ifcsname #1subseteq\endcsname
+    {\ifcsname #1bottom\endcsname
+    {\ifcsname #1top\endcsname
+    {\ifcsname #1join\endcsname
+    {\ifcsname #1meet\endcsname
+      {\completelattice{
+        \csname #1type\endcsname
+      }{
+        \csname #1subseteq\endcsname
+      }{
+        \csname #1bottom\endcsname
+      }{
+        \csname #1top\endcsname
+      }{
+        \csname #1join\endcsname
+      }{
+        \csname #1meet\endcsname
+      }}%
+    \else
+      Missing meet macro for {#1} \fi} \else
+      Missing join macro for {#1} \fi} \else
+      Missing top macro for {#1} \fi} \else
+      Missing bottom macro for {#1} \fi} \else
+      Missing subseteq macro for {#1} \fi} \else
+      Missing type macro for {#1}
+    \fi
+  }%
+}
+
+\newcommandx{\newsemantics}[2][2={}]{%
+  % #1 is the semantic keyword, #2 the optional semantic parameter
+  % semantics definition
+  \expandafter\newcommand\csname #1semantics\endcsname{%
+    \ifcsname #1semanticsnoparam\endcsname
+      {{\csname #1semanticsnoparam\endcsname} \semanticsof{\defprogram}}%
+    \else
+      Missing semanticsnoparam macro for {#1}
+    \fi
+  }%
+  \expandafter\newcommand\csname #1semanticsnoparam\endcsname{%
+    \ifcsname #1sym\endcsname
+      {\semanticsletter^{\csname #1sym\endcsname}_{#2}}%
+    \else
+      Missing symbol macro for {#1}
+    \fi
+  }%
+  % operators
+  \newoperator{#1}{sqsubseteq}[subseteq]
+  \newoperator{#1}{sqsubseteq}[computationalsubseteq]
+  \newoperator{#1}{nsqsubseteq}[nsubseteq]
+  \newoperator{#1}{bottom}
+  \newoperator{#1}{top}
+  \newoperator{#1}{join}
+  \newoperator{#1}{meet}
+  \newoperator{#1}{bigjoin}
+  \newoperator{#1}{bigmeet}
+  \newoperatorsubscript{#1}{#2}{transformer}
+  % semantics transformer type
+  \expandafter\newcommand\csname #1transformertype\endcsname{%
+    \ifcsname #1type\endcsname
+      {{\csname #1type\endcsname} \to {\csname #1type\endcsname}}%
+    \else
+      Missing type macro for {#1}
+    \fi
+  }%
+  \newoperator{#1}{abstraction}
+  \newoperator{#1}{concretization}
+  \newlattice{#1}
+  %
+  \expandafter\newcommand\csname #1poset\endcsname{%
+    \ifcsname #1type\endcsname
+      {
+        \ifcsname #1subseteq\endcsname
+          {
+            \tuple{\csname #1type\endcsname}{\csname #1subseteq\endcsname}
+          }%
+        \else
+          Missing  subseteq macro for {#1}
+        \fi
+      }
+    \else
+      Missing type macro for {#1}
+    \fi
+  }%
+}

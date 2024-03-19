@@ -1,0 +1,52 @@
+% trace semantics
+
+%% transitions
+\newcommand*{\state}{\Sigma}
+\newcommand*{\stateeq}[1]{=_{#1}}
+\newcommand*{\reducedstate}[1][\inputvariables]{\restr{\state}{#1}}
+\newcommand*{\stateandbottom}{\state^\bottom}
+\newcommand*{\reducedstateandbottom}[1][\inputvariables]{\restr{\stateandbottom}{#1}}
+\newcommand*{\transitionrelation}{\tau}
+\newcommand*{\transitionrelationtype}{\pair{\statesym}{\statesym}}
+\newcommand*{\transitionsystem}{\tuple{\statesym}{\transitionrelation}}
+\newcommand*{\statebottom}{\bottom}
+\newcommand*{\statesym}{\state}
+\newcommand*{\finalstates}{\Omega}
+\newcommand*{\retrieveinput}[1]{#1_0}
+\newcommand*{\retrieveoutput}[1]{#1_\omega}
+\newcommand*{\inputoutputtuple}[1]{\tuple{\retrieveinput{#1}}{\retrieveoutput{#1}}}
+
+\newcommand*{\concat}[2]{{#1}\cdot{#2}}
+\newcommand*{\mergesequences}[2]{{#1}~;~{#2}}
+
+%% sequences of states
+\newcommand*{\emptysequence}{\epsilon}
+\newcommand*{\finitesymbol}{+}
+\newcommand*{\finiteoremptysymbol}{\star}
+\newcommand*{\infinitesymbol}{\infty}
+\newcommand*{\retrievefinitetontraces}[2]{{#1}^{#2}}
+\newcommand*{\retrievefinitetraces}[1]{#1^\finitesymbol}
+\newcommand*{\retrievefiniteoremptytraces}[1]{#1^\finiteoremptysymbol}
+\newcommand*{\retrieveinfinitetraces}[1]{#1^\infinitesymbol}
+\newcommand*{\retrievefiniteinfinitetraces}[1]{#1^{\finitesymbol\infinitesymbol}}
+\newcommand*{\retrievefiniteoremptyinfinitetraces}[1]{#1^{\finiteoremptysymbol\infinitesymbol}}
+\newcommand*{\finitetontraces}{\retrievefinitetontraces{\state}{n}}
+\newcommand*{\finitetozerotraces}{\retrievefinitetontraces{\state}{0}}
+\newcommand*{\finiteoremptysequences}{\retrievefiniteoremptytraces{\state}}
+\newcommand*{\finitesequences}{\retrievefinitetraces{\state}}
+\newcommand*{\infinitesequences}{\retrieveinfinitetraces{\state}}
+\newcommand*{\finiteinfinitesequences}{\retrievefiniteinfinitetraces{\state}}
+\newcommand*{\finiteoremptyinfinitesequences}{\retrievefiniteoremptyinfinitetraces{\state}}
+
+\newcommand*{\pairofstates}{\pair\state\stateandbottom}
+
+
+%% values and variables
+
+\newcommand*{\values}{\mathbb{I}}
+\newcommand*{\valuesinf}{\values^{\pm \infty}}
+\newcommand*{\valuesposplus}{\resize{\values}{\ge 0}[\pm \infty]}
+
+\newcommand*{\variables}{\mathbb{V}}
+\newcommand*{\inputvariables}{\Delta}
+\newcommand*{\inputvariableswithouti}{\inputvariables \setminus \{\definputvariable\}}

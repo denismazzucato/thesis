@@ -1,15 +1,15 @@
 {
   "latex-workshop.latex.recipes": [
     {
-      "name": "Compile Thesis",
-      "tools": [
-          "compileThesis"
-      ]
-    },
-    {
       "name": "Fast Compile Thesis",
       "tools": [
           "fastCompileThesis"
+      ]
+    },
+    {
+      "name": "Compile Thesis",
+      "tools": [
+          "compileThesis"
       ]
     }
   ],

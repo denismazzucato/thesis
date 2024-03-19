@@ -1,0 +1,69 @@
+
+
+\newcommand*{\bottom}{\bot}
+
+\newcommand*{\N}{\mathbb{N}}
+  \newcommand*{\Nle}[1]{\N_{\le #1}}
+  \newcommand*{\Nl}[1]{\N_{<#1}}
+  \newcommand*{\Npos}{\N_{\ge0}}
+  \newcommand*{\Ninf}{\N^{\pm\infty}}
+  \newcommand*{\Nplus}{\N^{+\infty}}
+
+\newcommand*{\Z}{\mathbb{Z}}
+
+\newcommand*{\R}{\mathbb{R}}
+  \newcommand*{\Rinf}{\R^{\pm\infty}}
+  \newcommand*{\Rplus}{\R^{+\infty}}
+  \newcommand*{\Rposplus}{\resize{\R}{\ge0}[+\infty][f^2]}
+
+\newcommand*{\B}{\{ \true, \false \}}
+  \newcommand*{\true}{\textsc{true}}
+  \newcommand*{\false}{\textsc{false}}
+
+\newcommand*{\setof}[1]{\wp(#1)}
+\newcommand*{\finitesetof}[1]{\wp_{\text{finite}}(#1)}
+\newcommand*{\setofsetof}[1]{\setof{\setof{#1}}}
+\newcommand*{\setofsetofsetof}[1]{\setof{\setofsetof{#1}}}
+\newcommand*{\setdef}[2]{\{#1 \mid #2\}}
+\newcommand*{\seTDef}[2]{\setdef{#1\spacer}{\spacer#2}}
+\newcommand*{\vecdef}[2]{[#1\mid#2]}
+\newcommand*{\defeq}{\overset{\text{\scalebox{.5}{def}}}{=}}
+\newcommand*{\DefeQ}{\spacearound{\overset{\text{\scalebox{.6}{def}}}{=}}}
+\newcommand*{\SubseteQ}{\spacearound{\subseteq}}
+\newcommand*{\cardinalitynospaces}[1]{|#1|}
+\newcommand*{\cardinality}[1]{\cardinalitynospaces{\spacearound{#1}}}
+\newcommand*{\satisfies}{\models}
+\newcommand*{\tuple}[2]{\langle #1, #2 \rangle}
+\newcommand*{\pair}[2]{#1\times#2}
+\newcommand*{\setjoin}{\cup}
+\newcommand*{\setmeet}{\cap}
+\newcommand*{\bigsetjoin}{\bigcup}
+\newcommand*{\bigsetmeet}{\bigcap}
+\newcommandx{\foralldef}[3][3=\forall]{{#3}{#1}.\spacer{#2}}
+\newcommandx{\existsdef}[3][3=\exists]{{#3}{#1}.\spacer{#2}}
+\newcommandx{\existsunique}{\exists!}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argsort}{arg\,sort}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\hoaresubseteq}{\subseteq^H}
+\newcommand*{\asterisk}{{*}}
+\renewcommand*{\implies}{\Rightarrow}
+\renewcommand*{\iff}{\Leftrightarrow}
+\newcommand*{\defiff}{\overset{\text{\scalebox{.6}{def}}}{\iff}}
+\newcommand*{\ImplieS}{\spacearound{\implies}}
+\newcommand*{\IfF}{\spacearound{\iff}}
+\newcommand*{\DefifF}{\spacearound{\defiff}}
+\newcommand*{\LE}{\spacearound{\le}}
+\newcommand*{\LanD}{\spacearound{\land}}
+\newcommand*{\LoR}{\spacearound{\lor}}
+\newcommand*{\IN}{\spacearound{\in}}
+\newcommand*{\CirC}{\spacearound{\circ}}
+
+\newcommand*{\abstraction}{\alpha}
+\newcommand*{\concretization}{\gamma}
+\DeclareMathOperator*{\lfp}{lfp}
+\newcommand{\join}{\sqcup}
+\newcommand{\bigjoin}{\bigsqcup}
+\newcommand{\meet}{\sqcap}
+\newcommand{\bigmeet}{\bigsqcap}
+\newcommand{\completelattice}[6]{\langle#1,#2,#3,#4,#5,#6\rangle}

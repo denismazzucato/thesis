@@ -1,0 +1,629 @@
+\section{Experimental Results}
+\labsec{experimental-results}
+\newcommand*{\x}{\texttt{angle}}
+\newcommand*{\y}{\texttt{speed}}
+\newcommand*{\z}{\texttt{risk}}
+
+
+The goal of this section is to highlight the potential of our static analysis for quantitative input data usage.
+We implemented a proof-of-concept tool\sidenote{\url{https://github.com/denismazzucato/impatto}} in Python 3 that employs the \interproc\sidenote{\url{https://github.com/jogiet/interproc}} abstract interpreter to perform the backward analysis.
+Then, we exploited this tool to automatically derive a sound input data usage of three different scenarios.
+More use cases are shown in~\\Appendixfullexperimentaloverview.
+As each impact result must be interpreted with respect to what the program computes, we analyze each scenario separately.
+
+\subsection{Growth in a Time of Debt}
+\labsec{rr}
+
+
+Reinhart and Rogoff article ``Growth in a Time of Debt''~\sidecite{Reinhart2010} proposed a correlation between high levels of public debt and low economic growth,
+and %. As a consequence, the article
+was heavily cited to justify austerity measures around the world. %Notably,
+One of the several errors discovered in the article is the incorrect usage of the input value relative to Norway's economic growth in 1964.
+The data used in the article is publicly available but not the spreadsheet file. We reconstructed this simplified example based on
+the technical critique by \sidecitet{Herndon2014}, and an online discussion\sidenote{\url{https://economics.stackexchange.com/q/18553}}.
+The~\refprog{rr}
+computes the cross-country mean growth for the public debt-to-GDP $60-90\%$ category, key point to the article's conclusions.
+The input data is the average growth rate for each country within this public dept-to-GDP category. The problem with this computation is that Norway has only one observation in such category, which alone could disrupt the mean computation among all the countries. Indeed, the year that Norway appears in the $60-90\%$ category achieved a growth rate of $10.2\%$, while the average growth rate for the other countries is $2.7\%$.
+With such high rate, the mean growth rate raised to $3.4\%$, altering the article's conclusions.
+We assume growth rate values between $-20\%$ and $20\%$ for all countries, consequentially, the output ranges are between these bounds as well. We instrumented the output buckets to cover the full output space in buckets of size $1$, \ie, $\setdef{t \le \texttt{avg} < t + 1}{-20 \le t \le 20}$.
+%
+\newcommand{\dg}{60}
+\begin{table}[t]
+  \caption{Quantitative input usage for \refprog{rr} from the Reinhart and Rogoff's article.}
+  \labtab{rr}
+  \centering
+  \begin{tabular}{c | ccccccccccc}
+    \textsc{Impact} & \rotatebox{\dg}{\texttt{portugal1}} & \rotatebox{\dg}{\texttt{portugal2}} & \rotatebox{\dg}{\texttt{portugal3}} & \rotatebox{\dg}{\texttt{norway1}} & \rotatebox{\dg}{\texttt{uk1}} & \rotatebox{\dg}{\texttt{uk2}} & \rotatebox{\dg}{\texttt{uk3}} & \rotatebox{\dg}{\texttt{uk4}} & \rotatebox{\dg}{\texttt{us1}} & \rotatebox{\dg}{\texttt{us2}} & \rotatebox{\dg}{\texttt{us3}} \\
+    \toprule
+    \outcomesname{} & 5 & 5 & 5 & 10 & 2 & 2 & 2 & 2 & 3 & 3 & 3 \\
+    \rangename{} & 5 & 5 & 5 & 10 & 2 & 2 & 2 & 2 & 3 & 3 & 3 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+%
+Results for both \outcomesname{} and \rangename{} are shown in \reftab{rr}.
+\begin{figure}[t]
+  \centering
+\begin{lstlisting}[
+  style=mystyle,
+  language=customPython,
+  escapechar=\%,
+  caption={refprog computing the mean growth rate in the $60-90\%$ category.},
+  label={lst:rr},
+  % float,
+  % floatplacement=H
+]
+ def mean_growth_rate_60_90(
+     portugal1, portugal2, portugal3,
+     norway1,
+     uk1, uk2, uk3, uk4,
+     us1, us2, us3):
+   portugal_avg = (portugal1 + portugal2 + portugal3) / 3%\label{l:portugal-avg}%
+   norway_avg = norway1%\label{l:norway-avg}%
+   uk_avg = (uk1 + uk2 + uk3 + uk4) / 4%\label{l:uk-avg}%
+   us_avg = (us1 + us2 + us3) / 3%\label{l:us-avg}%
+   avg = (portugal_avg + norway_avg + uk_avg + us_avg) / 4%\label{l:final-avg}%
+\end{lstlisting}
+%\vspace{%-15pt}
+\end{figure}
+%
+%
+The analysis discovers that the Norway's only observation for this category $\texttt{norway1}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 10 different outcomes (\cf~column $\texttt{norway1}$), while the other countries only have 5, 2, and 3, respectively for Portugal, UK, and US.
+The same applies to \rangename{} as the output buckets have size $1$ and all the input perturbations are only capable of reaching contiguous buckets. Hence, we obtain the same exact results.
+
+Our analysis is able to discover the disproportionate impact of Norway's only observation in the mean computation, which would have prevented one of the several programming errors found in the article.
+%Nevertheless,
+From a review of~\refprog{rr}, it is clear that Norway's only observation has a greater contribution to the computation,
+%of the average growth rate,
+as it does not need to be averaged with other observations first.
+However, such methodological error is less evident when dealing with a higher number of input observations ($1175$ observations in the original work) and the computation is hidden behind a spreadsheet.
+
+% As noted in many reports, a possible solution would be to improve the weighting procedure or filter outliers.
+
+
+\subsection{GPT-4 Turbo}
+\labsec{gpt-4-turbo}
+
+The second use case we present is drawn from Sam Altman's recent OpenAI keynote in September 2023\footnote{\url{https://www.youtube.com/live/U9mJuUkhUzk?si=HOzuH3-gr_kTdhCt&t=2330}}, where he presented the GPT-4 Turbo.
+This new version of the GPT-4 language model brings the ability to write and interpret code directly without the need of human interaction.
+Hence, as showcased in the keynote, the user could prompt multiple information to the model, such as related to the organization of a holiday trip with friends in Paris, and the model automatically generates the code to compute the share of the total cost of the trip and run it in background.
+In this environment, users are unable to directly view the code unless they access the backend console.
+This limitation makes it challenging for them to evaluate whether the function has been implemented correctly or not, assuming users have the capability to do so.
+%
+From the keynote, we extracted the~\refprog{share-division} which computes the user's share of the total cost of a holiday trip to Paris, given the total cost of the Airbnb, the flight cost, and the number of friends going on the trip.
+%
+% \begin{table}[t]
+%   \caption{Results of the quantitative analysis for \refprog{refprog-division} and \refprog{refprog-analysis}.}
+% \begin{subtable}{.83\textwidth}
+%   \centering
+%   \begin{tabular}{c | ccc}
+%     \textsc{Impact} & \rotatebox{21}{\texttt{airbnb\_total\_cost\_eur}} & \rotatebox{21}{\texttt{flight\_cost\_usd}} & \rotatebox{21}{\texttt{number\_of\_friends}} \\
+%     \toprule
+%     \outcomesname{} & 10 & 17 & 9 \\
+%     \rangename{} & 1099 & 1709 & 999 \\
+%     \bottomrule
+%   \end{tabular}
+%   \caption{\refprog{share-division} computing the share division among friends.}
+%   \labtab{gpt-4-turbo}
+% \end{subtable}%
+
+% \begin{subtable}{.17\textwidth}
+%   %\vspace{%-5.1pt}
+%   \centering
+%   \begin{tabular}{c | c@{\hskip 5pt}c}
+%     ~ & \rotatebox{0}{\texttt{x}} & \rotatebox{0}{\texttt{y}} \\
+%     \toprule
+%     ~ & 50 & 10 \\
+%     ~ & 499 & 99 \\
+%     \bottomrule
+%   \end{tabular}
+%   \caption{\refprog{timing-analysis}.}
+%   \labtab{termination-analysis}
+% \end{subtable}
+% \end{table}
+%
+% \begin{figure}[t]
+% \begin{lstlisting}[
+%   style=mystyle,
+%   language=customPython,
+%   escapechar=\%,
+%   label={lst:share-division},
+%   caption={Program computing share division for holiday planning among friends.},
+%   % float,
+%   % floatplacement=H
+% ]
+%  def share_division(
+%      airbnb_total_cost_eur,
+%      flight_cost_usd,
+%      number_of_friends):
+%    share_airbnb = airbnb_total_cost_eur / number_of_friends
+%    usd_to_eur = 0.92
+%    flight_cost_eur = flight_cost_usd * usd_to_eur
+%    total_cost_eur = share_airbnb + flight_cost_eur
+% \end{lstlisting}
+% \caption{Program computing share division for holiday planning among friends.}
+% \end{figure}
+%
+Regarding the input bounds, users are willing to spend between 500 and 2000 for the Airbnb, between 50 and 1000 for the flight, and travel with between 2 and 10 friends. As a result, they expect their share, variable $\texttt{total\_cost\_eur}$, to be between 90 and 1900.
+To compute the impact of the input variables we choose the output buckets to cover the expected output space in buckets of size $100$, \ie, $\setdef{100t + 90 \le \texttt{total\_cost\_eur} < \min \{100(t + 1) + 90, 1900\}}{0 \le t \le 19}$.
+The %analysis discovers similar
+findings are similar for both the \outcomesname{} and \rangename{} analysis, see~\reftab{gpt-4-turbo}.
+The input variable $\texttt{flight\_cost\_usd}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 17 different output buckets (resp. a range of 1709 output values), while the other two, $\texttt{airbnb\_total\_cost\_eur}$ and $\texttt{number\_of\_friends}$, only reach 10 and 9 output buckets (resp. have ranges of size 1099 and 999), respectively.
+%Since the output buckets reached by perturbations of input values are contiguous, the \rangename{} analysis shows similar findings: 1709, 1099, and 999, respectively for \texttt{flight\_cost\_usd}, \texttt{airbnb\_total\_cost\_eur}, and \texttt{number\_of\_friends},
+
+These results confirm the user expectations about the proposed program from ChatGPT: the flight cost yields the biggest impact as it cannot be shared among friends.
+
+
+\subsection{Termination Analysis}
+\labsec{termination-analysis}
+
+\refprog{refprog-analysis} is adapted from the termination category of the software verification competition \textsc{sv-comp}\footnote{\url{https://sv-comp.sosy-lab.org/}}.
+%the work of \sidecite{Gopan2006} .
+%This use case comes from
+Assuming both input positives, $\texttt{x},\texttt{y} \ge 0$, this program terminates in $\texttt{x}+1$ iterations if $\texttt{y} >50$, otherwise it terminates in $\texttt{x} - 2\texttt{y} + 103$ iterations.
+We define $\texttt{counter}$ as the output variable, with output buckets defined as $\setdef{10k \le \texttt{counter} < 10(k+1)}{0 \le k < 50}$ and $\{\texttt{counter}\ge 500\}$. These output buckets represent cumulative ranges of iterations required for termination.
+The analysis results are illustrated in~\reftab{termination-analysis}, they show that the input variable $\texttt{x}$ has the biggest impact.
+Modifying the value of $\texttt{x}$ can result in the program terminating within any of the other 50 iteration ranges.
+On the other hand, perturbations on $\texttt{y}$ can only result in the program terminating within 10 different iteration ranges.
+%
+% \begin{figure}[t]
+% \begin{lstlisting}[
+%     style=mystyle,
+%     language=customPython,
+%     escapechar=\%,
+%     label={lst:timing-analysis},
+%     caption={Timing analysis.},
+%     % float,
+%     % floatplacement=H
+%     ]
+%  def example(x, y):
+%    counter = 0
+%    while x >= 0:
+%      if y <= 50:
+%        x += 1
+%      else
+%        x -= 1
+%      y += 1
+%      counter += 1
+% \end{lstlisting}
+% %\vspace{%-15pt}
+% \end{figure}
+%
+Such difference is motivated by the fact that $\texttt{y}$ is only used to determine the number of iterations in the case where $\texttt{y}$ is greater than 50, otherwise it is not used at all. Therefore, two values of $\texttt{y}$, \eg, $y_0$ and $y_1$, only result in two different ranges of iterations required to make the program terminate if either both of them are below $50$ or $y_0 < 50\land y_1 \ge 50$ or $y_0\ge50\land y_1 <50$, not in all the cases.
+
+The given results can be interpreted as follows: the speed of termination of this loop is highly dependent on the value of $\texttt{x}$, while $\texttt{y}$ has a much smaller impact.
+% This information could be used to attack such program just by looking at its timing behavior.
+% For instance, given the number of iterations \texttt{counter}, we infer that the value of \texttt{x} is either $\texttt{counter} - 1$ or $\texttt{counter} + 2\texttt{y} - 103$. On the other hand, since \texttt{y} has less impact as discovered by our tool, we cannot infer much about its value.
+
+
+\subsection{Landing Risk Syste}
+\labsec{landing-risk}
+
+
+% \begin{table}[t]
+%   \caption{Quantitative input usage for~\refprog{example}.}
+%   \labtab{landing-risk}
+%   \centering
+%   \begin{tabular}{cc|cc|cc}
+%     \multicolumn{2}{c|}{\multirow{2}{*}{~\textbf{Input Bounds}}} & \multicolumn{2}{c|}{\outcomesname} & \multicolumn{2}{c}{\rangename} \\ \cline{3-6}
+%     & & \texttt{angle} & \texttt{speed} & \texttt{angle} & \texttt{speed} \\ \hline\hline
+%     % $\texttt{angle} = -1 \lor \texttt{angle} = 4$ & \multirow{4}{*}{$1 \le \texttt{speed} \le 3$} & &
+%     % 1  &  2  & 3  & 2  \\ \cline{1-1} \cline{4-7}
+%     $-4 \le \texttt{angle} \le 4$ & \multirow{3}{*}{$~~\land 1 \le \texttt{speed} \le 3$} &
+%     3  &  3  & 3  & 3  \\ \cline{1-1} \cline{3-6}
+%     $-4 \le \texttt{angle} \le 0$ & &
+%     3  &  2  & 3  & 2  \\ \cline{1-1} \cline{3-6}
+%     $0 \le \texttt{angle} \le 4$ & &
+%     3 &  2 & 3 & 2 \\
+%   \end{tabular}
+% \end{table}
+
+% \begin{figure}[t]
+%   \centering
+% \begin{tikzpicture}
+%   % Grid
+%   \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (9.9,3.9);
+%   % x-axis
+%   \draw[->,ultra thick] (0,0)--(10,0) node[rotate=90,below]{\x};
+%   % y-axis
+%   \draw[->,ultra thick] (0,0)--(0,4) node[above]{\y};
+%   % x-axis ticks
+%   \foreach \x in {-4,-3,-2,-1,0,1,2,3,4}
+%       \draw (\x+5,0.1) -- (\x+5,-0.1) node[below] {\x};
+%   % y-axis ticks
+%   \foreach \y in {1,2,3}
+%       \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+%   % Polyhedra
+%   \fill[color=seabornGreen, opacity=0.5] (5,3) -- (7,1) -- (3,1) -- cycle;
+%   \draw[color=seabornGreen, ultra thick] (5,3) -- (7,1) -- (3,1) -- cycle;
+%   % Polyhedra
+%   \fill[color=seabornYellow, opacity=0.5] (4,3) -- (5,3) -- (3,1) -- (2,1) -- cycle;
+%   \draw[color=seabornYellow, ultra thick] (4,3) -- (5,3) -- (3,1) -- (2,1) -- cycle;
+%   % % Polyhedra
+%   \fill[color=seabornYellow, opacity=0.5] (5,3) -- (6,3) -- (8,1) -- (7,1) -- cycle;
+%   \draw[color=seabornYellow, ultra thick] (5,3) -- (6,3) -- (8,1) -- (7,1) -- cycle;
+%   % Polyhedra
+%   \fill[color=seabornOrange, opacity=0.5] (3,3) -- (4,3) -- (2,1) -- (1,1) -- cycle;
+%   \draw[color=seabornOrange, ultra thick] (3,3) -- (4,3) -- (2,1) -- (1,1) -- cycle;
+%   % % Polyhedra
+%   \fill[color=seabornOrange, opacity=0.5] (6,3) -- (7,3) -- (9,1) -- (8,1) -- cycle;
+%   \draw[color=seabornOrange, ultra thick] (6,3) -- (7,3) -- (9,1) -- (8,1) -- cycle;
+%   % Polyhedra
+%   \fill[color=seabornRed, opacity=0.5] (1,3) -- (3,3) -- (1,1) -- cycle;
+%   \draw[color=seabornRed, ultra thick] (1,3) -- (3,3) -- (1,1) -- cycle;
+%   % Polyhedra
+%   \fill[color=seabornRed, opacity=0.5] (7,3) -- (9,3) -- (9,1) -- cycle;
+%   \draw[color=seabornRed, ultra thick] (7,3) -- (9,3) -- (9,1) -- cycle;
+%   % Nodes
+%   \fill[color=seabornRed] (0+1,0+1) circle[radius=2pt];
+%   \node[above left] at (0+1,0+1) {$3$};
+%   \fill[color=seabornRed] (0+1,1+1) circle[radius=2pt];
+%   \node[above left] at (0+1,1+1) {$3$};
+%   \fill[color=seabornRed]    (0+1,2+1) circle[radius=2pt];
+%   \node[above left] at (0+1,2+1) {$3$};
+%   \fill[color=seabornOrange] (1+1,0+1) circle[radius=2pt];
+%   \node[above left] at (1+1,0+1) {$2$};
+%   \fill[color=seabornRed]    (1+1,1+1) circle[radius=2pt];
+%   \node[above left] at (1+1,1+1) {$3$};
+%   \fill[color=seabornRed] (1+1,2+1) circle[radius=2pt];
+%   \node[above left] at (1+1,2+1) {$3$};
+%   \fill[color=seabornYellow]    (2+1,0+1) circle[radius=2pt];
+%   \node[above left] at (2+1,0+1) {$1$};
+%   \fill[color=seabornOrange] (2+1,1+1) circle[radius=2pt];
+%   \node[above left] at (2+1,1+1) {$2$};
+%   \fill[color=seabornRed] (2+1,2+1) circle[radius=2pt];
+%   \node[above left] at (2+1,2+1) {$3$};
+%   \fill[color=seabornGreen] (3+1,0+1) circle[radius=2pt];
+%   \node[above left] at (3+1,0+1) {$0$};
+%   \fill[color=seabornYellow] (3+1,1+1) circle[radius=2pt];
+%   \node[above left] at (3+1,1+1) {$1$};
+%   \fill[color=seabornOrange]    (3+1,2+1) circle[radius=2pt];
+%   \node[above left] at (3+1,2+1) {$2$};
+%   \fill[color=seabornGreen] (4+1,0+1) circle[radius=2pt];
+%   \node[above left] at (4+1,0+1) {$0$};
+%   \fill[color=seabornGreen]    (4+1,1+1) circle[radius=2pt];
+%   \node[above left] at (4+1,1+1) {$0$};
+%   \fill[color=seabornYellow]   (4+1,2+1) circle[radius=2pt];
+%   \node[above left] at (4+1,2+1) {$1$};
+%   \fill[color=seabornGreen]    (5+1,0+1) circle[radius=2pt];
+%   \node[above right] at (5+1,0+1) {$0$};
+%   \fill[color=seabornYellow]   (5+1,1+1) circle[radius=2pt];
+%   \node[above right] at (5+1,1+1) {$1$};
+%   \fill[color=seabornOrange]   (5+1,2+1) circle[radius=2pt];
+%   \node[above right] at (5+1,2+1) {$2$};
+%   \fill[color=seabornYellow]   (6+1,0+1) circle[radius=2pt];
+%   \node[above right] at (6+1,0+1) {$1$};
+%   \fill[color=seabornOrange]   (6+1,1+1) circle[radius=2pt];
+%   \node[above right] at (6+1,1+1) {$2$};
+%   \fill[color=seabornRed]   (6+1,2+1) circle[radius=2pt];
+%   \node[above right] at (6+1,2+1) {$3$};
+%   \fill[color=seabornOrange]   (7+1,0+1) circle[radius=2pt];
+%   \node[above right] at (7+1,0+1) {$2$};
+%   \fill[color=seabornRed]   (7+1,1+1) circle[radius=2pt];
+%   \node[above right] at (7+1,1+1) {$3$};
+%   \fill[color=seabornRed]   (7+1,2+1) circle[radius=2pt];
+%   \node[above right] at (7+1,2+1) {$3$};
+%   \fill[color=seabornRed]   (8+1,0+1) circle[radius=2pt];
+%   \node[above right] at (8+1,0+1) {$3$};
+%   \fill[color=seabornRed]   (8+1,1+1) circle[radius=2pt];
+%   \node[above right] at (8+1,1+1) {$3$};
+%   \fill[color=seabornRed]   (8+1,2+1) circle[radius=2pt];
+%   \node[above right] at (8+1,2+1) {$3$};
+% \end{tikzpicture}
+% \caption{Input space composition with continuous input values.}
+% \label{fig:extended}
+
+%   %\vspace{%-15pt}
+% \end{figure}
+
+% \begin{figure}[t]
+%   \centering
+%   \begin{subfigure}{\textwidth}
+%   \begin{subfigure}[b]{0.24\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       \foreach \y in {1,2,3}
+%           \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornRed, opacity=0.5] (0.5,0.5) -- (2.5,0.5) -- (2.5,2.5) -- (0.5,2.5) -- cycle;
+%       \draw[color=seabornRed, ultra thick] (0.5,0.5) -- (2.5,0.5) -- (2.5,2.5) -- (0.5,2.5) -- cycle;
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 3\}$}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}[b]{0.23\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornOrange, opacity=0.5] (0.5,0.5) -- (2.5,0.5) -- (2.25,2.5) -- (0.75,2.5) -- cycle;
+%       \draw[color=seabornOrange, ultra thick] (0.5,0.5) -- (2.5,0.5);
+%       \draw[color=seabornOrange, ultra thick] (0.75,2.5) -- (2.25,2.5);
+%       \draw[color=seabornOrange, ultra thick, dotted] (2.5,0.5) -- (2.25,2.5);
+%       \draw[color=seabornOrange, ultra thick, dotted] (0.75,2.5) -- (0.5,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 2\}$}
+%   \end{subfigure}
+%   % \hfill
+%   \begin{subfigure}[b]{0.23\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornYellow, opacity=0.5] (1,0.5) -- (2,0.5) -- (1.75,2.5) -- (1.25,2.5) -- cycle;
+%       \draw[color=seabornYellow, ultra thick] (1,0.5) -- (2,0.5);
+%       \draw[color=seabornYellow, ultra thick] (1.75,2.5) -- (1.25,2.5);
+%       \draw[color=seabornYellow, ultra thick, dotted] (2,0.5) -- (1.75,2.5);
+%       \draw[color=seabornYellow, ultra thick, dotted] (1.25,2.5) -- (1,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 1\}$}
+%   \end{subfigure}
+%   % \hfill
+%   \begin{subfigure}[b]{0.24\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       % \draw[->,ultra thick] (0,0)--(3,0);
+%       \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornGreen, opacity=0.5] (1.25,0.5) -- (1.75,0.5) -- (1.5,2.5) -- cycle;
+%       \draw[color=seabornGreen, ultra thick] (1.25,0.5) -- (1.75,0.5);
+%       \draw[color=seabornGreen, ultra thick, dotted] (1.75,0.5) -- (1.5,2.5);
+%       \draw[color=seabornGreen, ultra thick, dotted] (1.5,2.5) -- (1.25,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 0\}$}
+%   \end{subfigure}
+% % \caption{Analysis result using the polyhedra domain.}
+% \label{fig:analysis-extended}
+% \end{subfigure}
+% \begin{subfigure}{\textwidth}
+%   \begin{subfigure}[b]{0.24\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       \draw[dashed] (1.5,0)--(1.5,3);
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       \foreach \y in {1,2,3}
+%           \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornRed, opacity=0.5] (0.5,0.5) -- (1,2.5) -- (0.5,2.5) -- cycle;
+%       \fill[color=seabornRed, opacity=0.5] (2.5,0.5) -- (2.5,2.5) -- (2,2.5) -- cycle;
+%       \draw[color=seabornRed, ultra thick] (0.5,0.5) -- (1,2.5) -- (0.5,2.5) -- cycle;
+%       \draw[color=seabornRed, ultra thick] (2.5,0.5) -- (2.5,2.5) -- (2,2.5) -- cycle;
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 3\}$}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}[b]{0.23\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       \draw[dashed] (1.5,0)--(1.5,3);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornOrange, opacity=0.5] (0.5,0.5) -- (0.75,0.5) -- (1,2.5) -- (0.75,2.5) -- cycle;
+%       \fill[color=seabornOrange, opacity=0.5] (2.25,0.5) -- (2.5,0.5) -- (2.25,2.5) -- (2,2.5) -- cycle;
+%       \draw[color=seabornOrange, ultra thick] (0.5,0.5) -- (0.75,0.5);
+%       \draw[color=seabornOrange, ultra thick] (2.25,0.5) -- (2.5,0.5);
+%       \draw[color=seabornOrange, ultra thick] (0.75,2.5) -- (1,2.5);
+%       \draw[color=seabornOrange, ultra thick] (2,2.5) -- (2.25,2.5);
+%       \draw[color=seabornOrange, ultra thick, dotted] (2.5,0.5) -- (2.25,2.5);
+%       \draw[color=seabornOrange, ultra thick] (2.25,0.5) -- (2,2.5);
+%       \draw[color=seabornOrange, ultra thick, dotted] (0.75,2.5) -- (0.5,0.5);
+%       \draw[color=seabornOrange, ultra thick] (1,2.5) -- (0.75,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 2\}$}
+%   \end{subfigure}
+%   % \hfill
+%   \begin{subfigure}[b]{0.23\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       \draw[->,ultra thick] (0,0)--(3,0);
+%       \draw[dashed] (1.5, 0)--(1.5, 3);
+%       % \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornYellow, opacity=0.5] (1,0.5) -- (1.25,0.5) -- (1.5,2.5) -- (1.75,0.5) -- (2,0.5) -- (1.75,2.5) -- (1.25,2.5) -- cycle;
+%       \draw[color=seabornYellow, ultra thick] (1,0.5) -- (1.25,0.5);
+%       \draw[color=seabornYellow, ultra thick] (1.75,0.5) -- (2,0.5);
+%       \draw[color=seabornYellow, ultra thick] (1.75,2.5) -- (1.25,2.5);
+%       \draw[color=seabornYellow, ultra thick, dotted] (2,0.5) -- (1.75,2.5);
+%       \draw[color=seabornYellow, ultra thick] (1.75,0.5) -- (1.5,2.5);
+%       \draw[color=seabornYellow, ultra thick, dotted] (1.25,2.5) -- (1,0.5);
+%       \draw[color=seabornYellow, ultra thick] (1.5,2.5) -- (1.25,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 1\}$}
+%   \end{subfigure}
+%   % \hfill
+%   \begin{subfigure}[b]{0.24\textwidth}
+%     \begin{tikzpicture}[scale=0.8]
+%       % Grid
+%       \foreach \y in {0.5, 1.5, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (0,\y) -- (2.9,\y);
+%       }
+%       \foreach \x in {0.5, 1, 1.5, 2, 2.5} {
+%         \draw[help lines, color=gray!30, dashed] (\x, 0) -- (\x, 2.9);
+%       }
+%       % x-axis
+%       % \draw[->,ultra thick] (0,0)--(3,0);
+%       \draw[->,ultra thick] (0,0)--(3,0) node[rotate=90,below]{\x};
+%       \draw[dashed] (1.5, 0)--(1.5, 3);
+%       % % y-axis
+%       % \draw[->,ultra thick] (0,0)--(0,3) node[above]{\y};
+%       % % x-axis ticks
+%       \draw (0.5,0.1) -- (0.5,-0.1) node[below] {$-4$};
+%       % \draw (1,0.1) -- (1,-0.1) node[below] {$-2$};
+%       \draw (1,0.1) -- (1,-0.1);
+%       \draw (1.5,0.1) -- (1.5,-0.1) node[below] {$0$};
+%       % \draw (2,0.1) -- (2,-0.1) node[below] {$2$};
+%       \draw (2,0.1) -- (2,-0.1);
+%       \draw (2.5,0.1) -- (2.5,-0.1) node[below] {$4$};
+%       % % y-axis ticks
+%       % \foreach \y in {1,2,3}
+%       %     \draw (0.1,\y-0.5) -- (-0.1,\y-0.5) node[left] {\y};
+%       % % Polyhedra
+%       \fill[color=seabornGreen, opacity=0.5] (1.25,0.5) -- (1.75,0.5) -- (1.5,2.5) -- cycle;
+%       \draw[color=seabornGreen, ultra thick] (1.25,0.5) -- (1.75,0.5);
+%       \draw[color=seabornGreen, ultra thick, dotted] (1.75,0.5) -- (1.5,2.5);
+%       \draw[color=seabornGreen, ultra thick, dotted] (1.5,2.5) -- (1.25,0.5);
+%       \draw[color=seabornGreen, ultra thick, dotted] (1.5,2.5) -- (1.5,0.5);
+%     \end{tikzpicture}
+%     % \caption{$\{\texttt{risk} = 0\}$}
+%   \end{subfigure}
+% % \caption{Analysis result after splitting the input space into two subspaces around $\texttt{angle}=0$.}
+% \end{subfigure}
+% \caption{Above, result of the analysis with convex polyhedra. Below, result after splitting the input space into two subspaces around $\texttt{angle}=0$.}
+% %\vspace{%-15pt}
+% \label{fig:analysis}
+% \end{figure}
+
+
+We apply our quantitative analysis to~\refprog{example} for the landing alarm system extended with the  continuous input space for the aircraft angle of approach, where $(-4 \le \texttt{angle} \le 4) \land (1 \le \texttt{speed} \le 3)$, see \reffig{extended}.
+In this instance, the precision of the abstraction drastically drops as convex abstract domains are not able to capture the symmetric features of the input space around 0.
+Indeed, the analysis result, first row of~\reffig{analysis}, is unable to reveal any difference in the input usage of input variables as all the abstract preconditions result of the backward analysis intersect together.
+As a consequence, \outcomesname{} and \rangename{} are unable to provide any meaningful information, first row of \reftab{landing-risk}.
+
+A possible approach to overcome the non-convexity of the input space is to split the input space into two subspaces (as a bounded set of disjunctive polyhedra), $-4 \le \texttt{angle} \le 0$ and $0 \le \texttt{angle} \le 4$, second and third row of \reftab{landing-risk}.
+In the first subset $-4 \le \texttt{angle} \le 0$, we are able to perfectly captures the input regions that lead to each output bucket with our abstract analysis, second row of~\reffig{analysis}.
+Therefore, we are able to recover the information that the input configurations from the bucket $\{\texttt{risk} =3\}$ do not intersect with the ones from the bucket $\{\texttt{risk} = 0\}$ after projecting away the axis \texttt{speed}.
+As the end, our analysis notices that variations in the value of the input \texttt{angle} results in three possible output values, while variations in the \texttt{speed} input lead to two.
+Similarly, regarding the range of values, variations in the \texttt{angle} input cover the entire spectrum of output values, whereas to the \texttt{speed} input only span a range of 2 since it exists no input value such that modifications in the \texttt{speed} value could obtain a range of output values bigger than 2.
+The same reasoning applies to the other subspace with $0 \le \texttt{angle} \le 4$.
