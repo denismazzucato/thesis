@@ -5,12 +5,13 @@
 
 In this chapter we present the quantitative framework used to measure the contributions of the input variables to the outcome of a program. First, we introduce a leading example of a landing-risk alarm system to illustrate the concepts. Then, we present the framework and its properties. Finally, since the framework depends on the notion of impact, we show a few possible definitions of impact.
 
-\onlysectioncommands{\x,\y,\z,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle}
+\onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle}
 \section{Landing Alarm System}
 \labsec{landing-alarm-system}
 \newcommand*{\x}{\texttt{angle}}
 \newcommand*{\y}{\texttt{speed}}
 \newcommand*{\z}{\texttt{risk}}
+\newcommand*{\lc}{\texttt{landing\_coeff}}
 
 
 \begin{lstlisting}[language=customPython,escapechar=\%,label={lst:landing-alarm-system},caption={Program for the landing-risk alarm system.}]
@@ -25,11 +26,16 @@ else %\labline{medium-risk-branch}%
 
 
 The goal of \refprog{landing-alarm-system}, referred to as \landingprogram, is to inform the pilot about the level of risk associated with the landing approach.
-It takes two input variables, denoted as \x and \y, for the aircraft-airstrip alignment angle and the aircraft speed, respectively.
+It takes two input variables, denoted as \x{} and \y, for the aircraft-airstrip alignment angle and the aircraft speed, respectively.
 A value of 1 represents a good alignment while -4 a non-aligned angle, whereas 1, 2, 3 denote low, medium, and high speed.
 A safer approach is indicated by lower speed.
-The landing risk coefficient combines the absolute landing angle and speed.
-The output variable $\z{}$ is the danger level with possible values $\{0, 1, 2, 3\}$, where 0 represents low danger and 3 high danger.
+The program \landingprogram{} computes first the landing risk coefficient, denoted as \lc, at \refline{compute-risk}.
+This coefficient is obtained by taking the absolute value of the landing angle (accounting for both negative and positive approach angles) and adding it to the speed.
+Afterwards, \refline{low-risk-cond} and~\refline{high-risk-cond} restrict \lc{} to range between values 2 and 5.
+Values below 2 signify low danger, while values above 5 indicate high danger.
+Respectively, we assign to the output variable \z{} the value of 0 for low danger and the value of 3 for high danger.
+The medium degree of dangerousness is computed at \refline{medium-risk} and ranges between 1 and 2, which assigns to the output variable \z{} the largest integer less than, or equal, to $\lc-2$.
+The output variable $\z{}$ is the danger level with possible values $\{0, 1, 2, 3\}$.
 
 \begin{marginfigure}
 \centering
@@ -71,10 +77,18 @@ Our goal is to develop a static analysis capable of quantifying the contribution
 
 \newcommand{\exampleinput}[1][\defaultprogramexampleletter]{\textsc{Input}_{#1}}
 
-We propose two impact definitions which, from value variations of the input variable under consideration, respectively focus on
-\textit{the number of} resulting reachable outputs, and \textit{the distance of} extreme reachable outputs.
-The column $\exampleinput[\landingprogram]$ in \reftab{outcome-count} shows all the possible input configurations $\tuple{angle}{speed}$ for the program $\landingprogram$.
-For each input configuration, column \textsc{Relevant Traces} groups together the program traces resulting from value variation of the input variable of interest (in column $\textsc{variable}$), and column $\textsc{Outputs}$ collects the set of all reachable outputs.
+Understanding the effects of input variables on program executions allows us to reveal potential bugs or certify intended behavior.
+Therefore, we present a framework to quantify the impact of input variables on the outcome of a program.
+Intuitively, the definition of impact of a variable depends on various factors such as program structure, environment, developer expertise, and researcher intuition.
+Different notions of impact leverage different traits of the input-output relations in computation.
+As a result, it is not possible to formalize a definition that fits all requirements.
+
+In general, all possible definitions of impact establish some relationship between variations of the input and the output values.
+In this section, we introduce two impact notions.
+The first impact definition focuses on \textit{the size of} extreme reachable values resulting from variations in the input variable.
+The second exploits \textit{the number of} reachable outcomes.
+Both definitions give us different insights on the program \landingprogram.
+In particular, the first quantity tells us which variation in the values of input variables results in larger differences between output values, while the second indicates which variation reaches a greater number of output values.
 
 \newcommand{\highlight}[1]{\textcolor{seabornBlue}{#1}}
 \newcommand{\inputa}{\tuple{-4}{1}}
@@ -124,7 +138,7 @@ For each input configuration, column \textsc{Relevant Traces} groups together th
 %
 The first impact definition that we consider is
  $\outcomes(\defprogram)$, %(derived from $\outcomesentropy$),
-where $\definputvariable$ is the input variable of interest and $\defprogram$ the program under analysis. Intuitively (the formal definition is given in \refsec{quantitative-input-feature-usage}), $\outcomes$ returns the maximum number of outputs that are reachable from value variations of the input variable $\definputvariable$.
+where $\definputvariable$ is the input variable of interest and $\defprogram$ the program under analysis. Intuitively\sidenote{the formal definition is given in \refsec{quantitative-input-feature-usage}}, $\outcomes$ returns the maximum number of outputs that are reachable from value variations of the input variable $\definputvariable$.
 For the program
 $\landingprogram$, the result is shown in column $\outcomesname(\landingprogram)$~of \reftab{outcome-count}:
 we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingprogram)=3$.
@@ -191,7 +205,10 @@ Note that, the impact definitions presented above are not computationally practi
 Specifically, when dealing with more complex input space compositions, this approach is highly inefficient or even infeasible (as in the case of continuous input spaces).
 As a consequence, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
 
-\subsection{Abstract Analysis}
+\subsection{Static Analysis}
+
+To quantify the impact of a program, one can rely solely on the input-output observations of the program.
+Thus, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
 
 The analysis starts with a set of output abstractions called \textit{output buckets}.
 A bucket is an abstract element representing a set of output states.
@@ -201,7 +218,46 @@ The analyzer returns an abstract element for each output bucket, representing an
 This result contains also spurious input configurations that may not lead to a value inside the output bucket.
 Based on the chosen impact definition \impactwrappername{} (e.g., \rangename{} or \outcomesname), we perform computations and comparisons on the abstract elements returned by the analysis to obtain an upper bound $\defbound'$. This upper bound is sound by construction of the theoretical framework, meaning that if $\defbound$ is the real (concrete) impact quantity obtained by \impactwrappername, then $\defbound\le\defbound'$.
 
-The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \denis{(as outlined by the use cases shown in~\\Section{experiments} and~\\Appendixfullexperimentaloverview)}
+Assuming \rangename{} as our impact of interest, given the set of abstract elements returned from the backward analysis (one for each bucket), we first project away the input variable $\definputvariable$ under consideration.
+This means that our abstract elements now represent input configurations without the variable $\definputvariable$.
+To be precise, we obtain \textit{partial input configurations} taking into account all possible variations of the input $\definputvariable$.
+After the projection, we check for intersections among the abstract elements.
+Any intersection may indicate two input configurations that only differ in the value of the variable $\definputvariable$, leading to two different output buckets.
+
+Continuing our landing alarm system example, we start with three output buckets: $b_0=\{-1, 0\}$, $b_1=\{1, 2\}$, and $b_2=\{3, 4\}$ for instance.
+Note that, only $\{0, 1, 2, 3\}$ are reachable \z{} values, but we may not have the exact post-condition of a program.
+Therefore, for each of these three buckets, we run the backward analysis.
+The backward analysis is parametric in the choice of the abstract domain, for instance, the disjunctive polyhedra domain based on the convex polyhedra domain~\sidecite{Cousot1978}.
+Without showing the details of the analysis, starting with the bucket $b_0$, only the first branch of the if statement can be processed, \refline{low-risk}.
+Therefore, \lc{} should be smaller than 2 at the end of \refline{compute-risk}.
+Consequently, the sum of the absolute values of \x{} and \y{} should be smaller than 2.
+Thus, our analysis discovers that only the input configuration $\tuple{1}{1}$ leads to the first bucket.
+Similarly, we discover that from the bucket $b_1$, we reach the input configurations $\tuple{1}{2}$ and $\tuple{1}{3}$.
+Lastly, from the bucket $b_2$, we reach the input configurations $\tuple{-4}{1}$, $\tuple{-4}{2}$, and $\tuple{-4}{3}$.
+
+Regarding the case in which we quantify the impact of \x{}, we remove \x{} from each of the abstract elements returned by the analysis.
+For example, from the bucket $b_0$, we have the abstract input configuration $\langle 1\rangle$\sidenote{the analysis discovers that only the input configuration $\tuple{1}{1}$ leads to the first bucket $b_0$. Thus, by removing \x{} from the input configuration, we obtain the tuple of on element $\langle 1\rangle$}
+; from the bucket $b_1$, we have $\langle 2\rangle$ and $\langle 3\rangle$; and from the bucket $b_2$, we have $\langle 1\rangle$, $\langle 2\rangle$, and $\langle 3\rangle$.
+By checking the intersections, we find that bucket $b_0$ intersects with bucket $b_2$ since they have $\langle 1\rangle$ in common.
+Bucket $b_2$ also intersects with bucket $b_1$ since they have both $\langle 2\rangle$ and $\langle 3\rangle$ in common.
+Understanding the meaning of intersections is crucial.
+For example, the first intersection between buckets $b_0$ and $b_2$ means that there exist two input configurations (namely $\tuple{1}{1}$ and $\tuple{-4}{1}$) that only differ in the value of \x{} (from $\x=1$ in the first configuration $\tuple{1}{1}$ to $\x=-4$ in the second configuration $\tuple{-4}{1}$), where the first configuration leads to an output in bucket $b_0$ and the second configuration leads to an output in the other bucket $b_2$.
+Therefore, we are able to assign a range to this variation by taking the minimum of bucket $b_0$ and the maximum of bucket $b_2$, resulting in the range $[-1,4]$ with a size of 5.
+Similarly, we obtain the range $[1,4]$ with a size of 3 from the other intersection between buckets $b_1$ and $b_2$.
+Finally, we return the maximum among all possible sizes, which is 5.
+This result is an over-approximation of the impact value for the function $\rangename_\x(\landingprogram)$.
+
+Similarly, from the result of the backward analysis, we repeat the steps to quantify the impact regarding the other input variable \y{}.
+Therefore, the analysis result is an impact of 3 since the only buckets intersecting after projecting away \y{} are buckets $b_0$ and $b_1$, with abstract input configurations of $\langle 1\rangle$ for both, while bucket $b_2$ contains only the value $\langle -4\rangle$.
+
+Regarding the impact definition \outcomesname, whenever we discover intersections among different buckets, we count the total number of different outcome values they carry.
+Consequently, we find that the two intersections for both variables \x{} and \y{} hold four different outcome values in total.
+In such case, our analysis would conclude that the two variables hold the same impact.
+Indeed, the choice of the starting output buckets is critical.
+For instance, with $b_0=\{0\}$, $b_1=\{1\}$, $b_2=\{2\}$, and $b_3=\{3\}$ one would recover maximum precision and obtain a useful analysis quantification.
+
+In conclusion, the sound upper bound discovered by our analysis is always higher than the concrete one by construction of the theoretical framework.
+The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \sidenote{(as outlined by the use cases shown in~\\Section{experiments} and~\\Appendixfullexperimentaloverview)}
 
 \input{src/chapters/extensional/quantitative-input-data-usage}
 \input{src/chapters/extensional/static-analysis}
