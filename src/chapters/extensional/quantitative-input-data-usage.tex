@@ -10,8 +10,20 @@ In this section we present some preliminaries on program computations, then we i
 
 Our goal is to quantify the impact of a specific input variable on the computation of the program.
 To this end, we introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
-We implicitly assume the use of an \textit{output descriptor} $\outputdesc\in \stateandbottom \to \valuesinf$ to determine the desired output of a program by observations on program states\sidenote{The option of returning $\pm\infty$  from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}.
-The output descriptor $\outputdesc$ is generic enough to cover plenty of use cases, providing the end-user the flexibility to choose the interpretation and meaning of program outputs.
+
+We implicitly assume the use of an \textit{output descriptor} $\outputdesc$ to determine the desired output of a program by observations on program states.
+
+Specifically, $\reader\in \stateandbottom \to \valuesinf$ selects the output of interest from a given state and returns its corresponding value\sidenote{The option of returning $\pm\infty$ from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}.
+Additionally, $\filter\subseteq\valuesinf$ filters output states and selectively engages a subset of the potential outcomes.
+Through this filtering mechanism, undesired outcomes are directly excluded, and a numerical value is ensured.
+
+\begin{definition}[Output Descriptor]
+  \labdef{outputdesc}
+  Given $\reader\in\stateandbottom\to\valuesinf$ and $\filter\subseteq\valuesinf$, the tuple $\outputdesc$ is called an \textup{output descriptor}.
+\end{definition}
+
+The above output characterization $\outputdesc$ is generic enough to cover plenty of use cases.
+We leverage this output descriptor to provide the end user of the framework the flexibility to choose the interpretation and meaning of program outputs, without establishing it beforehand.
 
 \begin{marginlisting}
 \begin{lstlisting}[language=customPython]
@@ -37,24 +49,52 @@ else:
     +\infty & \text{otherwise}
   \end{cases}
   \]
+  and $\filter=\{0,1,2,3\}$ filters $+\infty$ from the possible outputs.
   In other words, we are interested in the value of $\z$ for terminating traces.
+
+  However, the end-user of the analysis may be interested in only a subset of the possible outcomes of the program.
+  For instance, only about the risk levels in $\{0, 1, 2\}$, forgetting about the value $3$.
+  It is crucial that our impact definitions remain sound to the user assumption on post-conditions, even when it is under-approximating the exact one.
+  Thus, the filter specifies this information by $\filter=\{0, 1, 2\}$, which is a subset of all the possible values of the output variable \z.
 \end{example}
 
-Given an impact definition of interest, we define the \textit{$\defbound$-bounded impact property} $\bounded\in\setofsetof\pairofstates$ as the set of dependency semantics with impact with respect to the input variable $\definputvariable$ below the threshold $\defbound\in\valuesposplus$. Formally,
-\begin{align}\label{eq:bounded}
-  \BOUNDED \DefeQ \seTDef
-  {\dependencysemanticsnoparam \in \setof\pairofstates}
-  {\impactwrapper(\dependencysemanticsnoparam) \impactsubseteq \defbound}
-\end{align}
+\begin{example}
+  For other contexts, rather than considering a single output variable one may be interested in a custom operation.
+  % For example, in the context of neural network classifiers, the output of the program is the index of the output variable with highest value.
+  For example, the output of a neural network classifier is the index of the output neuron holding the highest value.
+  Hence, for a network with $n+1$ output neurons, we could instantiate
+  \[
+    \reader(x_0,\dots,x_{w+n-1},x_{w+n})=\argmax_{0\le j\le n} x_{w+j}
+  \] where the function $\argmax_j X_j$ returns the \textit{argument} $j$ of the value holding the \textit{maximum} among the indexed family $X_j$.
+  The filter $\filter$ could be the set of all indices $\{0,\dots,n\}$, hence permitting all possible outcomes from the reader $\reader$.
+\end{example}
 
-We require $\impactwrapper$ to be monotonic, \ie, for any $\defsetoftraces, \defsetoftraces'\in \setof\pairofstates$,
-it holds that:
-\[
-  \defsetoftraces \subseteq \defsetoftraces' \ImplieS \impactwrapper(\defsetoftraces) \le \impactwrapper(\defsetoftraces')
-\]
-Intuitively, this ensures that an impact applied to an over-approximation of the program semantics can only produce a higher quantity,
-allowing for a sound $\defbound$-bounded impact verification.
-Next, we formalize the already introduced impact metrics \outcomesname{} and \rangename.
+
+
+We can now define our property of interest, the \textit{$\defbound$-bounded impact property} $\bounded$.
+By extension, $\bounded$ is the set of trace semantics such that the impact of the set of traces allowed by the output descriptor $\outputdesc$, \wrt{} the input variable $\definputvariable$, is below the threshold $\defbound\in\valuesposplus$. Formally,
+\begin{align}\labeq{eq:bounded}
+  \BOUNDED \DefeQ \setdef
+  {\tracesemanticsnoparam \in \setof\finiteinfinitesequences}
+  {\impactwrapper(\setdef{\defseq\in\tracesemanticsnoparam}{\reader(\retrieveoutput{\defseq})\in\filter}) \impactsubseteq \defbound}
+\end{align}
+where $\impactwrapper$ is a parameter of the property $\bounded$ and returns the quantity computed on the given set of traces.
+%
+Following the definition of $\bounded$, our validation framework, \refeq{qualitative-soundness}, is instantiated as
+%
+\begin{align}
+  \labeq{bounded-soundness}
+  \defprogram \satisfies \BOUNDED \IfF \collectingsemantics \subseteq \BOUNDED
+\end{align}
+%
+We are interested in properties $\bounded$ that are \textit{extensional}, namely, properties based on the observation of input-output relations of program states.
+This means that, if $\tracesemantics\in\bounded$ and $\tracesemanticsnoparam\semanticsof{\defprogram'}$ consider the same set of input-output observations of $\tracesemantics$, then $\tracesemanticsnoparam\semanticsof{\defprogram'}\in\bounded$.
+As a consequence, the impact is not affected by intermediate states,
+$\impactwrapper(\tracesemantics)=\impactwrapper(\tracesemanticsnoparam\semanticsof{\defprogram'})$.
+% Therefore, we derive the \textit{dependency semantics} $\dependencysemanticsnoparam$~\citep{Urban2020} as an abstraction of the collecting semantics $\collectingsemanticsnoparam$ removing intermediate computational states.
+Furthermore, we require $\impactwrapper$ to be monotonic, \ie, for any $X, Y\in \setof\finiteinfinitesequences$, it holds that $X \subseteq Y$ if and only if $\impactwrapper(X) \le \impactwrapper(Y)$.
+Intuitively, this ensures that an impact applied to an over-approximation of the program semantics can only produce a higher quantity, enabling the definition of a sound terminating static analysis.
+Next, we formalize the already introduced impact metrics \rangename{} and \outcomesname.
 
 \subsection{The \outcomesname{} impact definition}
 \labsec{outcomes}
