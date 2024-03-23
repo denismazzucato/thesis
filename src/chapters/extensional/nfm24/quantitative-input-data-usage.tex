@@ -96,54 +96,5 @@ Furthermore, we require $\impactwrapper$ to be monotonic, \ie, for any $X, Y\in 
 Intuitively, this ensures that an impact applied to an over-approximation of the program semantics can only produce a higher quantity, enabling the definition of a sound terminating static analysis.
 Next, we formalize the already introduced impact metrics \rangename{} and \outcomesname.
 
-\subsection{The \outcomesname{} impact definition}
-\labsec{outcomes}
-%
-Formally $\outcomes\in\setof\pairofstates\to\Nplus$ counts the number of different output values reachable by varying the input variable $\definputvariable\in\inputvariables$.
-Intuitively,
-for any possible input configuration $\definputvariable\in\reducedstate$, we gather the set $\defsetoftraces\in\setof\pairofstates$ of all input-output state dependencies with an input configuration that is a variation of $\definputvariable$ on the input variable $\definputvariable$, \ie, $\setdef{
-  \inputoutputtuple{\defstate}\in \defsetoftraces
-}{
-  \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definputvariable
-}$.
-Then, $\outcomes$ is the maximal cardinality of the output values $\setdef{
-  \reader(\retrieveoutput\defstate)
-}{
-  \inputoutputtuple{\defstate} \in \defsetoftraces \land
-    \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definputvariable
-}$.
-%
-Formally,
-%
-\begin{align}
-  \label{eq:outcomes}
-\outcomes(\defsetoftraces) &\DefeQ
-  \sup_{\definputvariable\in\reducedstate}
-  \cardinality{\seTDef{\reader(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\defsetoftraces\land\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable
-  }
-  }
-\end{align}
-where $\cardinality{\cdot}$ is the cardinality operator,
-and $\sup(X)$ is the supremum operator, \ie, the smallest $q$ such that $q\ge x$ for all $x\in X$.
-From the definition above, it is easy to note that $\outcomes(\defsetoftraces)$ is monotone in the amount of dependencies $\defsetoftraces$. That is, the more dependencies in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
-
-\subsection{The \rangename{} impact definition}
-\labsec{range}
-%
-The quantity $\range\in\setof\pairofstates\to\Rposplus$ determines the
-length of the range of output values from all the possible variations in the input variable $\definputvariable\in\inputvariables$.
-%
-This definition employs the auxiliary function $\length\in\setof\valuesinf\to\valuesposplus$, defined as follows:
- $\length(X) \defeq \sup\;{X} - \inf\;{X}$ if $X\neq\emptyset$, where $\sup$ and $\inf$ are the supremum and infimum operators, while $\length(X)\defeq0$ otherwise.
-  Formally,
-  \begin{align}
-    \label{eq:range}
-    \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
-      \length(\seTDef{
-        \reader(\retrieveoutput{\defstate})
-      }{
-        \inputoutputtuple\defstate \in \defsetoftraces \land \retrieveinput{\defstate} \stateeq{\inputvariableswithouti} \definput
-      })
-  \end{align}
-
-Similarly to $\outcomesname$, $\rangename$ is monotone in the amount of dependencies $\defsetoftraces$.
+\input{src/chapters/extensional/nfm24/outcomes}
+\input{src/chapters/extensional/nfm24/range}

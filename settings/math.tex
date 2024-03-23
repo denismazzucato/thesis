@@ -39,6 +39,8 @@
 \newcommand*{\setmeet}{\cap}
 \newcommand*{\bigsetjoin}{\bigcup}
 \newcommand*{\bigsetmeet}{\bigcap}
+\newcommand{\higher}[1]{\dot{#1}}
+\newcommand{\higherhigher}[1]{\ddot{#1}}
 \newcommandx{\foralldef}[3][3=\forall]{{#3}{#1}.\spacer{#2}}
 \newcommandx{\existsdef}[3][3=\exists]{{#3}{#1}.\spacer{#2}}
 \newcommandx{\existsunique}{\exists!}
@@ -67,3 +69,10 @@
 \newcommand{\meet}{\sqcap}
 \newcommand{\bigmeet}{\bigsqcap}
 \newcommand{\completelattice}[6]{\langle#1,#2,#3,#4,#5,#6\rangle}
+
+% galois connections
+\newcommand{\galoisbetweensemantics}[2]{
+  {\csname #1poset\endcsname}
+  \galois{\csname #2abstraction\endcsname}{\csname #2concretization\endcsname}
+  {\csname #2poset\endcsname}
+}

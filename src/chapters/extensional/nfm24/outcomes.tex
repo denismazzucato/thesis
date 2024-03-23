@@ -1,0 +1,85 @@
+\subsection{The \outcomesname{} impact definition}[The Outcomes Impact Definition]
+\labsec{outcomes}
+%
+Formally $\outcomes\in\setof\pairofstates\to\Nplus$ counts the number of different output values, allowed by the output descriptor, reachable by varying the input variable $\definputvariable\in\inputvariables$.
+First, we define step-by-step the quantity $\outcomes$,
+followed by the instantiation of this quantity within the context of example of \refprog{landing-alarm-system}.
+We present the formal definition at the end.
+
+
+Intuitively,
+for any possible input configuration $\definput\in\reducedstate$, we collect all the traces that are starting from an input configuration that is a variation of $\definput$ on the input variable $\definputvariable$, \ie, $\setdef{
+  \defseq\in \defsetoftraces
+}{
+  \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+}$, where $\defsetoftraces\in\setof\finiteinfinitesequences$.
+Then, we collect the output values of this set of traces by means of the output descriptor $\outputdesc$, \ie, $\setdef{
+  \reader(\retrieveoutput\defseq)
+}{
+  \defseq \in \defsetoftraces \land
+    \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+}$. Specifically, this set contains all the output readings performed by $\reader$.
+%
+Afterwards, we extract the number of elements via the cardinality operator $\cardinality{\cdot}$.
+Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure the greatest impact is preserved.
+
+\begin{example}[Landing Alarm System]
+  \label{ex:range}
+  \newcommand*{\inputa}{\tuple{-4}{1}} \newcommand*{\outputa}{\langle \outputvaluea\rangle} \newcommand*{\outputvaluea}{3}
+  \newcommand*{\inputb}{\tuple{-4}{2}} \newcommand*{\outputb}{\langle \outputvalueb\rangle} \newcommand*{\outputvalueb}{3}
+  \newcommand*{\inputc}{\tuple{-4}{3}} \newcommand*{\outputc}{\langle \outputvaluec\rangle} \newcommand*{\outputvaluec}{3}
+  \newcommand*{\inputd}{\tuple{ 1}{1}} \newcommand*{\outputd}{\langle \outputvalued\rangle} \newcommand*{\outputvalued}{0}
+  \newcommand*{\inpute}{\tuple{ 1}{2}} \newcommand*{\outpute}{\langle \outputvaluee\rangle} \newcommand*{\outputvaluee}{1}
+  \newcommand*{\inputf}{\tuple{ 1}{3}} \newcommand*{\outputf}{\langle \outputvaluef\rangle} \newcommand*{\outputvaluef}{2}
+  \newcommand*{\tracea}{\inputa\to\outputa}
+  \newcommand*{\traceb}{\inputb\to\outputb}
+  \newcommand*{\tracec}{\inputc\to\outputc}
+  \newcommand*{\traced}{\inputd\to\outputd}
+  \newcommand*{\tracee}{\inpute\to\outpute}
+  \newcommand*{\tracef}{\inputf\to\outputf}
+  Let us revisit the example of the landing alarm system, with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\Nle{3}}$.
+  The input variables are $\inputvariables = \{\x,\y\}$, consequently the input configurations are
+  $\reducedstate=\{\inputa, \inputb, \inputc, \inputd, \inpute, \inputf\}$.
+%
+  We begin by considering $\definputvariable=\x$ and $\inputa$ as the first input configuration to be explored.
+  Hence, we collect all traces that are
+  starting from an input configuration that is a variation of $\inputa$, \ie, $\setdef{
+    \defseq \in \tracesemantics
+  }{
+    \retrieveinput{\defseq} \stateeq{\inputvariables\setminus\{\x\}} \inputa
+  }$, where $\inputvariables\setminus\{\x\} = \{\y\}$ and consequently $\retrieveinput{\defseq} \stateeq{\{\y\}} \inputa$ holds whenever the initial state of $\defseq$ has $\y=1$. A possible trace of this set is $\langle 1, 1, 0, 0\rangle \to \langle 1, 1, 2, 0\rangle\to\langle 1, 1, 2, 0\rangle$ where, at the beginning, we randomly assign $\lc=0$ and $\z=0$, respectively the third and fourth component of the initial state.
+%
+  We collect the output values of this set of traces, $\setdef{
+    \reader(\retrieveoutput\defseq)
+  }{
+    \defseq \in \tracesemantics \land
+      \retrieveinput{\defseq}(\y) = 1
+  }$.
+  As a result, we obtain the set of output values $\{0, 3\}$.
+  For instance, the output value $0$ is the result of the trace we exhibited previously, where the last state is $\langle 1, 1, 2, 0\rangle$ and thus the $\z$ variable of this trace is the last component with value $0$.
+%
+  Finally, the cardinality operator returns the value $2$, $\cardinality{\{0, 3\}} = 2$.
+  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\x}(\tracesemantics)=3$.
+  \reftab{range-x} and~\reftab{range-y} in overview (\refsec{overview}) illustrate the steps for $\outcomesname_{\x}(\tracesemantics)$ and $\outcomesname_{\y}(\tracesemantics)$ respectively.
+\end{example}
+
+\begin{definition}[\outcomesname]\labdef{outcomes}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\outcomes\in\setof\finiteinfinitesequences\to\Rposplus$ is defined as
+  %
+  \begin{align}
+    \labeq{outcomes}
+    \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+      \cardinality{\setdef{
+        \reader(\retrieveoutput{\defseq})
+      }{
+        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+      }}
+  \end{align}
+  where $\sup(X)$ is the supremum operator, \ie, the smallest $q$ such that $q\ge x$ for all $x\in X$.
+\end{definition}
+
+It is easy to note that $\outcomes(\defsetoftraces)$ uses only input-output states (\cf, $\retrieveinput{\defseq}$ and $\retrieveoutput{\defseq}$) of traces $\defseq\in\defsetoftraces$.
+Therefore, assuming $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$ share the same set of input-output observations, $\outcomes(\defsetoftraces) = \outcomes(\defsetoftraces')$ holds.
+This implies that, $\bounded$ is an extensional property when $\outcomes$ is used to instantiate $\impactwrapper$ in $\bounded$.
+Furthermore, this impact definition is monotone in the amount of traces. That is, the more traces in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.

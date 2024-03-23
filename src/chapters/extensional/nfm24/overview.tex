@@ -1,11 +1,5 @@
 %
 
-\chapter{Quantitative Input Data Usage}
-\labch{quantitative-input-data-usage}
-
-In this chapter we present the quantitative framework used to measure the contributions of the input variables to the outcome of a program. First, we introduce a leading example of a landing-risk alarm system to illustrate the concepts. Then, we present the framework and its properties. Finally, since the framework depends on the notion of impact, we show a few possible definitions of impact.
-
-\onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle}
 \section{Landing Alarm System}
 \labsec{landing-alarm-system}
 \newcommand*{\x}{\texttt{angle}}
@@ -90,51 +84,52 @@ The second exploits \textit{the number of} reachable outcomes.
 Both definitions give us different insights on the program \landingprogram.
 In particular, the first quantity tells us which variation in the values of input variables results in larger differences between output values, while the second indicates which variation reaches a greater number of output values.
 
-\newcommand{\highlight}[1]{\textcolor{seabornBlue}{#1}}
-\newcommand{\inputa}{\tuple{-4}{1}}
-\newcommand{\inputax}{\tuple{\highlight{-4}}{1}}
-\newcommand{\inputay}{\tuple{-4}{\highlight{1}}}
-\newcommand{\outputa}{\langle \outputvaluea\rangle} \newcommand{\outputvaluea}{3}
-\newcommand{\inputb}{\tuple{-4}{2}}
-\newcommand{\inputbx}{\tuple{\highlight{-4}}{2}}
-\newcommand{\inputby}{\tuple{-4}{\highlight{2}}}
-\newcommand{\outputb}{\langle \outputvalueb\rangle} \newcommand{\outputvalueb}{3}
-\newcommand{\inputc}{\tuple{-4}{3}}
-\newcommand{\inputcx}{\tuple{\highlight{-4}}{3}}
-\newcommand{\inputcy}{\tuple{-4}{\highlight{3}}}
-\newcommand{\outputc}{\langle \outputvaluec\rangle} \newcommand{\outputvaluec}{3}
-\newcommand{\inputd}{\tuple{ 1}{1}}
-\newcommand{\inputdx}{\tuple{\highlight{ 1}}{1}}
-\newcommand{\inputdy}{\tuple{ 1}{\highlight{1}}}
-\newcommand{\outputd}{\langle \outputvalued\rangle} \newcommand{\outputvalued}{0}
-\newcommand{\inpute}{\tuple{ 1}{2}}
-\newcommand{\inputex}{\tuple{\highlight{ 1}}{2}}
-\newcommand{\inputey}{\tuple{ 1}{\highlight{2}}}
-\newcommand{\outpute}{\langle \outputvaluee\rangle} \newcommand{\outputvaluee}{1}
-\newcommand{\inputf}{\tuple{ 1}{3}}
-\newcommand{\inputfx}{\tuple{\highlight{ 1}}{3}}
-\newcommand{\inputfy}{\tuple{ 1}{\highlight{3}}}
-\newcommand{\outputf}{\langle \outputvaluef\rangle} \newcommand{\outputvaluef}{2}
-\newcommand{\tracea}{\inputa\to\outputa}
-\newcommand{\traceax}{\inputax\to\outputa}
-\newcommand{\traceay}{\inputay\to\outputa}
-\newcommand{\traceb}{\inputb\to\outputb}
-\newcommand{\tracebx}{\inputbx\to\outputb}
-\newcommand{\traceby}{\inputby\to\outputb}
-\newcommand{\tracec}{\inputc\to\outputc}
-\newcommand{\tracecx}{\inputcx\to\outputc}
-\newcommand{\tracecy}{\inputcy\to\outputc}
-\newcommand{\traced}{\inputd\to\outputd}
-\newcommand{\tracedx}{\inputdx\to\outputd}
-\newcommand{\tracedy}{\inputdy\to\outputd}
-\newcommand{\tracee}{\inpute\to\outpute}
-\newcommand{\traceex}{\inputex\to\outpute}
-\newcommand{\traceey}{\inputey\to\outpute}
-\newcommand{\tracef}{\inputf\to\outputf}
-\newcommand{\tracefx}{\inputfx\to\outputf}
-\newcommand{\tracefy}{\inputfy\to\outputf}
+\newcommand*{\highlight}[1]{\textcolor{seabornBlue}{#1}}
+\newcommand*{\inputa}{\tuple{-4}{1}}
+\newcommand*{\inputax}{\tuple{\highlight{-4}}{1}}
+\newcommand*{\inputay}{\tuple{-4}{\highlight{1}}}
+\newcommand*{\outputa}{\langle \outputvaluea\rangle} \newcommand*{\outputvaluea}{3}
+\newcommand*{\inputb}{\tuple{-4}{2}}
+\newcommand*{\inputbx}{\tuple{\highlight{-4}}{2}}
+\newcommand*{\inputby}{\tuple{-4}{\highlight{2}}}
+\newcommand*{\outputb}{\langle \outputvalueb\rangle} \newcommand*{\outputvalueb}{3}
+\newcommand*{\inputc}{\tuple{-4}{3}}
+\newcommand*{\inputcx}{\tuple{\highlight{-4}}{3}}
+\newcommand*{\inputcy}{\tuple{-4}{\highlight{3}}}
+\newcommand*{\outputc}{\langle \outputvaluec\rangle} \newcommand*{\outputvaluec}{3}
+\newcommand*{\inputd}{\tuple{ 1}{1}}
+\newcommand*{\inputdx}{\tuple{\highlight{ 1}}{1}}
+\newcommand*{\inputdy}{\tuple{ 1}{\highlight{1}}}
+\newcommand*{\outputd}{\langle \outputvalued\rangle} \newcommand*{\outputvalued}{0}
+\newcommand*{\inpute}{\tuple{ 1}{2}}
+\newcommand*{\inputex}{\tuple{\highlight{ 1}}{2}}
+\newcommand*{\inputey}{\tuple{ 1}{\highlight{2}}}
+\newcommand*{\outpute}{\langle \outputvaluee\rangle} \newcommand*{\outputvaluee}{1}
+\newcommand*{\inputf}{\tuple{ 1}{3}}
+\newcommand*{\inputfx}{\tuple{\highlight{ 1}}{3}}
+\newcommand*{\inputfy}{\tuple{ 1}{\highlight{3}}}
+\newcommand*{\outputf}{\langle \outputvaluef\rangle} \newcommand*{\outputvaluef}{2}
+\newcommand*{\tracea}{\inputa\to\outputa}
+\newcommand*{\traceax}{\inputax\to\outputa}
+\newcommand*{\traceay}{\inputay\to\outputa}
+\newcommand*{\traceb}{\inputb\to\outputb}
+\newcommand*{\tracebx}{\inputbx\to\outputb}
+\newcommand*{\traceby}{\inputby\to\outputb}
+\newcommand*{\tracec}{\inputc\to\outputc}
+\newcommand*{\tracecx}{\inputcx\to\outputc}
+\newcommand*{\tracecy}{\inputcy\to\outputc}
+\newcommand*{\traced}{\inputd\to\outputd}
+\newcommand*{\tracedx}{\inputdx\to\outputd}
+\newcommand*{\tracedy}{\inputdy\to\outputd}
+\newcommand*{\tracee}{\inpute\to\outpute}
+\newcommand*{\traceex}{\inputex\to\outpute}
+\newcommand*{\traceey}{\inputey\to\outpute}
+\newcommand*{\tracef}{\inputf\to\outputf}
+\newcommand*{\tracefx}{\inputfx\to\outputf}
+\newcommand*{\tracefy}{\inputfy\to\outputf}
 
 \subsection{First Impact Definition {\normalfont(\texorpdfstring{$\outcomesname$}{Outcomes})}}[Outcomes]
+\labsec{overview:outcomes}
 %
 The first impact definition that we consider is
  $\outcomes(\defprogram)$, %(derived from $\outcomesentropy$),
@@ -143,7 +138,7 @@ For the program
 $\landingprogram$, the result is shown in column $\outcomesname(\landingprogram)$~of \reftab{outcome-count}:
 we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingprogram)=3$.
 
-\newcommand{\labelrotationangle}{30}
+\newcommand*{\labelrotationangle}{30}
 \begin{table*}[t]
   \centering
   \caption{Impact of for $\outcomesname(\landingprogram)$  and $\rangename(\landingprogram)$ definitions for both $\x$ and $\y$ variables. Computational features are \highlight{highlighted in blue}.}
@@ -188,6 +183,7 @@ we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingpr
 The conclusion is that $\y$ has a greater influence than $\x$ on the output of the program.
 
 \subsection{Second Impact Definition {\normalfont(\texorpdfstring{$\rangename$}{Range})}}[Range]
+\labsec{overview:range}
 %
 The second impact definition is $\rangename_\definputvariable$, which yields the maximum difference between the maximum and the minimum outputs that are reachable from value variations of the input variable $\definputvariable$.
 The result for program $\landingprogram$ is shown in column $\rangename(\landingprogram)$~of \reftab{outcome-count}:
@@ -206,6 +202,7 @@ Specifically, when dealing with more complex input space compositions, this appr
 As a consequence, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
 
 \subsection{Static Analysis}
+\labsec{overview:static-analysis}
 
 To quantify the impact of a program, one can rely solely on the input-output observations of the program.
 Thus, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
@@ -258,7 +255,3 @@ For instance, with $b_0=\{0\}$, $b_1=\{1\}$, $b_2=\{2\}$, and $b_3=\{3\}$ one wo
 
 In conclusion, the sound upper bound discovered by our analysis is always higher than the concrete one by construction of the theoretical framework.
 The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \sidenote{(as outlined by the use cases shown in~\\Section{experiments} and~\\Appendixfullexperimentaloverview)}
-
-\input{src/chapters/extensional/quantitative-input-data-usage}
-\input{src/chapters/extensional/static-analysis}
-\input{src/chapters/extensional/impatto}

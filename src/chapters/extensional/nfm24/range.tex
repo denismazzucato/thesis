@@ -1,0 +1,47 @@
+
+\subsection{The \rangename{} impact definition}[The Range Impact Definition]
+\labsec{range}
+
+%
+The quantity $\range\in\setof\pairofstates\to\Rposplus$ determines the
+length of the range of output values from all the possible variations in the input variable $\definputvariable\in\inputvariables$.
+%
+This definition employs the auxiliary function $\length\in\setof\valuesinf\to\valuesposplus$, defined as follows:
+ $\length(X) \defeq \sup\;{X} - \inf\;{X}$ if $X\neq\emptyset$, where $\sup$ and $\inf$ are the supremum and infimum operators, while $\length(X)\defeq0$ otherwise.
+
+\begin{example}[Landing Alarm System]
+  \label{ex:range}
+  We revisit again the example of the landing alarm system.
+  Assuming $\definputvariable=\x$, $\tuple{-4}{1}$ is the first input configuration to be explored, we collect all traces that are
+  starting from an input configuration that is a variation of $\tuple{-4}{1}$.
+  As before, we obtain $\setdef{
+    \retrieveoutput\defseq(\z)
+  }{
+    \defseq \in \defsetoftraces \land
+      \retrieveinput{\defseq}(\y) = 1
+  }=\{0,3\}$.
+%
+  Here, we apply the length function, hence $\length(\{0,3\})=3$.
+  By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\x}(\tracesemantics)=2$.
+  \reftab{range-count} illustrates the steps for both $\rangename_{\x}(\tracesemantics)$ and $\rangename_{\y}(\tracesemantics)$.
+\end{example}
+
+  Formally,
+\begin{definition}[\rangename]\labdef{range}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\range\in\setof\finiteinfinitesequences\to\Rposplus$ is defined as
+  %
+  \begin{align}
+    \labeq{range}
+    \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+      \length(\setdef{
+        \reader(\retrieveoutput{\defseq})
+      }{
+        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+      })
+  \end{align}
+\end{definition}
+
+As similarly noted for the previous definition, $\range(\defsetoftraces)$ uses only input-output states (\cf, $\retrieveinput{\defseq}$ and $\retrieveoutput{\defseq}$) of traces $\defseq\in\defsetoftraces$.
+Therefore, assuming $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$ share the same set of input-output observations, $\range(\defsetoftraces) = \range(\defsetoftraces')$ holds.
+This impact definition is monotone as well, in the amount of traces. Formally, for any $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$, $\defsetoftraces \subseteq \defsetoftraces'$ if and only if $\range(\defsetoftraces) \le \range(\defsetoftraces')$.

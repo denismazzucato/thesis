@@ -1,0 +1,110 @@
+\subsection{Filter Semantics}
+\labsec{filter-semantics}
+\newcommand*{\X}{X}
+\newcommand*{\Y}{Y}
+\newcommand*{\hiX}{\higher{X}}
+\newcommand*{\hiY}{\higher{Y}}
+
+From the dependency abstractions we derive the \textit{filter semantics}.
+We exploit the output descriptor $\outputdesc$ to remove dependencies (tuple of input-output values) that are not relevant for our property, that is, not in $\filter$.
+
+Formally, the pair of right-left adjoints $\tuple{\filterabstraction}{\filterconcretization}$ with $\filterabstraction, \filterconcretization\in\dependencytype\to\filtertype$ is defined as:
+\begin{align}
+  \labeq{filter-abstraction}
+  \filterabstraction(\hiX)&\DefeQ\setdef{\setdef{\inputoutputtuple{\defseq}\in X}{\reader(\retrieveoutput{\defseq})\in\filter}}{X\in\hiX}\\
+  \labeq{filter-concretization}
+%   \filterconcretization(\hiY) &\DefeQ \setdef{\Y\setjoin\setdef{\inputoutputtuple{\defseq}}{\reader(\retrieveoutput{\defseq})\in Z\land \retrieveinput{\defseq}\in I}}{
+%   \Y\in\hiY \land Z\subseteq\readerdomain\setminus\filter \land I\subseteq\state
+% }
+  \filterconcretization(\hiY) &\DefeQ \setdef{\Y\setjoin\setdef{\inputoutputtuple{\defseq}}{\tuple{\retrieveinput{\defseq}}{z}\in W \land \retrieveoutput{\defseq}\in \state \land \reader(\retrieveoutput{\defseq})=z}}{
+  \Y\in\hiY \land W \subseteq \pair{\state}{(\readerdomain\setminus\filter)}
+  }
+\end{align}
+where $
+\filterabstraction$ abstracts away pair of states that lead to outputs that are not allowed by the output descriptor $\outputdesc$ maintaining the set-structure of $\hiX$.
+% Similarly, double dot notation (written $\hihiX$) is a set of sets of sets of elements.
+% The concretization $\filterconcretization(\hiY) \defeq \setdef{\X\in\setof\pairofstates}{
+%   \exists \Y\in\hiY, Z\subseteq\readerdomain\setminus\filter, I\subseteq\state.~
+%     \X=
+%       \setdef{\inputoutputtuple{\defseq}}{\defseq\in \Y}\setjoin\setdef{\inputoutputtuple{\defseq}}{\reader(\retrieveoutput{\defseq})\in Z\land \retrieveinput{\defseq}\in I}
+% }$ considers all the semantics $Y\in\setof\pairofstates$ such that it exists a semantics $\Y\in\hiY$ that shares the same input-output observations plus arbitrary observations made of discarded output values in $\readerdomain\setminus\filter$.
+The concretization $\filterconcretization$ considers all the semantics $\Y\in\hiY$ extended with arbitrary observations made of discarded output values in $\readerdomain\setminus\filter$.
+The abstract subset operator $\hiX \filtersubseteq \hiY$ checks subset inclusion among sets of traces allowed by the output descriptor $\outputdesc$, formally defined as:
+\begin{align}
+  \labeq{filter-subseteq}
+  \hiX \filtersubseteq \hiY \iff
+  \setdef{\X\in\hiX}{\foralldef{\inputoutputtuple{\defstate}\in\X}{\reader(\retrieveoutput{\defstate})\in\filter}}
+  \subseteq
+  \setdef{\Y\in\hiY}{\foralldef{\inputoutputtuple{\defstate}\in\Y}{\reader(\retrieveoutput{\defstate})\in\filter}}
+\end{align}
+%
+Therefore, we define the following Galois connection.
+%
+\begin{theorem}
+  \label{th:dependency-filter-galois}
+  $\galoisbetweensemantics{dependency}{filter}$ is a Galois connection.
+  \begin{proof}
+    Given two set of sets of input-output observations $\hiX, \higher{Y}\in\setofsetof\pairofstates$ such that $\filterabstraction(\hiX)\filtersubseteq \higher{Y}$, we obtain that $\hiX\dependencysubseteq\filterconcretization(\higher{Y})$ since the concretization $\filterconcretization$ builds all the possible set of input-output observations enhanced with auxiliary observations made of output values previously discarded by $\filterabstraction(\hiX)$.
+    On the other hand, we have $\hiX\dependencysubseteq\filterconcretization(\higher{Y})$.
+    By abstracting we obtain $\filterabstraction(\hiX)$, which filters all semantics by removing traces that do not agree with $\outputdesc$.
+    It holds that $\filterabstraction(\hiX)\filtersubseteq \higher{Y}$ since the $\filtersubseteq$ operator removes, in turn, traces that do not agree with $\outputdesc$.
+  \end{proof}
+\end{theorem}
+% Note that, applying
+% \begin{corollary}
+%   Given $\hiX\in\filtertype$ such that $\foralldef{\X\in\hiX,\inputoutputtuple{\defseq}\in\X}{\reader(\retrieveoutput{\defseq})\in\filter}$, it holds that $\filterabstraction(\filterconcretization(\hiX))=\hiX$.
+% \end{corollary}
+%
+We derive the filter semantics $\filtersemanticsnoparam\in\setofsetof\pairofstates$ as follows:
+%
+\begin{align}
+  \labeq{filter}
+  \filtersemanticsnoparam &\DefeQ \filterabstraction(\dependencysemanticsnoparam) = \filterabstraction(\{\setdef{
+    \inputoutputtuple{\defseq}
+  }{
+    \defseq\in \tracesemanticsnoparam
+  }\}) \\
+    &\;=~ \{{\setdef{\inputoutputtuple{\defseq}\in \setdef{
+      \inputoutputtuple{\defseq}
+    }{
+      \defseq\in \tracesemanticsnoparam
+    }}{\reader(\retrieveoutput{\defseq})\in\filter}}\} \\
+    &\;=~ \{{\setdef{\inputoutputtuple{\defseq}}{\defseq\in \tracesemanticsnoparam\land\reader(\retrieveoutput{\defseq})\in\filter}}\}
+\end{align}
+%
+The next result shows that $\filtersemanticsnoparam$ allows sound and complete verification for proving that the impact of a program is bounded by $\defbound$.
+%
+\begin{theorem}
+  \label{th:filter-soundness}
+  $\collectingsemantics \subseteq \BOUNDED \IfF \filtersemantics \filtersubseteq \filterabstraction(\dependencyabstraction(\BOUNDED))$
+  % \begin{proof}
+  %   Let $\dependencysemantics \subseteq \dependencyabstraction(\bounded)$. From the Galois connection described in \refthm{dependency-filter-galois}, we have that $\filterabstraction(\dependencysemantics) \subseteq \filterabstraction(\dependencyabstraction(\bounded))$.
+  %   From the definition of $\filtersemantics$, \refeq{filter}, we can conclude $\filtersemantics \subseteq \filterabstraction(\dependencyabstraction(\bounded))$. The other direction is symmetric.
+  % \end{proof}
+  \begin{proof}
+    The implication $(\implies)$ follows from \refthm{dependency-soundness}, the monotonicity of $\filterabstraction$, \refthm{dependency-filter-galois}, and the definition of $\filtersemanticsnoparam$, \refeq{filter}, \ie,
+    $
+    \collectingsemanticsnoparam \subseteq \bounded \implies
+      \dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded) \implies \filterabstraction(\dependencysemanticsnoparam) \filtersubseteq \filterabstraction(\dependencyabstraction(\bounded))\implies \filtersemanticsnoparam \filtersubseteq \filterabstraction(\dependencyabstraction(\bounded))
+    $.
+    Regarding the other implication $(\Leftarrow)$, by the definition of $\filtersemanticsnoparam$, $\dependencysemanticsnoparam$, and the property of Galois connections, we obtain
+    \begin{align}
+      \filtersemanticsnoparam
+        \filtersubseteq &\;\, \filterabstraction(\dependencyabstraction(\bounded)) \\
+      &~\implies \filterabstraction(\dependencysemanticsnoparam) \filtersubseteq \filterabstraction(\dependencyabstraction(\bounded)) &&(\text{by \refeq{filter}}) \\
+      &~\implies \dependencysemanticsnoparam
+        \subseteq \filterconcretization(\filterabstraction(\dependencyabstraction(\bounded))) &&(\text{by \refthm{dependency-filter-galois}}) \\
+      &~\implies \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam} \in \filterconcretization(\filterabstraction(\dependencyabstraction(\bounded))) &&(\text{by \refeq{dependency}})
+    \end{align}
+    We split two cases depending whether $\setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}$ contains only traces allowed by $\outputdesc$:
+    \begin{enumerate}[label=(\roman*)]
+      \item $\foralldef{\defseq\in\tracesemanticsnoparam}{\reader(\retrieveoutput{\defseq})\in\filter}$ holds. In this case it is easy to note that $\setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam} \in \dependencyabstraction(\bounded)$ since $\filterconcretization$ and $\filterabstraction$ do not affect semantics that already satisfy the output descriptor. \label{first-case}
+      \item $\existsdef{\defseq\in\tracesemanticsnoparam}{\reader(\retrieveoutput{\defseq})\not\in\filter}$ holds. Given $\defsetoftraces\subseteq\setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}$ such that any trace $\defseq\in\defsetoftraces$ is allowed by $\reader(\retrieveoutput{\defseq})\in\filter$, from the previous case it is evident that $\defsetoftraces\in\dependencyabstraction(\bounded)$. By the definition of $\bounded$, \refeq{bounded}, it holds that any superset $\defsetoftraces'\supseteq\defsetoftraces$ belongs to $\bounded$ when $\defsetoftraces$ contains only traces allowed by the output descriptor and $\defsetoftraces\in\bounded$. Hence, it holds that $\setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam} \in \dependencyabstraction(\bounded)$. \label{second-case}
+    \end{enumerate}
+    In both cases~\ref{first-case} and~\ref{second-case} we obtain $\setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam} \in \dependencyabstraction(\bounded)$.
+    The conclusion $\collectingsemanticsnoparam \subseteq \bounded$ trivially follows from the definition of $(\subseteq)$ and \refthm{dependency-soundness}.
+  \end{proof}
+\end{theorem}
+
+This semantics still contains enough information to soundly and completely prove our any property $\bounded$, therefore potentially undecidable.
+% Next step is to define sound-only semantics that are approximating the property of interest therefore leading to an impact bound which is higher than the actual yet undecidable one.
