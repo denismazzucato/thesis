@@ -130,6 +130,22 @@
     	%refname={theorem,theorems},
     	%Refname={Theorem,Theorems},
     ]{kaoexercise}
+		\declaretheoremstyle[
+			style=kaoplain,
+			spaceabove=\topsep, spacebelow=\topsep,
+			headfont=\normalfont\bfseries,
+			notefont=\bfseries, notebraces={}{},
+			bodyfont=\normalfont\itshape,
+			postheadspace=0.5em,
+			name={\ignorespaces},
+			numbered=no,
+			headpunct=:,
+			mdframed={
+				style=mdfkao,
+						backgroundcolor=\kaotheorems@theorembackground,
+				%frametitlebackgroundcolor=\@theorembackground,
+			},
+		]{kaonamed}
 
     \theoremstyle{kaoplain}
     \declaretheorem[
@@ -182,6 +198,17 @@
     	},
     ]{corollary}
 
+		\theoremstyle{kaonamed}
+		\declaretheorem[
+			name={\ignorespaces},
+			numbered=no,
+			mdframed={
+				style=mdfkao,
+						backgroundcolor=\kaotheorems@theorembackground,
+				%frametitlebackgroundcolor=\@theorembackground,
+			},
+		]{named}
+
     \theoremstyle{kaodefinition}
     \declaretheorem[
     	name=Definition,
@@ -195,21 +222,6 @@
     		%frametitlebackgroundcolor=\@theorembackground,
     	},
     ]{definition}
-
-		\theoremstyle{kaodefinition}
-    \declaretheorem[
-    	name=Definition,
-    	%refname={definition,definitions},
-    	refname={Definition,Definitions},
-    	Refname={Definition,Definitions},
-    	% numberwithin=section,
-			numbered=no,
-    	mdframed={
-    		style=mdfkao,
-            backgroundcolor=\kaotheorems@definitionbackground,
-    		%frametitlebackgroundcolor=\@theorembackground,
-    	},
-    ]{definition*}
 
     \theoremstyle{kaoassumption}
     \declaretheorem[

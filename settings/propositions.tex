@@ -1,0 +1,53 @@
+
+\newcommand*{\labprog}[1]{\label{lst:#1}}
+\newcommand*{\labline}[1]{\label{line:#1}}
+
+\newcommand*{\refprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1}}}
+\newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
+
+\newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}
+
+\newcommand*{\refeqshorter}[1]{\hyperref[eq:#1]{\ref{eq:#1}}}
+
+\newcommand*{\refdefshorter}[1]{\hyperref[def:#1]{\ref{def:#1}}}
+\newcommand*{\nrefdef}[1]{\hyperref[def:#1]{\defname\xspace\ref{def:#1} (\nameref{def:#1})}}
+
+
+\newcommand*{\side}[2]{%
+\expandafter\csname ref#1\endcsname{#2}%
+  \marginnote{%
+    \begin{named}[{\csname nref#1\endcsname{#2}}]%
+      \input{src/propositions/#2-short}%
+    \end{named}%
+  }%
+}
+
+
+% \newcommand*{\siderefdef}[1]{\side{def}{#1}}
+% \newcommand*{\siderefeq}[1]{\side{eq}{#1}}
+% \newcommand*{\siderefthm}[1]{\side{thm}{#1}}
+% \WithSuffix\newcommand\refdef*[1]{\siderefdef{#1}}
+
+\newcommand*{\siderefdef}[1]{\side{def}{#1}}
+\WithSuffix\newcommand\refdef*[1]{\siderefdef{#1}}
+\newcommand*{\siderefassum}[1]{\side{assum}{#1}}
+\WithSuffix\newcommand\refassum*[1]{\siderefassum{#1}}
+\newcommand*{\siderefthm}[1]{\side{thm}{#1}}
+\WithSuffix\newcommand\refthm*[1]{\siderefthm{#1}}
+\newcommand*{\siderefprop}[1]{\side{prop}{#1}}
+\WithSuffix\newcommand\refprop*[1]{\siderefprop{#1}}
+\newcommand*{\sidereflemma}[1]{\side{lemma}{#1}}
+\WithSuffix\newcommand\reflemma*[1]{\sidereflemma{#1}}
+\newcommand*{\siderefremark}[1]{\side{remark}{#1}}
+\WithSuffix\newcommand\refremark*[1]{\siderefremark{#1}}
+\newcommand*{\siderefexample}[1]{\side{example}{#1}}
+\WithSuffix\newcommand\refexample*[1]{\siderefexample{#1}}
+\newcommand*{\siderefexercise}[1]{\side{exercise}{#1}}
+\WithSuffix\newcommand\refexercise*[1]{\siderefexercise{#1}}
+
+
+%%%%%%%%%%%%%%%%%
+
+% definitions and side definitions
+\newcommand*{\inputprop}[1]{\input{src/propositions/#1}}
+\newcommand*{\marginprop}[1]{\marginnote{\input{src/propositions/#1-short}}}
