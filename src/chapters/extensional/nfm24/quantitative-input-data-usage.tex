@@ -14,33 +14,24 @@ Indeed, we base our definitions on the dependency semantics $\dependencysemantic
 We introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
 
 We implicitly assume the use of an \textit{output descriptor} $\outputdesc$ to determine the desired output of a program by observations on program states.
-
+%
 Specifically, $\reader\in \stateandbottom \to \valuesinf$ selects the output of interest from a given state and returns its corresponding value\sidenote{The option of returning $\pm\infty$ from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}.
 Additionally, $\filter\subseteq\valuesinf$ filters output states and selectively engages a subset of the potential outcomes.
 Through this filtering mechanism, undesired outcomes are directly excluded, and a numerical value is ensured.
 
-\inputprop{output-descriptor}
-\marginprop{output-descriptor}
+\begin{definition}[Output Descriptor]
+  \labdef{output-descriptor}
+  Given $\reader\in\stateandbottom\to\valuesinf$ and $\filter\subseteq\valuesinf$, the tuple $\outputdesc$ is called an \textup{output descriptor}.
+\end{definition}
+% \marginprop{output-descriptor}
 
 The above output characterization $\outputdesc$ is generic enough to cover plenty of use cases.
 We leverage this output descriptor to provide the end user of the framework the flexibility to choose the interpretation and meaning of program outputs, without establishing it beforehand.
 
-\begin{marginlisting}
-\begin{lstlisting}[language=customPython]
-landing_coeff =
-  abs(angle) + speed
-if landing_coeff < 2:
-  risk = 0
-else if landing_coeff > 5:
-  risk = 3
-else:
-  risk =
-    floor(landing_coeff) - 2
-\end{lstlisting}
-\end{marginlisting}
-
 \begin{example}
-  Consider the~\refprog{landing-alarm-system} for the landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\x$, $b$ of $\y$, $c$ of $\lc$, and $d$ of $\z$.
+\marginprop{landing-alarm-system}
+
+  Consider the~\refprog{landing-alarm-system} for the landing alarm system (provided on the side of the page) with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\x$, $b$ of $\y$, $c$ of $\lc$, and $d$ of $\z$.
   Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
   The output descriptor is instantiated with
   \[
@@ -74,13 +65,24 @@ else:
 We can now define our property of interest, the \textit{$\defbound$-bounded impact property} $\bounded$.
 By extension, $\bounded$ is the set of dependencies such that their impact, \wrt{} to the output descriptor $\outputdesc$ and the input variable $\definputvariable$, is below the threshold $\defbound\in\valuesposplus$.
 %
-\inputprop{bounded}
+\begin{definition}{$\defbound$-Bounded Impact Property}
+  \labdef{bounded}
+  Let $\dependencytype$ be the dependency semantics, $\outputdesc$ the output descriptor, $\definputvariable$ the input variable of interest, and $\bounded\in\valuesposplus$ the threshold.
+  \begin{align}\labeq{bounded}
+    \BOUNDED \DefeQ \setdef
+    {\dependencysemanticsnoparam \in \dependencytype}
+    {\impactwrapper(\setdef{\inputoutputtuple\defstate\in\dependencysemanticsnoparam}{\reader(\retrieveoutput{\defstate})\in\filter}) \impactsubseteq \defbound}
+  \end{align}
+  where $\impactwrapper$ is a parameter of the property $\bounded$ and returns the quantity computed on the given set of dependencies.
+\end{definition}
+
 
 
 %
+\marginprop{validation}
+\marginprop{collecting}
 Following the definition of $\bounded$, our validation framework, \refeq{qualitative-soundness}, is instantiated as
 %
-\marginprop{collecting}
 \begin{align}
   \labeq{bounded-soundness}
   \defprogram \satisfies \BOUNDED \IfF \collectingsemantics \subseteq \BOUNDED

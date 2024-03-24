@@ -61,6 +61,37 @@
 
 \newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}
 
+\newcommand*{\refeqshorter}[1]{\hyperref[eq:#1]{\ref{eq:#1}}}
+
+
+% \newtheorem*{theorem*}{Theorem}
+% \newtheorem*{lemma*}{Lemma}
+% \newtheorem*{definition*}{Definition}
+% \newtheorem*{example*}{Example}
+% \newtheorem*{corollary*}{Corollary}
+% \newtheorem*{remark*}{Remark}
+
+% \newcommand*{\refeqshort}[1]{\hyperref[eq:#1]{\ref{eq:#1}}}
+
+% \newtheorem{innercustomgeneric}{\customgenericname}
+% \providecommand{\customgenericname}{}
+% \newcommand{\newcustomtheorem}[2]{%
+%   \newenvironment{#1}[1]
+%   {%
+%    \ifdefined\crefalias\crefalias{innercustomgeneric}{#2}\fi
+%    \renewcommand\customgenericname{#2}%
+%    \renewcommand\theinnercustomgeneric{##1}%
+%    \innercustomgeneric
+%   }
+%   {\endinnercustomgeneric}%
+%   \ifdefined\crefname\crefname{#2}{#2}{#2s}\fi
+% }
+
+% \newcustomtheorem{theorem*}{Theorem}
+% \newcustomtheorem{definition*}{Definition}
+
+%%%%%%%%%%%%%%%%%
+
 % definitions and side definitions
 \newcommand*{\inputprop}[1]{\input{src/propositions/#1}}
 % \newcommand*{\inputpropfullpage}[1]{

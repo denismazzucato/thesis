@@ -196,6 +196,21 @@
     	},
     ]{definition}
 
+		\theoremstyle{kaodefinition}
+    \declaretheorem[
+    	name=Definition,
+    	%refname={definition,definitions},
+    	refname={Definition,Definitions},
+    	Refname={Definition,Definitions},
+    	% numberwithin=section,
+			numbered=no,
+    	mdframed={
+    		style=mdfkao,
+            backgroundcolor=\kaotheorems@definitionbackground,
+    		%frametitlebackgroundcolor=\@theorembackground,
+    	},
+    ]{definition*}
+
     \theoremstyle{kaoassumption}
     \declaretheorem[
     	name=Assumption,
@@ -388,4 +403,3 @@
     %\renewcommand{\thetheorem}{\arabic{subsection}.\arabic{theorem}}
     %\renewcommand{\qedsymbol}{$\blacksquare$}
 \fi
-

@@ -128,7 +128,7 @@ In particular, the first quantity tells us which variation in the values of inpu
 \newcommand*{\tracefx}{\inputfx\to\outputf}
 \newcommand*{\tracefy}{\inputfy\to\outputf}
 
-\subsection{First Impact Definition {\normalfont(\texorpdfstring{$\outcomesname$}{Outcomes})}}[Outcomes]
+\paragraph{First Impact Definition {\normalfont(\texorpdfstring{$\outcomesname$}{Outcomes})}.}
 \labsec{overview:outcomes}
 %
 The first impact definition that we consider is
@@ -182,7 +182,7 @@ we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingpr
 \end{table*}
 The conclusion is that $\y$ has a greater influence than $\x$ on the output of the program.
 
-\subsection{Second Impact Definition {\normalfont(\texorpdfstring{$\rangename$}{Range})}}[Range]
+\paragraph{Second Impact Definition {\normalfont(\texorpdfstring{$\rangename$}{Range})}.}
 \labsec{overview:range}
 %
 The second impact definition is $\rangename_\definputvariable$, which yields the maximum difference between the maximum and the minimum outputs that are reachable from value variations of the input variable $\definputvariable$.
@@ -201,7 +201,7 @@ Note that, the impact definitions presented above are not computationally practi
 Specifically, when dealing with more complex input space compositions, this approach is highly inefficient or even infeasible (as in the case of continuous input spaces).
 As a consequence, our approach is based on an abstraction of input-output relations, which allows us to automatically infer a sound upper bound on the program's impact.
 
-\subsection{Static Analysis}
+\paragraph{Static Analysis.}
 \labsec{overview:static-analysis}
 
 To quantify the impact of a program, one can rely solely on the input-output observations of the program.
@@ -233,7 +233,7 @@ Similarly, we discover that from the bucket $b_1$, we reach the input configurat
 Lastly, from the bucket $b_2$, we reach the input configurations $\tuple{-4}{1}$, $\tuple{-4}{2}$, and $\tuple{-4}{3}$.
 
 Regarding the case in which we quantify the impact of \x{}, we remove \x{} from each of the abstract elements returned by the analysis.
-For example, from the bucket $b_0$, we have the abstract input configuration $\langle 1\rangle$\sidenote{the analysis discovers that only the input configuration $\tuple{1}{1}$ leads to the first bucket $b_0$. Thus, by removing \x{} from the input configuration, we obtain the tuple of on element $\langle 1\rangle$}
+For example, from the bucket $b_0$, we have the abstract input configuration $\langle 1\rangle$\sidenote{the analysis discovers that only the input configuration $\tuple{1}{1}$ leads to the first bucket $b_0$. Thus, by removing \x{} from the input configuration, we obtain the tuple of a single element $\langle 1\rangle$, we use this notation for the rest of the section.}
 ; from the bucket $b_1$, we have $\langle 2\rangle$ and $\langle 3\rangle$; and from the bucket $b_2$, we have $\langle 1\rangle$, $\langle 2\rangle$, and $\langle 3\rangle$.
 By checking the intersections, we find that bucket $b_0$ intersects with bucket $b_2$ since they have $\langle 1\rangle$ in common.
 Bucket $b_2$ also intersects with bucket $b_1$ since they have both $\langle 2\rangle$ and $\langle 3\rangle$ in common.
@@ -254,4 +254,4 @@ Indeed, the choice of the starting output buckets is critical.
 For instance, with $b_0=\{0\}$, $b_1=\{1\}$, $b_2=\{2\}$, and $b_3=\{3\}$ one would recover maximum precision and obtain a useful analysis quantification.
 
 In conclusion, the sound upper bound discovered by our analysis is always higher than the concrete one by construction of the theoretical framework.
-The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \sidenote{(as outlined by the use cases shown in~\\Section{experiments} and~\\Appendixfullexperimentaloverview)}
+The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \sidenote{as outlined by the use cases shown in~\refsec{nfm24:experiments}.}
