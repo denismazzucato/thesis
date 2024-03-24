@@ -29,7 +29,7 @@ This definition employs the auxiliary function $\length\in\setof\valuesinf\to\va
   Formally,
 \begin{definition}[\rangename]\labdef{range}
   Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
-  the quantity $\range\in\setof\finiteinfinitesequences\to\Rposplus$ is defined as
+  the quantity $\range\in\dependencytype\to\Rposplus$ is defined as
   %
   \begin{align}
     \labeq{range}
@@ -42,6 +42,12 @@ This definition employs the auxiliary function $\length\in\setof\valuesinf\to\va
   \end{align}
 \end{definition}
 
-As similarly noted for the previous definition, $\range(\defsetoftraces)$ uses only input-output states (\cf, $\retrieveinput{\defseq}$ and $\retrieveoutput{\defseq}$) of traces $\defseq\in\defsetoftraces$.
-Therefore, assuming $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$ share the same set of input-output observations, $\range(\defsetoftraces) = \range(\defsetoftraces')$ holds.
-This impact definition is monotone as well, in the amount of traces. Formally, for any $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$, $\defsetoftraces \subseteq \defsetoftraces'$ if and only if $\range(\defsetoftraces) \le \range(\defsetoftraces')$.
+This impact definition is monotone as well, in the amount of traces.
+\begin{lemma}[\rangename{} is Monotonic]
+  \lablemma{range-monotonic}
+  For any $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align}
+    \labeq{range-monotonic}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \range(\defsetoftraces) \le \range(\defsetoftraces')
+  \end{align}
+\end{lemma}

@@ -60,3 +60,18 @@
 \newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
 
 \newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}
+
+% definitions and side definitions
+\newcommand*{\inputprop}[1]{\input{src/propositions/#1}}
+% \newcommand*{\inputpropfullpage}[1]{
+%   \begin{wide}
+%     \input{src/propositions/#1}
+%   \end{wide}
+% }
+\newcommand*{\marginprop}[1]{\marginnote{\input{src/propositions/#1-short}}}
+
+% \newenvironment*{wide}{
+%   \begin{figure*}[h!]
+% }{
+%   \end{figure*}
+% }

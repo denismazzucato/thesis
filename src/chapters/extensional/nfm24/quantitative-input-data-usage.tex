@@ -5,11 +5,13 @@
 \newcommand*{\z}{\texttt{risk}}
 \newcommand*{\lc}{\texttt{landing\_coeff}}
 
-In this section we present some preliminaries on program computations, then we introduce our quantitative framework with the formal definitions of \rangename{} and \outcomesname.
+In this section we introduce our quantitative framework with the formal definitions of \rangename{} and \outcomesname.
 
 
 Our goal is to quantify the impact of a specific input variable on the computation of the program.
-To this end, we introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
+To this end, all the impact definition described by this work are extensional, \ie, they are based on the observation of input-output relations of program states.
+Indeed, we base our definitions on the dependency semantics $\dependencysemanticsnoparam$, \refdef{dependency-semantics}.
+We introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
 
 We implicitly assume the use of an \textit{output descriptor} $\outputdesc$ to determine the desired output of a program by observations on program states.
 
@@ -17,10 +19,8 @@ Specifically, $\reader\in \stateandbottom \to \valuesinf$ selects the output of 
 Additionally, $\filter\subseteq\valuesinf$ filters output states and selectively engages a subset of the potential outcomes.
 Through this filtering mechanism, undesired outcomes are directly excluded, and a numerical value is ensured.
 
-\begin{definition}[Output Descriptor]
-  \labdef{outputdesc}
-  Given $\reader\in\stateandbottom\to\valuesinf$ and $\filter\subseteq\valuesinf$, the tuple $\outputdesc$ is called an \textup{output descriptor}.
-\end{definition}
+\inputprop{output-descriptor}
+\marginprop{output-descriptor}
 
 The above output characterization $\outputdesc$ is generic enough to cover plenty of use cases.
 We leverage this output descriptor to provide the end user of the framework the flexibility to choose the interpretation and meaning of program outputs, without establishing it beforehand.
@@ -72,29 +72,24 @@ else:
 
 
 We can now define our property of interest, the \textit{$\defbound$-bounded impact property} $\bounded$.
-By extension, $\bounded$ is the set of trace semantics such that the impact of the set of traces allowed by the output descriptor $\outputdesc$, \wrt{} the input variable $\definputvariable$, is below the threshold $\defbound\in\valuesposplus$. Formally,
-\begin{align}\labeq{eq:bounded}
-  \BOUNDED \DefeQ \setdef
-  {\tracesemanticsnoparam \in \setof\finiteinfinitesequences}
-  {\impactwrapper(\setdef{\defseq\in\tracesemanticsnoparam}{\reader(\retrieveoutput{\defseq})\in\filter}) \impactsubseteq \defbound}
-\end{align}
-where $\impactwrapper$ is a parameter of the property $\bounded$ and returns the quantity computed on the given set of traces.
+By extension, $\bounded$ is the set of dependencies such that their impact, \wrt{} to the output descriptor $\outputdesc$ and the input variable $\definputvariable$, is below the threshold $\defbound\in\valuesposplus$.
+%
+\inputprop{bounded}
+
+
 %
 Following the definition of $\bounded$, our validation framework, \refeq{qualitative-soundness}, is instantiated as
 %
+\marginprop{collecting}
 \begin{align}
   \labeq{bounded-soundness}
   \defprogram \satisfies \BOUNDED \IfF \collectingsemantics \subseteq \BOUNDED
 \end{align}
 %
-We are interested in properties $\bounded$ that are \textit{extensional}, namely, properties based on the observation of input-output relations of program states.
-This means that, if $\tracesemantics\in\bounded$ and $\tracesemanticsnoparam\semanticsof{\defprogram'}$ consider the same set of input-output observations of $\tracesemantics$, then $\tracesemanticsnoparam\semanticsof{\defprogram'}\in\bounded$.
-As a consequence, the impact is not affected by intermediate states,
-$\impactwrapper(\tracesemantics)=\impactwrapper(\tracesemanticsnoparam\semanticsof{\defprogram'})$.
-% Therefore, we derive the \textit{dependency semantics} $\dependencysemanticsnoparam$~\citep{Urban2020} as an abstraction of the collecting semantics $\collectingsemanticsnoparam$ removing intermediate computational states.
-Furthermore, we require $\impactwrapper$ to be monotonic, \ie, for any $X, Y\in \setof\finiteinfinitesequences$, it holds that $X \subseteq Y$ if and only if $\impactwrapper(X) \le \impactwrapper(Y)$.
+We require $\impactwrapper$ to be monotonic, \ie, for any $X, Y\in \setof\finiteinfinitesequences$, it holds that $X \subseteq Y$ if and only if $\impactwrapper(X) \le \impactwrapper(Y)$.
 Intuitively, this ensures that an impact applied to an over-approximation of the program semantics can only produce a higher quantity, enabling the definition of a sound terminating static analysis.
-Next, we formalize the already introduced impact metrics \rangename{} and \outcomesname.
+%
+Next, we formalize the already introduced impact metrics \outcomesname{} and \rangename.
 
 \input{src/chapters/extensional/nfm24/outcomes}
 \input{src/chapters/extensional/nfm24/range}

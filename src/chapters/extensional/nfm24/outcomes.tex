@@ -65,7 +65,7 @@ Finally, we iterate through each input configuration $\definput$ and return the 
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
   Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
-  the quantity $\outcomes\in\setof\finiteinfinitesequences\to\Rposplus$ is defined as
+  the quantity $\outcomes\in\dependencytype\to\Rposplus$ is defined as
   %
   \begin{align}
     \labeq{outcomes}
@@ -79,7 +79,13 @@ Finally, we iterate through each input configuration $\definput$ and return the 
   where $\sup(X)$ is the supremum operator, \ie, the smallest $q$ such that $q\ge x$ for all $x\in X$.
 \end{definition}
 
-It is easy to note that $\outcomes(\defsetoftraces)$ uses only input-output states (\cf, $\retrieveinput{\defseq}$ and $\retrieveoutput{\defseq}$) of traces $\defseq\in\defsetoftraces$.
-Therefore, assuming $\defsetoftraces, \defsetoftraces'\in\setof\finiteinfinitesequences$ share the same set of input-output observations, $\outcomes(\defsetoftraces) = \outcomes(\defsetoftraces')$ holds.
-This implies that, $\bounded$ is an extensional property when $\outcomes$ is used to instantiate $\impactwrapper$ in $\bounded$.
-Furthermore, this impact definition is monotone in the amount of traces. That is, the more traces in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
+It is easy to note that the \outcomesname{} impact definition is monotone in the amount of traces. That is, the more traces in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
+
+\begin{lemma}[\outcomesname{} is Monotonic]
+  \lablemma{outcomes-monotonic}
+  For any $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align}
+    \labeq{outcomes-monotonic}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
+  \end{align}
+\end{lemma}

@@ -1,4 +1,4 @@
-\subsection{Filter Semantics}
+\section{Filter Semantics}
 \labsec{filter-semantics}
 \newcommand*{\X}{X}
 \newcommand*{\Y}{Y}
@@ -32,7 +32,7 @@ The concretization $\filterconcretization$ considers all the semantics $\Y\in\hi
 The abstract subset operator $\hiX \filtersubseteq \hiY$ checks subset inclusion among sets of traces allowed by the output descriptor $\outputdesc$, formally defined as:
 \begin{align}
   \labeq{filter-subseteq}
-  \hiX \filtersubseteq \hiY \iff
+  \hiX \filtersubseteq \hiY \DefifF
   \setdef{\X\in\hiX}{\foralldef{\inputoutputtuple{\defstate}\in\X}{\reader(\retrieveoutput{\defstate})\in\filter}}
   \subseteq
   \setdef{\Y\in\hiY}{\foralldef{\inputoutputtuple{\defstate}\in\Y}{\reader(\retrieveoutput{\defstate})\in\filter}}
