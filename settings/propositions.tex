@@ -14,12 +14,12 @@
 
 
 \newcommand*{\side}[2]{%
-\expandafter\csname ref#1\endcsname{#2}%
-  \marginnote{%
-    \begin{named}[{\csname nref#1\endcsname{#2}}]%
-      \input{src/propositions/#2-short}%
-    \end{named}%
-  }%
+\expandafter\marginnote{%
+\begin{named}[{\csname nref#1\endcsname{#2}}]%
+  \input{src/propositions/#2-short}%
+\end{named}%
+}%
+\csname ref#1\endcsname{#2}%
 }
 
 
