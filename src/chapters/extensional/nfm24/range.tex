@@ -18,9 +18,9 @@ length of the range of output values from all the possible variations in the inp
       \retrieveinput{\defseq}(\y) = 1
   }=\{0,3\}$.
 %
-  Here, we apply the length function, hence $\length(\{0,3\})=3$.
-  By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\x}(\tracesemantics)=2$.
-  \reftab{range-count} illustrates the steps for both $\rangename_{\x}(\tracesemantics)$ and $\rangename_{\y}(\tracesemantics)$.
+  Here, we apply the function $\length$, hence $\length(\{0,3\})=3$.
+  By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\x}(\tracesemantics)=3$.
+  \reftab{overview} illustrates the steps for both $\rangename_{\x}(\tracesemantics)$ and $\rangename_{\y}(\tracesemantics)$.
 \end{example}
 
   Formally,
@@ -38,10 +38,10 @@ length of the range of output values from all the possible variations in the inp
   \end{align*}
 \end{definition}
 
-This impact definition is monotone as well, in the amount of traces.
+The next result shows that the impact definition $\rangename$ is monotone in the amount of traces.
 \begin{lemma}[\rangename{} is Monotonic]
   \lablemma{range-monotonic}
-  For any $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  $\forall\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
   \begin{align*}
     \defsetoftraces \subseteq \defsetoftraces' \ImplieS \range(\defsetoftraces) \le \range(\defsetoftraces')
   \end{align*}

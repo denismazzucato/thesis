@@ -59,8 +59,8 @@ Finally, we iterate through each input configuration $\definput$ and return the 
   For instance, the output value $0$ is the result of the trace we exhibited previously, where the last state is $\langle 1, 1, 2, 0\rangle$ and thus the $\z$ variable of this trace is the last component with value $0$.
 %
   Finally, the cardinality operator returns the value $2$, $\cardinality{\{0, 3\}} = 2$.
-  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\x}(\tracesemantics)=3$.
-  \reftab{range-x} and~\reftab{range-y} in overview (\refsec{overview}) illustrate the steps for $\outcomesname_{\x}(\tracesemantics)$ and $\outcomesname_{\y}(\tracesemantics)$ respectively.
+  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\x}(\tracesemantics)=2$.
+  \reftab{overview} (column \textsc{Outcomes}) illustrate the steps for $\outcomesname_{\x}(\tracesemantics)$ and $\outcomesname_{\y}(\tracesemantics)$ respectively.
 \end{example}
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
@@ -81,7 +81,7 @@ It is easy to note that the \outcomesname{} impact definition is monotone in the
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
-  For any $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+$\forall\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
   \begin{align*}
     \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
   \end{align*}

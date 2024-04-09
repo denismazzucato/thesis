@@ -29,9 +29,7 @@ The above output characterization $\outputdesc$ is generic enough to cover plent
 We leverage this output descriptor to provide the end user of the framework the flexibility to choose the interpretation and meaning of program outputs, without establishing it beforehand.
 
 \begin{example}
-\marginprop{landing-alarm-system}
-
-  Consider the~\refprog{landing-alarm-system} for the landing alarm system (provided on the side of the page) with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\x$, $b$ of $\y$, $c$ of $\lc$, and $d$ of $\z$.
+  Consider the~\refprog{landing-alarm-system} for the landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\x$, $b$ of $\y$, $c$ of $\lc$, and $d$ of $\z$.
   Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
   The output descriptor is instantiated with
   \[
@@ -50,8 +48,7 @@ We leverage this output descriptor to provide the end user of the framework the 
 \end{example}
 
 \begin{example}
-  For other contexts, rather than considering a single output variable one may be interested in a custom operation.
-  % For example, in the context of neural network classifiers, the output of the program is the index of the output variable with highest value.
+  Rather than considering a single output variable one may be interested in a custom operation.
   For example, the output of a neural network classifier is the index of the output neuron holding the highest value.
   Hence, for a network with $n+1$ output neurons, we could instantiate
   \[
