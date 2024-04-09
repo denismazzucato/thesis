@@ -65,14 +65,14 @@ We leverage this output descriptor to provide the end user of the framework the 
 We can now define our property of interest, the \textit{$\defbound$-bounded impact property} $\bounded$.
 By extension, $\bounded$ is the set of dependencies such that their impact, \wrt{} to the output descriptor $\outputdesc$ and the input variable $\definputvariable$, is below the threshold $\defbound\in\valuesposplus$.
 %
-\begin{definition}{$\defbound$-Bounded Impact Property}
+\begin{definition}[$\defbound$-Bounded Impact Property]
   \labdef{bounded}
   Let $\dependencytype$ be the dependency semantics, $\outputdesc$ the output descriptor, $\definputvariable$ the input variable of interest, and $\bounded\in\valuesposplus$ the threshold.
-  \begin{align}\labeq{bounded}
-    \BOUNDED \DefeQ \setdef
-    {\dependencysemanticsnoparam \in \dependencytype}
+  \begin{align*}
+    \BOUNDED \DefeQ& \setdef
+    {\dependencysemanticsnoparam \in \dependencytype\\ & \qquad}
     {\impactwrapper(\setdef{\inputoutputtuple\defstate\in\dependencysemanticsnoparam}{\reader(\retrieveoutput{\defstate})\in\filter}) \impactsubseteq \defbound}
-  \end{align}
+  \end{align*}
   where $\impactwrapper$ is a parameter of the property $\bounded$ and returns the quantity computed on the given set of dependencies.
 \end{definition}
 

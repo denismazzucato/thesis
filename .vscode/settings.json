@@ -22,5 +22,6 @@
       "name": "fastCompileThesis",
       "command": "./fast"
     }
-  ]
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave"
 }

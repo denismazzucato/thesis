@@ -24,7 +24,7 @@ Afterwards, we extract the number of elements via the cardinality operator $\car
 Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure the greatest impact is preserved.
 
 \begin{example}[Landing Alarm System]
-  \label{ex:range}
+  \labexample{outcomes}
   \newcommand*{\inputa}{\tuple{-4}{1}} \newcommand*{\outputa}{\langle \outputvaluea\rangle} \newcommand*{\outputvaluea}{3}
   \newcommand*{\inputb}{\tuple{-4}{2}} \newcommand*{\outputb}{\langle \outputvalueb\rangle} \newcommand*{\outputvalueb}{3}
   \newcommand*{\inputc}{\tuple{-4}{3}} \newcommand*{\outputc}{\langle \outputvaluec\rangle} \newcommand*{\outputvaluec}{3}
@@ -67,25 +67,22 @@ Finally, we iterate through each input configuration $\definput$ and return the 
   Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
   the quantity $\outcomes\in\dependencytype\to\Rposplus$ is defined as
   %
-  \begin{align}
-    \labeq{outcomes}
+  \begin{align*}
     \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
       \cardinality{\setdef{
         \reader(\retrieveoutput{\defseq})
       }{
         \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
       }}
-  \end{align}
-  where $\sup(X)$ is the supremum operator, \ie, the smallest $q$ such that $q\ge x$ for all $x\in X$.
+  \end{align*}
 \end{definition}
 
-It is easy to note that the \outcomesname{} impact definition is monotone in the amount of traces. That is, the more traces in input, the higher the impact as only more dependencies can satisfy the condition of \refeq{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
+It is easy to note that the \outcomesname{} impact definition is monotone in the amount of traces. That is, the more traces in input, the higher the impact as only more dependencies can satisfy the condition of \refdef{outcomes}, \cf~$\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable$, and hence increase the number of outcomes.
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
   For any $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
-  \begin{align}
-    \labeq{outcomes-monotonic}
+  \begin{align*}
     \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
-  \end{align}
+  \end{align*}
 \end{lemma}
