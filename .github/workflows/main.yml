@@ -13,7 +13,7 @@ jobs:
       - name: Install TeXlive
         run: sudo apt-get update && sudo apt-get install texlive texlive-publishers texlive-science latexmk texlive-fonts-extra cm-super texlive-bibtex-extra biber xindy
       - name: LaTeX compile
-        run: ./r
+        run: ./compile
       - name: Move
         run: mkdir -p github_artifacts && mv pdf/thesis.pdf ./github_artifacts/
       - name: Upload pdf as artifact
