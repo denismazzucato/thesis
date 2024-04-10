@@ -10,7 +10,7 @@ In this section we introduce our quantitative framework with the formal definiti
 
 Our goal is to quantify the impact of a specific input variable on the computation of the program.
 To this end, all the impact definition described by this work are extensional, \ie, they are based on the observation of input-output relations of program states.
-Indeed, we base our definitions on the dependency semantics $\dependencysemanticsnoparam$, \refdef{dependency-semantics}.
+Indeed, we base our definitions on the dependency semantics $\dependencysemanticsnoparam$, \refdef*{dependency-semantics}.
 We introduce the notion of impact, denoted by the function $\impactwrapper\in\setof\pairofstates\to\valuesposplus$, which maps program semantics to a non-negative domain of quantities, where $\definputvariable$ represents the input variable of interest in the program under analysis.
 
 We implicitly assume the use of an \textit{output descriptor} $\outputdesc$ to determine the desired output of a program by observations on program states.
@@ -47,15 +47,15 @@ We leverage this output descriptor to provide the end user of the framework the 
   Thus, the filter specifies this information by $\filter=\{0, 1, 2\}$, which is a subset of all the possible values of the output variable \z.
 \end{example}
 
-\begin{example}
-  Rather than considering a single output variable one may be interested in a custom operation.
-  For example, the output of a neural network classifier is the index of the output neuron holding the highest value.
-  Hence, for a network with $n+1$ output neurons, we could instantiate
-  \[
-    \reader(x_0,\dots,x_{w+n-1},x_{w+n})=\argmax_{0\le j\le n} x_{w+j}
-  \] where the function $\argmax_j X_j$ returns the \textit{argument} $j$ of the value holding the \textit{maximum} among the indexed family $X_j$.
-  The filter $\filter$ could be the set of all indices $\{0,\dots,n\}$, hence permitting all possible outcomes from the reader $\reader$.
-\end{example}
+% \begin{example}
+%   Rather than considering a single output variable one may be interested in a custom operation.
+%   For example, the output of a neural network classifier is the index of the output neuron holding the highest value.
+%   Hence, for a network with $n+1$ output neurons, we could instantiate
+%   \[
+%     \reader(x_0,\dots,x_{w+n-1},x_{w+n})=\argmax_{0\le j\le n} x_{w+j}
+%   \] where the function $\argmax_j X_j$ returns the \textit{argument} $j$ of the value holding the \textit{maximum} among the indexed family $X_j$.
+%   The filter $\filter$ could be the set of all indices $\{0,\dots,n\}$, hence permitting all possible outcomes from the reader $\reader$.
+% \end{example}
 
 
 

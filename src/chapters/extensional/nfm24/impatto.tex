@@ -1,5 +1,5 @@
 \section{Experimental Results}
-\labsec{experimental-results}
+\labsec{nfm24:experimental-results}
 \newcommand*{\x}{\texttt{angle}}
 \newcommand*{\y}{\texttt{speed}}
 \newcommand*{\z}{\texttt{risk}}
@@ -7,7 +7,7 @@
 
 The goal of this section is to highlight the potential of our static analysis for quantitative input data usage.
 We implemented a proof-of-concept tool, called \impatto\sidenote{\url{https://github.com/denismazzucato/impatto}}, in Python 3 that employs the \interproc\sidenote{\url{https://github.com/jogiet/interproc}} abstract interpreter to perform the backward analysis.
-Then, we exploited this tool to automatically derive a sound input data usage of three different scenarios.
+Then, we exploited this tool to automatically derive a sound input data usage of six different scenarios.
 As each impact result must be interpreted with respect to what the program computes, we analyze each scenario separately.
 
 \subsection{Growth in a Time of Debt}
@@ -132,32 +132,14 @@ These results confirm the user expectations about the proposed program from Chat
 \subsection{Termination Analysis (A)}
 \labsec{termination-analysis-A}
 
-\refprog{timing-analysis} is adapted from the termination category of the software verification competition \textsc{sv-comp}\sidenote{\url{https://sv-comp.sosy-lab.org/}}.
-%the work of \sidecite{Gopan2006} .
-%This use case comes from
-Assuming both input positives, $\texttt{x},\texttt{y} \ge 0$, this program terminates in $\texttt{x}+1$ iterations if $\texttt{y} >50$, otherwise it terminates in $\texttt{x} - 2\texttt{y} + 103$ iterations.
-We define $\texttt{counter}$ as the output variable, with output buckets defined as $\setdef{10k \le \texttt{counter} < 10(k+1)}{0 \le k < 50}$ and $\{\texttt{counter}\ge 500\}$. These output buckets represent cumulative ranges of iterations required for termination.
-The analysis results are illustrated in~\reftab{termination-analysis}, they show that the input variable $\texttt{x}$ has the biggest impact.
-Modifying the value of $\texttt{x}$ can result in the program terminating within any of the other 50 iteration ranges.
-On the other hand, perturbations on $\texttt{y}$ can only result in the program terminating within 10 different iteration ranges.
 %
-\begin{table}
-  \begin{tabular}{c | c@{\hskip 5pt}c}
-    \textsc{Impact} & \rotatebox{0}{\texttt{x}} & \rotatebox{0}{\texttt{y}} \\
-    \toprule
-    \outcomesname{} & 50 & 10 \\
-    \rangename{} & 499 & 99 \\
-    \bottomrule
-  \end{tabular}
-  \caption{Quantitative input usage for \refprog{timing-analysis}.}
-  \labtab{termination-analysis}
-\end{table}
-%
+\begin{marginlisting}
+  \caption{Example program from termination analysis.}
+  \labprog{timing-analysis}
+  \vspace{0.5cm}
 \begin{lstlisting}[
     language=customPython,
     escapechar=\%,
-    label={lst:timing-analysis},
-    caption={Timing analysis.},
     ]
  def example(x, y):
    counter = 0
@@ -169,8 +151,28 @@ On the other hand, perturbations on $\texttt{y}$ can only result in the program 
      y += 1
      counter += 1
 \end{lstlisting}
-%
+\end{marginlisting}
+
+\refprog{timing-analysis} is adapted from the termination category of the software verification competition \textsc{sv-comp}\sidenote{\url{https://sv-comp.sosy-lab.org/}}.
+Assuming both input positives, $\texttt{x},\texttt{y} \ge 0$, this program terminates in $\texttt{x}+1$ iterations if $\texttt{y} >50$, otherwise it terminates in $\texttt{x} - 2\texttt{y} + 103$ iterations.
+We define $\texttt{counter}$ as the output variable, with output buckets defined as $\setdef{10k \le \texttt{counter} < 10(k+1)}{0 \le k < 50}$ and $\{\texttt{counter}\ge 500\}$. These output buckets represent cumulative ranges of iterations required for termination.
+The analysis results are illustrated in~\reftab{termination-analysis}, they show that the input variable $\texttt{x}$ has the biggest impact.
+Modifying the value of $\texttt{x}$ can result in the program terminating within any of the other 50 iteration ranges.
+On the other hand, perturbations on $\texttt{y}$ can only result in the program terminating within 10 different iteration ranges.
 Such difference is motivated by the fact that $\texttt{y}$ is only used to determine the number of iterations in the case where $\texttt{y}$ is greater than 50, otherwise it is not used at all. Therefore, two values of $\texttt{y}$, \eg, $y_0$ and $y_1$, only result in two different ranges of iterations required to make the program terminate if either both of them are below $50$ or $y_0 < 50\land y_1 \ge 50$ or $y_0\ge50\land y_1 <50$, not in all the cases.
+
+
+\begin{margintable}[-4cm]
+  \caption{Quantitative input usage for \refprog{timing-analysis}.}
+  \labtab{termination-analysis}
+  \begin{tabular}{c | c@{\hskip 5pt}c}
+    \textsc{Impact} & \rotatebox{0}{\texttt{x}} & \rotatebox{0}{\texttt{y}} \\
+    \toprule
+    \outcomesname{} & 50 & 10 \\
+    \rangename{} & 499 & 99 \\
+    \bottomrule
+  \end{tabular}
+\end{margintable}
 
 The given results can be interpreted as follows: the speed of termination of this loop is highly dependent on the value of $\texttt{x}$, while $\texttt{y}$ has a much smaller impact.
 % This information could be used to attack such program just by looking at its timing behavior.
@@ -183,11 +185,13 @@ The given results can be interpreted as follows: the speed of termination of thi
 
 This use case comes from the software verification competition SV-Comp\sidenote{\url{https://sv-comp.sosy-lab.org/}}, where the goal is to verify the termination of a program. \refprog{termination-a} and~\refprog{termination-b} have originally been proposed by \sidetextcite{Chen2012}, respectively these are Example (2.16) and Example (2.21) of such work.
 
+\begin{marginlisting}
+  \caption{Program Ex2.16 from software verification competition SV-Comp.}
+  \labprog{termination-a}
+  \vspace{0.5cm}
 \begin{lstlisting}[
   language=customPython,
   escapechar=\%,
-  caption={Program Ex2.16 from software verification competition SV-Comp.},
-  label={lst:termination-a}
 ]
 def termination_a(x, y):
   while x > 0:
@@ -196,6 +200,8 @@ def termination_a(x, y):
   result = x + y
   return result
 \end{lstlisting}
+\end{marginlisting}
+
 
 \refprog{termination-a} returns the value of \texttt{y} whenever $\texttt{x} = 0$, otherwise it returns $-1$.
 We assume both input variables are positive up to $1000$, $0 \le \texttt{x} \le 1000$ and $0 \le \texttt{y} \le 1000$.
@@ -206,11 +212,13 @@ While perturbations on the value of the variable \texttt{y} are only able to pro
 
 As a second experiments, we consider the buckets from -1 to 19, $\setdef{ \texttt{result} = n}{-1 \le n \le 19}$, and we notice that the analysis \outcomesname{} returns 1 for the input variable \texttt{x} and 19 for \texttt{y}, meaning that the variable \texttt{y} is able to affect far more output values than \texttt{x}. However, combing the results of the previous experiment, only the variable \texttt{x} is able to affect the negative output values.
 
+\begin{marginlisting}[-1.4cm]
+  \caption{Program Ex2.21 from software verification competition SV-Comp.}
+  \labprog{termination-b}
+  \vspace{0.5cm}
 \begin{lstlisting}[
   language=customPython,
   escapechar=\%,
-  caption={Program Ex2.21 from software verification competition SV-Comp.},
-  label={lst:termination-b}
 ]
 def termination_b(x, y):
   while x > 0:
@@ -219,6 +227,7 @@ def termination_b(x, y):
   result = x + y
   return result
 \end{lstlisting}
+\end{marginlisting}
 
 From the same work, we also consider \refprog{termination-b} which returns the value of \texttt{y} whenever $\texttt{x} = 0$, otherwise it returns $-1$.
 Unfortunately, the backward analysis does not capture a precise loop invariant, thus both the analyses \outcomesname{} and \rangename are inconclusive in such case.
@@ -231,14 +240,14 @@ Drawing examples from their dataset is less appealing to our work.
 \subsection{Linear Loops}
 \labsec{linear-loops}
 
-The last use case,~\refprog{linear-expression} computes the linear expression $(5x + 2y)$ via repeated additions.
-Note that the invariant of the loop is indeed non-linear ($\texttt{result} = \texttt{i} * \texttt{x}$ and $\texttt{result} = \texttt{result}' + \texttt{i} * \texttt{y}$ respectively for the first and second loop, where $\texttt{result}'$ is the value of \texttt{result} before entering the second loop), but the loop is executed a fixed number of times, thus the analysis is able to compute the exact output buckets through loop unrolling.
 
+\begin{marginlisting}
+  \caption{Program computing the linear expression $(5x + 2y)$ via repeated additions.}
+  \labprog{linear-expression}
+  \vspace{0.9cm}
 \begin{lstlisting}[
   language=customPython,
   escapechar=\%,
-  caption={Program computing the linear expression $(5x + 2y)$ via repeated additions.},
-  label={lst:linear-expression}
 ]
 def linear_expression(x, y):
   result = 0
@@ -251,6 +260,10 @@ def linear_expression(x, y):
     result = result + y
     i += 1
 \end{lstlisting}
+\end{marginlisting}
+
+\refprog{linear-expression} computes the linear expression $(5x + 2y)$ via repeated additions.
+Note that the invariant of the loop is indeed non-linear ($\texttt{result} = \texttt{i} * \texttt{x}$ and $\texttt{result} = \texttt{result}' + \texttt{i} * \texttt{y}$ respectively for the first and second loop, where $\texttt{result}'$ is the value of \texttt{result} before entering the second loop), but the loop is executed a fixed number of times, thus the analysis is able to compute the exact output buckets through loop unrolling.
 
 For the analysis the input bounds are $0 \le \texttt{x} \le 1000$ and $0 \le \texttt{y} \le 1000$, while the output buckets are $\setdef{n * 100 \le \texttt{result} < (n + 1) * 100}{n \le 70}$.
 Both analyses, \outcomesname{} and \rangename, show that \texttt{x} has an impact $\frac{5}{2}$ times bigger than \texttt{y} on the output.
@@ -264,7 +277,7 @@ Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y
 
 
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
 \begin{tikzpicture}
   % Grid
@@ -358,7 +371,39 @@ Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y
 \end{tikzpicture}
 \caption{Input space composition with continuous input values.}
 \labfig{extended}
-\end{figure*}
+\end{figure}
+
+
+\begin{table}[t]
+  \caption{Quantitative input usage for~\refprog{landing-alarm-system}.}
+  \labtab{landing-risk}
+  \centering
+  \begin{tabular}{cc|cc|cc}
+    \multicolumn{2}{c|}{\multirow{2}{*}{~\textbf{Input Bounds}}} & \multicolumn{2}{c|}{\outcomesname} & \multicolumn{2}{c}{\rangename} \\ \cline{3-6}
+    & & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} \\ \hline\hline
+    % $\texttt{angle} = -1 \lor \texttt{angle} = 4$ & \multirow{4}{*}{$1 \le \texttt{speed} \le 3$} & &
+    % 1  &  2  & 3  & 2  \\ \cline{1-1} \cline{4-7}
+    $-4 \le \texttt{angle} \le 4$ & \multirow{3}{*}{$~~\land 1 \le \texttt{speed} \le 3$} &
+    3  &  3  & 3  & 3  \\ \cline{1-1} \cline{3-6}
+    $-4 \le \texttt{angle} \le 0$ & &
+    3  &  2  & 3  & 2  \\ \cline{1-1} \cline{3-6}
+    $0 \le \texttt{angle} \le 4$ & &
+    3 &  2 & 3 & 2 \\
+  \end{tabular}
+\end{table}
+
+Finally, we apply our quantitative analysis to~\refprog{landing-alarm-system}\marginprop{landing-alarm-system} (reported on the side) for the landing alarm system extended with the  continuous input space for the aircraft angle of approach, where $(-4 \le \texttt{angle} \le 4) \land (1 \le \texttt{speed} \le 3)$, see \reffig{extended}.
+In this instance, the precision of the abstraction drastically drops as convex abstract domains are not able to capture the symmetric features of the input space around 0.
+Indeed, the analysis result, first row of~\reffig{analysis}, is unable to reveal any difference in the input usage of input variables as all the abstract preconditions result of the backward analysis intersect together.
+As a consequence, \outcomesname{} and \rangename{} are unable to provide any meaningful information, first row of \reftab{landing-risk}.
+
+A possible approach to overcome the non-convexity of the input space is to split the input space into two subspaces (as a bounded set of disjunctive polyhedra), $-4 \le \texttt{angle} \le 0$ and $0 \le \texttt{angle} \le 4$, second and third row of \reftab{landing-risk}.
+In the first subset $-4 \le \texttt{angle} \le 0$, we are able to perfectly captures the input regions that lead to each output bucket with our abstract analysis, second row of~\reffig{analysis}.
+Therefore, we are able to recover the information that the input configurations from the bucket $\{\texttt{risk} =3\}$ do not intersect with the ones from the bucket $\{\texttt{risk} = 0\}$ after projecting away the axis \texttt{speed}.
+As the end, our analysis notices that variations in the value of the input \texttt{angle} results in three possible output values, while variations in the \texttt{speed} input lead to two.
+Similarly, regarding the range of values, variations in the \texttt{angle} input cover the entire spectrum of output values, whereas to the \texttt{speed} input only span a range of 2 since it exists no input value such that modifications in the \texttt{speed} value could obtain a range of output values bigger than 2.
+The same reasoning applies to the other subspace with $0 \le \texttt{angle} \le 4$.
+
 
 \begin{figure*}[t]
   \centering
@@ -658,34 +703,3 @@ Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y
 %\vspace{%-15pt}
 \labfig{analysis}
 \end{figure*}
-
-
-We apply our quantitative analysis to~\refprog{landing-alarm-system} for the landing alarm system extended with the  continuous input space for the aircraft angle of approach, where $(-4 \le \texttt{angle} \le 4) \land (1 \le \texttt{speed} \le 3)$, see \reffig{extended}.
-In this instance, the precision of the abstraction drastically drops as convex abstract domains are not able to capture the symmetric features of the input space around 0.
-Indeed, the analysis result, first row of~\reffig{analysis}, is unable to reveal any difference in the input usage of input variables as all the abstract preconditions result of the backward analysis intersect together.
-As a consequence, \outcomesname{} and \rangename{} are unable to provide any meaningful information, first row of \reftab{landing-risk}.
-
-\begin{table}
-  \caption{Quantitative input usage for~\refprog{landing-alarm-system}.}
-  \labtab{landing-risk}
-  \centering
-  \begin{tabular}{cc|cc|cc}
-    \multicolumn{2}{c|}{\multirow{2}{*}{~\textbf{Input Bounds}}} & \multicolumn{2}{c|}{\outcomesname} & \multicolumn{2}{c}{\rangename} \\ \cline{3-6}
-    & & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} \\ \hline\hline
-    % $\texttt{angle} = -1 \lor \texttt{angle} = 4$ & \multirow{4}{*}{$1 \le \texttt{speed} \le 3$} & &
-    % 1  &  2  & 3  & 2  \\ \cline{1-1} \cline{4-7}
-    $-4 \le \texttt{angle} \le 4$ & \multirow{3}{*}{$~~\land 1 \le \texttt{speed} \le 3$} &
-    3  &  3  & 3  & 3  \\ \cline{1-1} \cline{3-6}
-    $-4 \le \texttt{angle} \le 0$ & &
-    3  &  2  & 3  & 2  \\ \cline{1-1} \cline{3-6}
-    $0 \le \texttt{angle} \le 4$ & &
-    3 &  2 & 3 & 2 \\
-  \end{tabular}
-\end{table}
-
-A possible approach to overcome the non-convexity of the input space is to split the input space into two subspaces (as a bounded set of disjunctive polyhedra), $-4 \le \texttt{angle} \le 0$ and $0 \le \texttt{angle} \le 4$, second and third row of \reftab{landing-risk}.
-In the first subset $-4 \le \texttt{angle} \le 0$, we are able to perfectly captures the input regions that lead to each output bucket with our abstract analysis, second row of~\reffig{analysis}.
-Therefore, we are able to recover the information that the input configurations from the bucket $\{\texttt{risk} =3\}$ do not intersect with the ones from the bucket $\{\texttt{risk} = 0\}$ after projecting away the axis \texttt{speed}.
-As the end, our analysis notices that variations in the value of the input \texttt{angle} results in three possible output values, while variations in the \texttt{speed} input lead to two.
-Similarly, regarding the range of values, variations in the \texttt{angle} input cover the entire spectrum of output values, whereas to the \texttt{speed} input only span a range of 2 since it exists no input value such that modifications in the \texttt{speed} value could obtain a range of output values bigger than 2.
-The same reasoning applies to the other subspace with $0 \le \texttt{angle} \le 4$.

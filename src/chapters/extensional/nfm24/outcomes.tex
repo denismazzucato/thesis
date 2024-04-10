@@ -44,7 +44,7 @@ Finally, we iterate through each input configuration $\definput$ and return the 
   We begin by considering $\definputvariable=\x$ and $\inputa$ as the first input configuration to be explored.
   Hence, we collect all traces that are
   starting from an input configuration that is a variation of $\inputa$, \ie, $\setdef{
-    \defseq \in \tracesemantics
+    \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram}
   }{
     \retrieveinput{\defseq} \stateeq{\inputvariables\setminus\{\x\}} \inputa
   }$, where $\inputvariables\setminus\{\x\} = \{\y\}$ and consequently $\retrieveinput{\defseq} \stateeq{\{\y\}} \inputa$ holds whenever the initial state of $\defseq$ has $\y=1$. A possible trace of this set is $\langle 1, 1, 0, 0\rangle \to \langle 1, 1, 2, 0\rangle\to\langle 1, 1, 2, 0\rangle$ where, at the beginning, we randomly assign $\lc=0$ and $\z=0$, respectively the third and fourth component of the initial state.
@@ -52,15 +52,15 @@ Finally, we iterate through each input configuration $\definput$ and return the 
   We collect the output values of this set of traces, $\setdef{
     \reader(\retrieveoutput\defseq)
   }{
-    \defseq \in \tracesemantics \land
+    \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram} \land
       \retrieveinput{\defseq}(\y) = 1
   }$.
   As a result, we obtain the set of output values $\{0, 3\}$.
   For instance, the output value $0$ is the result of the trace we exhibited previously, where the last state is $\langle 1, 1, 2, 0\rangle$ and thus the $\z$ variable of this trace is the last component with value $0$.
 %
   Finally, the cardinality operator returns the value $2$, $\cardinality{\{0, 3\}} = 2$.
-  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\x}(\tracesemantics)=2$.
-  \reftab{overview} (column \textsc{Outcomes}) illustrate the steps for $\outcomesname_{\x}(\tracesemantics)$ and $\outcomesname_{\y}(\tracesemantics)$ respectively.
+  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\x}(\tracesemanticsnoparam\semanticsof{\landingprogram})=2$.
+  \reftab{overview} (column \textsc{Outcomes}) illustrate the steps for $\outcomesname_{\x}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and $\outcomesname_{\y}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ respectively.
 \end{example}
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
