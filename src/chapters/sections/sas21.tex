@@ -1,0 +1,90 @@
+\chapter{Quantitative Fairness for Neural Networks}
+\labch{quantitative-fairness}
+
+% In this chapter, we introduce quantitative notions of impact in the context of neural networks.
+
+% \input{src/chapters/extensional/sas21/overview}
+% \input{src/chapters/extensional/sas21/changes}
+% \input{src/chapters/extensional/sas21/qlibra}
+% \input{src/chapters/extensional/sas21/evaluation-changes}
+% \input{src/chapters/extensional/sas21/evaluation-qlibra}
+
+\section{Neural Network Semantics}
+\labsec{neural-network-semantics}
+
+\begin{definition}[Terminating Outcome Semantics]\labdef{outcome-semantics}
+  \begin{align*}
+    \outcomesemantics\DefeQ\outcomeabstraction(\tracesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Terminating Dependency Semantics]\labdef{dependency-semantics}
+  \begin{align*}
+    \dependencysemantics\DefeQ\dependencyabstraction(\outcomesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Terminating Filter Semantics]\labdef{filter-semantics}
+  \begin{align*}
+    \filtersemantics\DefeQ\filterabstraction(\dependencysemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{definition}[$\defbound$-Bounded Impact Property]
+  \labdef{bounded}
+  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\setof{\pair\state\state}\to\valuesposplus$ a monotonic impact definition, and $\defbound\in\valuesposplus$ the threshold.
+  The \emph{$\defbound$-bounded impact property} $\bounded$ is defined as follows:
+  \begin{align*}
+    \BOUNDED \DefeQ& \setdef
+    {\filtersemanticsnoparam \in \setof{\pair\state\state}\\ & \qquad}
+    {\impactwrapper(\filtersemanticsnoparam) \impactsubseteq \defbound}
+  \end{align*}
+\end{definition}
+\section{The \changesname{} Impact Definition}[\changesname]
+\labsec{changes-impact-definition}
+
+\begin{definition}[Segments of Contiguous Regions]\labdef{segments}
+\end{definition}
+
+\begin{definition}[\changesname]\labdef{changes}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\changes\in\dots$ is defined as:
+  \begin{align*}
+    \changes(\defsetoftraces) &\DefeQ \dots
+  \end{align*}
+\end{definition}
+
+\begin{lemma}[\changesname{} is Monotonic]
+  \lablemma{changes-monotonic}
+For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \changes(\defsetoftraces) \le \changes(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+
+\section{The \qlibraname{} Impact Definition}[\qlibraname]
+\labsec{qlibra-impact-definition}
+
+\begin{definition}[\qlibraname]\labdef{qlibra}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\qlibra\in\dots$ is defined as:
+  \begin{align*}
+    \qlibra(\defsetoftraces) &\DefeQ \dots
+  \end{align*}
+\end{definition}
+
+\begin{lemma}[\qlibraname{} is Monotonic]
+  \lablemma{qlibra-monotonic}
+For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \qlibra(\defsetoftraces) \le \qlibra(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+
+\section{Abstract Domains for Neural Network Verification}
+\labsec{abstract-domains-for-neural-network-verification}
+
+\section{Reduced Product}
+\labsec{reduced-product}

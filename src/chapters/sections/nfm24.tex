@@ -1,0 +1,260 @@
+%
+
+\chapter{Quantitative Input Data Usage}
+\labch{quantitative-input-data-usage}
+
+% \begin{itemize}
+%   \item $\sup$ and $\inf$ operators;
+%   \item $\length$ function;
+%   \item abstract domain $\abstractdomain$
+%   \item backward reachability state abstract semantics $\backwardsemanticsnoparam$.
+% \end{itemize}
+
+% In this chapter, we present the quantitative framework used to measure the contributions of the input variables to the outcome of a program. First, we introduce a leading example of a landing-risk alarm system to illustrate the motivation of this chapter. Then, we present the quantitative framework and its properties. Since the framework depends on the underlying notion of impact, we show a few possible definitions of impact. Finally, we demonstrate the effectiveness of our approach against a set of potential applications.
+
+% \textit{Dans ce chapitre, nous présentons le cadre quantitatif utilisé pour mesurer les contributions des variables d'input à l'output d'un programme. Tout d'abord, nous introduisons un exemple principal d'un système d'alarme de risque d'atterrissage pour illustrer la motivation de ce chapitre. Ensuite, nous présentons le cadre quantitatif et ses propriétés. Étant donné que le cadre dépend de la notion d'impact, nous en montrons quelques définitions possibles. Enfin, nous démontrons l'efficacité notre approche contre des applications potentielles.}
+
+% \onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle,
+% \outputvaluea,\outputvalueb,\outputvaluec,\outputvalued,\outputvaluee,\outputvaluef}
+
+% \input{src/chapters/extensional/nfm24/overview.tex}
+% \input{src/chapters/extensional/nfm24/quantitative-input-data-usage}
+% % \input{src/chapters/extensional/nfm24/hierarchy}
+% \input{src/chapters/extensional/nfm24/static-analysis}
+% \input{src/chapters/extensional/nfm24/impatto}
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Input Data Quantification}
+\labsec{Input Data QUantification}
+
+Overview of Quantitative Information Flow using Entropies as in Related Work NFM24.
+
+\section{The \texorpdfstring{$\defbound$}{k}-Bounded Impact Property}
+\labsec{k-bounded-impact-property}
+
+
+\begin{definition}[$\defbound$-Bounded Impact Property]
+  \labdef{bounded}
+  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\dependencytype\to\valuesposplus$ a monotonic impact definition, and $\defbound\in\valuesposplus$ the threshold.
+  The \emph{$\defbound$-bounded impact property} $\bounded$ is defined as follows:
+  \begin{align*}
+    \BOUNDED \DefeQ& \setdef
+    {\filtersemanticsnoparam \in \filtertype\\ & \qquad}
+    {\impactwrapper(\filtersemanticsnoparam) \impactsubseteq \defbound}
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Monotonic Impact Definitions]
+  \labdef{monotonic-impact}
+  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\dependencytype\to\valuesposplus$ is a \emph{monotonic impact definition}, whenever it holds that:
+  \begin{align*}
+    \foralldef{\defsetoftraces, \defsetoftraces'\in \setof\finiteinfinitesequences}{\defsetoftraces \subseteq \defsetoftraces' \IfF \impactwrapper(\defsetoftraces) \le \impactwrapper(\defsetoftraces')}
+  \end{align*}
+\end{definition}
+
+\begin{remark}
+  A program $\defprogram$ satisfies the $\defbound$-bounded impact property $\bounded$ if and only if the collecting semantics of $\defprogram$ implies $\bounded$. Formally:
+  \begin{align}
+    \labeq{bounded-soundness}
+    \defprogram \satisfies \BOUNDED \IfF \collectingsemantics \subseteq \BOUNDED
+  \end{align}
+\end{remark}
+
+\section{The \outcomesname{} Impact Definition}[\outcomesname]
+\labsec{outcomes}
+
+\begin{definition}[\outcomesname]\labdef{outcomes}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\outcomes\in\dependencytype\to\Rposplus$ is defined as:
+  \begin{align*}
+    \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+      \cardinality{\setdef{
+        \reader(\retrieveoutput{\defseq})
+      }{
+        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+      }}
+  \end{align*}
+\end{definition}
+
+\begin{lemma}[\outcomesname{} is Monotonic]
+  \lablemma{outcomes-monotonic}
+For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+\section{The \rangename{} Impact Definition}[\rangename]
+\labsec{range}
+
+\begin{definition}[\rangename]\labdef{range}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\range\in\dependencytype\to\Rposplus$ is defined as
+  %
+  \begin{align*}
+    \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+      \length(\setdef{
+        \reader(\retrieveoutput{\defseq})
+      }{
+        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+      })
+  \end{align*}
+\end{definition}
+
+\begin{lemma}[\rangename{} is Monotonic]
+  \lablemma{range-monotonic}
+  For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \range(\defsetoftraces) \le \range(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+\section{Abstract Quantitative Input Data Usage}
+\labsec{abstract-quantitative-input-data-usage}
+
+\begin{definition}[Sound Over-Approximation for \texorpdfstring{$\backwardsemanticsnoparam$}{the backward semantics}]\labdef{sound-over-approximation}
+  For all programs $\defprogram$, and output bucket $\bucket\in\abstractdomain$, the family of semantics $\backwardsemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ reduced with  $\abstractdomainconcretization(\bucket)$, when it holds that:
+  \[\reduceddependencysemantics \SubseteQ \backwardconcretization(\backwardsemantics)\bucket\]
+\end{definition}
+
+
+\begin{definition}[Multi-Bucket Semantics \texorpdfstring{$\multisemanticsnoparam$}{}]\labdef{multi-semantics}
+  We define
+$\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a set of output buckets $\buckets\in\vectorbuckets$, that is:
+\begin{align*}
+\multisemantics\buckets \DefeQ (\backwardsemantics\bucket)_{j\le n}
+\end{align*}
+where the concretization function $\multiconcretization\in(\multitype)\to\vectorbuckets\to\setof\pairofstates$ is defined as:
+\begin{align*}\multiconcretization(\multisemantics)\buckets \DefeQ \bigsetjoin_{j\le n} \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j)\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+\end{align*}
+\end{definition}
+
+\begin{lemma}[Sound Over-Approximation for \texorpdfstring{$\multisemanticsnoparam$}{the Multi-Bucket Semantics}]\lablemma{sound-over-approximation-multi-bucket}
+  For all programs $\defprogram$, output buckets $\buckets\in\vectorbuckets$, and a family of semantics $\backwardsemanticsnoparam$, the %multi-bucket family of
+  semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ when reduced to $\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)$:
+  \[\reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)} \SubseteQ \multiconcretization(\multisemantics)\buckets\]
+\end{lemma}
+
+\begin{definition}[Covering]\label{def:covering}
+  We say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
+  \[\filter\subseteq \setdef{\reader(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}\]
+\end{definition}
+
+\begin{definition}[Compatibility]\labdef{compatibility}
+  Given the output buckets $\buckets\in\vectorbuckets$ and the output descriptor $\reader\in\stateandbottom\to\valuesinf$, we say that $\buckets$ is \textup{compatible} with $\reader$, whenever it holds:
+  \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\reader(\defstate_j) \neq \reader(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
+\end{definition}
+
+\begin{definition}[Sound Implementation]\labdef{sound-implementation}
+  For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
+  \[
+    \impactwrapper(
+      \multiconcretization(\multisemantics)\buckets
+    ) \LE \impactinstance(\multisemantics\buckets, \buckets)
+  \]
+\end{definition}
+
+\begin{theorem}[Soundness] \labthm{soundness}
+  Let $\bounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariable\in\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
+    \item \label{p:second} $\buckets$ covers the subset of potential outcomes $\filter$, \cf{} \refdef{covering}, and
+    \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef{sound-implementation},
+  \end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \impactinstance(\multisemantics\buckets, \buckets) = \defbound' \LanD \defbound' \le \defbound \ImplieS \defprogram \satisfies \bounded
+  \end{align*}
+\end{theorem}
+
+
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainproject$}{Project}]\labdef{soundness-project}
+  Given an abstract value $\defstate^\natural\in\abstractdomain$, for all $\defstate \in \abstractdomainconcretization(\defstate^\natural)$, whenever it exists a state $\defstate'$ such that $\defstate \stateeq{\inputvariableswithouti} \defstate'$, then it holds that $\defstate' \in \abstractdomainconcretization(\abstractdomainproject(\defstate^\natural))$.
+\end{definition}
+
+\begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
+  We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
+  \begin{equation*}
+  \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \end{equation*}
+\end{definition}
+
+\section{Abstract Implementation \texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}}[Abstract \texorpdfstring{$\abstractoutcomes$}{Outcomes}]
+\labsec{abstract-outcomes}
+
+\begin{definition}[Intersect All Function \texorpdfstring{$\intersectallfunction$}{}]\labdef{intersect-all-function}
+  \begin{gather*}
+    \intersectallfunction(X^\natural\in\vectorbuckets) \DefeQ \\
+    \setdef{J}{J \subseteq \N \land \forall j\le n, p\le n.~ j\in J \land p\in J \LanD X^\natural_j \abstractdomainmeet X^\natural_{p}}
+  \end{gather*}
+\end{definition}
+
+\begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
+  We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
+  \begin{equation*}
+  \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \end{equation*}
+\end{definition}
+
+\begin{lemma}[$\outcomes$ Upper Bound]\lablemma{outcomes-upper-bound}
+  When the buckets $\buckets$ are compatible, \cf{} \refdef{compatibility}, and cover the subset of potential outcomes, \cf{} \refdef{covering}, it holds that
+  $\outcomes(\dependencysemanticsnoparam) \le n$.
+\end{lemma}
+
+\begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
+  Let  $\definputvariable\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Whenever the following conditions hold:
+  \begin{enumerate}[label=(\roman*)]
+    \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
+    \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
+    \item \label{proof:b1} $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
+    \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
+  \end{enumerate}
+  then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
+\end{lemma}
+
+
+\section{Abstract Implementation \texorpdfstring{$\abstractrange$}{Abstract Range}}[Abstract \texorpdfstring{$\abstractrange$}{Range}]
+\labsec{abstract-range}
+
+\begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
+  We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
+  \begin{align*}
+    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomainlength(K)}{K \in I} \\
+    \text{where}~
+    I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainlength$}{Length}]\labdef{soundness-length}
+  Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
+  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\reader(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+\end{definition}
+
+\begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
+  Let  $\definputvariable\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Whenever the following conditions hold:
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
+    \item $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
+    \item $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
+  \end{enumerate}
+  then, $\abstractrange$ is a sound implementation of $\range$.
+\end{lemma}
+
+\section{Evaluation}
+\labsec{evaluation}

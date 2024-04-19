@@ -1,0 +1,194 @@
+\chapter{Input Data Usage}
+\labch{input-data-usage}
+
+
+\section{Input Data Usage}
+\labsec{input-data-usage}
+
+\begin{definition}[Unused Predicate]\labdef{unused-predicate}
+  \begin{align*}
+    \unusedwrapper(\tracesemanticsnoparam) \DefeQ&
+    \forall
+      \defseq\in\tracesemanticsnoparam, \defvalue\in\values
+    .\spacer
+      \retrieveinput{\defseq}(\definputvariable) \neq \defvalue \ImplieS \\
+      &\exists
+        \defseq'\in\tracesemanticsnoparam
+      .\spacer
+        \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
+        \LanD \retrieveinput{\defseq'}(\definputvariable) = \defvalue
+        \LanD \retrieveoutput{\defseq} = \retrieveoutput{\defseq'}
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Unused Predicate with Input-Output Abstractions]\labdef{unused-input-output-predicate}
+  \begin{align*}
+    \unusediowrapper(\tracesemanticsnoparam) \DefeQ
+    \forall
+      \defseq\in\tracesemanticsnoparam, \defvalue\in\values
+    .\spacer&
+      \inputobs(\retrieveinput{\defseq}(\definputvariable)) \neq \defvalue
+      \ImplieS \\
+      \exists
+        \defseq'\in\tracesemanticsnoparam
+      .\spacer&
+        \inputobs \circ \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \inputobs \circ \retrieveinput{\defseq}
+        \LanD \\
+        &\inputobs(\retrieveinput{\defseq'}(\definputvariable)) = \defvalue
+        \LanD \\
+        &\outputobs(\retrieveoutput{\defseq}) = \outputobs(\retrieveoutput{\defseq'})
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Unused]\labdef{unused}
+  \begin{align*}
+    \filterabstraction(\defsetoftraces) \DefeQ& \setdef{\deftrace}{\deftrace\in\defsetoftraces \land \inputobs(\retrieveinput\deftrace) \in \inputfilter \land \outputobs(\retrieveoutput\deftrace) \in \outputfilter} \\
+    \unused\DefeQ&
+    \setdef{\tracesemanticsnoparam\in\tracetype}{\foralldef{\definputvariable\in\inputvariables}{\unusediowrapper(\filterabstraction(\tracesemanticsnoparam))}}
+  \end{align*}
+\end{definition}
+
+
+\begin{theorem}[Validation of Unused]\labthm{validation-unused}
+  \begin{align*}
+    \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
+  \end{align*}
+\end{theorem}
+
+\section{Dependency Semantics}
+\labsec{dependency-semantics}
+
+\begin{definition}[Adjoints for the Dependency Semantics]
+  \labdef{adjoints-dependency-semantics}
+  \begin{align*}
+    \dependencyabstraction \IN& \collectingtype \to \dependencytype \\
+    \dependencyabstraction(\defsetofsetoftraces) \DefeQ& \setdef{
+      \setdef{\inputoutputtuple{\defseq}}{\defseq\in\defsetoftraces}
+    }{
+      \defsetoftraces\in\defsetofsetoftraces
+    }\\
+    \dependencyconcretization \IN& \dependencytype \to \collectingtype \\
+    \dependencyconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \defsetoftraces\in\setof\finiteinfinitesequences
+    }{
+      \setdef{\inputoutputtuple\defseq}{\defseq\in\defsetoftraces} \in \defsetofsetofdependencies
+    }
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{collecting-dependency-galois-connection}
+  The collecting $\collectingsemanticsnoparam$ and dependency $\dependencysemanticsnoparam$ semantics form a \emph{Galois Connection}:
+\begin{align*}
+  \galoisbetweensemantics{collecting}{dependency}
+\end{align*}
+\end{theorem}
+
+\begin{definition}[Dependency Semantics]\labdef{dependency-semantics}
+  \begin{align*}
+    \dependencysemantics\DefeQ\dependencyabstraction(\outcomesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{dependency-validation}
+  \begin{align*}
+    \collectingsemantics \subseteq \unused \IfF \dependencysemantics \subseteq \unused
+  \end{align*}
+\end{theorem}
+
+
+\section{Input-Output Abstraction Semantics}
+\labsec{input-output-abstraction-semantics}
+
+
+\begin{definition}[Adjoints for the Input-Output Abstraction Semantics]\labdef{adjoints-dependency-semantics}
+  \begin{align*}
+    \inputoutputabstraction \IN& \dependencytype \to \inputoutputtype \\
+    \inputoutputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \setdef{
+        \tuple{\inputobs(\retrieveinput{\defstate})}{\outputobs(\retrieveoutput{\defstate})}
+      }{
+        \inputoutputtuple{\defstate}\in\defsetofdependencies
+      }
+    }{
+      \defsetofdependencies \in \defsetofsetofdependencies
+    }\\
+    \inputoutputconcretization \IN& \inputoutputtype \to \dependencytype \\
+    \inputoutputconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \setdef{
+        \inputoutputtuple{\defstate}
+      }{
+        \inputoutputtuple{\defvalue}\in\defsetofdependencies
+        \land
+        \inputobs(\retrieveinput{\defstate}) = \retrieveinput\defvalue
+        \land
+        \outputobs(\retrieveoutput{\defstate}) = \retrieveoutput\defvalue
+      }
+    }{
+      \defsetofdependencies\in\defsetofsetofdependencies
+    }
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{dependency-inputoutput-galois-connection}
+  The dependency $\dependencysemanticsnoparam$ and input-output abstraction $\inputoutputsemanticsnoparam$ semantics form a \emph{Galois Connection}:
+\begin{align*}
+  \galoisbetweensemantics{dependency}{inputoutput}
+\end{align*}
+\end{theorem}
+
+\begin{definition}[Input-Output Abstraction Semantics]\labdef{inputoutput-abstraction-semantics}
+  \begin{align*}
+    \inputoutputsemantics\DefeQ\inputoutputabstraction(\dependencysemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+
+\section{Filter Semantics}
+\labsec{filter-semantics}
+
+\begin{definition}[Adjoints for the Filter Semantics]\labdef{adjoints-filter-semantics}
+  \begin{align*}
+    \filterabstraction \IN& \inputoutputtype \to \filtertype \\
+    \filterabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \setdef{
+        \inputoutputtuple{\defvalue}
+      }{
+        \inputoutputtuple{\defvalue}\in\defsetofdependencies
+        \land \retrieveinput\defvalue \in \inputfilter
+        \land \retrieveoutput\defvalue \in \outputfilter
+      }
+    }{
+      \defsetofdependencies \in \defsetofsetofdependencies
+    }\\
+    \filterconcretization \IN& \filtertype \to \inputoutputtype \\
+    \filterconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \defsetofdependencies \setjoin \setdef{
+        \inputoutputtuple{\defstate}
+      }{
+        \inputoutputtuple{\defvalue}
+      }
+      \\&
+    }{
+      \defsetofdependencies\in\defsetofsetofdependencies
+      \land
+      \retrieveinput{W} \subseteq \pair{\values \setminus \inputfilter}{\state}
+      \land
+      \retrieveoutput{W} \subseteq \pair{\state}{\values \setminus \outputfilter}
+    }
+  \end{align*}
+\end{definition}
+
+
+\begin{definition}[Filter Semantics]\labdef{filter-semantics}
+  \begin{align*}
+    \filtersemantics\DefeQ\filterabstraction(\dependencysemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+
+
+
+
+
+\section{Syntactic Dependency Abstraction}
+\labsec{syntactic-dependency-abstraction}

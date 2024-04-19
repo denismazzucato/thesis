@@ -1,0 +1,105 @@
+
+\chapter{Abstract Interpretation}
+\labch{abstract-interpretation}
+
+\section{Order Theory}
+\labsec{order-theory}
+
+\subsection{Sets}
+\labsec{sets}
+
+\subsection{Relations}
+\labsec{relations}
+
+\subsection{Ordered Sets}
+\labsec{ordered-sets}
+
+\subsection{Lattices}
+\labsec{lattices}
+
+\subsection{Functions}
+\labsec{functions}
+
+\subsection{Fixpoints}
+\labsec{fixpoints}
+
+\section{Notations of Abstract Interpretation}
+\labsec{notations-of-abstract-interpretation}
+
+\subsection{Transition System}
+\labsec{transition-system}
+
+\subsection{Maximal Trace Semantics}
+\labsec{maximal-trace-semantics}
+
+\begin{definition}[Maximal Trace Semantics]\labdef{maximal-trace-semantics}
+  \begin{align*}
+    \tracesemanticsnoparam &\DefeQ \lfp \tracetransformer \\
+    \tracetransformer(\defsetoftraces) &\DefeQ \finalstates \setjoin (\mergesequences{\transitionrelation}{\defsetoftraces})
+  \end{align*}
+\end{definition}
+
+\subsection{Collecting Semantics}
+\labsec{collecting-semantics}
+
+\begin{definition}[Collecting Semantics]\labdef{collecting-semantics}
+  \begin{align*}
+    \collectingsemanticsnoparam &\DefeQ \{\spacearound{\tracesemanticsnoparam}\}
+  \end{align*}
+
+\end{definition}
+
+\subsection{Verification Framework}
+\labsec{verification-framework}
+
+\begin{definition}[Validation]\labdef{validation}
+  \begin{align*}
+    \defprogram \satisfies \defproperty \IfF \collectingsemantics \subseteq \defproperty
+  \end{align*}
+\end{definition}
+
+\subsection{Fixpoint Induction}
+\labsec{fixpoint-induction}
+
+\subsection{Hierarchy of Semantics}
+\labsec{hierarchy-of-semantics}
+
+\subsection{Galois Connection}
+\labsec{galois-connection}
+
+\subsection{Reachable State Semantics}
+\labsec{reachable-state-semantics}
+
+\subsection{Fixpoint Transfer}
+\labsec{fixpoint-transfer}
+
+\subsection{Fixpoint Approximation}
+\labsec{fixpoint-approximation}
+
+\subsection{Widening}
+\labsec{widening}
+
+\subsection{Narrowing}
+\labsec{narrowing}
+
+
+\section{A Small Imperative Language}
+\labsec{a-small-imperative-language}
+
+\subsection{Syntax}
+\labsec{syntax}
+
+\subsection{Maximal Trace Semantics}
+\labsec{maximal-trace-semantics}
+
+\subsection{Numerical Abstract Domain}
+\labsec{numerical-abstract-domain}
+
+\subsection{Reduced Product}
+\labsec{reduced-product}
+
+\subsection{Forward Reachability State Semantics}
+\labsec{forward-reachability-state-semantics}
+
+\subsection{Backward Reachability State Semantics}
+\labsec{backward-reachability-state-semantics}

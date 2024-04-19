@@ -5,53 +5,50 @@
 \mainmatter % Denotes the start of the main document content, resets page numbering and uses arabic numbers
 \setchapterstyle{kao} % Choose the default chapter heading style
 
-\pagelayout{wide} % No margins
-\addpart{Background}
-\pagelayout{margin} % Restore margins
+% \pagelayout{wide} % No margins
+% \addpart{Background}
+% \pagelayout{margin} % Restore margins
 
 \setchapterpreamble[u]{\margintoc}
 \input{src/chapters/introduction}
 \setchapterpreamble[u]{\margintoc}
-\input{src/chapters/mathematical_background}
+\input{src/chapters/abstract-interpretation}
 
-\pagelayout{wide} % No margins
-\addpart{Safety Program Properties}
-\pagelayout{margin} % Restore margins
-
-\setchapterpreamble[u]{\margintoc}
-\input{src/chapters/safety/safety}
-
-\pagelayout{wide} % No margins
-\addpart{Verification of Extensional Properties}
-\pagelayout{margin} % Restore margins
+% \pagelayout{wide} % No margins
+% \addpart{Safety Program Properties}
+% \pagelayout{margin} % Restore margins
 
 
 \setchapterpreamble[u]{\margintoc}
-\input{src/chapters/extensional/nfm24}
-\setchapterpreamble[u]{\margintoc}
-\input{src/chapters/extensional/fairness}
+\input{src/chapters/sections/esop18}
 
-\pagelayout{wide} % No margins
-\addpart{Verification of Intensional Properties}
-\pagelayout{margin} % Restore margins
+% \pagelayout{wide} % No margins
+% \addpart{Verification of Extensional Properties}
+% \pagelayout{margin} % Restore margins
 
-\setchapterpreamble[u]{\margintoc}
-\input{src/chapters/intensional/timing}
-
-\pagelayout{wide} % No margins
-\addpart{Experimental Implementations}
-\pagelayout{margin} % Restore margins
 
 \setchapterpreamble[u]{\margintoc}
-\input{src/chapters/tools/libra}
+\input{src/chapters/sections/nfm24}
 \setchapterpreamble[u]{\margintoc}
-\input{src/chapters/tools/impatto}
-\setchapterpreamble[u]{\margintoc}
-\input{src/chapters/tools/timesec}
+\input{src/chapters/sections/sas21}
 
-\pagelayout{wide} % No margins
-\addpart{Conclusion}
-\pagelayout{margin} % Restore margins
+% \pagelayout{wide} % No margins
+% \addpart{Verification of Intensional Properties}
+% \pagelayout{margin} % Restore margins
+
+\setchapterpreamble[u]{\margintoc}
+\input{src/chapters/sections/sas24}
+
+% \pagelayout{wide} % No margins
+% \addpart{Experimental Implementations}
+% \pagelayout{margin} % Restore margins
+
+\setchapterpreamble[u]{\margintoc}
+\input{src/chapters/sections/evaluation}
+
+% \pagelayout{wide} % No margins
+% \addpart{Conclusion}
+% \pagelayout{margin} % Restore margins
 
 \setchapterpreamble[u]{\margintoc}
 \input{src/chapters/conclusion}

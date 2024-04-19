@@ -11,18 +11,18 @@
 
 % collecting
 \newcommand*{\collectingsym}{c}
-\newcommand*{\collectingtype}{\setofsetof\pairofstates}
+\newcommand*{\collectingtype}{\setofsetof\finiteinfinitesequences}
 \newcommand*{\collectingsubseteq}{\subseteq}
 \newcommand*{\collectingjoin}{\setjoin}
 \newcommand*{\collectingmeet}{\setmeet}
 \newcommand*{\collectingtop}{\emptyset}
-\newcommand*{\collectingbottom}{\setof\pairofstates}
+\newcommand*{\collectingbottom}{\setof\finiteinfinitesequences}
 \newsemantics{collecting}
 \renewcommand*{\collectingsubseteq}{\subseteq}
 
 %% dependency semantics
 \newcommand*{\dependencysym}{\rightsquigarrow}
-\newcommand*{\dependencytype}{\setof{\pairofstates}}
+\newcommand*{\dependencytype}{\setofsetof\pairofstates}
 \newsemantics{dependency}
 \renewcommand*{\dependencysubseteq}{\subseteq}
 \newcommandx{\reduce}[2][1=\dependencysemantics]{\restr{#1}{#2}}
@@ -31,10 +31,24 @@
 \newcommand*{\reduceddependencysemanticsnoparam}{\reduce[\dependencysemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
 \newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
 
+%% outcome
+\newcommand*{\outcomesym}{\mathbb{O}}
+\newcommand*{\outcometype}{\setof\setof\finiteinfinitesequences}
+\newsemantics{outcome}
+
+%% input-output
+\newcommand*{\inputoutputsym}{\mathbb{I},\mathbb{O}}
+\newcommand*{\inputobs}{\mathbb{I}}
+\newcommand*{\inputobstype}{\values_{\inputobs}}
+\newcommand*{\outputobs}{\mathbb{O}}
+\newcommand*{\outputobstype}{\values_{\outputobs}}
+\newcommand*{\inputoutputtype}{\setofsetof{\pair{\inputobstype}{\outputobstype}}}
+\newsemantics{inputoutput}
+\renewcommand*{\inputoutputsubseteq}{\subseteq}
 
 %% filter
 \newcommand*{\filtersym}{\filter}
-\newcommand*{\filtertype}{\dependencytype}
+\newcommand*{\filtertype}{\inputoutputtype}
 \newsemantics{filter}
 
 %% backward

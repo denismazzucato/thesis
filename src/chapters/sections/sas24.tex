@@ -1,0 +1,28 @@
+\chapter{Quantitative Static Timing Analysis}
+\labch{quantitative-static-timing-analysis}
+
+
+\section{Iteration-Aware Semantics}
+\labsec{iteration-aware-semantics}
+
+\begin{definition}[Iteration-Aware Outcome Semantics]\labdef{outcome-semantics}
+  \begin{align*}
+    \outcomesemantics\DefeQ\outcomeabstraction(\tracesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Iteration-Aware Dependency Semantics]\labdef{dependency-semantics}
+  \begin{align*}
+    \dependencysemantics\DefeQ\dependencyabstraction(\outcomesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{definition}[Iteration-Aware Filter Semantics]\labdef{filter-semantics}
+  \begin{align*}
+    \filtersemantics\DefeQ\filterabstraction(\dependencysemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+
+\section{Abstraction for Quantitative Static Timing Analysis}
+\labsec{abstraction-for-quantitative-static-timing-analysis}
