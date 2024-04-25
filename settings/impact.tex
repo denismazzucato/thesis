@@ -10,6 +10,7 @@
 \newcommand*{\impactsubseteq}{\le}
 
 \newcommand{\impactinstance}{\resize{\textup{\texttt{Impact}}}{\definputvariable}[\natural]}
+\newcommand{\impactinstanceconcretization}{\concretization^\defbound}
 
 \newcommand*{\rangename}{\textup{\textsc{Range}}}
 \newcommand*{\range}{\rangename_\definputvariable}
@@ -18,16 +19,25 @@
 \newcommand*{\outcomesname}{\textup{\textsc{Outcomes}}}
 \newcommand*{\outcomes}{\outcomesname_\definputvariable}
 
+\newcommand*{\qusedname}{\textup{\textsc{QUsed}}}
+\newcommand*{\qused}{\qusedname_\definputvariable}
+
 \newcommand*{\changesname}{\textup{\textsc{Changes}}}
 \newcommand*{\changes}{\changesname_\definputvariable}
 
 \newcommand*{\qlibraname}{\textup{\textsc{QLibra}}}
 \newcommand*{\qlibra}{\qlibraname_\definputvariable}
 
-\newcommand{\LEK}{{\le\defbound}}
-\newcommand{\lek}{{\scaleto{\le}{5pt}\defbound}}
+\newcommand*{\LEK}{{\le\defbound}}
+\newcommand*{\lek}{{\scaleto{\le}{5pt}\defbound}}
+\newcommand*{\gek}{{\scaleto{\ge}{5pt}\defbound}}
+\newcommand*{\comparisonk}{{\scaleto{\comparison}{5pt}\defbound}}
+\newcommand*{\genbounded}{\resize{\mathscr{B}}{\definputvariable}[\comparisonk]}
+\newcommand*{\GENBOUNDED}{\mathscr{B}_{\definputvariable}^{\comparisonk}}
 \newcommand*{\bounded}{\resize{\mathscr{B}}{\definputvariable}[\lek]}
 \newcommand*{\BOUNDED}{\mathscr{B}_{\definputvariable}^{\lek}}
+\newcommand*{\revbounded}{\resize{\mathscr{B}}{\definputvariable}[\gek]}
+\newcommand*{\REVBOUNDED}{\mathscr{B}_{\definputvariable}^{\gek}}
 
 \newcommand*{\numberofbuckets}{n}
 \newcommand*{\bucketname}{B}
@@ -38,3 +48,4 @@
 
 \newcommand*{\abstractrange}{\resize{\textup{\texttt{Range}}}{\definputvariable}[\natural]}
 \newcommand*{\abstractoutcomes}{\resize{\textup{\texttt{Outcomes}}}{\definputvariable}[\natural]}
+\newcommand*{\abstractqused}{\resize{\textup{\texttt{QUsed}}}{\definputvariable}[\natural]}

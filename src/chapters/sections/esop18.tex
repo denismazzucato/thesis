@@ -5,9 +5,9 @@
 \section{Input Data Usage}
 \labsec{input-data-usage}
 
-\begin{definition}[Unused Predicate]\labdef{unused-predicate}
+\begin{definition}[Unused]\labdef{unused-predicate}
   \begin{align*}
-    \unusedwrapper(\tracesemanticsnoparam) \DefeQ&
+    \unusedwrapper(\tracesemanticsnoparam) \DefifF&
     \forall
       \defseq\in\tracesemanticsnoparam, \defvalue\in\values
     .\spacer
@@ -21,30 +21,64 @@
   \end{align*}
 \end{definition}
 
-\begin{definition}[Unused Predicate with Input-Output Abstractions]\labdef{unused-input-output-predicate}
+\begin{description}
+  \item[Output Observer] $\aniobserver \in \state \to \state$ abstraction of output states.
+  \item[Input Selection] $\aniselect \in \state \to \state$ abstraction of input states.
+\end{description}
+
+\begin{definition}[Abstract Non-Interference]\labdef{ani-predicate}
+  This definition is specialized on the $\definputvariable\in\inputvariables$ input variable.
   \begin{align*}
-    \unusediowrapper(\tracesemanticsnoparam) \DefeQ
+    \aniwrapper(\tracesemanticsnoparam) \DefifF
     \forall
-      \defseq\in\tracesemanticsnoparam, \defvalue\in\values
-    .\spacer&
-      \inputobs(\retrieveinput{\defseq}(\definputvariable)) \neq \defvalue
-      \ImplieS \\
-      \exists
-        \defseq'\in\tracesemanticsnoparam
-      .\spacer&
-        \inputobs \circ \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \inputobs \circ \retrieveinput{\defseq}
-        \LanD \\
-        &\inputobs(\retrieveinput{\defseq'}(\definputvariable)) = \defvalue
-        \LanD \\
-        &\outputobs(\retrieveoutput{\defseq}) = \outputobs(\retrieveoutput{\defseq'})
+      \defseq, \defseq'\in\tracesemanticsnoparam
+    .\spacer
+      \aniselect(\retrieveinput{\defseq}) \stateeq{\inputvariableswithouti} \aniselect(\retrieveinput{\defseq'})
+      \ImplieS
+        \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
   \end{align*}
 \end{definition}
 
-\begin{definition}[Unused]\labdef{unused}
+Note that such definition does not work with non-deterministic programs.
+
+\begin{definition}[Abstract Unused]\labdef{abstract-unused}
   \begin{align*}
-    \filterabstraction(\defsetoftraces) \DefeQ& \setdef{\deftrace}{\deftrace\in\defsetoftraces \land \inputobs(\retrieveinput\deftrace) \in \inputfilter \land \outputobs(\retrieveoutput\deftrace) \in \outputfilter} \\
+    \unusediowrapper(\tracesemanticsnoparam) \DefifF
+    \forall
+      \defseq\in\tracesemanticsnoparam, \defstate\in\state
+    .\spacer&
+      \aniselect(\retrieveinput{\defseq})(\definputvariable) \neq \aniselect(\defstate)(\definputvariable) \ImplieS \\
+      \exists
+        \defseq'\in\tracesemanticsnoparam
+      .\spacer&
+        \aniselect(\retrieveinput{\defseq'}) \stateeq{\inputvariableswithouti} \aniselect(\retrieveinput{\defseq})
+        \LanD \\
+        &\aniselect(\retrieveinput{\defseq'})(\definputvariable) = \aniselect(\defstate)(\definputvariable)
+        \LanD \\
+        &\aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
+  \end{align*}
+\end{definition}
+
+This can be seen as a generalization of the abstract non-interference that works with non-deterministic programs.
+
+\begin{remark}[Unused Equivalence]\labremark{unused-predicate-equivalence}
+  \begin{gather*}
+    \aniobserver \spacearound{=} \aniselect \spacearound{=} \identity \\
+    \unusedwrapper(\tracesemanticsnoparam) \IfF \unusediowrapper(\tracesemanticsnoparam)
+  \end{gather*}
+\end{remark}
+
+\begin{remark}[Abstract Non-Interference Equivalence]\labremark{ani-predicate-equivalence}
+  If $\defprogram$ deterministic, then it holds that:
+  \begin{align*}
+    \aniwrapper(\tracesemanticsnoparam) \IfF \unusediowrapper(\tracesemanticsnoparam)
+  \end{align*}
+\end{remark}
+
+\begin{definition}[Unused Property]\labdef{unused}
+  \begin{align*}
     \unused\DefeQ&
-    \setdef{\tracesemanticsnoparam\in\tracetype}{\foralldef{\definputvariable\in\inputvariables}{\unusediowrapper(\filterabstraction(\tracesemanticsnoparam))}}
+    \setdef{\tracesemanticsnoparam\in\tracetype}{\unusediowrapper(\tracesemanticsnoparam)}
   \end{align*}
 \end{definition}
 
@@ -85,13 +119,16 @@
 
 \begin{definition}[Dependency Semantics]\labdef{dependency-semantics}
   \begin{align*}
-    \dependencysemantics\DefeQ\dependencyabstraction(\outcomesemanticsnoparam)
+    \dependencysemanticsnoparam\DefeQ& \dependencyabstraction(\collectingsemanticsnoparam) \\
+    \spacearound{=}& \dependencyabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
+    \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
+    \spacearound{=}& \{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}
   \end{align*}
 \end{definition}
 
 \begin{theorem}\labthm{dependency-validation}
   \begin{align*}
-    \collectingsemantics \subseteq \unused \IfF \dependencysemantics \subseteq \unused
+    \collectingsemantics \subseteq \unused \IfF \dependencysemantics \subseteq \dependencyabstraction(\unused)
   \end{align*}
 \end{theorem}
 
@@ -114,14 +151,18 @@
     }\\
     \inputoutputconcretization \IN& \inputoutputtype \to \dependencytype \\
     \inputoutputconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \setdef{
-        \inputoutputtuple{\defstate}
+      \setjoin \setdef{
+        \defsetofdependencies' \subseteq
+        \setdef{
+          \inputoutputtuple{\defstate}
+        }{
+          \retrieveinput{\defvalue} = \inputobs(\retrieveinput{\defstate})
+          \land
+          \retrieveoutput{\defvalue} = \outputobs(\retrieveoutput{\defstate})
+        }
+        \\ &\qquad
       }{
-        \inputoutputtuple{\defvalue}\in\defsetofdependencies
-        \land
-        \inputobs(\retrieveinput{\defstate}) = \retrieveinput\defvalue
-        \land
-        \outputobs(\retrieveoutput{\defstate}) = \retrieveoutput\defvalue
+        \inputoutputtuple{\defstate} \in \defsetofdependencies
       }
     }{
       \defsetofdependencies\in\defsetofsetofdependencies
@@ -138,57 +179,44 @@
 
 \begin{definition}[Input-Output Abstraction Semantics]\labdef{inputoutput-abstraction-semantics}
   \begin{align*}
-    \inputoutputsemantics\DefeQ\inputoutputabstraction(\dependencysemanticsnoparam)
+    \inputoutputsemanticsnoparam\DefeQ&\inputoutputabstraction(\dependencysemanticsnoparam) \\
+    % \spacearound{=}&\inputoutputabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
+    \spacearound{=}&
+    \{\spacearound{
+      \setdef{
+        \tuple{\inputobs(\retrieveinput{\deftrace})}{\outputobs(\retrieveoutput{\deftrace})}
+      }{
+        \deftrace \in \tracesemanticsnoparam
+      }
+    }\}
   \end{align*}
 \end{definition}
 
-
-\section{Filter Semantics}
-\labsec{filter-semantics}
-
-\begin{definition}[Adjoints for the Filter Semantics]\labdef{adjoints-filter-semantics}
+\begin{theorem}\labthm{inputoutput-validation}
   \begin{align*}
-    \filterabstraction \IN& \inputoutputtype \to \filtertype \\
-    \filterabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \setdef{
-        \inputoutputtuple{\defvalue}
-      }{
-        \inputoutputtuple{\defvalue}\in\defsetofdependencies
-        \land \retrieveinput\defvalue \in \inputfilter
-        \land \retrieveoutput\defvalue \in \outputfilter
-      }
-    }{
-      \defsetofdependencies \in \defsetofsetofdependencies
-    }\\
-    \filterconcretization \IN& \filtertype \to \inputoutputtype \\
-    \filterconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \defsetofdependencies \setjoin \setdef{
-        \inputoutputtuple{\defstate}
-      }{
-        \inputoutputtuple{\defvalue}
-      }
-      \\&
-    }{
-      \defsetofdependencies\in\defsetofsetofdependencies
-      \land
-      \retrieveinput{W} \subseteq \pair{\values \setminus \inputfilter}{\state}
-      \land
-      \retrieveoutput{W} \subseteq \pair{\state}{\values \setminus \outputfilter}
+    \collectingsemantics \subseteq \unused \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\unused))
+  \end{align*}
+\end{theorem}
+
+\begin{remark}
+  \begin{align*}
+    \inputoutputabstraction(\dependencyabstraction(\unused))\spacearound{=}
+    \setdef{\inputoutputsemanticsnoparam\in\setof\pairofstates}{&
+    \forall
+      \inputoutputtuple\defstate\in\inputoutputsemanticsnoparam, \defstate\in\state
+    .\spacer
+      \\ &\qquad
+      \retrieveinput{\defstate}(\definputvariable) \neq \inputobs(\defstate(\definputvariable)) \ImplieS \\
+      &\exists
+        \defstate'\in\inputoutputsemanticsnoparam
+      .\spacer
+        \retrieveinput{\defstate'} \stateeq{\inputvariableswithouti} \retrieveinput{\defstate}
+        \LanD \\
+        & \qquad
+        \retrieveinput{\defstate'}(\definputvariable) = \inputobs(\defstate(\definputvariable))
+        \LanD \\
+        & \qquad
+        \aniobserver(\retrieveoutput{\defstate}) = \aniobserver(\retrieveoutput{\defstate'})
     }
   \end{align*}
-\end{definition}
-
-
-\begin{definition}[Filter Semantics]\labdef{filter-semantics}
-  \begin{align*}
-    \filtersemantics\DefeQ\filterabstraction(\dependencysemanticsnoparam)
-  \end{align*}
-\end{definition}
-
-
-
-
-
-
-\section{Syntactic Dependency Abstraction}
-\labsec{syntactic-dependency-abstraction}
+\end{remark}

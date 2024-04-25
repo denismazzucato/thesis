@@ -36,39 +36,27 @@
 % Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Input Data Quantification}
-\labsec{Input Data QUantification}
-
-Overview of Quantitative Information Flow using Entropies as in Related Work NFM24.
-
 \section{The \texorpdfstring{$\defbound$}{k}-Bounded Impact Property}
 \labsec{k-bounded-impact-property}
 
 
 \begin{definition}[$\defbound$-Bounded Impact Property]
   \labdef{bounded}
-  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\dependencytype\to\valuesposplus$ a monotonic impact definition, and $\defbound\in\valuesposplus$ the threshold.
-  The \emph{$\defbound$-bounded impact property} $\bounded$ is defined as follows:
+  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\tracetype\to\valuesposplus$ an impact definition, and $\defbound\in\valuesposplus$ the threshold.
+  The \emph{$\defbound$-bounded impact property} $\genbounded$ is defined as follows:
   \begin{align*}
-    \BOUNDED \DefeQ& \setdef
-    {\filtersemanticsnoparam \in \filtertype\\ & \qquad}
-    {\impactwrapper(\filtersemanticsnoparam) \impactsubseteq \defbound}
+    \GENBOUNDED \DefeQ \setdef
+    {\tracesemanticsnoparam \in \tracetype}
+    {\impactwrapper(\tracesemanticsnoparam) \comparison \defbound}
   \end{align*}
-\end{definition}
-
-\begin{definition}[Monotonic Impact Definitions]
-  \labdef{monotonic-impact}
-  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\dependencytype\to\valuesposplus$ is a \emph{monotonic impact definition}, whenever it holds that:
-  \begin{align*}
-    \foralldef{\defsetoftraces, \defsetoftraces'\in \setof\finiteinfinitesequences}{\defsetoftraces \subseteq \defsetoftraces' \IfF \impactwrapper(\defsetoftraces) \le \impactwrapper(\defsetoftraces')}
-  \end{align*}
+  where $\comparison \in \{\le, \ge, =\}$.
 \end{definition}
 
 \begin{remark}
-  A program $\defprogram$ satisfies the $\defbound$-bounded impact property $\bounded$ if and only if the collecting semantics of $\defprogram$ implies $\bounded$. Formally:
+  A program $\defprogram$ satisfies the $\defbound$-bounded impact property $\genbounded$ if and only if the collecting semantics of $\defprogram$ implies $\genbounded$. Formally:
   \begin{align}
     \labeq{bounded-soundness}
-    \defprogram \satisfies \BOUNDED \IfF \collectingsemantics \subseteq \BOUNDED
+    \defprogram \satisfies \GENBOUNDED \IfF \collectingsemantics \subseteq \GENBOUNDED
   \end{align}
 \end{remark}
 
@@ -76,21 +64,21 @@ Overview of Quantitative Information Flow using Entropies as in Related Work NFM
 \labsec{outcomes}
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
-  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
-  the quantity $\outcomes\in\dependencytype\to\Rposplus$ is defined as:
+  Given an input variable $\definputvariable\in\inputvariables$,
+  the quantity $\outcomes\in\tracetype\to\Rposplus$ is defined as:
   \begin{align*}
-    \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+    \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\state}
       \cardinality{\setdef{
-        \reader(\retrieveoutput{\defseq})
+        \outputobs(\retrieveoutput{\defseq})
       }{
-        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+        \defseq \in \defsetoftraces \land \inputobs(\retrieveinput{\defseq}) \stateeq{\inputvariableswithouti} \inputobs(\definput)
       }}
   \end{align*}
 \end{definition}
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
-For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
   \begin{align*}
     \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
   \end{align*}
@@ -100,26 +88,64 @@ For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype
 \labsec{range}
 
 \begin{definition}[\rangename]\labdef{range}
-  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
-  the quantity $\range\in\dependencytype\to\Rposplus$ is defined as
+  Given an input variable $\definputvariable\in\inputvariables$,
+  the quantity $\range\in\tracetype\to\Rposplus$ is defined as
   %
   \begin{align*}
     \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
       \length(\setdef{
-        \reader(\retrieveoutput{\defseq})
+        \outputobs(\retrieveoutput{\defseq})
       }{
-        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+        \defseq \in \defsetoftraces \land \inputobs(\retrieveinput{\defseq}) \stateeq{\inputvariableswithouti} \inputobs(\definput)
       })
   \end{align*}
 \end{definition}
 
-\begin{lemma}[\rangename{} is Monotonic]
-  \lablemma{range-monotonic}
-  For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
+\begin{theorem}\labthm{range-validation}
+  Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\range$, the following holds:
   \begin{align*}
-    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \range(\defsetoftraces) \le \range(\defsetoftraces')
+    \collectingsemantics \subseteq \BOUNDED \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\BOUNDED))
   \end{align*}
-\end{lemma}
+\end{theorem}
+
+\section{The \qusedname{} Impact Definition}[\qusedname]
+\labsec{qused}
+
+\begin{definition}[\qusedname]\labdef{qused}
+  Given an input variable $\definputvariable\in\inputvariables$,
+  the quantity $\qused\in\tracetype\to\Nplus$ is defined as
+  %
+  \begin{align*}
+    \qused(\defsetoftraces) \DefeQ
+    \sup \setdef{
+      \cardinality{&\setdef{\inputobs(\retrieveinput\defstate)(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\ & \setdef{
+        \inputobs(\retrieveinput{\defseq'})(\definputvariable)
+        }{
+          \deftrace,\deftrace' \in \defsetoftraces \LanD
+          \\ & \qquad \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput\defstate) \LanD
+          \\ & \qquad \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD
+          \\ & \qquad \inputobs(\retrieveinput{\deftrace'}) \stateeq{\inputvariableswithouti} \inputobs(\retrieveinput{\deftrace})
+        }}
+    }{
+      \retrieveoutput\defstate \in \state
+    }
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{qused-validation}
+  Whenever $\impactwrapper$ in $\revbounded$ is instantiated with $\qused$, the following holds:
+  \begin{align*}
+    \collectingsemantics \subseteq \REVBOUNDED \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\REVBOUNDED))
+  \end{align*}
+\end{theorem}
+
+
+\begin{remark}[Unused Equivalence]\labremark{qualitative-quantitative-equivalence}
+  \begin{gather*}
+    \unusediowrapper(\tracesemanticsnoparam) \IfF \qused(\tracesemanticsnoparam) = 0 \\
+    \neg\unused \spacearound{=} \mathscr{B}_{\definputvariable}^{\ge 1}
+  \end{gather*}
+\end{remark}
 
 \section{Abstract Quantitative Input Data Usage}
 \labsec{abstract-quantitative-input-data-usage}
@@ -149,22 +175,35 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
 
 \begin{definition}[Covering]\label{def:covering}
   We say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
-  \[\filter\subseteq \setdef{\reader(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}\]
+  \[\filter\subseteq \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}\]
 \end{definition}
 
 \begin{definition}[Compatibility]\labdef{compatibility}
-  Given the output buckets $\buckets\in\vectorbuckets$ and the output descriptor $\reader\in\stateandbottom\to\valuesinf$, we say that $\buckets$ is \textup{compatible} with $\reader$, whenever it holds:
-  \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\reader(\defstate_j) \neq \reader(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
+  Given the output buckets $\buckets\in\vectorbuckets$ and the output descriptor $\outputobs\in\stateandbottom\to\valuesinf$, we say that $\buckets$ is \textup{compatible} with $\outputobs$, whenever it holds:
+  \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\outputobs(\defstate_j) \neq \outputobs(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
 \end{definition}
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
-  For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
-  \[
-    \impactwrapper(
-      \multiconcretization(\multisemantics)\buckets
-    ) \LE \impactinstance(\multisemantics\buckets, \buckets)
-  \]
+  % For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
+  % \[
+  %   \impactwrapper(
+  %     \multiconcretization(\multisemantics)\buckets
+  %   ) \LE \impactinstance(\multisemantics\buckets, \buckets)
+  % \]
+  The concretization of the abstract implementation $\impactinstance$ is $\impactinstanceconcretization\in\valuesposplus\to\inputoutputtype$, defined as:
+  \begin{align*}
+    \impactinstanceconcretization(\defbound) \DefeQ
+    \setdef{\defsetofdependencies \in \setof\pairofstates}{
+      \impactwrapper(\defsetofdependencies) \le \defbound
+    }
+  \end{align*}
 \end{definition}
+
+\begin{lemma}
+  \begin{align*}
+    \dependencyconcretization(\inputoutputconcretization(\impactinstanceconcretization(\impactinstance(\multisemantics\buckets, \buckets)))) \subseteq \GENBOUNDED \ImplieS \defprogram \satisfies \GENBOUNDED
+  \end{align*}
+\end{lemma}
 
 \begin{theorem}[Soundness] \labthm{soundness}
   Let $\bounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariable\in\inputvariables$.
@@ -176,7 +215,7 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \end{enumerate}
   the following implication holds:
   \begin{align*}
-    \impactinstance(\multisemantics\buckets, \buckets) = \defbound' \LanD \defbound' \le \defbound \ImplieS \defprogram \satisfies \bounded
+    \impactinstance(\multisemantics\buckets, \buckets) \le \defbound \ImplieS \defprogram \satisfies \bounded
   \end{align*}
 \end{theorem}
 
@@ -220,7 +259,7 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \begin{enumerate}[label=(\roman*)]
     \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
     \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item \label{proof:b1} $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
+    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility}, and
     \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
   \end{enumerate}
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
@@ -241,7 +280,7 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainlength$}{Length}]\labdef{soundness-length}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
-  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\reader(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
 
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
@@ -250,11 +289,20 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \begin{enumerate}[label=(\roman*)]
     \item $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
     \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
+    \item $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility}, and
     \item $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
   \end{enumerate}
   then, $\abstractrange$ is a sound implementation of $\range$.
 \end{lemma}
 
-\section{Evaluation}
-\labsec{evaluation}
+\section{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
+\labsec{abstract-qused}
+
+\begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
+  We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
+  \begin{align*}
+    \abstractqused(X^\natural, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\max~  \seTDef{\abstractdomaincount(K)}{K \in I} \\
+    \text{where}~
+    I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \end{align*}
+\end{definition}

@@ -10,7 +10,7 @@
 \newsemantics{trace}
 
 % collecting
-\newcommand*{\collectingsym}{c}
+\newcommand*{\collectingsym}{\mathbb{C}}
 \newcommand*{\collectingtype}{\setofsetof\finiteinfinitesequences}
 \newcommand*{\collectingsubseteq}{\subseteq}
 \newcommand*{\collectingjoin}{\setjoin}
@@ -31,25 +31,13 @@
 \newcommand*{\reduceddependencysemanticsnoparam}{\reduce[\dependencysemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
 \newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
 
-%% outcome
-\newcommand*{\outcomesym}{\mathbb{O}}
-\newcommand*{\outcometype}{\setof\setof\finiteinfinitesequences}
-\newsemantics{outcome}
-
 %% input-output
-\newcommand*{\inputoutputsym}{\mathbb{I},\mathbb{O}}
-\newcommand*{\inputobs}{\mathbb{I}}
-\newcommand*{\inputobstype}{\values_{\inputobs}}
-\newcommand*{\outputobs}{\mathbb{O}}
-\newcommand*{\outputobstype}{\values_{\outputobs}}
-\newcommand*{\inputoutputtype}{\setofsetof{\pair{\inputobstype}{\outputobstype}}}
+\newcommand*{\inputoutputsym}{{\aniselect,\aniobserver}}
+\newcommand*{\inputobs}{\aniselect}
+\newcommand*{\outputobs}{\aniobserver}
+\newcommand*{\inputoutputtype}{\dependencytype}
 \newsemantics{inputoutput}
 \renewcommand*{\inputoutputsubseteq}{\subseteq}
-
-%% filter
-\newcommand*{\filtersym}{\filter}
-\newcommand*{\filtertype}{\inputoutputtype}
-\newsemantics{filter}
 
 %% backward
 \newcommand*{\backwardsym}{\leftarrow}
@@ -71,6 +59,7 @@
 \newcommand*{\abstractdomainproject}{\resize{\textup{\texttt{Proj}}}{\definputvariable}[\natural]}
 \newcommand*{\abstractdomainlattice}{\langle \abstractdomain,\abstractdomainsubseteq, \abstractdomainbottom, \abstractdomaintop, \abstractdomainjoin, \abstractdomainmeet \rangle}
 \newcommand*{\abstractdomainlength}{\textup{\texttt{Length}}^\natural}
+\newcommand*{\abstractdomaincount}{\textup{\texttt{Count}}^\natural}
 
 \newcommand*{\lengthfunction}{\textup{\texttt{Length}}}
 \newcommand*{\rangefunction}{\textup{\texttt{Range}}}
