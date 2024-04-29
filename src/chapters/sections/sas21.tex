@@ -9,37 +9,12 @@
 % \input{src/chapters/extensional/sas21/evaluation-changes}
 % \input{src/chapters/extensional/sas21/evaluation-qlibra}
 
-\section{Neural Network Semantics}
-\labsec{neural-network-semantics}
+\section{Neural Network Analysis}
+\labsec{neural-network-analysis}
 
-\begin{definition}[Terminating Outcome Semantics]\labdef{outcome-semantics}
-  \begin{align*}
-    \outcomesemantics\DefeQ\outcomeabstraction(\tracesemanticsnoparam)
-  \end{align*}
-\end{definition}
+\denis{Here definition of neural networks, and the backward analysis of neural networks.}
 
-\begin{definition}[Terminating Dependency Semantics]\labdef{dependency-semantics}
-  \begin{align*}
-    \dependencysemantics\DefeQ\dependencyabstraction(\outcomesemanticsnoparam)
-  \end{align*}
-\end{definition}
 
-\begin{definition}[Terminating Filter Semantics]\labdef{filter-semantics}
-  \begin{align*}
-    \filtersemantics\DefeQ\filterabstraction(\dependencysemanticsnoparam)
-  \end{align*}
-\end{definition}
-
-\begin{definition}[$\defbound$-Bounded Impact Property]
-  \labdef{bounded}
-  Let $\definputvariable\in\variables$ the input variable of interest, $\impactwrapper\in\setof{\pair\state\state}\to\valuesposplus$ a monotonic impact definition, and $\defbound\in\valuesposplus$ the threshold.
-  The \emph{$\defbound$-bounded impact property} $\bounded$ is defined as follows:
-  \begin{align*}
-    \BOUNDED \DefeQ& \setdef
-    {\filtersemanticsnoparam \in \setof{\pair\state\state}\\ & \qquad}
-    {\impactwrapper(\filtersemanticsnoparam) \impactsubseteq \defbound}
-  \end{align*}
-\end{definition}
 \section{The \changesname{} Impact Definition}[\changesname]
 \labsec{changes-impact-definition}
 
@@ -54,13 +29,7 @@
   \end{align*}
 \end{definition}
 
-\begin{lemma}[\changesname{} is Monotonic]
-  \lablemma{changes-monotonic}
-For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
-  \begin{align*}
-    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \changes(\defsetoftraces) \le \changes(\defsetoftraces')
-  \end{align*}
-\end{lemma}
+\denis{Here the algorithm for the abstract implementation of changes.}
 
 
 \section{The \qlibraname{} Impact Definition}[\qlibraname]
@@ -74,17 +43,112 @@ For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype
   \end{align*}
 \end{definition}
 
-\begin{lemma}[\qlibraname{} is Monotonic]
-  \lablemma{qlibra-monotonic}
-For any set of dependencies $\defsetoftraces, \defsetoftraces'\in\dependencytype$, it holds that:
-  \begin{align*}
-    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \qlibra(\defsetoftraces) \le \qlibra(\defsetoftraces')
-  \end{align*}
-\end{lemma}
 
+\section{Outcome Semantics}
+\labsec{outcome-semantics}
+
+
+\begin{definition}[Adjoints for the Outcome Semantics]
+  \labdef{adjoints-outcome-semantics}
+  \begin{align*}
+    \outcomeabstraction \IN& \inputoutputtype \to \outcometype \\
+    \outcomeabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \setdef{\inputoutputtuple{\defseq} \in\defsetofdependencies}{\retrieveoutput{\defseq} = \defstate}
+    }{
+      \defsetofdependencies\in\defsetofsetofdependencies \land
+      \defstate \in \stateandbottom
+    }\\
+    \outcomeconcretization \IN& \outcometype \to \inputoutputtype \\
+    \outcomeconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \dots
+    }{
+      \dots
+    }
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{inputoutput-outcome-galois-connection}
+  The input-output $\inputoutputsemanticsnoparam$ and outcome $\outcomesemanticsnoparam$ semantics form a \emph{Galois Connection}:
+\begin{align*}
+  \galoisbetweensemantics{inputoutput}{outcome}
+\end{align*}
+\end{theorem}
+
+\begin{definition}[Outcome Semantics]\labdef{outcome-semantics}
+  \begin{align*}
+    \outcomesemanticsnoparam\DefeQ& \outcomeabstraction(\inputoutputsemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{outcome-validation}
+  \begin{align*}
+    \inputoutputsemantics \subseteq \unused \IfF \outcomesemantics \subseteq \outcomeabstraction(\unused)
+  \end{align*}
+\end{theorem}
+
+
+\section{Parallel Semantics}
+\labsec{parallel-semantics}
+
+
+\begin{definition}[Adjoints for the Parallel Semantics]
+  \labdef{adjoints-parallel-semantics}
+  \begin{align*}
+    \parallelabstraction \IN& \outcometype \to \paralleltype \\
+    \parallelabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \dots
+    }{
+      \dots
+    }\\
+    \parallelconcretization \IN& \paralleltype \to \outcometype \\
+    \parallelconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+      \dots
+    }{
+      \dots
+    }
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{outcome-parallel-galois-connection}
+  The input-output $\outcomesemanticsnoparam$ and parallel $\parallelsemanticsnoparam$ semantics form a \emph{Galois Connection}:
+\begin{align*}
+  \galoisbetweensemantics{outcome}{parallel}
+\end{align*}
+\end{theorem}
+
+\begin{definition}[Parallel Semantics]\labdef{parallel-semantics}
+  \begin{align*}
+    \parallelsemanticsnoparam\DefeQ& \parallelabstraction(\outcomesemanticsnoparam)
+  \end{align*}
+\end{definition}
+
+\begin{theorem}\labthm{parallel-validation}
+  \begin{align*}
+    \outcomesemantics \subseteq \unused \IfF \parallelsemantics \subseteq \parallelabstraction(\unused)
+  \end{align*}
+\end{theorem}
+
+\section{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
+\labsec{abstract-qlibra}
+
+
+\denis{Here the algorithm for the abstract implementation of changes.}
 
 \section{Abstract Domains for Neural Network Verification}
 \labsec{abstract-domains-for-neural-network-verification}
+
+\subsection{Boxes}
+\labsec{boxes}
+
+\subsection{Symbolic Constant Propagation}
+\labsec{symbolic-constant-propagation}
+
+\subsection{DeepPoly}
+\labsec{deeppoly}
+
+\subsection{Neurify}
+\labsec{neurify}
+
 
 \section{Reduced Product}
 \labsec{reduced-product}
