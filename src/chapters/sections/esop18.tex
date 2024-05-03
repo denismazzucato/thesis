@@ -2,88 +2,126 @@
 \labch{input-data-usage}
 
 
+In this chapter, we introduce the basic notions of input data usage and the corresponding semantics proposed by \sidetextcite{Urban2018}.
+In particular, we focus on the definition of an unused input variable, we extend it with output abstractions, and we introduce the output-abstraction semantics.
+
 \section{Input Data Usage}
 \labsec{input-data-usage}
 
+Originally introduced by \sidetextcite{Urban2018}, the notion of input data usage is a predicate to determine whether a given input variable is used in the computation of the output. It consists in a predicate
+\[
+  \unusedwrapper \in \tracetype \to \B
+\]
+that holds whenever the input variable $\definputvariable\in\inputvariables$ is not used in the program under evaluation.
+
 \begin{definition}[Unused]\labdef{unused-predicate}
-  \begin{align*}
-    \unusedwrapper(\tracesemanticsnoparam) \DefifF&
+  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, the variable $\definputvariable$ is \emph{unused} if the following predicate holds:
+  \begin{align}
+    \unusedwrapper(\tracesemantics) \DefifF
     \forall
-      \defseq\in\tracesemanticsnoparam, \defvalue\in\values
-    .\spacer
+      \defseq\in\tracesemantics, \defvalue\in\values
+    .\spacer&
       \retrieveinput{\defseq}(\definputvariable) \neq \defvalue \ImplieS \\
-      &\exists
-        \defseq'\in\tracesemanticsnoparam
-      .\spacer
+      \exists
+        \defseq'\in\tracesemantics
+      .\spacer&
         \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
-        \LanD \retrieveinput{\defseq'}(\definputvariable) = \defvalue
-        \LanD \retrieveoutput{\defseq} = \retrieveoutput{\defseq'}
-  \end{align*}
+        \LanD \\
+        &\retrieveinput{\defseq'}(\definputvariable) = \defvalue
+        \LanD \\
+        &\retrieveoutput{\defseq} = \retrieveoutput{\defseq'}
+  \end{align}
 \end{definition}
 
-\begin{description}
-  \item[Output Observer] $\aniobserver \in \state \to \state$ abstraction of output states.
-  \item[Input Selection] $\aniselect \in \state \to \state$ abstraction of input states.
-\end{description}
+Intuitively, an input variable $\definputvariable$ is unused if all feasible trace outcomes $\retrieveoutput{\defseq}$ are feasible from all possible initial values of the input variable $\definputvariable$.
+That is, for all possible initial values $\defvalue$ of $\definputvariable$ that differ from the initial value of $\definputvariable$ in the trace $\defseq$, there exists another trace $\defseq'$ with initial value $\defvalue$ for $\definputvariable$ that leads to the same output $\retrieveoutput\defseq$.
 
+\denis{Example to show unused.}
+
+Such definition is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs.
+Furthermore, also non-termination is considered in the definition, as the predicate consider non-termination as a feasible trace outcome.
+
+\denis{Example to show that non-termination is a possible outcome.}
+
+As this thesis focuses on the quantification of the impact of variations of the input data, it is essential to develop an abstraction of output states to determine a numerical value of the feasible outcomes.
+To this end, we employ the notion of an \emph{output observer} $\aniobserver \in \state \to \state$ from the definition of abstract non-interference (ANI) \sidecite{...}.
+
+\marginnote{
 \begin{definition}[Abstract Non-Interference]\labdef{ani-predicate}
-  This definition is specialized on the $\definputvariable\in\inputvariables$ input variable.
-  \begin{align*}
-    \aniwrapper(\tracesemanticsnoparam) \DefifF
-    \forall
-      \defseq, \defseq'\in\tracesemanticsnoparam
-    .\spacer
+  The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$, it holds that:
+  \begin{gather*}
       \aniselect(\retrieveinput{\defseq}) \stateeq{\inputvariableswithouti} \aniselect(\retrieveinput{\defseq'})
       \ImplieS
         \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
-  \end{align*}
+  \end{gather*}
+\end{definition}}
+
+\begin{definition}[Output observer]\labdef{output-observer}
+  Given a program $\defprogram$, an \emph{output observer} $\aniobserver\in \state \to \state$ is an upper closure operator that abstracts the value of output states.
 \end{definition}
 
-Note that such definition does not work with non-deterministic programs.
+\denis{Examples of the output observer, e.g. gathering together output values, even-odd values, neural networks.}
+
+Similar to the abstraction of non-interference property into the abstract non-interference, we employ the output observer to define an abstract version of the unused predicate, called $\unusediowrapper$.
+
 
 \begin{definition}[Abstract Unused]\labdef{abstract-unused}
-  \begin{align*}
-    \unusediowrapper(\tracesemanticsnoparam) \DefifF
+  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, an output observer $\aniobserver\in \state \to \state$ the variable $\definputvariable$ is \emph{unused} if the following predicate holds:
+  \begin{align}
+    \unusediowrapper(\tracesemantics) \DefifF
     \forall
-      \defseq\in\tracesemanticsnoparam, \defstate\in\state
+      \defseq\in\tracesemantics, \defvalue\in\values
     .\spacer&
-      \aniselect(\retrieveinput{\defseq})(\definputvariable) \neq \aniselect(\defstate)(\definputvariable) \ImplieS \\
+      \retrieveinput{\defseq}(\definputvariable) \neq \defvalue \ImplieS \\
       \exists
-        \defseq'\in\tracesemanticsnoparam
+        \defseq'\in\tracesemantics
       .\spacer&
-        \aniselect(\retrieveinput{\defseq'}) \stateeq{\inputvariableswithouti} \aniselect(\retrieveinput{\defseq})
+        \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
         \LanD \\
-        &\aniselect(\retrieveinput{\defseq'})(\definputvariable) = \aniselect(\defstate)(\definputvariable)
+        &\retrieveinput{\defseq'}(\definputvariable) = \defvalue
         \LanD \\
         &\aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
-  \end{align*}
+  \end{align}
 \end{definition}
 
-This can be seen as a generalization of the abstract non-interference that works with non-deterministic programs.
+This latter abstract unused predicate allows for further abstractions of the output states, which can be used to determine the impact of variations of the input data on the output states.
+This can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
+As a drawback, we lose the input abstraction, the tread-off to allow for non-determinism does not permit input state abstractions in the sense of abstract non-interference.
 
+The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function.
 \begin{remark}[Unused Equivalence]\labremark{unused-predicate-equivalence}
+  Whenever $\aniobserver = \identity$, it holds that:
   \begin{gather*}
-    \aniobserver \spacearound{=} \aniselect \spacearound{=} \identity \\
-    \unusedwrapper(\tracesemanticsnoparam) \IfF \unusediowrapper(\tracesemanticsnoparam)
+    \unusedwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{gather*}
 \end{remark}
 
+Moreover, abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction is the identity function.
+
 \begin{remark}[Abstract Non-Interference Equivalence]\labremark{ani-predicate-equivalence}
-  If $\defprogram$ deterministic, then it holds that:
+  If $\defprogram$ deterministic and $\aniselect = \identity$, then, it holds that:
   \begin{align*}
-    \aniwrapper(\tracesemanticsnoparam) \IfF \unusediowrapper(\tracesemanticsnoparam)
+    \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{align*}
 \end{remark}
 
+\denis{Example comparing ANI and unused on a non-deterministic program.}
+
+The input data usage property $\unused$ can be now formally defined as follows:
+
 \begin{definition}[Unused Property]\labdef{unused}
+  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, the \emph{input data usage} property $\unused\in\setofsetof\finiteinfinitesequences$ is defined as:
   \begin{align*}
     \unused\DefeQ&
-    \setdef{\tracesemanticsnoparam\in\tracetype}{\unusediowrapper(\tracesemanticsnoparam)}
+    \setdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
   \end{align*}
 \end{definition}
 
+The input data usage property $\unused$ defined above is not subset-closed, we cannot use the standard abstract interpretation framework to soundly prove that a program does not use (some of) its input variables by checking whether an over-approximation of the semantics of the program is included in the unused property.
+We solve this problem by lifting the trace semantics of the program to its collecting semantics.
 
 \begin{theorem}[Validation of Unused]\labthm{validation-unused}
+  A program $\defprogram$ satisfies a property $\defproperty\in\setofsetof\finiteinfinitesequences$ if and only if its collecting semantics $\collectingsemantics$ belongs to the property $\defproperty$.
   \begin{align*}
     \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
   \end{align*}
@@ -92,99 +130,126 @@ This can be seen as a generalization of the abstract non-interference that works
 \section{Dependency Semantics}
 \labsec{dependency-semantics}
 
-\begin{definition}[Adjoints for the Dependency Semantics]
-  \labdef{adjoints-dependency-semantics}
-  \begin{align*}
-    \dependencyabstraction \IN& \collectingtype \to \dependencytype \\
-    \dependencyabstraction(\defsetofsetoftraces) \DefeQ& \setdef{
-      \setdef{\inputoutputtuple{\defseq}}{\defseq\in\defsetoftraces}
-    }{
-      \defsetoftraces\in\defsetofsetoftraces
-    }\\
-    \dependencyconcretization \IN& \dependencytype \to \collectingtype \\
-    \dependencyconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \defsetoftraces\in\setof\finiteinfinitesequences
-    }{
-      \setdef{\inputoutputtuple\defseq}{\defseq\in\defsetoftraces} \in \defsetofsetofdependencies
-    }
-  \end{align*}
-\end{definition}
+\denis{Maybe explain here that the soundness requirement for abstractions of the collecting is a reasoning on set of programs rather than a single program.}
+
+We abstract the collecting semantics $\collectingsemantics$ into a set of dependencies between output states of finite traces and between initial and $\statebottom$ for infinite traces.
+Formally, the pair of right-left adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ is defined as follows:
+%
+\begin{align*}
+  \dependencyabstraction \IN& \collectingtype \to \dependencytype \\
+  \dependencyabstraction(\defsetofsetoftraces) \DefeQ& \setdef{
+    \setdef{\inputoutputtuple{\defseq}}{\defseq\in\defsetoftraces}
+  }{
+    \defsetoftraces\in\defsetofsetoftraces
+  }\\
+  \dependencyconcretization \IN& \dependencytype \to \collectingtype \\
+  \dependencyconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+    \defsetoftraces\in\setof\finiteinfinitesequences
+  }{
+    \setdef{\inputoutputtuple\defseq}{\defseq\in\defsetoftraces} \in \defsetofsetofdependencies
+  }
+\end{align*}
+where $\dependencyabstraction$ abstracts away all intermediate states of any trace, preserving the set-structure of $\defsetofsetoftraces$.
+The concretization $\dependencyconcretization$ yields all the semantics that share the same output observations of, at least, one of the set of semantics in $\defsetofsetofdependencies$.
+
 
 \begin{theorem}\labthm{collecting-dependency-galois-connection}
-  The collecting $\collectingsemanticsnoparam$ and dependency $\dependencysemanticsnoparam$ semantics form a \emph{Galois Connection}:
+The two adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ form a \emph{Galois Connection}:
 \begin{align*}
   \galoisbetweensemantics{collecting}{dependency}
 \end{align*}
 \end{theorem}
+\begin{proof}
+  Given a set of semantics $\defsetofsetoftraces\in\setofsetof\finiteinfinitesequences$ and a set of sets of input-output observations $\defsetofsetofdependencies\in\setofsetof\pairofstates$ implied by the abstraction of $\defsetofsetoftraces$, $\dependencyabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies$, we obtain that $\defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$ since the concretization $\dependencyconcretization$ builds all the possible semantics with the same set of input-output observations of at least one of the starting semantics.
+  Moreover, it is easy to note that $\dependencyabstraction(\dependencyconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$ since the concretization maintains the same input-output observations and the abstraction removes only intermediate states.
+\end{proof}
+
+We now derive the \emph{dependency semantics} $\dependencysemantics$ as an abstraction of the collecting semantics.
 
 \begin{definition}[Dependency Semantics]\labdef{dependency-semantics}
+  The \emph{dependency semantics} $\dependencysemanticsnoparam\in\dependencytype$ is defined as:
   \begin{align*}
     \dependencysemanticsnoparam\DefeQ& \dependencyabstraction(\collectingsemanticsnoparam) \\
-    \spacearound{=}& \dependencyabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
-    \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
+    % \spacearound{=}& \dependencyabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
+    % \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
     \spacearound{=}& \{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}
   \end{align*}
 \end{definition}
 
+The next result shows that the dependency semantics $\dependencysemantics$ allows a sound and complete verification for proving that an input variable $\definputvariable$ is unused in the program $\defprogram$.
+
 \begin{theorem}\labthm{dependency-validation}
-  \begin{align*}
+  \begin{math}
     \collectingsemantics \subseteq \unused \IfF \dependencysemantics \subseteq \dependencyabstraction(\unused)
-  \end{align*}
+  \end{math}
 \end{theorem}
+\begin{proof}
+  The implication $(\implies)$ follows from the monotonicity of $\dependencyabstraction$, \refthm{collecting-dependency-galois-connection}, and the definition of $\dependencysemanticsnoparam$, \refeq{dependency}, \ie,
+  $
+    \collectingsemanticsnoparam \subseteq \bounded \implies \dependencyabstraction(\collectingsemanticsnoparam) \subseteq \dependencyabstraction(\bounded)\implies \dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded)
+  $.
+  Regarding the other implication $(\Leftarrow)$, from the definition of $\dependencysemanticsnoparam$ and the property of \refthm{collecting-dependency-galois-connection}, we obtain $\dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded) \implies \dependencyabstraction(\collectingsemanticsnoparam) \subseteq \dependencyabstraction(\bounded)\implies \collectingsemanticsnoparam \subseteq \dependencyconcretization(\dependencyabstraction(\bounded))$, which can be written as $\tracesemanticsnoparam \in \dependencyconcretization(\dependencyabstraction(\bounded))$ by the definition of $\collectingsemanticsnoparam$.
+  By definition of $\dependencyconcretization$, \refeq{dependency-concretization}, it follows that $\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\tracesemanticsnoparam}\in\dependencyabstraction(\bounded)$.
+  Finally, by application of the definition of $\dependencyabstraction$, \refeq{dependency-abstraction}, we obtain $\tracesemanticsnoparam\in\bounded$.
+  The conclusion $\collectingsemanticsnoparam \subseteq \bounded$ trivially follows from the definition of $(\subseteq)$.
+\end{proof}
 
+\denis{Example to show how the dependency semantics works.}
 
-\section{Input-Output Abstraction Semantics}
-\labsec{input-output-abstraction-semantics}
+\section{Output Abstraction Semantics}
+\labsec{output-abstraction-semantics}
 
-
-\begin{definition}[Adjoints for the Input-Output Abstraction Semantics]\labdef{adjoints-dependency-semantics}
-  \begin{align*}
-    \inputoutputabstraction \IN& \dependencytype \to \inputoutputtype \\
-    \inputoutputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \setdef{
-        \tuple{\inputobs(\retrieveinput{\defstate})}{\outputobs(\retrieveoutput{\defstate})}
-      }{
-        \inputoutputtuple{\defstate}\in\defsetofdependencies
-      }
-    }{
-      \defsetofdependencies \in \defsetofsetofdependencies
-    }\\
-    \inputoutputconcretization \IN& \inputoutputtype \to \dependencytype \\
-    \inputoutputconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \setjoin \setdef{
-        \defsetofdependencies' \subseteq
-        \setdef{
-          \inputoutputtuple{\defstate}
-        }{
-          \retrieveinput{\defvalue} = \inputobs(\retrieveinput{\defstate})
-          \land
-          \retrieveoutput{\defvalue} = \outputobs(\retrieveoutput{\defstate})
-        }
-        \\ &\qquad
-      }{
-        \inputoutputtuple{\defstate} \in \defsetofdependencies
-      }
-    }{
-      \defsetofdependencies\in\defsetofsetofdependencies
-    }
-  \end{align*}
-\end{definition}
-
-\begin{theorem}\labthm{dependency-inputoutput-galois-connection}
-  The dependency $\dependencysemanticsnoparam$ and input-output abstraction $\inputoutputsemanticsnoparam$ semantics form a \emph{Galois Connection}:
+We further abstract the dependency semantics $\dependencysemantics$ into the output-abstraction semantics $\outputsemantics$.
+We exploit the output observer $\aniobserver$ to abstract the output states.
+Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as follows:
+%
 \begin{align*}
-  \galoisbetweensemantics{dependency}{inputoutput}
+  \outputabstraction \IN& \dependencytype \to \outputtype \\
+  \outputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+    \setdef{
+      \tuple{\retrieveinput{\defstate}}{\outputobs(\retrieveoutput{\defstate})}
+    }{
+      \inputoutputtuple{\defstate}\in\defsetofdependencies
+    }
+  }{
+    \defsetofdependencies \in \defsetofsetofdependencies
+  }\\
+  \outputconcretization \IN& \outputtype \to \dependencytype \\
+  \outputconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
+    \setjoin \setdef{
+      \defsetofdependencies' \subseteq
+      \setdef{
+        \tuple{\retrieveinput\defstate}{\retrieveoutput\defstate'}
+      }{
+        \retrieveoutput{\defstate} = \outputobs(\retrieveoutput{\defstate'})
+      }
+    }{
+      \inputoutputtuple{\defstate} \in \defsetofdependencies
+    }
+  }{
+    \defsetofdependencies\in\defsetofsetofdependencies
+  }
+\end{align*}
+where $\outputabstraction$ abstracts the output states of the dependencies and $\outputconcretization$ concretizes the set of dependencies that share the same set of output observations.
+
+\begin{theorem}\labthm{dependency-output-galois-connection}
+  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois Connection}:
+\begin{align*}
+  \galoisbetweensemantics{dependency}{output}
 \end{align*}
 \end{theorem}
 
-\begin{definition}[Input-Output Abstraction Semantics]\labdef{inputoutput-abstraction-semantics}
+We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an abstraction of the dependency semantics.
+
+\begin{definition}[Output Abstraction Semantics]\labdef{inputoutput-abstraction-semantics}
+  The \emph{output-abstraction semantics} $\outputsemanticsnoparam\in\outputtype$ is defined as:
   \begin{align*}
-    \inputoutputsemanticsnoparam\DefeQ&\inputoutputabstraction(\dependencysemanticsnoparam) \\
-    % \spacearound{=}&\inputoutputabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
+    \outputsemanticsnoparam\DefeQ&\outputabstraction(\dependencysemanticsnoparam) \\
+    % \spacearound{=}&\outputabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
     \spacearound{=}&
     \{\spacearound{
       \setdef{
-        \tuple{\inputobs(\retrieveinput{\deftrace})}{\outputobs(\retrieveoutput{\deftrace})}
+        \tuple{\retrieveinput{\deftrace}}{\outputobs(\retrieveoutput{\deftrace})}
       }{
         \deftrace \in \tracesemanticsnoparam
       }
@@ -192,31 +257,36 @@ This can be seen as a generalization of the abstract non-interference that works
   \end{align*}
 \end{definition}
 
-\begin{theorem}\labthm{inputoutput-validation}
-  \begin{align*}
-    \collectingsemantics \subseteq \unused \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\unused))
-  \end{align*}
+The next result shows that the output-abstraction semantics $\outputsemantics$ allows a sound and complete verification for proving that an input variable $\definputvariable$ is unused in the program $\defprogram$.
+
+\begin{theorem}\labthm{output-validation}
+  \begin{math}
+    \collectingsemantics \subseteq \unused \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\unused))
+  \end{math}
 \end{theorem}
 
-\begin{remark}
-  \begin{align*}
-    \inputoutputabstraction(\dependencyabstraction(\unused))\spacearound{=}
-    \setdef{\inputoutputsemanticsnoparam\in\setof\pairofstates}{&
+\denis{Example to show how the dependency semantics works.}
+
+We show the unused property $\unused$ derived from the dependency and output-abstraction semantics.
+It is interesting to note that removing intermediate states and abstracting output states allows to rewrite the unused property as was originally proposed by \sidetextcite{Urban2018}. That is, the output abstraction and intermediate states are handled at a semantics level rather than in the property definition.
+
+\begin{remark} The abstraction $\outputabstraction\circ\dependencyabstraction$ of the unused property $\unused$ is defined as:
+    \begin{align*}
+    \setdef{\defsetofdependencies\in\setof\pairofstates}{
     \forall
-      \inputoutputtuple\defstate\in\inputoutputsemanticsnoparam, \defstate\in\state
-    .\spacer
-      \\ &\qquad
-      \retrieveinput{\defstate}(\definputvariable) \neq \inputobs(\defstate(\definputvariable)) \ImplieS \\
-      &\exists
-        \defstate'\in\inputoutputsemanticsnoparam
-      .\spacer
+      \inputoutputtuple\defstate\in\defsetofdependencies, \defvalue\in\values
+    .\spacer &
+      \retrieveinput{\defstate}(\definputvariable) \neq \defvalue \ImplieS \\
+      \exists
+      \inputoutputtuple{\defstate'}\in\defsetofdependencies
+      .\spacer &
         \retrieveinput{\defstate'} \stateeq{\inputvariableswithouti} \retrieveinput{\defstate}
         \LanD \\
-        & \qquad
-        \retrieveinput{\defstate'}(\definputvariable) = \inputobs(\defstate(\definputvariable))
+        &
+        \retrieveinput{\defstate'}(\definputvariable) = \defvalue
         \LanD \\
-        & \qquad
-        \aniobserver(\retrieveoutput{\defstate}) = \aniobserver(\retrieveoutput{\defstate'})
+        &
+       \retrieveoutput{\defstate} =\retrieveoutput{\defstate'}
     }
   \end{align*}
 \end{remark}

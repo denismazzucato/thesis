@@ -32,12 +32,17 @@
 \newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
 
 %% input-output
-\newcommand*{\inputoutputsym}{{\aniselect,\aniobserver}}
+\newcommand*{\inputoutputsym}{\red{XXX}}
 \newcommand*{\inputobs}{\aniselect}
-\newcommand*{\outputobs}{\aniobserver}
-\newcommand*{\inputoutputtype}{\dependencytype}
+\newcommand*{\inputoutputtype}{\red{XXX}}
 \newsemantics{inputoutput}
-\renewcommand*{\inputoutputsubseteq}{\subseteq}
+
+%% output
+\newcommand*{\outputobs}{\aniobserver}
+\newcommand*{\outputsym}{\aniobserver}
+\newcommand*{\outputtype}{\dependencytype}
+\newsemantics{output}
+\renewcommand*{\outputsubseteq}{\subseteq}
 
 %% outcomes
 \newcommand*{\outcomesym}{\defpartitioning}

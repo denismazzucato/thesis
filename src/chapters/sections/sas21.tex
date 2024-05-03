@@ -35,17 +35,6 @@
 \denis{Here the algorithm for the abstract implementation of changes.}
 
 
-\section{The \qlibraname{} Impact Definition}[\qlibraname]
-\labsec{qlibra-impact-definition}
-
-\begin{definition}[\qlibraname]\labdef{qlibra}
-  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
-  the quantity $\qlibra\in\dots$ is defined as:
-  \begin{align*}
-    \qlibra(\defsetoftraces) &\DefeQ \dots
-  \end{align*}
-\end{definition}
-
 
 \section{Outcome Semantics}
 \labsec{outcome-semantics}
@@ -130,6 +119,19 @@
     \outcomesemantics \subseteq \unused \IfF \parallelsemantics \subseteq \parallelabstraction(\unused)
   \end{align*}
 \end{theorem}
+
+
+
+\section{The \qlibraname{} Impact Definition}[\qlibraname]
+\labsec{qlibra-impact-definition}
+
+\begin{definition}[\qlibraname]\labdef{qlibra}
+  Given an input variable $\definputvariable\in\inputvariables$, and an output descriptor $\outputdesc$,
+  the quantity $\qlibra\in\dots$ is defined as:
+  \begin{align*}
+    \qlibra(\defsetoftraces) &\DefeQ \dots
+  \end{align*}
+\end{definition}
 
 \section{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
 \labsec{abstract-qlibra}
