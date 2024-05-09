@@ -38,7 +38,7 @@ that holds whenever the input variable $\definputvariable\in\inputvariables$ is 
 Intuitively, an input variable $\definputvariable$ is unused if all feasible trace outcomes $\retrieveoutput{\defseq}$ are feasible from all possible initial values of $\definputvariable$.
 That is, for all possible initial values $\defvalue$ that differ from the initial value of $\definputvariable$ in the trace $\defseq$, there exists another trace $\defseq'$ with initial value $\defvalue$ for $\definputvariable$ that leads to the same output $\retrieveoutput\defseq$.
 
-\begin{example}
+\begin{example}\labexample{school-year}
 \begin{marginlisting}
   \caption{Program to check if a student passed the school year.}
   \labprog{school-year}
@@ -60,9 +60,9 @@ Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt
 However, there are two mistakes in the program: it should be \texttt{passing = False} in the first conditional statement, and the third condition should be \texttt{not science} instead of \texttt{not math}.
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused in \refprog{school-year}.
 Let us consider the input variable \texttt{science}.
-The simplified trace semantics, considering only the variables \texttt{math} and \texttt{passing}, is:
+The simplified trace semantics, considering only the variables \texttt{science} and \texttt{passing}, is:
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}}
+  \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
   =
   \{
     &\tuple\true\anyvalue\dots\tuple\true\true, \\
@@ -73,12 +73,53 @@ The simplified trace semantics, considering only the variables \texttt{math} and
 \end{align*}
 where each state $\tuple{\defvalue_1}{\defvalue_2}$ shows the boolean value $\defvalue_1$ of \texttt{science} and $\defvalue_2$ of \texttt{passing}. The symbol $\anyvalue$ denotes any boolean value. We omit the intermediate states for brevity, only showing input-output dependencies.
 The input variable \texttt{science} is unused, since each result value for \texttt{passing} is feasible from all possible initial values of \texttt{science}.
+
+Instead, if we consider the variable \texttt{math}, the simplified trace semantics considering only the variables \texttt{math} and \texttt{passing} is:
+\begin{align*}
+  \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
+  =
+  \{
+    &\tuple\true\anyvalue\dots\tuple\true\true, \\
+    &\tuple\false\anyvalue\dots\tuple\false\true, \\
+    &\tuple\false\anyvalue\dots\tuple\false\false
+  \}
+\end{align*}
+The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
+Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
 \end{example}
 
-Such definition is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs.
+\refdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic set of traces.}.
 Furthermore, also non-termination is considered in the definition, as the predicate consider non-termination as a feasible trace outcome.
 
-\denis{Example to show that non-termination is a possible outcome.}
+\begin{example}\labexample{non-termination}
+  \begin{marginlisting}
+    \caption{Program that does not terminate for positive values of \texttt{x}.}
+    \labprog{non-termination}
+    \vspace{10pt}
+  \begin{lstlisting}
+non_termination(x):
+  while x > 0:
+    x = x + 1;
+\end{lstlisting}
+  \end{marginlisting}
+  Consider the \refprog{non-termination} defined on the side. The program does not terminate for positive values of \texttt{x}. Instead, it terminates without modifying \texttt{x} on the value of $0$ or negative. The trace semantics is the following:
+  \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{non\_termination}}
+    =
+    \{
+      \langle{<}\rangle\dots\langle{<}\rangle,
+      \langle{0}\rangle\dots\langle{0}\rangle,
+      \langle{>}\rangle\dots
+    \}
+  \end{align*}
+  where the symbol $\langle{<}\rangle$ denotes a negative value and $\langle{<}\rangle$ a positive one. When the program is provided a positive value for \texttt{x}, it does not terminate and the respective traces are all of infinite length.
+
+  In this case, the variable \texttt{x} is used since the non-termination is feasible only from positive values of \texttt{x}.
+  In fact, by excluding non-termination as a possible outcome, the variable \texttt{x} would be unused.
+\end{example}
+
+\section{Abstract Input Data Usage}
+\labsec{abstract-input-data-usage}
 
 As this thesis focuses on the quantification of the impact of variations of the input data, it is essential to develop an abstraction of output states to determine a numerical value of the feasible outcomes.
 To this end, we employ the notion of an \emph{output observer} $\aniobserver \in \state \to \state$ from the definition of abstract non-interference (ANI) \sidecite{...}.
