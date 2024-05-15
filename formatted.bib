@@ -2,7 +2,7 @@
   author       = {Wing H. Wong},
   title        = {Timing attacks on {RSA:} revealing your secrets through the fourth
                   dimension},
-  journal      = {{ACM} Crossroads},
+  journal      = {{ACM}},
   year         = {2005},
   doi          = {10.1145/1144396.1144401},
 }
@@ -37,7 +37,7 @@
    author = {Carmen M Reinhart and Kenneth S Rogoff},
    doi = {10.1257/AER.100.2.573},
    journal = {American Economic Review},
-    year = {2010},
+   year = {2010},
    title = {Growth in a Time of Debt},
 }
 @article{Mazzucato2021,
@@ -61,7 +61,7 @@
    author = {T Herndon and M Ash and R Pollin},
    doi = {10.1093/cje/bet075},
    journal = {Cambridge Journal of Economics},
-   year = {2014},
+    year = {2014},
    title = {Does high public debt consistently stifle economic growth? A critique of Reinhart and Rogoff},
 }
 @article{Henzinger2023,
@@ -76,7 +76,7 @@
 @article{Gray1991,
   author       = {James W. Gray},
   title        = {Toward a Mathematical Foundation for Information Flow Security},
-  journal    = {{IEEE} Computer Society},
+  journal    = {{IEEE}},
   year         = {1991},
   doi          = {10.1109/RISP.1991.130769},
 }
@@ -93,6 +93,7 @@
   title        = {Cryptography and Data Security},
   publisher    = {Addison-Wesley},
   year         = {1982},
+isbn = {0201101505},
 }
 @article{Cousot2012Probabilistic,
   author       = {Patrick Cousot and
@@ -139,7 +140,7 @@
 	author={Campion, Marco	and Urban, Caterina and Dalla Preda, Mila and Giacobazzi, Roberto},
 	title={A Formal Framework to Measure the Incompleteness of Abstract Interpretations},
 	journal = {{SAS}},
-  year = {2023},
+  year={2023},
 	doi={10.1007/978-3-031-44245-2\_7}
 }
 @article{Bron1973,
@@ -162,9 +163,9 @@
   title = {{Quantitative Input Usage Static Analysis}},
   author = {Mazzucato, Denis and Campion, Marco and Urban, Caterina},
   url = {https://hal.science/hal-04339001},
-  journal = {{NASA Formal Methods}},
+  hal = {hal-04339001},
+  journal = {{NFM}},
   year = {2024},
-  doi = {hal-04339001}
 }
 @article{Clark2007,
    author = {David Clark and Sebastian Hunt and Pasquale Malacaria},
@@ -191,14 +192,14 @@
 @article{Malacaria2007,
    author = {Pasquale Malacaria},
    doi = {10.1145/1190216.1190251},
-   journal = {Conference Record of the Annual ACM Symposium on Principles of Programming Languages},
+   journal = {POPL},
    title = {Assessing security threats of looping constructs},
    year = {2007},
 }
 @article{Smith2009,
    author = {Geoffrey Smith},
    doi = {10.1007/978-3-642-00596-1\_21/COVER},
-   journal = {Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)},
+   journal = {FoSSaCS},
    title = {On the foundations of quantitative information flow},
    year = {2009},
 }
@@ -216,24 +217,24 @@
    title = {Symbolic quantitative information flow},
    year = {2012},
 }
-@inproceedings{Assaf2017,
+@article{Assaf2017,
    author = {Mounir Assaf and David A Naumann and Julien Signoles and Éric Totel and Frédéric Tronel},
    doi = {10.1145/3009837.3009889},
-   journal = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages},
+   journal = {ACM SIGPLAN Notices},
    title = {Hypercollecting semantics and its application to static analysis of information flow},
    year = {2017},
 }
 @article{Cousot2019,
    author = {Patrick Cousot},
    doi = {10.1007/978-3-030-32304-2\_19},
-   pages = {389-410},
+   journal = {SAS},
    title = {Abstract Semantic Dependency},
    year = {2019},
 }
 @article{Chothia2014,
    author = {Tom Chothia and Yusuke Kawamoto and Chris Novakovic},
    doi = {10.1007/978-3-319-11212-1\_13/COVER},
-   journal = {Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)},
+   journal = {ESORICS},
    title = {LeakWatch: Estimating information leakage from java programs},
    year = {2014},
 }
@@ -241,29 +242,30 @@
    author = {Seemanta Saha and Uc Santa Barbara and Usa Surendra Ghentiyala and Usa LU Shihua},
    doi = {10.1145/3591281},
    title = {Obtaining Information Leakage Bounds via Approximate Model Counting},
+   journal = {PLDI},
    year = {2023},
 }
 @article{McCamant2008,
    author = {Stephen McCamant and Michael D. Ernst},
    doi = {10.1145/1375581.1375606},
-   journal = {Proceedings of the ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI)},
+   journal = {PLDI},
    title = {Quantitative information flow as network flow capacity},
    year = {2008},
 }
 @misc{bignum,
   author = {AWS},
   title = {s2n-bignum},
-  year = {2024},
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/awslabs/s2n-bignum}},
+  notes = {Last Accessed: 1st May 2024},
 }
 @article{Mine2006,
    author = {Antoine Miné},
-   journal = {Higher-Order and Symbolic Computation},
+   journal = {Working Conference on Reverse Engineering},
    title = {The Octagon Abstract Domain},
-   url = {https://hal.science/hal-00136639},
-   year = {2006},
+   doi = {10.1109/WCRE.2001.957836},
+   year = {2001},
 }
 
 @article{Almeida2013,
@@ -281,46 +283,43 @@
 author="de Bruijn, N. G.",
 title="AUTOMATH, a Language for Mathematics",
 year="1983",
-publisher="Springer Berlin Heidelberg",
+journal="Automation of Reasoning",
 doi="10.1007/978-3-642-81955-1\_11",
 }
 
-@inproceedings{Clarke1981,
+@article{Clarke1981,
   author       = {Edmund M. Clarke and
                   E. Allen Emerson},
   title        = {Design and Synthesis of Synchronization Skeletons Using Branching-Time
                   Temporal Logic},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  journal       = {Logics of Programs},
   year         = {1981},
   doi          = {10.1007/BFB0025774},
 }
 
-@inproceedings{Clarke2004,
+@article{Clarke2004,
   author       = {Edmund M. Clarke and
                   Daniel Kroening and
                   Flavio Lerda},
   title        = {A Tool for Checking {ANSI-C} Programs},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  journal       = {TACAS},
   year         = {2004},
   doi          = {10.1007/978-3-540-24730-2\_15},
 }
 
-@inproceedings{Cousot1979,
+@article{Cousot1979,
   author       = {Patrick Cousot and
                   Radhia Cousot},
   title        = {Systematic Design of Program Analysis Frameworks},
-  publisher    = {{ACM} Press},
+  publisher    = {POPL},
   year         = {1979},
   doi          = {10.1145/567752.567778},
 }
 
-@inproceedings{Harrison2009,
+@article{Harrison2009,
   author       = {John Harrison},
   title        = {{HOL} Light: An Overview},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  journal       = {TPHOLs},
   year         = {2009},
   doi          = {10.1007/978-3-642-03359-9\_4},
 }
@@ -328,8 +327,7 @@ doi="10.1007/978-3-642-81955-1\_11",
 @article{King1976,
   author       = {James C. King},
   title        = {Symbolic Execution and Program Testing},
-  journal      = {Commun. {ACM}},
-  number       = {7},
+  journal      = {{ACM}},
   year         = {1976},
   doi          = {10.1145/360248.360252},
 }
@@ -339,29 +337,22 @@ doi="10.1007/978-3-642-81955-1\_11",
   editor       = {Neal Koblitz},
   title        = {Timing Attacks on Implementations of Diffie-Hellman, RSA, DSS, and
                   Other Systems},
-  booktitle    = {Advances in Cryptology - {CRYPTO} '96, 16th Annual International Cryptology
-                  Conference, Santa Barbara, California, USA, August 18-22, 1996, Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  journal    = {CRYPTO},
   year         = {1996},
   doi          = {10.1007/3-540-68697-5\_9},
 }
 
-@inproceedings{Kocher1999,
+@article{Kocher1999,
   author       = {Paul C. Kocher and
                   Joshua Jaffe and
                   Benjamin Jun},
-  editor       = {Michael J. Wiener},
   title        = {Differential Power Analysis},
-  booktitle    = {Advances in Cryptology - {CRYPTO} '99, 19th Annual International Cryptology
-                  Conference, Santa Barbara, California, USA, August 15-19, 1999, Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  journal    = {CRYPTO},
   year         = {1999},
   doi          = {10.1007/3-540-48405-1\_25},
 }
 
-@inproceedings{Kocher2019,
+@article{Kocher2019,
   author       = {Paul Kocher and
                   Jann Horn and
                   Anders Fogh and
@@ -375,28 +366,24 @@ doi="10.1007/978-3-642-81955-1\_11",
                   Michael Schwarz and
                   Yuval Yarom},
   title        = {Spectre Attacks: Exploiting Speculative Execution},
-  booktitle    = {2019 {IEEE} Symposium on Security and Privacy, {SP} 2019, San Francisco,
-                  CA, USA, May 19-23, 2019},
   publisher    = {{IEEE}},
   year         = {2019},
   doi          = {10.1109/SP.2019.00002},
 }
 
-@inproceedings{Kopf2007,
+@article{Kopf2007,
   author       = {Boris K{\"{o}}pf and
                   David A. Basin},
   editor       = {Peng Ning and
                   Sabrina De Capitani di Vimercati and
                   Paul F. Syverson},
   title        = {An information-theoretic model for adaptive side-channel attacks},
-  booktitle    = {Proceedings of the 2007 {ACM} Conference on Computer and Communications
-                  Security, {CCS} 2007, Alexandria, Virginia, USA, October 28-31, 2007},
-  publisher    = {{ACM}},
+  journal    = {{CCS}},
   year         = {2007},
   doi          = {10.1145/1315245.1315282},
 }
 
-@inproceedings{Lipp2018,
+@article{Lipp2018,
   author       = {Moritz Lipp and
                   Michael Schwarz and
                   Daniel Gruss and
@@ -410,37 +397,29 @@ doi="10.1007/978-3-642-81955-1\_11",
                   Yuval Yarom and
                   Mike Hamburg},
   title        = {Meltdown: Reading Kernel Memory from User Space},
-  booktitle    = {27th {USENIX} Security Symposium, {USENIX} Security 2018, Baltimore,
-                  MD, USA, August 15-17, 2018},
-  publisher    = {{USENIX} Association},
+  journal    = {{USENIX} Security Symposium},
   year         = {2018},
-  url          = {https://www.usenix.org/conference/usenixsecurity18/presentation/lipp},
+  doi          = {10.1145/3357033},
 }
 
-@inproceedings{Phan2017,
+@article{Phan2017,
   author       = {Quoc{-}Sang Phan and
                   Lucas Bang and
                   Corina S. Pasareanu and
                   Pasquale Malacaria and
                   Tevfik Bultan},
   title        = {Synthesis of Adaptive Side-Channel Attacks},
-  booktitle    = {30th {IEEE} Computer Security Foundations Symposium, {CSF} 2017, Santa
-                  Barbara, CA, USA, August 21-25, 2017},
-  publisher    = {{IEEE} Computer Society},
+  journal    = {IEEE},
   year         = {2017},
   doi          = {10.1109/CSF.2017.8},
 }
 
-@inproceedings{Queille1982,
+@article{Queille1982,
   author       = {Jean{-}Pierre Queille and
                   Joseph Sifakis},
-  editor       = {Mariangiola Dezani{-}Ciancaglini and
-                  Ugo Montanari},
   title        = {Specification and verification of concurrent systems in {CESAR}},
-  booktitle    = {International Symposium on Programming, 5th Colloquium, Torino, Italy,
-                  April 6-8, 1982, Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  publisher    = {Springer},
+  booktitle    = {International Symposium on Programming},
+  journal    = {Springer},
   year         = {1982},
   doi          = {10.1007/3-540-11494-7\_22},
 }
@@ -452,7 +431,7 @@ doi="10.1007/978-3-642-81955-1\_11",
 }
 
 
-@inproceedings{Nilizadeh2019,
+@article{Nilizadeh2019,
   author       = {Shirin Nilizadeh and
                   Yannic Noller and
                   Corina S. Pasareanu},
@@ -467,12 +446,12 @@ doi="10.1007/978-3-642-81955-1\_11",
                   Dengguo Feng},
   title        = {Side-Channel Attacks: Ten Years After Its Publication and the Impacts
                   on Cryptographic Module Security Testing},
-  journal      = {{IACR} Cryptol. ePrint Arch.},
+  journal      = {IACR},
   year         = {2005},
   url          = {http://eprint.iacr.org/2005/388},
 }
 
-@inproceedings{Urban2014,
+@article{Urban2014,
   author       = {Caterina Urban and
                   Antoine Min{\'{e}}},
   title        = {An Abstract Domain to Infer Ordinal-Valued Ranking Functions},
@@ -480,7 +459,7 @@ doi="10.1007/978-3-642-81955-1\_11",
   year         = {2014},
   doi          = {10.1007/978-3-642-54833-8\_22},
 }
-@inproceedings{Urban2014b,
+@article{Urban2014b,
   author       = {Caterina Urban and
                   Antoine Min{\'{e}}},
   title        = {A Decision Tree Abstract Domain for Proving Conditional Termination},
@@ -491,7 +470,7 @@ doi="10.1007/978-3-642-81955-1\_11",
 
 @article{Kwiatkowska2016,
   author={Marta Kwiatkowska},
-  journal={2016 Science of Security for Cyber-Physical Systems Workshop (SOSCYPS)},
+  journal={SOSCYPS},
   title={Advances and challenges of quantitative verification and synthesis for cyber-physical systems},
   year={2016},
   doi={10.1109/SOSCYPS.2016.7579999}
@@ -506,7 +485,7 @@ journal = {ACM Trans. Embed. Comput. Syst.},
 @article{Barthe2011,
   title={Secure information flow by self-composition},
   DOI={10.1017/S0960129511000193},
-  journal={Mathematical Structures in Computer Science},
+  journal={IEEE},
   author={Barthe,
   Gilles and D'Argento,
   Pedro R. and Rezk,
@@ -519,9 +498,7 @@ author = {Antonopoulos, Timos and Gazzillo, Paul and Hicks, Michael and Koskinen
 title = {Decomposition instead of self-composition for proving the absence of timing channels},
 year = {2017},
 doi = {10.1145/3140587.3062378},
-journal = {SIGPLAN Not.},
-}
-
+journal = {PLDI},
 }
 @article{Sinn2017,
   title={Complexity and Resource Bound Analysis of Imperative
@@ -542,7 +519,7 @@ Programs Using Difference Constraints},
 @article{Cadek2018,
    author = {Pavel Cadek and Clemens Danninger and Moritz Sinn and Florian Zuleger},
    doi = {10.23919/FMCAD.2018.8603005},
-   journal = {2018 Formal Methods in Computer Aided Design (FMCAD)},
+   journal = {FMCAD},
    title = {Using Loop Bound Analysis For Invariant Generation},
    year = {2018},
 }
@@ -570,21 +547,15 @@ YEAR = {2019},
 DOI = {10.3390/app9091881}
 }
 
-@inproceedings{Parolini2024,
+@article{Parolini2024,
 author = {Parolini, Francesco and Min\'{e}, Antoine},
 title = {Sound Abstract Nonexploitability Analysis},
 year = {2024},
 journal = {VMCAI},
 doi = {10.1007/978-3-031-50521-8\_15},
 }
-@article{Mazzucato2024artifact,
-  title = {{Quantifying the Impact of Input Variables }{on the Global Loop Counter}},
-  author = {Anonymized},
-  url = {https://zenodo.org/...},
-  note            = {Online Artifact},
-}
 
-@inproceedings{Cousot1978,
+@article{Cousot1978,
    author = {Patrick Cousot and Nicolas Halbwachs},
    doi = {10.1145/512760.512770},
    journal = {POPL},
@@ -592,7 +563,7 @@ doi = {10.1007/978-3-031-50521-8\_15},
    year = {1978},
 }
 
-@inproceedings{Steensgaard1996,
+@article{Steensgaard1996,
 author = {Steensgaard, Bjarne},
 title = {Points-to analysis in almost linear time},
 year = {1996},
@@ -608,45 +579,76 @@ doi = {10.1145/2813885.2737976},
 journal = {PLDI},
 }
 
-@inproceedings{Granger1992,
+@article{Granger1992,
 author={Granger, Philippe},
 title={Improving the results of static analyses of programs by local decreasing iterations},
 year={1992},
 journal={FSTTCS},
 doi={10.1007/3-540-56287-7\_95},
 }
-@InProceedings{Rival2005,
+@article{Rival2005,
 author={Rival, Xavier},
 title={Understanding the Origin of Alarms in Astr{\'e}e},
 year={2005},
-journal={SAS}
+journal={SAS},
+doi={10.1007/11547662\_21}
 }
 
-@InProceedings{Terauchi2005,
+@article{Terauchi2005,
 author={Terauchi, Tachio and Aiken, Alex},
 title={Secure Information Flow as a Safety Problem},
 year={2005},
-journal={SAS 2005},
+journal={SAS},
 doi={10.1007/11547662\_24}
 }
-@InProceedings{Podelski2004,
+@article{Podelski2004,
 author={Podelski, Andreas and Rybalchenko, Andrey},
 title={A Complete Method for the Synthesis of Linear Ranking Functions},
 year={2004},
-journal={VMCAI 2004},
+journal={VMCAI},
 doi={10.1007/978-3-540-24622-0\_20}
 }
-@InProceedings{Dhem2000,
+@article{Dhem2000,
 author={Dhem, Jean-Fran{\c{c}}ois and Koeune, Fran{\c{c}}ois and Leroux, Philippe-Ale andre and Mestr{\'e}, Patrick and Quisquater, Jean-Jacques and Willems, Jean-Louis},
 title={A Practical Implementation of the Timing Attack},
 year={2000},
-journal={CARDIS 2000},
+journal={CARDIS},
 doi={10.1007/10721064\_15}
 }
-@InProceedings{Brumley2011,
+@article{Brumley2011,
 author={Brumley, Billy Bob and Tuveri, Nicola},
 title={Remote Timing Attacks Are Still Practical},
 year={2011},
-journal={ESORICS 2011},
+journal={ESORICS},
 doi={10.1007/978-3-642-23822-2\_20}
+}
+
+@article{Omar2017,
+  title={GraphTuner: An Input Dependence Aware Loop Perforation Scheme for Efficient Execution of Approximated Graph Algorithms},
+  author={Hamza Omar and Masab Ahmad and Omer Khan},
+  journal={ICCD},
+  year={2017},
+  doi={10.1109/ICCD.2017.38}
+}
+@InProceedings{Jeannet2009,
+author={Jeannet, Bertrand
+and Min{\'e}, Antoine},
+title={Apron: A Library of Numerical Abstract Domains for Static Analysis},
+journal={CAV},
+year={2009},
+doi={10.1007/978-3-642-02658-4\_52}
+}
+@article{Giacobazzi2018,
+  title={Abstract non-interference: a unifying framework for weakening information-flow},
+  author={Giacobazzi, Roberto and Mastroeni, Isabella},
+  journal={TOPS},
+  year={2018},
+}
+@inproceedings{Mastroeni2023,
+  author       = {Isabella Mastroeni and
+                  Michele Pasqua},
+  title        = {Domain Precision in Galois Connection-Less Abstract Interpretation},
+  year         = {2023},
+  journal      = {SAS},
+  doi          = {10.1007/978-3-031-44245-2\_19},
 }

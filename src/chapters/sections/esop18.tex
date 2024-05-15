@@ -121,8 +121,9 @@ non_termination(x):
 \section{Abstract Input Data Usage}
 \labsec{abstract-input-data-usage}
 
-As this thesis focuses on the quantification of the impact of variations of the input data, it is essential to develop an abstraction of output states to determine a numerical value of the feasible outcomes.
-To this end, we employ the notion of an \emph{output observer} $\aniobserver \in \state \to \state$ from the definition of abstract non-interference (ANI) \sidecite{...}.
+Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, we introduce the notion of abstract unused predicate.
+That is, a weaker version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
+Later, we define the quantitative measure of input data usage, and use the abstraction of output states to determine numerical values from output states.
 
 \marginnote{
 \begin{definition}[Abstract Non-Interference]\labdef{ani-predicate}
@@ -133,6 +134,8 @@ To this end, we employ the notion of an \emph{output observer} $\aniobserver \in
         \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
   \end{gather*}
 \end{definition}}
+
+In the following, we define the abstraction of output states, called output observer, as a map from states to an abstract domain.
 
 \begin{definition}[Output observer]\labdef{output-observer}
   Given a program $\defprogram$, an \emph{output observer} $\aniobserver\in \state \to \state$ is an upper closure operator that abstracts the value of output states.
