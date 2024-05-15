@@ -10,9 +10,13 @@
 %   \item backward reachability state abstract semantics $\backwardsemanticsnoparam$.
 % \end{itemize}
 
-% In this chapter, we present the quantitative framework used to measure the contributions of the input variables to the outcome of a program. First, we introduce a leading example of a landing-risk alarm system to illustrate the motivation of this chapter. Then, we present the quantitative framework and its properties. Since the framework depends on the underlying notion of impact, we show a few possible definitions of impact. Finally, we demonstrate the effectiveness of our approach against a set of potential applications.
+In this chapter, we present the quantitative notion of input data usage, extending the definition introduced in the previous chapter.
+We define a few quantitative measures of input variables' impact on the program outcomes.
+Then, we formalize the theoretical framework to verify the quantitative impact property of a program.
+At the end, we present the abstract version of the quantitative measures and show how they can be used to verify the quantitative impact property of a program.
+In the next chapters, we will present an adaptation of this quantitative notion to the context of neural network and timing side-channel attacks.
 
-% \textit{Dans ce chapitre, nous présentons le cadre quantitatif utilisé pour mesurer les contributions des variables d'input à l'output d'un programme. Tout d'abord, nous introduisons un exemple principal d'un système d'alarme de risque d'atterrissage pour illustrer la motivation de ce chapitre. Ensuite, nous présentons le cadre quantitatif et ses propriétés. Étant donné que le cadre dépend de la notion d'impact, nous en montrons quelques définitions possibles. Enfin, nous démontrons l'efficacité notre approche contre des applications potentielles.}
+\emph{Dans ce chapitre, nous présentons la notion quantitative d'utilisation des données d'entrée, en étendant la définition introduite dans le chapitre précédent. Nous définissons quelques mesures quantitatives de l'impact des variables d'entrée sur les résultats du programme. Ensuite, nous formalisons le cadre théorique pour vérifier la propriété d'impact quantitatif d'un programme. À la fin, nous présentons la version abstraite des mesures quantitatives et montrons comment elles peuvent être utilisées pour vérifier la propriété d'impact quantitatif d'un programme. Dans les prochains chapitres, nous présenterons une adaptation de cette notion quantitative au contexte des réseaux neuronaux et des attaques par canal auxiliaire temporel.}
 
 % \onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle,
 % \outputvaluea,\outputvalueb,\outputvaluec,\outputvalued,\outputvaluee,\outputvaluef}
@@ -39,6 +43,10 @@
 \section{The \texorpdfstring{$\defbound$}{k}-Bounded Impact Property}
 \labsec{k-bounded-impact-property}
 
+Quantitative input data usage should be understood as the amount of input data that influences the program outcomes.
+To this end, we develop the \emph{$\defbound$-bounded impact property} $\genbounded$ as the set of program semantics whose input variable $\definputvariable\in\inputvariables$ has an impact on the program outcomes bounded by $\defbound\in\valuesposplus$.
+We employ the notion of \emph{impact definition} $\impactwrapper\in\tracetype\to\valuesposplus$ to quantify the impact of the input variable $\definputvariable$ on the outcome from a given program semantics.
+
 
 \begin{definition}[$\defbound$-Bounded Impact Property]
   \labdef{bounded}
@@ -49,8 +57,11 @@
     {\tracesemanticsnoparam \in \tracetype}
     {\impactwrapper(\tracesemanticsnoparam) \comparison \defbound}
   \end{align*}
-  where $\comparison \in \{\le, \ge, =\}$.
+  where $\comparison \in \{\le, \ge\}$.
 \end{definition}
+
+We allow the measured impact to be either less than or equal to ($\le$) or greater than or equal to ($\ge$) the threshold $\defbound$.
+With such a definition, we allow further abstractions of computable semantics to return an always greater or smaller impact than the actual one and thus provide a sound over-approximation of the impact property.
 
 \begin{remark}
   A program $\defprogram$ satisfies the $\defbound$-bounded impact property $\genbounded$ if and only if the collecting semantics of $\defprogram$ implies $\genbounded$. Formally:
@@ -60,8 +71,19 @@
   \end{align}
 \end{remark}
 
+Next, we formalize the impact notions \outcomesname{}, \rangename{}, and \qusedname{}. These notions characterize the impact of the input variables each differently. Mostly, \outcomesname{} measures the number of different outcomes, \rangename{} quantify the length of outcome values, and \qusedname{} counts the number of input values used to produce the outcomes.
+To this end, these definitions employ the concept of output abstraction with a further restriction on the observed outcomes. We expect the output observer $\outputobs$ to return a quantifiable element, \ie{}, a value or infinite in $\valuesinf$.
+An output observer $\outputobs$ with a quantifiable element is called an \emph{output descriptor}.
+
+\begin{definition}[Output Descriptor]
+  \labdef{output-descriptor}
+  An \textup{output descriptor} is an output observer $\outputobs\in\stateandbottom\to\valuesinf$ that returns a quantifiable element.
+\end{definition}
+
 \section{The \outcomesname{} Impact Definition}[\outcomesname]
 \labsec{outcomes}
+
+Formally,
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
   Given an input variable $\definputvariable\in\inputvariables$,
