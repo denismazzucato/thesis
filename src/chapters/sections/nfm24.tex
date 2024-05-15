@@ -18,8 +18,8 @@ In the next chapters, we will present an adaptation of this quantitative notion 
 
 \emph{Dans ce chapitre, nous présentons la notion quantitative d'utilisation des données d'entrée, en étendant la définition introduite dans le chapitre précédent. Nous définissons quelques mesures quantitatives de l'impact des variables d'entrée sur les résultats du programme. Ensuite, nous formalisons le cadre théorique pour vérifier la propriété d'impact quantitatif d'un programme. À la fin, nous présentons la version abstraite des mesures quantitatives et montrons comment elles peuvent être utilisées pour vérifier la propriété d'impact quantitatif d'un programme. Dans les prochains chapitres, nous présenterons une adaptation de cette notion quantitative au contexte des réseaux neuronaux et des attaques par canal auxiliaire temporel.}
 
-% \onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle,
-% \outputvaluea,\outputvalueb,\outputvaluec,\outputvalued,\outputvaluee,\outputvaluef}
+% \onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle, \outputvaluea,\outputvalueb,\outputvaluec,\outputvalued,\outputvaluee,\outputvaluef}
+
 
 % \input{src/chapters/extensional/nfm24/overview.tex}
 % \input{src/chapters/extensional/nfm24/quantitative-input-data-usage}
@@ -80,14 +80,98 @@ An output observer $\outputobs$ with a quantifiable element is called an \emph{o
   An \textup{output descriptor} is an output observer $\outputobs\in\stateandbottom\to\valuesinf$ that returns a quantifiable element.
 \end{definition}
 
+The above output descriptor $\outputobs$ is generic enough to cover plenty of use cases and still abstract enough to maintain the generality of the output abstraction introduced in the previous chapter.
+We leverage this output descriptor to provide the end user of the framework the flexibility to choose the meaning of program outputs, without establishing it beforehand.
+
+\begin{example}
+  Consider the~\refprog{landing-alarm-system} for the landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\text{angle}$, $b$ of $\texttt{speed}$, $c$ of $\texttt{landing\_coeff}$, and $d$ of $\texttt{risk}$.
+  Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
+  The output descriptor is instantiated with
+  \[
+  \outputobs(x) \DefeQ \begin{cases}
+    d & \text{if } x = \langle a, b, c, d \rangle \\
+    +\infty & \text{otherwise}
+  \end{cases}
+  \]
+  and $\filter=\{0,1,2,3\}$ filters $+\infty$ from the possible outputs.
+  In other words, we are interested in the value of $\texttt{risk}$ for terminating traces.
+
+  However, the end-user of the analysis may be interested in only a subset of the possible outcomes of the program.
+  For instance, only about the risk levels in $\{0, 1, 2\}$, forgetting about the value $3$.
+  It is crucial that our impact definitions remain sound to the user assumption on post-conditions, even when it is under-approximating the exact one.
+  Thus, the filter specifies this information by $\filter=\{0, 1, 2\}$, which is a subset of all the possible values of the output variable \texttt{risk}.
+\end{example}
+
 \section{The \outcomesname{} Impact Definition}[\outcomesname]
 \labsec{outcomes}
 
-Formally,
+Formally $\outcomes\in\setof\tracetype\to\Nplus$ counts the number of different output values, allowed by the output descriptor, reachable by varying the input variable $\definputvariable\in\inputvariables$.
+First, we define step-by-step the quantity $\outcomes$,
+followed by the instantiation of this quantity within the context of example of \refprog{landing-alarm-system}.
+We present the formal definition at the end.
+
+
+Intuitively,
+for any possible input configuration $\definput\in\reducedstate$, we collect all the traces that are starting from an input configuration that is a variation of $\definput$ on the input variable $\definputvariable$, \ie, $\setdef{
+  \defseq\in \defsetoftraces
+}{
+  \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+}$, where $\defsetoftraces\in\setof\finiteinfinitesequences$.
+Then, we collect the output values of this set of traces by means of the output descriptor $\outputdesc$, \ie, $\setdef{
+  \reader(\retrieveoutput\defseq)
+}{
+  \defseq \in \defsetoftraces \land
+    \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+}$. Specifically, this set contains all the output readings performed by $\reader$.
+%
+Afterwards, we extract the number of elements via the cardinality operator $\cardinality{\cdot}$.
+Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure the greatest impact is preserved.
+
+\begin{example}[Landing Alarm System]
+  \labexample{outcomes}
+  \newcommand*{\inputa}{\tuple{-4}{1}} \newcommand*{\outputa}{\langle \outputvaluea\rangle} \newcommand*{\outputvaluea}{3}
+  \newcommand*{\inputb}{\tuple{-4}{2}} \newcommand*{\outputb}{\langle \outputvalueb\rangle} \newcommand*{\outputvalueb}{3}
+  \newcommand*{\inputc}{\tuple{-4}{3}} \newcommand*{\outputc}{\langle \outputvaluec\rangle} \newcommand*{\outputvaluec}{3}
+  \newcommand*{\inputd}{\tuple{ 1}{1}} \newcommand*{\outputd}{\langle \outputvalued\rangle} \newcommand*{\outputvalued}{0}
+  \newcommand*{\inpute}{\tuple{ 1}{2}} \newcommand*{\outpute}{\langle \outputvaluee\rangle} \newcommand*{\outputvaluee}{1}
+  \newcommand*{\inputf}{\tuple{ 1}{3}} \newcommand*{\outputf}{\langle \outputvaluef\rangle} \newcommand*{\outputvaluef}{2}
+  \newcommand*{\tracea}{\inputa\to\outputa}
+  \newcommand*{\traceb}{\inputb\to\outputb}
+  \newcommand*{\tracec}{\inputc\to\outputc}
+  \newcommand*{\traced}{\inputd\to\outputd}
+  \newcommand*{\tracee}{\inpute\to\outpute}
+  \newcommand*{\tracef}{\inputf\to\outputf}
+  Let us revisit the example of the landing alarm system, with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\Nle{3}}$.
+  The input variables are $\inputvariables = \{\texttt{angle},\texttt{speed}\}$, consequently the input configurations are
+  $\reducedstate=\{\inputa, \inputb, \inputc, \inputd, \inpute, \inputf\}$.
+%
+  We begin by considering $\definputvariable=\texttt{angle}$ and $\inputa$ as the first input configuration to be explored.
+  Hence, we collect all traces that are
+  starting from an input configuration that is a variation of $\inputa$, \ie, $\setdef{
+    \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram}
+  }{
+    \retrieveinput{\defseq} \stateeq{\inputvariables\setminus\{\texttt{angle}\}} \inputa
+  }$, where $\inputvariables\setminus\{\texttt{angle}\} = \{\texttt{speed}\}$ and consequently $\retrieveinput{\defseq} \stateeq{\{\texttt{speed}\}} \inputa$ holds whenever the initial state of $\defseq$ has $\texttt{speed}=1$. A possible trace of this set is $\langle 1, 1, 0, 0\rangle \to \langle 1, 1, 2, 0\rangle\to\langle 1, 1, 2, 0\rangle$ where, at the beginning, we randomly assign $\texttt{landing\_risk}=0$ and $\texttt{risk}=0$, respectively the third and fourth component of the initial state.
+%
+  We collect the output values of this set of traces, $\setdef{
+    \reader(\retrieveoutput\defseq)
+  }{
+    \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram} \land
+      \retrieveinput{\defseq}(\texttt{speed}) = 1
+  }$.
+  As a result, we obtain the set of output values $\{0, 3\}$.
+  For instance, the output value $0$ is the result of the trace we exhibited previously, where the last state is $\langle 1, 1, 2, 0\rangle$ and thus the $\texttt{risk}$ variable of this trace is the last component with value $0$.
+%
+  Finally, the cardinality operator returns the value $2$, $\cardinality{\{0, 3\}} = 2$.
+  By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\texttt{angle}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=2$.
+  \reftab{overview} (column \textsc{Outcomes}) illustrate the steps for $\outcomesname_{\texttt{angle}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and $\outcomesname_{\texttt{speed}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ respectively.
+\end{example}
+
+Formally, the $\outcomesname$ impact definition is defined as follows:
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
   Given an input variable $\definputvariable\in\inputvariables$,
-  the quantity $\outcomes\in\tracetype\to\Rposplus$ is defined as:
+  the quantity $\outcomes\in\tracetype\to\Nplus$ is defined as:
   \begin{align*}
     \outcomes(\defsetoftraces) &\DefeQ \sup_{\definput\in\state}
       \cardinality{\setdef{
@@ -98,6 +182,8 @@ Formally,
   \end{align*}
 \end{definition}
 
+We note that the above definition is monotone in the amount of traces provided as input.
+
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
 For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
@@ -106,8 +192,39 @@ For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
   \end{align*}
 \end{lemma}
 
+We show the validation of the $\defbound$-impact property when applied to $\outcomesname$.
+
+\begin{theorem}\labthm{outcomes-validation}
+  Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\outcomes$, the following holds:
+  \begin{align*}
+    \collectingsemantics \subseteq \BOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDED))
+  \end{align*}
+\end{theorem}
+
 \section{The \rangename{} Impact Definition}[\rangename]
 \labsec{range}
+
+The quantity $\range\in\setof\tracetype\to\Rposplus$ determines the
+length of the range of output values from all the possible variations in the input variable $\definputvariable\in\inputvariables$.
+
+\begin{example}[Landing Alarm System]
+  \labexample{range}
+  We revisit again the example of the landing alarm system.
+  Assuming $\definputvariable=\texttt{angle}$, $\tuple{-4}{1}$ is the first input configuration to be explored, we collect all traces that are
+  starting from an input configuration that is a variation of $\tuple{-4}{1}$.
+  As before, we obtain $\setdef{
+    \retrieveoutput\defseq(\texttt{risk})
+  }{
+    \defseq \in \defsetoftraces \land
+      \retrieveinput{\defseq}(\texttt{speed}) = 1
+  }=\{0,3\}$.
+%
+  Here, we apply the function $\length$, hence $\length(\{0,3\})=3$.
+  By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\texttt{angle}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=3$.
+  \reftab{overview} illustrates the steps for both $\rangename_{\texttt{angle}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and $\rangename_{\texttt{speed}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
+\end{example}
+
+  Formally, the $\rangename$ quantity is defined as follows:
 
 \begin{definition}[\rangename]\labdef{range}
   Given an input variable $\definputvariable\in\inputvariables$,
@@ -123,15 +240,30 @@ For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
   \end{align*}
 \end{definition}
 
+As done for the previous impact quantity, we note that $\rangename$ is monotonic in the amount of traces.
+
+\begin{lemma}[\outcomesname{} is Monotonic]
+  \lablemma{outcomes-monotonic}
+For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \subseteq \defsetoftraces' \ImplieS \outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+We show the validation of the $\defbound$-bounded impact property when applied to $\rangename$.
+
 \begin{theorem}\labthm{range-validation}
   Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\range$, the following holds:
   \begin{align*}
-    \collectingsemantics \subseteq \BOUNDED \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\BOUNDED))
+    \collectingsemantics \subseteq \BOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDED))
   \end{align*}
 \end{theorem}
 
 \section{The \qusedname{} Impact Definition}[\qusedname]
 \labsec{qused}
+
+The quantity $\qused\in\setof\tracetype\to\Nplus$ counts the number of input values used to produce the outcomes.
+This definition is of significant importance as it natively handles non-deterministic systems.
 
 \begin{definition}[\qusedname]\labdef{qused}
   Given an input variable $\definputvariable\in\inputvariables$,
@@ -140,13 +272,13 @@ For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
   \begin{align*}
     \qused(\defsetoftraces) \DefeQ
     \sup \setdef{
-      \cardinality{&\setdef{\inputobs(\retrieveinput\defstate)(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\ & \setdef{
-        \inputobs(\retrieveinput{\defseq'})(\definputvariable)
+      \cardinality{&\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\ & \setdef{
+        \retrieveinput{\defseq'}(\definputvariable)
         }{
           \deftrace,\deftrace' \in \defsetoftraces \LanD
           \\ & \qquad \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput\defstate) \LanD
           \\ & \qquad \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD
-          \\ & \qquad \inputobs(\retrieveinput{\deftrace'}) \stateeq{\inputvariableswithouti} \inputobs(\retrieveinput{\deftrace})
+          \\ & \qquad \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
         }}
     }{
       \retrieveoutput\defstate \in \state
