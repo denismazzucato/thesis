@@ -102,8 +102,14 @@ We leverage this output descriptor to provide the end user of the framework the 
   Thus, the filter specifies this information by $\filter=\{0, 1, 2\}$, which is a subset of all the possible values of the output variable \texttt{risk}.
 \end{example}
 
+\begin{example}
+  another example where we use the output descriptor for parity as in ANI.
+\end{example}
+
 \section{The \outcomesname{} Impact Definition}[\outcomesname]
 \labsec{outcomes}
+
+\denis{Maybe add here content from the overview.}
 
 Formally $\outcomes\in\setof\tracetype\to\Nplus$ counts the number of different output values, allowed by the output descriptor, reachable by varying the input variable $\definputvariable\in\inputvariables$.
 First, we define step-by-step the quantity $\outcomes$,
@@ -262,8 +268,19 @@ We show the validation of the $\defbound$-bounded impact property when applied t
 \section{The \qusedname{} Impact Definition}[\qusedname]
 \labsec{qused}
 
-The quantity $\qused\in\setof\tracetype\to\Nplus$ counts the number of input values used to produce the outcomes.
+The quantity $\qused\in\setof\tracetype\to\Nplus$ counts the number of input values that are not used to produce the outcomes.
 This definition is of significant importance as it natively handles non-deterministic systems.
+
+For each possible outcome state $\retrieveoutput\defstate\in\state$ and trace $\deftrace\in\defsetoftraces$ that holds the same output abstraction, \ie{} $\outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput\defstate)$, we collect the set of input values of $\definputvariable$ that can produce this outcome $\retrieveoutput\defstate$.
+More specifically, we collect the set of input values that belong to traces $\deftrace'$ that have the same output abstraction as $\deftrace$, \ie{} $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$, and are a variation of $\deftrace$ on the input variables $\inputvariableswithouti$.
+Then, we obtain the number of missing input values by subtracting the set of all input values from the set of input values that can produce the outcome $\retrieveoutput\defstate$.
+We return the maximum number of input values that are not used to produce the outcomes.
+
+\begin{example}
+  \denis{3 examples: id, random, mix}
+\end{example}
+
+Formally, the $\qusedname$ quantity is defined as follows:
 
 \begin{definition}[\qusedname]\labdef{qused}
   Given an input variable $\definputvariable\in\inputvariables$,
@@ -275,7 +292,7 @@ This definition is of significant importance as it natively handles non-determin
       \cardinality{&\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\ & \setdef{
         \retrieveinput{\defseq'}(\definputvariable)
         }{
-          \deftrace \in \defsetoftraces \LanD
+          \deftrace' \in \defsetoftraces \LanD
           \\ & \qquad \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD
           \\ & \qquad \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
         }}
@@ -285,13 +302,29 @@ This definition is of significant importance as it natively handles non-determin
   \end{align*}
 \end{definition}
 
+We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-empty sets of traces.
+
+\begin{lemma}[\qusedname{} is Anti-Monotonic]
+  \lablemma{qused-antimonotonic}
+  For any non-empty set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
+  \begin{align*}
+    \defsetoftraces \neq \emptyset \LanD \defsetoftraces \subseteq \defsetoftraces' \ImplieS \qused(\defsetoftraces) \ge \qused(\defsetoftraces')
+  \end{align*}
+\end{lemma}
+
+In fact, $\qused(\emptyset) = \cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate\in\state}}$, the highest possible value for $\qusedname$. This is due to the fact that no trace is available to produce the outcomes. Instead, by considering set of traces with at least one trace, the value of $\qusedname$ always increases by enlarging the set of traces.
+
+Next we show the validation of the $\defbound$-bounded impact property when applied to $\qusedname$.
+
 \begin{theorem}\labthm{qused-validation}
   Whenever $\impactwrapper$ in $\revbounded$ is instantiated with $\qused$, the following holds:
   \begin{align*}
-    \collectingsemantics \subseteq \REVBOUNDED \IfF \inputoutputsemantics \subseteq \inputoutputabstraction(\dependencyabstraction(\REVBOUNDED))
+    \collectingsemantics \subseteq \REVBOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\REVBOUNDED))
   \end{align*}
 \end{theorem}
 
+Differently from the previous impact definitions, it holds that whenever $\qused(\tracesemanticsnoparam) = 0$, the program does not use the input variable $\definputvariable$, even in the presence of non-deterministic systems.
+Thus, we can establish the following equivalence:
 
 \begin{remark}[Unused Equivalence]\labremark{qualitative-quantitative-equivalence}
   \begin{gather*}
@@ -300,14 +333,38 @@ This definition is of significant importance as it natively handles non-determin
   \end{gather*}
 \end{remark}
 
+In the rest of this chapter, we present the theoretical framework to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures.
+
 \section{Abstract Quantitative Input Data Usage}
 \labsec{abstract-quantitative-input-data-usage}
+
+In this section, we introduce a sound and computable static analysis to verify the $\defbound$-bounded impact property of a program.
+The soundness of the approach leverages two elements: (1) the backward abstract semantics (\cf{} \refdef{?}), and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{}, written as $\abstractoutcomes$, $\abstractrange$, and $\abstractqused$ respectively.
+
+
+To quantify the usage of an input variable, we need to determine the input configurations leading to specific output values.
+As our impact definitions $\outcomes$ and $\range$ measure over the different output values (i.e., $\reader(\retrieveoutput{\defstate})$) our underlying abstract semantics will be a \emph{backward} (co-)reachability semantics starting from \emph{disjoint} abstract post-conditions, over-approximating the (concrete) output values of the dependency semantics.
+Specifically, we abstract the concrete output values with an indexed set $\buckets\in\vectorbuckets$ of $n$ disjoint \textit{output buckets}, where $\abstractdomainlattice$ is an abstract state domain with concretization function  $\abstractdomainconcretization\in\abstractdomain\to\setof\stateandbottom$. The choice of these output buckets is essential for obtaining a precise and meaningful analysis result.
+
+For each output bucket $\bucket\in\abstractdomain$ where $j \le n$, our analysis computes an over-approximation of the dependency semantics restricted to the input configurations leading to $\abstractdomainconcretization(\bucket)$.
+More formally, the reduction of the dependency semantics $\dependencysemanticsnoparam$ to the dependencies with final states in $X$ is defined as:
+\[\reduce[\dependencysemanticsnoparam]{X} \DefeQ \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in X}\]
+%
+Our static analysis is parametrized by an underlying backward abstract family\sidenote{A family of semantics is a set of program semantics parametrized by an initialization.}
+of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
+The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\setof\pairofstates$ employs %the abstract concretization
+$\abstractdomainconcretization$ to restore all possible input-output dependencies, formally:
+\[\backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam\bucket)\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}\]
+We can thus define the soundness condition for the backward semantics with respect to the reduction of the dependency semantics.
+
 
 \begin{definition}[Sound Over-Approximation for \texorpdfstring{$\backwardsemanticsnoparam$}{the backward semantics}]\labdef{sound-over-approximation}
   For all programs $\defprogram$, and output bucket $\bucket\in\abstractdomain$, the family of semantics $\backwardsemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ reduced with  $\abstractdomainconcretization(\bucket)$, when it holds that:
   \[\reduceddependencysemantics \SubseteQ \backwardconcretization(\backwardsemantics)\bucket\]
 \end{definition}
 
+We define
+$\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a set of output buckets $\buckets\in\vectorbuckets$ as follows:
 
 \begin{definition}[Multi-Bucket Semantics \texorpdfstring{$\multisemanticsnoparam$}{}]\labdef{multi-semantics}
   We define
@@ -320,21 +377,54 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
 \end{align*}
 \end{definition}
 
+Next, we show the soundness of the multi-bucket semantics with respect to the dependency semantics.
+
 \begin{lemma}[Sound Over-Approximation for \texorpdfstring{$\multisemanticsnoparam$}{the Multi-Bucket Semantics}]\lablemma{sound-over-approximation-multi-bucket}
   For all programs $\defprogram$, output buckets $\buckets\in\vectorbuckets$, and a family of semantics $\backwardsemanticsnoparam$, the %multi-bucket family of
   semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ when reduced to $\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)$:
   \[\reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)} \SubseteQ \multiconcretization(\multisemantics)\buckets\]
 \end{lemma}
+\begin{proof}
+  \begin{align*}
+    &\vphantom{=} \multiconcretization(\multisemanticsnoparam)\buckets
+      && \text{by $\multiconcretization$} \\
+    &= \bigsetjoin_{j \le n}\setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemanticsnoparam(\buckets))_j)\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+      && \text{by $\multisemanticsnoparam$} \\
+    &= \bigsetjoin_{j \le n} \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization(((\backwardsemanticsnoparam(\bucket[t]))_{t\le n})_j)\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+    && \\
+    &= \bigsetjoin_{j \le n} \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam(\bucket))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+    && \text{by $\backwardconcretization$} \\
+    &= \bigsetjoin_{j \le n} \backwardconcretization(\backwardsemanticsnoparam)\bucket
+  \end{align*}
+  From \refdef{sound-over-approximation}, we obtain that $\foralldef{j \le n}{\reduceddependencysemanticsnoparam \subseteq \backwardconcretization(\backwardsemanticsnoparam(\bucket))}$.
+  Thus, by monotonicity of the union operator over set inclusion, it holds that $\bigsetjoin_{j\le n}\reduceddependencysemanticsnoparam \subseteq \bigsetjoin_{j\le n}\backwardconcretization(\backwardsemanticsnoparam(\bucket))$. We conclude by:
+  \begin{align*}
+    \bigsetjoin_{j\le n}\reduceddependencysemanticsnoparam &= \bigsetjoin_{j\le n} \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+      && \text{by $\reducenoparam{X}$} \\
+    &= \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in\bigsetjoin_{j \le n}\abstractdomainconcretization(\bucket)}
+      && \text{by set definition} \\
+    &= \reducenoparam{\bigsetjoin_{j \le n}\abstractdomainconcretization(\bucket)}
+      && \text{by $\reducenoparam{X}$}
+  \end{align*}
+  \end{proof}
+
+
+Whenever the output buckets \textit{cover} the subset of potential outcomes $\filter$, $\multisemanticsnoparam$ is a sound over-approximation of $\dependencysemanticsnoparam$.
+The concept of covering for output buckets ensures that no potential final state is missed from the analysis.
 
 \begin{definition}[Covering]\label{def:covering}
   We say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
   \[\filter\subseteq \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}\]
 \end{definition}
 
+Additionally, the output buckets needs to be compatible with the concrete outcomes of the program, meaning that two output states cannot map to the same output abstraction if they belong to different output buckets.
+
 \begin{definition}[Compatibility]\labdef{compatibility}
   Given the output buckets $\buckets\in\vectorbuckets$ and the output descriptor $\outputobs\in\stateandbottom\to\valuesinf$, we say that $\buckets$ is \textup{compatible} with $\outputobs$, whenever it holds:
   \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\outputobs(\defstate_j) \neq \outputobs(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
 \end{definition}
+
+We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or lower depending on the ordering operator of $\genbounded$) than the concrete counterpart $\impactwrapper$.
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
   % For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
@@ -352,11 +442,17 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \end{align*}
 \end{definition}
 
+
+
 \begin{lemma}
   \begin{align*}
     \dependencyconcretization(\inputoutputconcretization(\impactinstanceconcretization(\impactinstance(\multisemantics\buckets, \buckets)))) \subseteq \GENBOUNDED \ImplieS \defprogram \satisfies \GENBOUNDED
   \end{align*}
 \end{lemma}
+
+The next result shows that our static analysis is sound when employed to verify the property of interest $\bounded$ for the program $\defprogram$.
+That is, if %the computation of
+$\impactinstance$ returns the bound $\defbound'$, and $\defbound'\le\defbound$, then the program $\defprogram$ satisfies the property $\bounded$, \cf{} $\defprogram \satisfies \bounded$.
 
 \begin{theorem}[Soundness] \labthm{soundness}
   Let $\bounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariable\in\inputvariables$.
@@ -373,19 +469,39 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
 \end{theorem}
 
 
+Finally,
+we define $\abstractrange$, $\abstractoutcomes$, and $\abstractqused$
+as possible implementations for $\range$ and $\outcomes$, respectively.
+
+%
+We assume the underlying abstract state domain $\abstractdomain$ is equipped with an
+operator $\abstractdomainproject\in\abstractdomain\to\abstractdomain$
+to project away the input variable $\definputvariable$.
+For example, in the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainproject(\langle\definputvariable \mapsto [1, 3], j \mapsto [2, 4]\rangle) = \langle \definputvariable \mapsto [-\infty, \infty], j \mapsto [2, 4] \rangle$
+removes the constraints related to $\definputvariable$.
+%
+We assume a soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariable$ from a state represented by an abstract value $\defstate^\natural$.
+
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainproject$}{Project}]\labdef{soundness-project}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, for all $\defstate \in \abstractdomainconcretization(\defstate^\natural)$, whenever it exists a state $\defstate'$ such that $\defstate \stateeq{\inputvariableswithouti} \defstate'$, then it holds that $\defstate' \in \abstractdomainconcretization(\abstractdomainproject(\defstate^\natural))$.
 \end{definition}
+The above condition ensures that no intersection is missed, potentially spurious ones are allowed by the abstraction.
 
+\section{Abstract Implementation \texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}}[Abstract \texorpdfstring{$\abstractoutcomes$}{Outcomes}]
+\labsec{abstract-outcomes}
+
+
+The definition of $\abstractoutcomes$ first projects away the input variable $\definputvariable$ from all the given abstract values, then it collects all intersecting abstract values via the meet operator $\abstractdomainmeet$.
+These intersections represent potential concrete input configurations where variations on the value of $\definputvariable$ lead to changes of program outcome, from a bucket to another.
+We return the maximum number of abstract values that intersects after projections:
 \begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
   We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
   \begin{equation*}
   \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
   \end{equation*}
 \end{definition}
-
-\section{Abstract Implementation \texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}}[Abstract \texorpdfstring{$\abstractoutcomes$}{Outcomes}]
-\labsec{abstract-outcomes}
+Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}) since the number of intersecting abstract values is bounded by $n$, the number of output buckets.
+The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
 
 \begin{definition}[Intersect All Function \texorpdfstring{$\intersectallfunction$}{}]\labdef{intersect-all-function}
   \begin{gather*}
@@ -394,17 +510,32 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \end{gather*}
 \end{definition}
 
-\begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
-  We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
-  \begin{equation*}
-  \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
-  \end{equation*}
-\end{definition}
 
+Finding all the indices of intersecting abstract values is equivalent to find cliques in a graph, where each node represents an abstract value and an edge exists between two nodes if and only if the corresponding abstract values intersect.
+Therefore, $\intersectallfunction$ can be efficiently implemented based on the graph algorithm by~\sidetextcite{Bron1973}.
+%
+
+In order to prove that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$, we require the output buckets $\buckets$ to be \textit{compatible} with the output descriptor $\reader$.
+Intuitively, compatibility ensures that the counting intersecting buckets in the abstract does not miss any concrete outcome.
+%
+\begin{definition}[Compatibility]\labdef{compatibility}
+  Given the output buckets $\buckets\in\vectorbuckets$ and the output descriptor $\reader\in\stateandbottom\to\valuesinf$, we say that $\buckets$ is \textup{compatible} with $\reader$, whenever it holds:
+  \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\reader(\defstate_j) \neq \reader(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
+\end{definition}
+%
+Note that, $\outcomes$ is bounded by the number of buckets when the conditions of covering and compatibility hold for the output buckets.
 \begin{lemma}[$\outcomes$ Upper Bound]\lablemma{outcomes-upper-bound}
   When the buckets $\buckets$ are compatible, \cf{} \refdef{compatibility}, and cover the subset of potential outcomes, \cf{} \refdef{covering}, it holds that
   $\outcomes(\dependencysemanticsnoparam) \le n$.
 \end{lemma}
+\begin{proof}
+  We notice that $\outcomes(\dependencysemanticsnoparam) \le \cardinalitynospaces{\setdef{\reader(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\finalstatesdependency}}$ as the set of outputs for the dependency semantics is always bigger than any set of outputs.
+  It is easy to note that the cardinality of $\setdef{\reader(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\finalstatesdependency}$ is upper bounded by $n$ since any two output states $\retrieveoutput\defstate, \retrieveoutput\defstate'$ that produce different output readings, \ie, $\reader(\retrieveoutput\defstate) \neq \reader(\retrieveoutput\defstate')$, belong to different buckets, \ie, $\retrieveoutput\defstate \in \abstractdomainconcretization(\bucket) \land \retrieveoutput\defstate' \in \abstractdomainconcretization(\bucket[p]) \land \bucket \neq \bucket[p]$ (by compatibility, \cf{} \refdef{compatibility}).
+  Where the existence of the two buckets is guaranteed by covering (\cf{} \refdef{covering}).
+  Therefore, there are at most $n$ different output readings.
+\end{proof}
+
+The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$.
 
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
   Let  $\definputvariable\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -412,15 +543,46 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \begin{enumerate}[label=(\roman*)]
     \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
     \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility}, and
+    \item \label{proof:b1} $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
     \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
   \end{enumerate}
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{lemma}
+\begin{proof}
+  From \ref{proof:a}, \ref{proof:b2}, and the fact that $\outcomes$ is monotone, we obtain that $\outcomes(\dependencysemanticsnoparam) \le \outcomes(\multiconcretization(\multisemanticsnoparam)\buckets)$.
+  By definitions of $\abstractoutcomes$, \cf{} \refdef{abstract-outcomes}, and $\outcomes$, \cf{} \refdef{outcomes}, we need to show that:
+  \begin{gather*}
+    \outcomes(\dependencysemanticsnoparam) = \sup_{\definputvariable\in\reducedstate}
+    \cardinality{\setdef{\reader(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\dependencysemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithouti} \definputvariable}} \\
+    \le \\
+    \abstractoutcomes(X^\natural, \buckets) = \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \end{gather*}
+  where $X^\natural = \multisemanticsnoparam(\buckets)$.
+%
+  First, from \ref{proof:b1} and \reflemma{outcomes-upper-bound} we know that $\outcomes$ is limited by the number of buckets $n$.
+  Notably, $\outcomes$ cannot be unbounded, but it has to be a number, at most $n$. Thus, it exists an initial state $\overline\defstate\in\reducedstate$ such that $\outcomes(\dependencysemanticsnoparam) = \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$, where $\defsetoftraces{\overline\defstate} = \setdef{\reader(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\dependencysemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithouti} \overline\defstate}$.
+  We conclude in case this cardinality is $0$ as anything returned by $\abstractoutcomes$ would be greater. In the other case, by covering (\cf{} \ref{proof:b2}), for all dependencies in $\defsetoftraces{\overline\defstate}$
+  it exists a bucket $\bucket$ such that $\retrieveoutput{\defstate'}\in\abstractdomainconcretization(\bucket)$.
+
+  Furthermore, by compatibility (\cf{} \ref{proof:b1}), for any pair $\inputoutputtuple\defstate, \inputoutputtuple{\defstate'}\in\defsetoftraces{\overline\defstate}$ leading to two different outcomes $\reader(\retrieveoutput{\defstate}) \neq \reader(\retrieveoutput{\defstate'})$, we have two different buckets $\bucket, \bucket[p]$ such that $\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)$ and $\retrieveoutput{\defstate'}\in\abstractdomainconcretization(\bucket[p])$.
+  Note that, by definition of $\defsetoftraces{\overline\defstate}$ it holds that $\retrieveinput\defstate \stateeq{\inputvariableswithouti} \overline{\defstate} \stateeq{\inputvariableswithouti} \retrieveinput{\defstate'}$, by transitivity $\retrieveinput\defstate \stateeq{\inputvariableswithouti} \retrieveinput{\defstate'}$.
+
+  Let us call $\prefrombucket$ and $\prefrombucket[p]$ the corresponding abstract values from the backward analysis applied to the buckets $\bucket$ and $\bucket[p]$, respectively.
+  From the fact that $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \ref{proof:a}, it holds that $\retrieveinput\defstate \in \abstractdomainconcretization(\prefrombucket)$ and $\retrieveinput{\defstate'} \in \abstractdomainconcretization(\prefrombucket[p])$.
+  By the soundness condition of $\abstractdomainproject$, \cf{} \ref{proof:d}, we obtain that both states $\retrieveinput\defstate$ and $\retrieveinput\defstate'$ belong to each other projection, \ie, $\retrieveinput\defstate \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket))$ and $\retrieveinput{\defstate'} \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket[p]))$.
+
+  Finally, the function \intersectallfunction{} applied to the projected preconditions $\prefrombucket$ and $\prefrombucket[p]$ finds an intersection between the indices $j$ and $p$ as $\abstractdomainproject(\prefrombucket) \abstractdomainmeet \abstractdomainproject(\prefrombucket[p])$ definitely holds since they share concrete states. Therefore, whenever it exists an intersection in the concrete, the two indices representing the respective precondition discovered by the backward analysis belong to the set $J$ in \refdef{abstract-outcomes}.
+  As a consequence, the maximum cardinality of $J$ takes into account all the possible intersections in $\defsetoftraces{\overline\defstate}$, hence $\abstractoutcomes(X^\natural, \buckets) \ge \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$.
+\end{proof}
+
+
 
 
 \section{Abstract Implementation \texorpdfstring{$\abstractrange$}{Abstract Range}}[Abstract \texorpdfstring{$\abstractrange$}{Range}]
 \labsec{abstract-range}
+
+Similarly, we define $\abstractrange$ as the maximum length of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
+In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainlength\in\abstractdomain\to\valuesposplus$, which returns the length of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
@@ -431,10 +593,14 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \end{align*}
 \end{definition}
 
+To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainlength$ to ensure that the abstract length is always greater than the concrete one.
+
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainlength$}{Length}]\labdef{soundness-length}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
-  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\reader(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
+
+As previously done, the next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
 
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
   Let  $\definputvariable\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -442,7 +608,7 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
   \begin{enumerate}[label=(\roman*)]
     \item $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
     \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility}, and
+    \item $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
     \item $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
   \end{enumerate}
   then, $\abstractrange$ is a sound implementation of $\range$.
@@ -450,6 +616,8 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
 
 \section{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
 \labsec{abstract-qused}
+
+We define $\abstractqused$ as the difference between the total number of input configurations and the maximum number of input configurations leading to the same output reading.
 
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
@@ -459,3 +627,31 @@ where the concretization function $\multiconcretization\in(\multitype)\to\vector
     I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
   \end{align*}
 \end{definition}
+
+To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the following soundness condition on the abstract operator $\abstractdomaincount$ to ensure that the abstract count is always greater than the concrete one.
+
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
+  Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
+  \[\abstractdomaincount(\defstate^\natural) \ge \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
+\end{definition}
+
+The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef{qused}.
+
+\begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
+  Let  $\definputvariable\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Whenever the following conditions hold:
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
+    \item $\buckets$ is compatible with $\reader$, \cf{} \refdef{compatibility}, and
+    \item $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
+  \end{enumerate}
+  then, $\abstractqused$ is a sound implementation of $\qused$.
+\end{lemma}
+
+\section{Summary}
+\labsec{quantitative-input-data-usage-summary}
+
+In this chapter, we introduced the quantitative measures $\outcomes$, $\range$, and $\qused$ to quantify the impact of input variables on the output of a program.
+We developed a theoretical framework to verify the $\defbound$-bounded impact property of a program and showed the abstract versions of the quantitative measures.
+In the next chapter, we show how we handle the quantification of input usage and bias in the context of neural network models.
