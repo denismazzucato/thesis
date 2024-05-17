@@ -45,6 +45,19 @@ Given an input vector $\networknodesinlayer{0}$, the output of the network is th
 \section{The \changesname{} Impact Definition}[\changesname]
 \labsec{changes-impact-definition}
 
+We introduce the first of the two quantitative impact metrics of this chapter, the \changesname{} impact definition.
+This impact definition is designed to count how many times the network outcome changes by modification in the value of the input variable $\definputvariable$.
+Notably, we recall similarities with the previously defined $\outcomesname$ impact definition: in this case, we consider changes in the outcome \emph{with repetitions}, that is, if two different variations in $\definputvariable$ result in the same change in outcome, it counts as double change.
+The higher the number of changes in the outcome, the greater the influence on the program outcome.
+Therefore, this definition demonstrates its effectiveness when the same outcomes are reachable by multiple variations.
+Intuitively, such situation arises in the presence of neural networks, where generally all the possible input variations lead to every possible outcome.
+Hence, the impact definitions defined in the previous chapter would not be useful.
+Instead, counting the repetitions is a potential solution to define a meaningful impact definition for neural networks.
+
+More specifically, the \changesname{} impact definition considers only variations in the value of input configurations that do not belong to the same \emph{continuous region}, containing no gaps or interruptions.
+To this end, we first define the function $\segments$, which takes as input the set of traces of the neural network and an output value, and partitions the set of traces into continuous subsets with respect to the input variable $\definputvariable$.
+
+
 \begin{definition}[Segments of Contiguous Regions]\labdef{segments}
 \end{definition}
 
