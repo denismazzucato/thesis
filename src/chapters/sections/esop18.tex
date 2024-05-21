@@ -354,24 +354,27 @@ We show the unused property $\unused$ derived from the dependency and output-abs
 It is interesting to note that removing intermediate states and abstracting output states allows to rewrite the unused property as was originally proposed by \sidetextcite{Urban2018}. That is, the output abstraction and intermediate states are handled at a semantics level rather than in the property definition.
 
 \begin{remark} The abstraction $\outputabstraction\circ\dependencyabstraction$ of the unused property $\unused$ is defined as:
-    \begin{align*}
-    \setdef{\defsetofdependencies\in\setof\pairofstates}{
+    \begin{gather*}
+      \left{
+      \defsetofdependencies\in\setof\pairofstates
+      \left|
+        \begin{array}{1}
     \forall
       \inputoutputtuple\defstate\in\defsetofdependencies, \defvalue\in\values
-    .\spacer &
+    .\spacer
       \retrieveinput{\defstate}(\definputvariable) \neq \defvalue \ImplieS \\
       \exists
       \inputoutputtuple{\defstate'}\in\defsetofdependencies
-      .\spacer &
+      .\spacer
         \retrieveinput{\defstate'} \stateeq{\inputvariableswithouti} \retrieveinput{\defstate}
-        \LanD \\
-        &
+        \LanD
         \retrieveinput{\defstate'}(\definputvariable) = \defvalue
-        \LanD \\
-        &
+        \LanD
        \retrieveoutput{\defstate} =\retrieveoutput{\defstate'}
-    }
-  \end{align*}
+      \end{array}
+      \right.
+    \right}
+  \end{gather*}
 \end{remark}
 
 \section{Summary}
