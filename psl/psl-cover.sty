@@ -206,7 +206,7 @@
 
       %% author
       \node[xshift=-95mm, yshift=-8mm, anchor=north west] at (o) {
-        \begin{minipage}[h]{.4\paperwidth}
+        \begin{minipage}[h]{.35\paperwidth}
           \pslbluelabel{Soutenue par}\unskip\strut\par
           \vspace{1mm}
           {\fontsize{16}{19}\selectfont\textbf{\@author{}}}\unskip\strut\par
@@ -217,7 +217,7 @@
 
       %% doctoral school
       \node[xshift=-95mm, yshift=-39mm, anchor=north west] at (o) {
-        \begin{minipage}[h]{.4\paperwidth}
+        \begin{minipage}[h]{.35\paperwidth}
           \pslbluelabel{\'{E}cole doctorale n\textsuperscript{o}\@doctoralschoolnumber{}}
           \unskip\strut\par
           \vspace{1mm}
@@ -228,7 +228,7 @@
 
       %% doctoral specialty
       \node[xshift=-95mm, yshift=-71mm, anchor=north west] at (o) {
-        \begin{minipage}[h]{.4\paperwidth}
+        \begin{minipage}[h]{.35\paperwidth}
           \pslbluelabel{Sp\'{e}cialit\'{e}}
           \unskip\strut\par
           \vspace{1mm}
@@ -237,15 +237,15 @@
       };
 
       %% jury
-      \node[fill=lightgray!40, xshift=0mm, yshift=-6.5mm, anchor=north west] at (o) {
-        \begin{minipage}[ht]{90mm}
+      \node[fill=lightgray!40, xshift=-10mm, yshift=-6.5mm, anchor=north west] at (o) {
+        \begin{minipage}[ht]{100mm}
           \vspace{2mm}
           {\hspace{1mm}\color{pslblue}\fontsize{12}{15}\selectfont Composition du jury :}
 
           \vspace{5mm}
           \hspace{-2mm}
           \fontsize{9}{11}\selectfont
-          \begin{tabularx}{91mm}{p{50mm}X}
+          \begin{tabularx}{106mm}{p{66mm}X}
             \psljurystyle{\@jiname}{\@jitt}{\@jirole}
             \psljurystyle{\@jiiname}{\@jiitt}{\@jiirole}
             \psljurystyle{\@jiiiname}{\@jiiitt}{\@jiiirole}
@@ -330,8 +330,10 @@
 \newcommand{\pslbluelabel}[1]{{\color{pslblue}\fontsize{12}{15}\selectfont #1}}
 \newcommand{\psljurystyle}[3]{
   \ifdefempty{#1}{}{
-    \fontsize{10}{12}\selectfont #1 & \\
-    #2 & \emph{#3} \\[3.5mm]
+    \makecell[l]{\fontsize{10}{12}\selectfont #1 \\
+    #2} & \emph{#3} \\[5mm]
+    % \fontsize{10}{12}\selectfont #1 & \\
+    % #2 & \emph{#3} \\[3.5mm]
   }
 }
 \newcommand{\pslbacknode}[4]{

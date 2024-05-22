@@ -37,6 +37,8 @@ pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file
 
 cd "$PSL_TEMPLATE"
 pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
 cd ..
 
 # merge the two
