@@ -2,15 +2,12 @@
 \labch{input-data-usage}
 
 
-In this chapter, we introduce the notion of input data usage and the corresponding semantics, as proposed by \textcite{Urban2018}.
-In particular, we introduce output abstractions in the definition of an unused input variable, compared to the original one we obtain a more general definition.
-Then, we show a \emph{sound and complete} hierarchy of semantics that contain only and exactly the information needed to reason about the usage of input variables.
-Later, in the next chapters, we define a quantitative measure of usage of input variables, extending the qualitative notion presented in this chapter.
+In this chapter, we introduce the notion of input data usage as proposed by \textcite{Urban2018}.
+In particular, we include output abstractions in the definition of an unused input variable obtaining a more general definition.
+Then, we present a \emph{sound and complete} hierarchy of semantics that contain only, and exactly, the information needed to reason about the usage of input variables.
+Later in the next chapters, we will define a quantitative measure of usage of input variables, extending the qualitative notion presented in this chapter.
 
-\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée et la sémantique correspondante, comme proposé par \sidetextcite{Urban2018}.
-En particulier, nous introduisons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée ; par rapport à la définition originale, nous obtenons une définition plus générale.
-Ensuite, nous montrons une hiérarchie \emph{correcte et complète} de sémantiques qui contiennent uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée.
-Plus tard, dans les chapitres suivants, nous définissons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
+\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée comme proposé par \sidetextcite{Urban2018}. En particulier, nous incluons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée, obtenant ainsi une définition plus générale. Ensuite, nous présentons une hiérarchie \emph{correcte et complète} de sémantiques qui contiennent uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée. Plus tard, dans les chapitres suivants, nous définirons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
 
 \section{Input Data Usage}
 \labsec{input-data-usage}
@@ -44,13 +41,13 @@ Intuitively, an input variable $\definputvariable$ is unused if all feasible tra
 That is, for all possible initial values $\defvalue$ that differ from the initial value of $\definputvariable$ in the trace $\defseq$, there exists another trace $\defseq'$ with initial value $\defvalue$ for $\definputvariable$ that leads to the same output $\retrieveoutput\defseq$.
 
 \begin{example}\labexample{school-year}
-\begin{marginlisting}
+\begin{marginlisting}[*-9]
   \caption{Program to check if a student passed the school year.}
   \labprog{school-year}
   \vspace{2\lineheight}
 \begin{lstlisting}[language=Python]
-is_passed(
-  eng, math, science, bonus):
+is_passed(eng, math, science,
+    bonus):
   passing = True;
   if not eng:
     eng = False;
@@ -60,8 +57,9 @@ is_passed(
     passing = bonus;
 \end{lstlisting}
 \end{marginlisting}
-Let us consider the program of example presented in \textcite{Urban2018}, on the side.
-Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}, the program should determine whether a student has passed the year or not, and store the result in the variable \texttt{passing}. Additionally, the student is allowed a bonus to help with math and science.
+Let us consider the program of example presented in \textcite{Urban2018}, \cf{} \refprog{school-year} on the side.
+Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}.
+The program should determine whether a student has passed the year or not, and store the result in the variable \texttt{passing}. Additionally, the student is allowed a bonus to help with math and science.
 However, there are two mistakes in the program: it should be \texttt{passing = False} in the first conditional statement, and the third condition should be \texttt{not science} instead of \texttt{not math}.
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused in \refprog{school-year}.
 Let us consider the input variable \texttt{science}.
@@ -69,12 +67,14 @@ The simplified trace semantics, considering only the variables \texttt{science} 
 \begin{align*}
   \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
   =
-  \{
-    &\tuple\true\anyvalue\dots\tuple\true\true, \\
-    &\tuple\true\anyvalue\dots\tuple\true\false, \\
-    &\tuple\false\anyvalue\dots\tuple\false\true, \\
-    &\tuple\false\anyvalue\dots\tuple\false\false
-  \}
+  \left\{
+    \begin{array}{l}
+      \tuple\true\anyvalue\dots\tuple\true\true, \\
+      \tuple\true\anyvalue\dots\tuple\true\false, \\
+      \tuple\false\anyvalue\dots\tuple\false\true, \\
+      \tuple\false\anyvalue\dots\tuple\false\false
+    \end{array}
+  \right\}
 \end{align*}
 where each state $\tuple{\defvalue_1}{\defvalue_2}$ shows the boolean value $\defvalue_1$ of \texttt{science} and $\defvalue_2$ of \texttt{passing}. The symbol $\anyvalue$ denotes any boolean value. We omit the intermediate states for brevity, only showing input-output dependencies.
 The input variable \texttt{science} is unused, since each result value for \texttt{passing} is feasible from all possible initial values of \texttt{science}.
@@ -83,11 +83,13 @@ Instead, if we consider the variable \texttt{math}, the simplified trace semanti
 \begin{align*}
   \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
   =
-  \{
-    &\tuple\true\anyvalue\dots\tuple\true\true, \\
-    &\tuple\false\anyvalue\dots\tuple\false\true, \\
-    &\tuple\false\anyvalue\dots\tuple\false\false
-  \}
+  \left\{
+    \begin{array}{l}
+    \tuple\true\anyvalue\dots\tuple\true\true, \\
+    \tuple\false\anyvalue\dots\tuple\false\true, \\
+    \tuple\false\anyvalue\dots\tuple\false\false
+  \end{array}
+  \right\}
 \end{align*}
 The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
 Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
