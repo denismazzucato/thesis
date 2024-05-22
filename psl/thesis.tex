@@ -1,0 +1,102 @@
+%% makeindex these0.nlo -s nomencl.ist -o these0.nls -t these0.nlg
+%!TEX spellcheck = en_US
+%!TEX root = thesis.tex
+
+\documentclass[11pt, twoside, openright]{thesis}
+
+% --------------------------------------
+% Packages
+\usepackage{psl-cover}
+\usepackage{lmodern}
+\usepackage{appendix}
+
+% --------------------------------------
+
+\definecolor{maincolor}{RGB}{36, 56, 141}
+\colorlet{secondarycolor}{violet}
+
+%%%==============================
+\title{My PhD Thesis}
+
+\institute{l’École Normale Supérieure de Paris}
+\doctoralschool{Sciences Mathématiques de\\ Paris Centre}{386}
+\specialty{Informatique}
+
+\author{My Name}
+\date{10 Juin 2022}
+\jurymember{1}{Name 1}{Université 1}{Rapporteur}
+\jurymember{2}{Name 2}{Université 2}{Rapporteur}
+\jurymember{3}{Name 3}{Université 3}{Examinatrice}
+\jurymember{4}{Name 4}{Université 4}{Directeur de thèse}
+
+% Abstract/Résumé/Mots-clés/Keywords
+\frabstract{
+%Résumé
+}
+\enabstract{
+%Abstract
+\vfill
+}
+\frkeywords{mots-clés {\Large\color{maincolor}$\star$} mots-clés}
+\enkeywords{keywords {\Large\color{maincolor}$\star$} keywords}
+
+%%%==============================
+\begin{document}
+\frontmatter
+\hypersetup{pageanchor=false}
+\maketitle
+\hypersetup{pageanchor=true}
+\dominitoc
+
+% \begin{dedication}
+%   Dedication...
+% \end{dedication}
+
+% =============================================
+%                 BEGIN
+% =============================================
+
+\cleardoublepage
+\chapter*{Résumé}
+\addstarredchapter{Résumé}
+\thefrabstract{}
+\vfill
+\thefrkeywords{}
+\cleardoublepage
+\chapter*{Abstract}
+\addstarredchapter{Abstract}
+\theenabstract{}
+\vfill
+\theenkeywords{}
+
+\cleardoublepage
+\chapter*{Acknowledgments}
+\addstarredchapter{Acknowledgments}
+
+\cleardoublepage
+\hypertarget{contents}{}
+\tableofcontents
+
+% \printnomenclature % pour faire une page d'index surement
+% \mtcfixnomenclature % necessaire pour éviter le decalage des minitoc
+
+%% ====   Corps du texte   === %%
+\mainmatter
+% 5-10 pages d'introduction en français
+% \include{tex/fr-intro}
+% \include{tex/intro}
+% \include{tex/preliminaries}
+%...
+%\include{tex/conclusion}
+%\appendix
+%\include{tex/appendix}
+
+% =============================================
+%                 END
+% =============================================
+
+%\bibliographystyle{alpha}
+%\bibliography{bib}
+
+%==============================
+\end{document}

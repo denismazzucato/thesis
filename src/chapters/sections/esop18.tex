@@ -127,6 +127,127 @@ On the other hand, if we consider unbounded integers, the trace semantics is:
   }{x, r \in \N}
 \end{align*}
 In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
+% \pgfplotstableread[]{
+% x y
+% 0 81
+% 1 15
+% 2 5
+% 3 97
+% 4 39
+% 5 36
+% 6 34
+% 7 24
+% 8 102
+% 9 22
+% 10 96
+% 11 105
+% 12 81
+% 13 24
+% 14 89
+% 15 69
+% 16 20
+% 17 20
+% 18 29
+% 19 46
+% 20 49
+% 21 85
+% 22 99
+% 23 26
+% 24 95
+% 25 50
+% 26 117
+% 27 110
+% 28 117
+% 29 98
+% 30 83
+% 31 59
+% 32 89
+% 33 108
+% 34 69
+% 35 35
+% 36 133
+% 37 57
+% 38 127
+% 39 93
+% 40 83
+% 41 76
+% 42 61
+% 43 70
+% 44 141
+% 45 88
+% 46 59
+% 47 58
+% 48 96
+% 49 61
+% 50 95
+% 51 95
+% 52 129
+% 53 86
+% 54 59
+% 55 148
+% 56 114
+% 57 125
+% 58 73
+% 59 107
+% 60 70
+% 61 131
+% 62 99
+% 63 143
+% 64 143
+% 65 111
+% 66 139
+% 67 91
+% 68 158
+% 69 77
+% 70 75
+% 71 155
+% 72 101
+% 73 171
+% 74 111
+% 75 85
+% 76 105
+% 77 89
+% 78 126
+% 79 114
+% 80 138
+% 81 162
+% 82 128
+% 83 103
+% 84 131
+% 85 130
+% 86 112
+% 87 172
+% 88 122
+% 89 178
+% 90 177
+% 91 173
+% 92 101
+% 93 170
+% 94 175
+% 95 116
+% 96 164
+% 97 190
+% 98 129
+% 99 119
+% }\advdata
+% \begin{figure}[H]
+% \centering
+% \caption{Scatterplot of Advertising versus Sales Data}
+% \begin{tikzpicture}
+% \begin{axis}[
+% axis lines = left,
+% xlabel = {Input Variable \texttt{x}},
+% ylabel = {Program Outcome}
+% ]
+% \addplot[
+% mark=*,only marks,
+% point meta =explicit symbolic,
+% nodes near coords,
+% ]
+% table[x=x,y=y]{\advdata};
+% \end{axis}
+% \end{tikzpicture}
+% \end{figure}
 \end{example}
 
 \nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote[][*-2]{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
