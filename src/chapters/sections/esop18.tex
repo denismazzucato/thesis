@@ -3,16 +3,19 @@
 
 
 In this chapter, we introduce the notion of input data usage and the corresponding semantics, as proposed by \textcite{Urban2018}.
-In particular, we focus on the definition of an unused input variable, we present a more generalized definition with the introduction of output abstractions.
-This chapter shows a \emph{sound and complete} hierarchy of semantics that contain only and exactly the information needed to reason about the usage of input variables.
+In particular, we introduce output abstractions in the definition of an unused input variable, compared to the original one we obtain a more general definition.
+Then, we show a \emph{sound and complete} hierarchy of semantics that contain only and exactly the information needed to reason about the usage of input variables.
 Later, in the next chapters, we define a quantitative measure of usage of input variables, extending the qualitative notion presented in this chapter.
 
-\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée et la sémantique correspondante, comme proposé par \sidetextcite{Urban2018}. En particulier, nous nous concentrons sur la définition d'une variable d'entrée inutilisée, nous présentons une définition plus généralisée avec l'introduction des abstractions de sortie. Ce chapitre présente une hiérarchie \emph{complète et correcte} de sémantiques qui contient uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée. Par la suite, dans les prochains chapitres, nous définissons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
+\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée et la sémantique correspondante, comme proposé par \sidetextcite{Urban2018}.
+En particulier, nous introduisons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée ; par rapport à la définition originale, nous obtenons une définition plus générale.
+Ensuite, nous montrons une hiérarchie \emph{correcte et complète} de sémantiques qui contiennent uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée.
+Plus tard, dans les chapitres suivants, nous définissons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
 
 \section{Input Data Usage}
 \labsec{input-data-usage}
 
-Originally introduced by \sidetextcite{Urban2018}, the notion of input data usage is a predicate to determine whether a given input variable is used in the computation of the output. It consists in a predicate
+Originally introduced by \textcite{Urban2018}, the notion of input data usage is a predicate to determine whether the input variable $\definputvariable\in\inputvariables$ is used in the computation of the output. It consists in a predicate
 \[
   \unusedwrapper \in \tracetype \to \B
 \]
@@ -44,8 +47,8 @@ That is, for all possible initial values $\defvalue$ that differ from the initia
 \begin{marginlisting}
   \caption{Program to check if a student passed the school year.}
   \labprog{school-year}
-  \vspace{10pt}
-\begin{lstlisting}
+  \vspace{2\lineheight}
+\begin{lstlisting}[language=Python]
 is_passed(
   eng, math, science, bonus):
   passing = True;
@@ -57,7 +60,7 @@ is_passed(
     passing = bonus;
 \end{lstlisting}
 \end{marginlisting}
-Let us consider the program of example presented in \sidetextcite{Urban2018}, on the side.
+Let us consider the program of example presented in \textcite{Urban2018}, on the side.
 Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}, the program should determine whether a student has passed the year or not, and store the result in the variable \texttt{passing}. Additionally, the student is allowed a bonus to help with math and science.
 However, there are two mistakes in the program: it should be \texttt{passing = False} in the first conditional statement, and the third condition should be \texttt{not science} instead of \texttt{not math}.
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused in \refprog{school-year}.
@@ -90,7 +93,20 @@ The input variable \texttt{math} is used, since the result value for \texttt{pas
 Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
 \end{example}
 
-\refdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
+\begin{example}
+  \begin{marginlisting}
+    \caption{Syntactic versus semantic usage of the input variable \texttt{x}.}
+    \labprog{syntactic-vs-semantic-usage}
+    \vspace{2\lineheight}
+  \begin{lstlisting}[language=Python]
+return x + rand();
+\end{lstlisting}
+  \end{marginlisting}
+With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie it is present in the code, but it could be semantically unused, \ie it does not affect the output of the program; and vice versa.
+Consider the program on the side, where the input variable \texttt{x} is used in the code to discriminate between two branches, but it does not affect the output of the program.
+\end{example}
+
+\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
 Furthermore, also non-termination is considered in the definition.
 In fact, non-termination is a feasible trace outcome.
 
