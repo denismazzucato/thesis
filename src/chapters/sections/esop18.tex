@@ -99,14 +99,35 @@ Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $
     \labprog{syntactic-vs-semantic-usage}
     \vspace{2\lineheight}
   \begin{lstlisting}[language=Python]
-return x + rand();
+x_plus_rand(x):
+  return x + rand();
 \end{lstlisting}
   \end{marginlisting}
 With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie it is present in the code, but it could be semantically unused, \ie it does not affect the output of the program; and vice versa.
-Consider the program on the side, where the input variable \texttt{x} is used in the code to discriminate between two branches, but it does not affect the output of the program.
+Consider \refprog{syntactic-vs-semantic-usage} on the side, where the input variable \texttt{x} is used in the return statement.
+However, the variable \texttt{x} is semantically unused if we consider machine integers wrapped up to $\texttt{max\_int}\in\N$. Otherwise, if we consider unbounded integers, then the input variable \texttt{x} is, as expected, used.
+This difference can be clearly seen by the trace semantics of the program, in case of bounded integers the trace semantics is:
+\begin{align*}
+  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_\texttt{x}}
+  =
+  \setdef{
+    \langle{x}\rangle\dots\langle{x+r \mod \texttt{max\_int}}\rangle
+  }{x, r \in \N}
+\end{align*}
+where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
+In this case, any outcome value $x+r \mod \texttt{max\_int}$ is feasible from any initial value of \texttt{x}.
+On the other hand, if we consider unbounded integers, the trace semantics is:
+\begin{align*}
+  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_\texttt{x}}
+  =
+  \setdef{
+    \langle{x}\rangle\dots\langle{x+r}\rangle
+  }{x, r \in \N}
+\end{align*}
+In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
 \end{example}
 
-\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
+\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote[][*-2]{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
 Furthermore, also non-termination is considered in the definition.
 In fact, non-termination is a feasible trace outcome.
 
@@ -114,7 +135,7 @@ In fact, non-termination is a feasible trace outcome.
   \begin{marginlisting}
     \caption{Program that does not terminate for positive values of \texttt{x}.}
     \labprog{non-termination}
-    \vspace{10pt}
+    \vspace{2\lineheight}
   \begin{lstlisting}
 non_termination(x):
   while x > 0:
@@ -152,7 +173,8 @@ Later, we will define the quantitative measure of input data usage, and use the 
       \ImplieS
        \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
   \end{gather*}
-\end{definition}}
+\end{definition}
+We assume that the objective of the input abstraction $\aniselect$ is to monitor the interference of the input variable $\definputvariable$.}
 
 In the following, we define the abstraction of output states, called output observer, as a map from states to an abstract domain.
 

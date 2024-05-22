@@ -11,4 +11,4 @@ if [ ! -d "$OUTPUT" ]; then
   mkdir "$OUTPUT"
 fi
 
-pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"

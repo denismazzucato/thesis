@@ -11,17 +11,17 @@ if [ ! -d "$OUTPUT" ]; then
   mkdir "$OUTPUT"
 fi
 
-pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 # Compile nomenclature
 makeindex "$OUTPUT/$PDF_NAME.nlo" -s nomencl.ist -o "$OUTPUT/$PDF_NAME.nls"
 # Compile index
 makeindex "$OUTPUT/$PDF_NAME"
 # Compile bibliography
 biber "$OUTPUT/$PDF_NAME"
-pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 # Compile glossary
 cd "$OUTPUT"
 makeglossaries "$PDF_NAME"
 cd ..
-pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
-pdflatex -interaction=nonstopmode -output-directory="$OUTPUT" "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
