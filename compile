@@ -5,6 +5,8 @@ set -e
 OUTPUT=pdf
 # PDF name (without extension)
 PDF_NAME=thesis
+# packages path
+PACKAGES=settings/packages.tex
 # PSL template directory
 PSL_TEMPLATE=psl
 
@@ -17,6 +19,9 @@ if [ ! -d "$PSL_TEMPLATE/$OUTPUT" ]; then
 fi
 
 ## do thesis.tex
+
+# Comment out \drafttrue for final compilation
+sed -i '' 's@\\drafttrue@% \\drafttrue@g' "$PACKAGES"
 
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 # Compile nomenclature
@@ -32,6 +37,9 @@ makeglossaries "$PDF_NAME"
 cd ..
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+
+# Uncomment \drafttrue for draft compilation
+sed -i '' 's@% \\drafttrue@\\drafttrue@g' "$PACKAGES"
 
 ## do psl/thesis.tex
 

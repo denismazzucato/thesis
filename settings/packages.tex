@@ -1,3 +1,13 @@
+\newif\ifdraft
+\drafttrue % Default is draft mode; comment this line for final version
+
+% Conditional inclusion of showkeys with appropriate option
+\ifdraft
+  \usepackage[draft]{showkeys}
+\else
+  \usepackage[final]{showkeys}
+\fi
+
 \usepackage{suffix} %% for appending suffixes to commands
 
 \usepackage{xargs} %% for newcommandx
