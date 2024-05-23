@@ -45,22 +45,22 @@ That is, for all possible initial values $\defvalue$ that differ from the initia
   \caption{Program to check if a student passed the school year.}
   \labprog{school-year}
   \vspace{2\lineheight}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=Python,escapechar=|]
 is_passed(eng, math, science,
     bonus):
   passing = True;
   if not eng:
-    eng = False;
+    eng = False;|\labline{err1}|
   if not math:
     passing = bonus;
-  if not math:
+  if not math:|\labline{err2}|
     passing = bonus;
 \end{lstlisting}
 \end{marginlisting}
 Let us consider the program of example presented in \textcite{Urban2018}, \cf{} \refprog{school-year} on the side.
 Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}.
 The program should determine whether a student has passed the year or not, and store the result in the variable \texttt{passing}. Additionally, the student is allowed a bonus to help with math and science.
-However, there are two mistakes in the program: it should be \texttt{passing = False} in the first conditional statement, and the third condition should be \texttt{not science} instead of \texttt{not math}.
+However, there are two mistakes in the program: it should be \texttt{passing = False} in the first conditional statement (\cf{} \refline{err1}), and the third condition should be \texttt{not science} instead of \texttt{not math} (\cf{} \refline{err2}).
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused in \refprog{school-year}.
 Let us consider the input variable \texttt{science}.
 The simplified trace semantics, considering only the variables \texttt{science} and \texttt{passing}, is:
@@ -105,12 +105,13 @@ x_plus_rand(x):
   return x + rand();
 \end{lstlisting}
   \end{marginlisting}
-With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie it is present in the code, but it could be semantically unused, \ie it does not affect the output of the program; and vice versa.
-Consider \refprog{syntactic-vs-semantic-usage} on the side, where the input variable \texttt{x} is used in the return statement.
-However, the variable \texttt{x} is semantically unused if we consider machine integers wrapped up to $\texttt{max\_int}\in\N$. Otherwise, if we consider unbounded integers, then the input variable \texttt{x} is, as expected, used.
-This difference can be clearly seen by the trace semantics of the program, in case of bounded integers the trace semantics is:
+With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie present in the code, but it could be semantically unused, \ie does not affect the computation of the program; and vice versa.
+Consider \refprog{syntactic-vs-semantic-usage} on the side, where the input variable \texttt{x} is a non-negative integer.
+The variable \texttt{x} is syntactically used in the program, as it is present in the return statement.
+However, the variable \texttt{x} is semantically unused if we consider machine integers wrapped up to $\texttt{max\_int}\in\N$.
+This difference can be clearly seen by studying the trace semantics of the program. In case of machine integers the trace semantics is:
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_\texttt{x}}
+  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =
   \setdef{
     \langle{x}\rangle\dots\langle{x+r \mod \texttt{max\_int}}\rangle
@@ -118,15 +119,18 @@ This difference can be clearly seen by the trace semantics of the program, in ca
 \end{align*}
 where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
 In this case, any outcome value $x+r \mod \texttt{max\_int}$ is feasible from any initial value of \texttt{x}.
-On the other hand, if we consider unbounded integers, the trace semantics is:
+Even if $x$ is bigger than a given outcome $z$, the result is still feasible as we can take a positive $r = \texttt{max\_int} - x + z$ to make the wrapped sum $x + r \mod \texttt{max\_int} = z$.
+
+On the other hand, if we consider unbounded positive integers, the trace semantics is:
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_\texttt{x}}
+  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =
   \setdef{
     \langle{x}\rangle\dots\langle{x+r}\rangle
   }{x, r \in \N}
 \end{align*}
 In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
+For instance, if the outcome is 42, an initial value of 41 is feasible as it exists a random value $r = 1$ that makes the sum $41 + 1 = 42$. Instead, an initial value of 43 is not feasible as there is no positive random value $r$ that makes the sum $43 + r = 42$.
 % \pgfplotstableread[]{
 % x y
 % 0 81
@@ -250,9 +254,20 @@ In such instance, for any outcome value $x+r$, only initial values of \texttt{x}
 % \end{figure}
 \end{example}
 
-\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs\sidenote[][*-2]{In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.}.
-Furthermore, also non-termination is considered in the definition.
-In fact, non-termination is a feasible trace outcome.
+\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs%
+\sidenote[][*-8]{%
+  In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.
+  %
+  This can be easily seen by considering the two traces:
+  \begin{eqnarray*}
+    \lefteqn{\tuple\true\true\dots\tuple\true\true} \\
+       &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}} \\
+    \lefteqn{\tuple\true\true\dots\tuple\true\false} \\
+       &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+  \end{eqnarray*}
+  where both start from the same initial state $\tuple\true\true$ and have different outcomes.}.
+Furthermore, the next example shows that the unused predicate is termination aware.
+Indeed, termination is a possible outcome of a program, and thus a variable should be unused if it does not affect the termination as well as the outcome of the program.
 
 \begin{example}\labexample{non-termination}
   \begin{marginlisting}
@@ -275,16 +290,16 @@ non_termination(x):
       \langle{>}\rangle\dots
     \}
   \end{align*}
-  where the symbol $\langle{<}\rangle$ denotes a negative value and $\langle{>}\rangle$ a positive one. When the program is provided a positive value for \texttt{x}, it does not terminate and the respective traces are all of infinite length.
+  where the symbol $<$ denotes a negative value and $>$ a positive one. When the program is provided a positive value for \texttt{x}, it does not terminate and the respective traces are all of infinite length.
 
-  In this case, the variable \texttt{x} is used since the non-termination is feasible only from positive values of \texttt{x}.
-  In fact, by excluding non-termination as a possible outcome, the variable \texttt{x} would be --instead-- unused.
+  In this example we conclude that the variable \texttt{x} is used since the non-termination is feasible only from positive values of \texttt{x}.
+  In fact, by excluding non-termination as a possible outcome, the variable \texttt{x} would be, instead, unused.
 \end{example}
 
 \section{Abstract Input Data Usage}
 \labsec{abstract-input-data-usage}
 
-Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, we introduce the notion of abstract unused predicate.
+Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, we introduce a generalized version of the unused predicate.
 That is, a weaker version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
 Later, we will define the quantitative measure of input data usage, and use the abstraction of output states to determine numerical values from output states.
 
@@ -306,11 +321,11 @@ In the following, we define the abstraction of output states, called output obse
 \end{definition}
 
 
-Similar to the abstraction of non-interference property into the abstract non-interference, we employ the output observer to define an abstract version of the unused predicate, called $\unusediowrapper$.
+Similar to the abstraction of non-interference property into abstract non-interference, we employ the output observer to define an abstract version of the unused predicate, called $\unusediowrapper$, as follows:
 
 
 \begin{definition}[Abstract Unused]\labdef{abstract-unused}
-  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, an output observer $\aniobserver\in \state \to \state$ the variable $\definputvariable$ is \emph{unused} if the following predicate holds:
+  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, an output observer $\aniobserver\in \state \to \state$, the variable $\definputvariable$ is \emph{unused} if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusediowrapper(\tracesemantics) \DefifF} \\
     & &\forall
@@ -328,85 +343,121 @@ Similar to the abstraction of non-interference property into the abstract non-in
   \end{eqnarray*}
 \end{definition}
 
-This latter abstract unused predicate allows for further abstractions of the output states, which can be used to determine the impact of variations of the input data on the output states.
-This can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
-As a drawback, we lose the input abstraction, the tread-off to allow for non-determinism does not permit input state abstractions in the sense of abstract non-interference.
-Moreover, such definition generalizes non-exploitability \sidecite{Parolini2024} to non-deterministic programs.
+This latter abstract unused predicate allows for further abstractions of the output states, which permits a more general definition of the unused property.
+For instance, the output observer could identify which variable is to consider as the outcome of the program and abstract away the other variables. Or another use case could be to abstract the output states into their parity, or even into their sign. In such case, a variable could be used with respect to \nrefdef{unused-predicate} but unused with respect to \nrefdef{abstract-unused}.
+
+\nrefdef{abstract-unused} can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
+As a drawback, we lose the input abstraction: the tread-off allows non-determinism but does not permit input state abstractions in the sense of abstract non-interference.
+The reason is that to take into account non-determinism, for any value of the input variable $\definputvariable$, we need to consider all possible traces that start from a different initial value.
+Such low-level detail cannot be captured anymore by the input abstraction employed in the definition of abstract non-interference.
+Moreover, \nrefdef{abstract-unused} generalizes non-exploitability \sidecite{Parolini2024} to non-deterministic programs.
 
 The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function.
-\begin{remark}[Unused Equivalence]\labremark{unused-predicate-equivalence}
+\begin{proposition}[Unused Equivalence]\labprop{unused-predicate-equivalence}
   Whenever $\aniobserver = \identity$, it holds that:
   \begin{gather*}
     \unusedwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{gather*}
-\end{remark}
+\end{proposition}
+\begin{proof}
+  The proof is straightforward by the definition of the abstract unused predicate, \nrefdef{abstract-unused}, and the unused predicate, \nrefdef{unused-predicate}.
+  Indeed, the output observer $\aniobserver = \identity$ does not abstract the output states, and thus the two predicates are equivalent.
+\end{proof}
 
 Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction is the identity function.
 
-\begin{remark}[Abstract Non-Interference Equivalence]\labremark{ani-predicate-equivalence}
-  If $\defprogram$ deterministic and $\aniselect = \identity$, then, it holds that:
+\begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
+  If $\defprogram$ deterministic and the input abstraction is defined as:
+  \begin{align*}
+    \aniselect(\defstate) \spacearound= \lambda \texttt{j}. \spacer
+    \begin{cases}
+      \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \definputvariable \\
+      \top & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  then, it holds that:
   \begin{align*}
     \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{align*}
-\end{remark}
+\end{proposition}
+\begin{proof}
+  Assuming that the program $\defprogram$ is deterministic implies that whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  Intuitively, whenever $\aniwrapper$ holds, the input variable $\definputvariable$ does not interfere with the output states (up to the abstraction $\aniobserver$).
+  It is easy to note that, even without the assumption on the determinism of the program, if the variable $\definputvariable$ does not interfere, then it is unused in the sense of \nrefdef{abstract-unused}.
+
+  On the other hand, to prove the other implication, we need to show that $\forall \deftrace,\deftrace' \in \tracesemantics.\spacer \retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace' \implies \aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
+  From the assumption that the program $\defprogram$ is deterministic, we have that $\retrieveinput\deftrace = \retrieveinput\deftrace'$ implies $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$. Note that, $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$ implies $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$ as $\aniobserver$ is an upper-closure operator.
+  Thus, we only need to prove that the output states are equivalent whenever $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$.
+  From the definition of the abstract unused predicate, it holds that if $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace'$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
+  Thus, the output states are equivalent and $\aniwrapper$ holds.
+\end{proof}
 
 \begin{example}
 \marginnote{
   \begin{eqnarray*}
     \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
     = } \\
-    &\{
-      \tuple\true\anyvalue\dots\tuple\true\true, \\
-      &\tuple\true\anyvalue\dots\tuple\true\false, \\
-      &\tuple\false\anyvalue\dots\tuple\false\true, \\
-      &\tuple\false\anyvalue\dots\tuple\false\false
-    \}
+    & \left\{
+      \begin{array}{l}
+        \tuple\true\anyvalue\dots\tuple\true\true, \\
+        \tuple\true\anyvalue\dots\tuple\true\false, \\
+        \tuple\false\anyvalue\dots\tuple\false\true, \\
+        \tuple\false\anyvalue\dots\tuple\false\false
+      \end{array}
+    \right\}
   \end{eqnarray*}
 }
 Let us consider the simplified trace semantics of the program \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
-As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover interference between the variables \texttt{science} and \texttt{passing}.
-In fact, assuming the input and output abstractions are the identity function, the abstract non-interference discovers interference between the input variables.
+As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{science} interferes with the output states.
+In fact, assuming:
+\begin{align*}
+  \eta_{\texttt{science}}(\defstate) \spacearound{&=} \lambda \texttt{j}. \spacer
+  \begin{cases}
+    \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \texttt{science} \\
+    \top & \text{otherwise}
+  \end{cases}\\
+  \aniobserver(\defstate) \spacearound{&=} \defstate
+\end{align*}
+the predicate of  abstract non-interference does not hold for the variable \texttt{science}.
 This can be shown by the two traces
 \begin{align*}
-  \tuple\true\true&\dots\tuple\true\true
+  \tuple\true\true&\dots\tuple\false\true
   \\
-  \tuple\false\true&\dots\tuple\true\false
+  \tuple\true\true&\dots\tuple\false\false
 \end{align*}
-for the variable \texttt{passing}, and these two traces
-\begin{align*}
-  \tuple\false\true&\dots\tuple\false\true
-  \\
-  \tuple\false\false&\dots\tuple\false\false
-\end{align*}
-for the variable \texttt{science}. Specifically, the two traces shows variations of the input value that lead to different output values. However, $\aniwrapper$ does not take into account that such variations in the outcome may be due to the non-determinism.
+where the output states are different, but the input states are the same.
+Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
 \end{example}
 
-The input data usage property $\unused$ can be now formally defined as follows:
+\section{Unused Property of Programs}
+\labsec{unused-property-of-programs}
+
+In this section, we state the \emph{unused property} as a property of programs.
+Whenever a program does not use the input variable $\definputvariable$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
 
 \begin{definition}[Unused Property]\labdef{unused}
-  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, the \emph{input data usage} property $\unused\in\setofsetof\finiteinfinitesequences$ is defined as:
+  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
   \begin{align*}
     \unused\DefeQ&
-    \bigsetdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
+    \setdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
   \end{align*}
 \end{definition}
 
 The input data usage property $\unused$ defined above is not subset-closed, we cannot use the standard abstract interpretation framework to soundly prove that a program does not use (some of) its input variables by checking whether an over-approximation of the semantics of the program is included in the unused property.
 We solve this problem by lifting the trace semantics of the program to its collecting semantics.
-
-\begin{theorem}[Validation of Unused]\labthm{validation-unused}
-  A program $\defprogram$ satisfies a property $\defproperty\in\setofsetof\finiteinfinitesequences$ if and only if its collecting semantics $\collectingsemantics$ belongs to the property $\defproperty$.
-  \begin{align*}
-    \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
-  \end{align*}
-\end{theorem}
+Therefore, a program $\defprogram$ satisfies the unused property $\unused\in\setofsetof\finiteinfinitesequences$ if and only if its collecting semantics $\collectingsemantics$ belongs to $\unused$, formally:
+\begin{align}\labeq{validation-unused}
+  \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
+\end{align}
+We develop our hierarchy of semantics to reason about the unused property starting from the collecting semantics.
 
 \section{Dependency Semantics}
 \labsec{dependency-semantics}
 
-We abstract the collecting semantics $\collectingsemantics$ into a set of dependencies between output states of finite traces and between initial and $\statebottom$ for infinite traces.
+We abstract the collecting semantics $\collectingsemanticsnoparam\in\collectingtype$ into a set of dependencies between output states of finite traces and between initial and $\statebottom$ for infinite traces.
 Formally, the pair of right-left adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ is defined as follows:
 %
+\begin{definition}[Right-Left Adjoints for the Dependency Semantics]\labdef{right-left-adjoints-for-the-dependency-semantics}
 \begin{align*}
   \dependencyabstraction \IN& \collectingtype \to \dependencytype \\
   \dependencyabstraction(\defsetofsetoftraces) \DefeQ& \setdef{
@@ -421,12 +472,13 @@ Formally, the pair of right-left adjoints $\tuple{\dependencyabstraction}{\depen
     \setdef{\inputoutputtuple\defseq}{\defseq\in\defsetoftraces} \in \defsetofsetofdependencies
   }
 \end{align*}
-where $\dependencyabstraction$ abstracts away all intermediate states of any trace, preserving the set-structure of $\defsetofsetoftraces$.
+\end{definition}
+The function $\dependencyabstraction$ abstracts away all intermediate states of any trace, preserving the set-structure of $\defsetofsetoftraces$.
 The concretization $\dependencyconcretization$ yields all the semantics that share the same output observations of, at least, one of the set of semantics in $\defsetofsetofdependencies$.
 
 
 \begin{theorem}\labthm{collecting-dependency-galois-connection}
-The two adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ form a \emph{Galois Connection}:
+The two adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ form a \emph{Galois connection}:
 \begin{align*}
   \galoisbetweensemantics{collecting}{dependency}
 \end{align*}
@@ -456,61 +508,47 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
   \end{math}
 \end{theorem}
 \begin{proof}
-  The implication $(\implies)$ follows from the monotonicity of $\dependencyabstraction$, \refthm{collecting-dependency-galois-connection}, and the definition of $\dependencysemanticsnoparam$, \refeq{dependency}, \ie,
+  The implication $(\implies)$ follows from the monotonicity of $\dependencyabstraction$, as an implication from the fact that the two adjoints $\tuple\dependencyabstraction\dependencyconcretization$ form a Galois connection (\cf{} \refthm{collecting-dependency-galois-connection}), and \refdef{dependency-semantics} of $\dependencysemanticsnoparam$.
+  Obtaining
   $
     \collectingsemanticsnoparam \subseteq \bounded \implies \dependencyabstraction(\collectingsemanticsnoparam) \subseteq \dependencyabstraction(\bounded)\implies \dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded)
   $.
-  Regarding the other implication $(\Leftarrow)$, from the definition of $\dependencysemanticsnoparam$ and the property of \refthm{collecting-dependency-galois-connection}, we obtain $\dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded) \implies \dependencyabstraction(\collectingsemanticsnoparam) \subseteq \dependencyabstraction(\bounded)\implies \collectingsemanticsnoparam \subseteq \dependencyconcretization(\dependencyabstraction(\bounded))$, which can be written as $\tracesemanticsnoparam \in \dependencyconcretization(\dependencyabstraction(\bounded))$ by the definition of $\collectingsemanticsnoparam$.
-  By definition of $\dependencyconcretization$, \refeq{dependency-concretization}, it follows that $\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\tracesemanticsnoparam}\in\dependencyabstraction(\bounded)$.
-  Finally, by application of the definition of $\dependencyabstraction$, \refeq{dependency-abstraction}, we obtain $\tracesemanticsnoparam\in\bounded$.
-  The conclusion $\collectingsemanticsnoparam \subseteq \bounded$ trivially follows from the definition of $(\subseteq)$.
+%
+  Regarding the other implication $(\Leftarrow)$, from \refdef{dependency-semantics} of $\dependencysemanticsnoparam$ and the property of \refthm{collecting-dependency-galois-connection}, we obtain $\dependencysemanticsnoparam \subseteq \dependencyabstraction(\bounded) \implies \dependencyabstraction(\collectingsemanticsnoparam) \subseteq \dependencyabstraction(\bounded)\implies \collectingsemanticsnoparam \subseteq \dependencyconcretization(\dependencyabstraction(\bounded))$, which can be written as $\tracesemanticsnoparam \in \dependencyconcretization(\dependencyabstraction(\bounded))$ by the definition of $\collectingsemanticsnoparam$.
+  By \refdef{right-left-adjoints-for-the-dependency-semantics} of $\dependencyconcretization$ it follows that $\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\tracesemanticsnoparam}\in\dependencyabstraction(\bounded)$.
+  Finally, by application of \refdef{right-left-adjoints-for-the-dependency-semantics} of $\dependencyabstraction$ we obtain $\tracesemanticsnoparam\in\bounded$.
+  The conclusion $\collectingsemanticsnoparam \subseteq \bounded$ trivially follows from the definition of the subset inclusion $(\subseteq)$.
 \end{proof}
 
 \begin{example}
   \marginnote{
-    \begin{eqnarray*}
-      \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-      = } \\
-      &\{
+  \begin{eqnarray*}
+    \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+    = } \\
+    & \left\{
+      \begin{array}{l}
         \tuple\true\anyvalue\dots\tuple\true\true, \\
-        &\tuple\true\anyvalue\dots\tuple\true\false, \\
-        &\tuple\false\anyvalue\dots\tuple\false\true, \\
-        &\tuple\false\anyvalue\dots\tuple\false\false
-      \}
-    \end{eqnarray*}
-  }
-  \marginnote{
-    \begin{eqnarray*}
-      \lefteqn{\dependencysemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
-      = } \\
-      &\{
-        \tuple\true\anyvalue\dots\tuple\true\true, \\
-        &\tuple\true\anyvalue\dots\tuple\true\false, \\
-        &\tuple\false\anyvalue\dots\tuple\false\true, \\
-        &\tuple\false\anyvalue\dots\tuple\false\false
-      \}
-    \end{eqnarray*}
-  }
-  We show how the dependency semantics abstracts the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$ of the program \refprog{school-year}.
-  First, as explained by \refthm{validation-unused}, the trace semantics should be abstracted by the collecting semantics, obtaining $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$ and
-  $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}\}$.
+        \tuple\true\anyvalue\dots\tuple\true\false, \\
+        \tuple\false\anyvalue\dots\tuple\false\true, \\
+        \tuple\false\anyvalue\dots\tuple\false\false
+      \end{array}
+    \right\}
+  \end{eqnarray*}
+}
+  We show how the dependency semantics abstracts the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ from the \refprog{school-year}.
+  First, as required by \refeq{validation-unused}, the trace semantics should be abstracted first by the collecting semantics, obtaining $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$.
   The dependency semantics is then:
   \begin{align*}
      \dependencysemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-    = &\dependencyabstraction(\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}) \\
-     = &\{ \tuple\true\anyvalue, \tuple\true\true, \\
-      & \tuple\true\anyvalue, \tuple\true\false, \\
-      & \tuple\false\anyvalue, \tuple\false\true, \\
-      & \tuple\false\anyvalue, \tuple\false\false
-    \}
-    \\
-    \dependencysemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
-    = &\dependencyabstraction(\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}) \\
-    = &\{ \tuple\true\anyvalue, \tuple\true\true, \\
-      &\tuple\true\anyvalue, \tuple\true\false, \\
-      &\tuple\false\anyvalue, \tuple\false\true, \\
-      &\tuple\false\anyvalue, \tuple\false\false
-    \}
+    \spacearound{&=} \dependencyabstraction(\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}) \\
+    \spacearound{&=} \left\{\left\{
+      \begin{array}{l}
+        \tuple{\tuple\true\anyvalue}{\tuple\true\true}, \\
+        \tuple{\tuple\true\anyvalue}{\tuple\true\false}, \\
+        \tuple{\tuple\false\anyvalue}{\tuple\false\true}, \\
+        \tuple{\tuple\false\anyvalue}{\tuple\false\false}
+      \end{array}
+    \right\}\right\}
   \end{align*}
   The dependency semantics abstracts the trace semantics, preserving the input-output dependencies.
 \end{example}
@@ -518,10 +556,11 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
 \section{Output Abstraction Semantics}
 \labsec{output-abstraction-semantics}
 
-We further abstract the dependency semantics $\dependencysemantics$ into the output-abstraction semantics $\outputsemantics$.
+We further abstract the dependency semantics $\dependencysemanticsnoparam$ into the output-abstraction semantics $\outputsemanticsnoparam$.
 We exploit the output observer $\aniobserver$ to abstract the output states.
-Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as follows:
+Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as:
 %
+\begin{definition}[Right-Left Adjoints for the Output Abstraction Semantics]\labdef{right-left-adjoints-for-the-output-abstraction-semantics}
 \begin{align*}
   \outputabstraction \IN& \dependencytype \to \outputtype \\
   \outputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
@@ -549,18 +588,25 @@ Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputcon
     \defsetofdependencies\in\defsetofsetofdependencies
   }
 \end{align*}
-where $\outputabstraction$ abstracts the output states of the dependencies and $\outputconcretization$ concretizes the set of dependencies that share the same set of output observations.
+\end{definition}
+The function $\outputabstraction$ abstracts the output states of the dependencies and $\outputconcretization$ concretizes the set of dependencies that share the same set of output observations.
 
 \begin{theorem}\labthm{dependency-output-galois-connection}
-  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois Connection}:
+  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois connection}:
 \begin{align*}
   \galoisbetweensemantics{dependency}{output}
 \end{align*}
 \end{theorem}
+\begin{proof}
+  Given two sets of sets of input-output observations $\defsetofsetofdependencies, \defsetofsetofdependencies\in\dependencytype$ such that $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$, we obtain that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$ since the concretization $\outputconcretization$ builds all the possible sets of sets of dependencies enhanced with the any amount of output states that result in an output abstraction of $\defsetofsetofdependencies'$.
+  On the other hand, we assume that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$.
+  By the monotonicity of $\outputabstraction$, \cf{} consequence of \refthm{dependency-output-galois-connection}, we obtain that $\outputabstraction(\defsetofsetofdependencies)\subseteq\outputabstraction(\outputconcretization(\defsetofsetofdependencies'))$.
+  We note that the concretization $\outputconcretization(\defsetofsetofdependencies')$ builds all the possible sets of dependencies that may have generated the same output observations of each set of dependencies in $\defsetofsetofdependencies'$. By applying the abstraction $\outputabstraction$, for each of the sets of dependencies concretized by $\outputconcretization$, the abstraction returns the original set in $\defsetofsetofdependencies'$. Thus, we have that $\outputabstraction(\outputconcretization(\defsetofsetofdependencies')) = \defsetofsetofdependencies'$, so we conclude with $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$.
+\end{proof}
 
 We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an abstraction of the dependency semantics.
 
-\begin{definition}[Output Abstraction Semantics]\labdef{inputoutput-abstraction-semantics}
+\begin{definition}[Output Abstraction Semantics]\labdef{output-abstraction-semantics}
   The \emph{output-abstraction semantics} $\outputsemanticsnoparam\in\outputtype$ is defined as:
   \begin{align*}
     \outputsemanticsnoparam\DefeQ&\outputabstraction(\dependencysemanticsnoparam) \\
@@ -583,6 +629,10 @@ The next result shows that the output-abstraction semantics $\outputsemantics$ a
     \collectingsemantics \subseteq \unused \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\unused))
   \end{math}
 \end{theorem}
+\begin{proof}
+  Similarly to the proof of \refthm{dependency-validation}, the implication $(\implies)$ follows from the monotonicity of $\outputabstraction$ and \refdef{output-abstraction-semantics} of $\outputsemanticsnoparam$.
+  The implication $(\Leftarrow)$ follows from the definition of the output-abstraction semantics $\outputsemanticsnoparam$ and the property of \refthm{dependency-output-galois-connection}.
+\end{proof}
 
 We show the unused property $\unused$ derived from the dependency and output-abstraction semantics.
 It is interesting to note that removing intermediate states and abstracting output states allows to rewrite the unused property as was originally proposed by \sidetextcite{Urban2018}. That is, the output abstraction and intermediate states are handled at a semantics level rather than in the property definition.
@@ -606,9 +656,12 @@ It is interesting to note that removing intermediate states and abstracting outp
   \end{gather*}
 \end{remark}
 
+Note that, the property defined in the remark above is not, per se, a property of programs as by extension it would be a set of program semantics.
+Instead, it is a property of output-and-dependency semantics, which is a set of sets of input-output observations.
+
 \section{Summary}
 \labsec{input-data-usage-summary}
 
 In this chapter, we introduced the notion of input data usage and define a generalized version based on the definition of abstract non-interference.
 We presented the hierarchy of semantics that allows reasoning about the usage of input variables.
-In the next chapter, we define a quantitative counterpart of the input data usage, able to measure the impact of variations in the input data on the outcome of a program.
+In the next chapter, we will define a quantitative counterpart of the input data usage, able to measure the impact of variations in the input data on the outcome of a program. We will exploit the output abstraction to obtain numerical values from the output states.
