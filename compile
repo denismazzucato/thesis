@@ -21,7 +21,7 @@ fi
 ## do thesis.tex
 
 # Comment out \drafttrue for final compilation
-sed -i '' 's@\\drafttrue@% \\drafttrue@g' "$PACKAGES"
+sed -i '' 's/\\drafttrue/%\\drafttrue/g' "$PACKAGES"
 
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 # Compile nomenclature
@@ -39,7 +39,7 @@ pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
 
 # Uncomment \drafttrue for draft compilation
-sed -i '' 's@% \\drafttrue@\\drafttrue@g' "$PACKAGES"
+sed -i '' 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
 
 ## do psl/thesis.tex
 
