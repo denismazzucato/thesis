@@ -115,3 +115,21 @@
 
 \subsection{Backward Reachability State Semantics}
 \labsec{backward-reachability-state-semantics}
+
+\begin{marginlisting}
+  \caption{Landing alarm system}
+  \labprog{landing-alarm-system}
+  \vspace{\lineheight}
+\begin{lstlisting}[
+  language=customPython]
+landing_coeff =
+  abs(angle) + speed
+if landing_coeff < 2:
+  risk = 0
+else if landing_coeff > 5:
+  risk = 3
+else:
+  risk =
+    floor(landing_coeff) - 2
+  \end{lstlisting}
+\end{marginlisting}

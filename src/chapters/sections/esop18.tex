@@ -69,10 +69,10 @@ The simplified trace semantics, considering only the variables \texttt{science} 
   =
   \left\{
     \begin{array}{l}
-      \tuple\true\anyvalue\dots\tuple\true\true, \\
-      \tuple\true\anyvalue\dots\tuple\true\false, \\
-      \tuple\false\anyvalue\dots\tuple\false\true, \\
-      \tuple\false\anyvalue\dots\tuple\false\false
+      \tuple\true\anyvalue\rightarrow\tuple\true\true, \\
+      \tuple\true\anyvalue\rightarrow\tuple\true\false, \\
+      \tuple\false\anyvalue\rightarrow\tuple\false\true, \\
+      \tuple\false\anyvalue\rightarrow\tuple\false\false
     \end{array}
   \right\}
 \end{align*}
@@ -85,9 +85,9 @@ Instead, if we consider the variable \texttt{math}, the simplified trace semanti
   =
   \left\{
     \begin{array}{l}
-    \tuple\true\anyvalue\dots\tuple\true\true, \\
-    \tuple\false\anyvalue\dots\tuple\false\true, \\
-    \tuple\false\anyvalue\dots\tuple\false\false
+    \tuple\true\anyvalue\rightarrow\tuple\true\true, \\
+    \tuple\false\anyvalue\rightarrow\tuple\false\true, \\
+    \tuple\false\anyvalue\rightarrow\tuple\false\false
   \end{array}
   \right\}
 \end{align*}
@@ -114,7 +114,7 @@ This difference can be clearly seen by studying the trace semantics of the progr
   \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =
   \setdef{
-    \langle{x}\rangle\dots\langle{x+r \mod \texttt{max\_int}}\rangle
+    \langle{x}\rangle\rightarrow\langle{x+r \mod \texttt{max\_int}}\rangle
   }{x, r \in \N}
 \end{align*}
 where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
@@ -126,7 +126,7 @@ On the other hand, if we consider unbounded positive integers, the trace semanti
   \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =
   \setdef{
-    \langle{x}\rangle\dots\langle{x+r}\rangle
+    \langle{x}\rangle\rightarrow\langle{x+r}\rangle
   }{x, r \in \N}
 \end{align*}
 In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
@@ -260,9 +260,9 @@ For instance, if the outcome is 42, an initial value of 41 is feasible as it exi
   %
   This can be easily seen by considering the two traces:
   \begin{eqnarray*}
-    \lefteqn{\tuple\true\true\dots\tuple\true\true} \\
+    \lefteqn{\tuple\true\true\rightarrow\tuple\true\true} \\
        &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}} \\
-    \lefteqn{\tuple\true\true\dots\tuple\true\false} \\
+    \lefteqn{\tuple\true\true\rightarrow\tuple\true\false} \\
        &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
   \end{eqnarray*}
   where both start from the same initial state $\tuple\true\true$ and have different outcomes.}.
@@ -285,9 +285,9 @@ non_termination(x):
     \tracesemanticsnoparam\semanticsof{\texttt{non\_termination}}
     =
     \{
-      \langle{<}\rangle\dots\langle{<}\rangle,
-      \langle{0}\rangle\dots\langle{0}\rangle,
-      \langle{>}\rangle\dots
+      \langle{<}\rangle\rightarrow\langle{<}\rangle,
+      \langle{0}\rangle\rightarrow\langle{0}\rangle,
+      \langle{>}\rangle\rightarrow\dots
     \}
   \end{align*}
   where the symbol $<$ denotes a negative value and $>$ a positive one. When the program is provided a positive value for \texttt{x}, it does not terminate and the respective traces are all of infinite length.
@@ -316,7 +316,7 @@ We assume that the objective of the input abstraction $\aniselect$ is to monitor
 
 In the following, we define the abstraction of output states, called output observer, as a map from states to an abstract domain.
 
-\begin{definition}[Output observer]\labdef{output-observer}
+\begin{definition}[Output Observer]\labdef{output-observer}
   Given a program $\defprogram$, an \emph{output observer} $\aniobserver\in \state \to \state$ is an upper closure operator that abstracts the value of output states.
 \end{definition}
 

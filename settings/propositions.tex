@@ -4,6 +4,7 @@
 
 \newcommand*{\refprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1}}}
 \newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
+\newcommand*{\nrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} (\nameref{lst:#1})}}
 
 \newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}
 
@@ -13,8 +14,8 @@
 \newcommand*{\nrefdef}[1]{\hyperref[def:#1]{\defname\xspace\ref{def:#1} (\nameref{def:#1})}}
 
 
-\newcommand*{\side}[2]{%
-\expandafter\marginnote{%
+\newcommandx{\side}[3][3=*0]{%
+\expandafter\marginnote[#3]{%
 \begin{named}[{\csname nref#1\endcsname{#2}}]%
   \input{src/propositions/#2-short}%
 \end{named}%
@@ -28,22 +29,32 @@
 % \newcommand*{\siderefthm}[1]{\side{thm}{#1}}
 % \WithSuffix\newcommand\refdef*[1]{\siderefdef{#1}}
 
-\newcommand*{\siderefdef}[1]{\side{def}{#1}}
-\WithSuffix\newcommand\refdef*[1]{\siderefdef{#1}}
-\newcommand*{\siderefassum}[1]{\side{assum}{#1}}
-\WithSuffix\newcommand\refassum*[1]{\siderefassum{#1}}
-\newcommand*{\siderefthm}[1]{\side{thm}{#1}}
-\WithSuffix\newcommand\refthm*[1]{\siderefthm{#1}}
-\newcommand*{\siderefprop}[1]{\side{prop}{#1}}
-\WithSuffix\newcommand\refprop*[1]{\siderefprop{#1}}
-\newcommand*{\sidereflemma}[1]{\side{lemma}{#1}}
-\WithSuffix\newcommand\reflemma*[1]{\sidereflemma{#1}}
-\newcommand*{\siderefremark}[1]{\side{remark}{#1}}
-\WithSuffix\newcommand\refremark*[1]{\siderefremark{#1}}
-\newcommand*{\siderefexample}[1]{\side{example}{#1}}
-\WithSuffix\newcommand\refexample*[1]{\siderefexample{#1}}
-\newcommand*{\siderefexercise}[1]{\side{exercise}{#1}}
-\WithSuffix\newcommand\refexercise*[1]{\siderefexercise{#1}}
+\newcommandx{\siderefdef}[2][2=*0]{\side{def}{#1}[#2]}
+\WithSuffix\newcommandx\refdef*[2][2=*0]{\siderefdef{#1}}
+\newcommandx{\siderefassum}[2][2=*0]{\side{assum}{#1}[#2]}
+\WithSuffix\newcommandx\refassum*[2][2=*0]{\siderefassum{#1}}
+\newcommandx{\siderefthm}[2][2=*0]{\side{thm}{#1}[#2]}
+\WithSuffix\newcommandx\refthm*[2][2=*0]{\siderefthm{#1}}
+\newcommandx{\siderefprop}[2][2=*0]{\side{prop}{#1}[#2]}
+\WithSuffix\newcommandx\refprop*[2][2=*0]{\siderefprop{#1}}
+\newcommandx{\sidereflemma}[2][2=*0]{\side{lemma}{#1}[#2]}
+\WithSuffix\newcommandx\reflemma*[2][2=*0]{\sidereflemma{#1}}
+\newcommandx{\siderefremark}[2][2=*0]{\side{remark}{#1}[#2]}
+\WithSuffix\newcommandx\refremark*[2][2=*0]{\siderefremark{#1}}
+\newcommandx{\siderefexample}[2][2=*0]{\side{example}{#1}[#2]}
+\WithSuffix\newcommandx\refexample*[2][2=*0]{\siderefexample{#1}}
+\newcommandx{\siderefexercise}[2][2=*0]{\side{exercise}{#1}[#2]}
+\WithSuffix\newcommandx\refexercise*[2][2=*0]{\siderefexercise{#1}}
+
+\newcommandx{\siderefprog}[2][2=*0]{%
+  \marginnote[#2]{%
+  \begin{namedprog}[{\nrefprog{#1}}]~ %%% very important the space here
+    \input{src/propositions/#1-short}%
+  \end{namedprog}%
+  }%
+  \refprog{#1}%
+}
+\WithSuffix\newcommandx\refprog*[2][2=*0]{\siderefprog{#1}[#2]}
 
 
 %%%%%%%%%%%%%%%%%
