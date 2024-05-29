@@ -8,15 +8,15 @@ PDF_NAME=thesis
 # packages path
 PACKAGES=settings/packages.tex
 # PSL template directory
-PSL_TEMPLATE=psl
+# PSL_TEMPLATE=psl
 
 # Create the pdf directory if it doesn't exist
 if [ ! -d "$OUTPUT" ]; then
   mkdir "$OUTPUT"
 fi
-if [ ! -d "$PSL_TEMPLATE/$OUTPUT" ]; then
-  mkdir "$PSL_TEMPLATE/$OUTPUT"
-fi
+# if [ ! -d "$PSL_TEMPLATE/$OUTPUT" ]; then
+#   mkdir "$PSL_TEMPLATE/$OUTPUT"
+# fi
 
 ## do thesis.tex
 
@@ -43,13 +43,12 @@ sed -i.bak 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
 
 ## do psl/thesis.tex
 
-cd "$PSL_TEMPLATE"
-pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
-pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
-pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
-cd ..
+# cd "$PSL_TEMPLATE"
+# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+# cd ..
 
 # merge the two
-pdftk psl/pdf/thesis.pdf cat 1 output pdf/psl-first.pdf
 pdftk pdf/thesis.pdf cat 2-end output pdf/thesis-tail.pdf
-pdftk pdf/psl-first.pdf pdf/thesis-tail.pdf cat output pdf/thesis.pdf
+pdftk psl-first.pdf pdf/thesis-tail.pdf cat output pdf/thesis.pdf
