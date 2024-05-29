@@ -440,14 +440,19 @@ In other words, the abstract unused predicate weakens the unused predicate.
 
 The next result instead shows that whenever a variable is unused, it means that for any abstract output and input value, it exists a trace with that input value that leads to the same output value.
 
-\begin{lemma}\lablemma{abstract-unused-property}
-  If $\unusediowrapper(\tracesemantics)$ holds, then it holds that:
-  \begin{align*}
-    \forall \defvalue\in\values.\spacer
-    \exists \defseq\in\tracesemantics.\spacer
-    \retrieveinput{\defseq}(\definputvariable) = \defvalue
-  \end{align*}
-\end{lemma}
+\begin{proposition}\labprop{abstract-unused-property}
+  If $\unusediowrapper(\tracesemantics)$ holds, then for any output state $\retrieveoutput{\defseq}\in\stateandbottom$ it holds that:
+  \begin{gather*}
+      \not\exists
+        \defseq'\in\tracesemantics.\spacer
+        \aniobserver(\retrieveoutput\defseq) = \aniobserver(\retrieveoutput{\defseq'}) \\
+      \lor \\
+      \foralldef{\defvalue\in\values}{\existsdef{\defseq'\in\tracesemantics}{
+        \retrieveinput{\defseq'}(\definputvariable) = \defvalue
+        \LanD
+        \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})}}
+  \end{gather*}
+\end{proposition}
 \begin{proof}
   \denis{todo}
 \end{proof}

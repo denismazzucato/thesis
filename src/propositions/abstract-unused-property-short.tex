@@ -1,0 +1,15 @@
+Whenever we assume that $\unusediowrapper(\tracesemantics)$ holds, then for any output state $\retrieveoutput{\defseq}\in\stateandbottom$ it holds that:
+\begin{gather*}
+    \not\exists
+      \defseq'\in\tracesemantics.\spacer
+      \aniobserver(\retrieveoutput\defseq) = \aniobserver(\retrieveoutput{\defseq'}) \\
+    \lor \\
+    \left(
+      \begin{array}{c}
+        \forall \defvalue\in\values .\spacer \exists \defseq'\in\tracesemantics .\spacer
+        \retrieveinput{\defseq'}(\definputvariable) = \defvalue \\
+        \LanD\\
+        \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
+      \end{array}
+    \right)
+\end{gather*}

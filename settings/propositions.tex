@@ -23,6 +23,15 @@
 \csname ref#1\endcsname{#2}%
 }
 
+\newcommandx{\sidewithoutname}[3][3=*0]{%
+\expandafter\marginnote[#3]{%
+\begin{named}[{\csname ref#1\endcsname{#2}}]%
+  \input{src/propositions/#2-short}%
+\end{named}%
+}%
+\csname ref#1\endcsname{#2}%
+}
+
 
 % \newcommand*{\siderefdef}[1]{\side{def}{#1}}
 % \newcommand*{\siderefeq}[1]{\side{eq}{#1}}
@@ -35,7 +44,7 @@
 \WithSuffix\newcommandx\refassum*[2][2=*0]{\siderefassum{#1}[#2]}
 \newcommandx{\siderefthm}[2][2=*0]{\side{thm}{#1}[#2]}
 \WithSuffix\newcommandx\refthm*[2][2=*0]{\siderefthm{#1}[#2]}
-\newcommandx{\siderefprop}[2][2=*0]{\side{prop}{#1}[#2]}
+\newcommandx{\siderefprop}[2][2=*0]{\sidewithoutname{prop}{#1}[#2]}
 \WithSuffix\newcommandx\refprop*[2][2=*0]{\siderefprop{#1}[#2]}
 \newcommandx{\sidereflemma}[2][2=*0]{\side{lemma}{#1}[#2]}
 \WithSuffix\newcommandx\reflemma*[2][2=*0]{\sidereflemma{#1}[#2]}
