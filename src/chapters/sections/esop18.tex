@@ -429,6 +429,30 @@ where the output states are different, but the input states are the same.
 Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
 \end{example}
 
+We show that whenever a variable is not used, it is also abstractly unused.
+In other words, the abstract unused predicate weakens the unused predicate.
+\begin{lemma}[Unused Implies Abstract Unused]\lablemma{unused-implies-abstract-unused}
+  If $\unusedwrapper(\tracesemantics)$ holds, then $\unusediowrapper(\tracesemantics)$ holds.
+\end{lemma}
+\begin{proof}
+  \denis{todo}
+\end{proof}
+
+The next result instead shows that whenever a variable is unused, it means that for any abstract output and input value, it exists a trace with that input value that leads to the same output value.
+
+\begin{lemma}\lablemma{abstract-unused-property}
+  If $\unusediowrapper(\tracesemantics)$ holds, then it holds that:
+  \begin{align*}
+    \forall \defvalue\in\values.\spacer
+    \exists \defseq\in\tracesemantics.\spacer
+    \retrieveinput{\defseq}(\definputvariable) = \defvalue
+  \end{align*}
+\end{lemma}
+\begin{proof}
+  \denis{todo}
+\end{proof}
+
+
 \section{Unused Property of Programs}
 \labsec{unused-property-of-programs}
 

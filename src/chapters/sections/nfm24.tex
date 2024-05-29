@@ -431,8 +431,85 @@ More specifically, we collect the set of input values that belong to traces $\de
 Then, we obtain the number of missing input values by subtracting the set of all input values from the set of input values that can produce the outcome $\retrieveoutput\defstate$.
 We return the maximum number of input values that are not used to produce the outcomes.
 
+\begin{marginlisting}[*1]
+  \caption{The identity program.}
+  \labprog{id}
+  \vspace{\lineheight}
+\begin{lstlisting}
+id(x):
+  return x;
+\end{lstlisting}
+\end{marginlisting}
+\begin{marginlisting}[*5]
+  \caption{The random program.}
+  \labprog{random}
+  \vspace{\lineheight}
+\begin{lstlisting}
+random(x):
+  return rand();
+\end{lstlisting}
+\end{marginlisting}
+\begin{marginlisting}[*9]
+  \caption{Combining random and constant value.}
+  \labprog{mix}
+  \vspace{2\lineheight}
+\begin{lstlisting}
+custom(x):
+  if x > 0:
+    return rand();
+  else:
+    return 0;
+\end{lstlisting}
+\denis{fix lineheight between programs and captions}
+\end{marginlisting}
 \begin{example}
-  \denis{3 examples: id, random, mix}
+  To explain the $\qusedname$ impact definition, we employ three simple programs.
+  The first program we consider, \refprog{id}, return the only input variable $\texttt{x}$ without any modification.
+  The second program, \refprog{random}, returns a random value.
+  The last one, \refprog{mix}, returns a random value if the input variable $\texttt{x}$ is greater than $0$, otherwise it returns $0$.
+  We assume that the output descriptor $\outputobs$ returns the value of the return statement.
+  For simplicity, the input space is $\state=\setdef{\langle x \rangle}{x\in\{0, 1, 2\}}$ and the input variable is $\texttt{x}$, thus the set of input values is $\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} = \{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ of cardinality $3$.
+  The trace semantics of \refprog{id} is:
+  \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{id}}
+    =
+    \left\{
+        \langle 0\rangle\rightarrow\langle 0\rangle,
+        \langle 1\rangle\rightarrow\langle 1\rangle,
+        \langle 2\rangle\rightarrow\langle 2\rangle
+    \right\}
+  \end{align*}
+  As explained above, for any $\deftrace\in \tracesemanticsnoparam\semanticsof{\texttt{id}}$ we collect the set of input values that belong to traces $\deftrace'\in\tracesemanticsnoparam\semanticsof{\texttt{id}}$ that share the same output abstraction as $\deftrace$.
+  In this case, the set of input values that can produce the outcome $0$ is $\{\langle 0\rangle\}$, for the outcome $1$ is $\{\langle 1\rangle\}$, and for the outcome $2$ is $\{\langle 2\rangle\}$, all singletons.
+  Hence, by subtracting the set of all input values, of cardinality $3$, from the set of input values that can produce the outcomes, we obtain the value $2$ for the three set of traces. Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{id}})=2$, meaning that the input variable $\texttt{x}$ is used.
+%
+  The trace semantics of \refprog{random} is:
+  \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{random}}
+    =
+    \left\{
+        \langle 0\rangle\rightarrow\langle \anyvalue\rangle,
+        \langle 1\rangle\rightarrow\langle \anyvalue\rangle,
+        \langle 2\rangle\rightarrow\langle \anyvalue\rangle
+    \right\}
+  \end{align*}
+  In this case, any outcome can be produced by any input value, thus the set of input values is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ for all outcomes.
+  By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0$.
+  Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{random}})=0$, meaning that the input variable $\texttt{x}$ is not used\sidenote{As we will see later, a value of $0$ for $\qusedname$ means that the input variable is not used.}.
+  %
+  The trace semantics of \refprog{mix} is:
+  \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{mix}}
+    =
+    \left\{
+        \langle 0\rangle\rightarrow\langle 0\rangle,
+        \langle 1\rangle\rightarrow\langle \anyvalue\rangle,
+        \langle 2\rangle\rightarrow\langle \anyvalue\rangle
+    \right\}
+  \end{align*}
+  In this case, the set of input values that can produce the outcome $0$ is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$, for the outcome $1$ is $\{\langle 1\rangle, \langle 2\rangle\}$, and for the outcome $2$ is $\{\langle 1\rangle, \langle 2\rangle\}$.
+  By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0, 1, 1$, respectively.
+  Thus, we yield the highest value, obtaining $\qused(\tracesemanticsnoparam\semanticsof{\texttt{custom}})=1$.
 \end{example}
 
 Formally, the $\qusedname$ quantity is defined as follows:
@@ -441,23 +518,29 @@ Formally, the $\qusedname$ quantity is defined as follows:
   Given an input variable $\definputvariable\in\inputvariables$,
   the quantity $\qused\in\tracetype\to\Nplus$ is defined as
   %
-  \begin{align*}
+  \marginnote[*2]{Note that, $\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state}$ is the set of all input values.}
+  \begin{eqnarray*}
     \qused(\defsetoftraces) \DefeQ
-    \sup \setdef{
-      \cardinality{&\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\ & \setdef{
-        \retrieveinput{\defseq'}(\definputvariable)
-        }{
-          \deftrace' \in \defsetoftraces \LanD
-          \\ & \qquad \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD
-          \\ & \qquad \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
-        }}
-    }{
-      \retrieveoutput\defstate \in \state
-    }
-  \end{align*}
+    \sup_{\retrieveoutput\defstate \in \stateandbottom}
+      \spacer\left|
+        \begin{array}{l}
+          \setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\
+          \quad \bigsetdef{
+            \retrieveinput{\defseq'}(\definputvariable)
+            }{
+              \deftrace' \in \defsetoftraces \LanD \\
+              \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD \\
+              \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
+            }
+        \end{array}
+      \right|
+  \end{eqnarray*}
 \end{definition}
 
 We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-empty sets of traces.
+In fact, $\qused(\emptyset) = \sup \emptyset = 0$ as the set of states is also empty.
+On the other hand, the set of traces with at least one trace yields the highest value of $\qusedname$, \ie{} $\cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state}} - 1$.
+Hence, the value of $\qusedname$ always decreases by enlarging the set of traces. Until the set of traces contains all possible traces\sidenote{The set of traces containing all the possible traces can be obtained by the random program, \cf{} \refprog{random}.} and the value of $\qusedname$ is $0$.
 
 \begin{lemma}[\qusedname{} is Anti-Monotonic]
   \lablemma{qused-antimonotonic}
@@ -466,10 +549,32 @@ We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-em
     \defsetoftraces \neq \emptyset \LanD \defsetoftraces \subseteq \defsetoftraces' \ImplieS \qused(\defsetoftraces) \ge \qused(\defsetoftraces')
   \end{align*}
 \end{lemma}
+\begin{proof}
+  We assume the cardinality of input values is $n$ and that $\qused(\defsetoftraces) = \defbound$.
+  Let us say that $\defoutput$ is the output value that maximizes $\qused(\defsetoftraces)$, \ie{} $\cardinalitynospaces{\setdef{
+    \retrieveinput{\defseq'}(\definputvariable)
+    }{
+      \deftrace' \in \defsetoftraces \land
+      \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\defoutput) \land
+      \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
+    }} = n - \defbound$.
+  By hypothesis that $\defsetoftraces$ is not empty, we have that $\defbound > 0$ since it exists at least one trace satisfying the above set.
+  Otherwise, the $\sup$ operator of an empty set would return $0$ and by adding traces this value would increase.
+  The other set of traces $\defsetoftraces'$ contains all the traces of $\defsetoftraces$ and possibly more.
+  Thus, $\setdef{
+    \retrieveinput{\defseq'}(\definputvariable)
+    }{
+      \deftrace' \in \defsetoftraces' \land
+      \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\defoutput) \land
+      \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
+    }$ contains, at least, all the input values of the one obtained for $\defsetoftraces$.
+    As a consequence, the cardinality can only be bigger or equal to $n - \defbound$.
+    The anti-monotonicity follows from the fact that this cardinality is subtracted from the set of all input values.
+\end{proof}
 
-In fact, $\qused(\emptyset) = \cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate\in\state}}$, the highest possible value for $\qusedname$. This is due to the fact that no trace is available to produce the outcomes. Instead, by considering set of traces with at least one trace, the value of $\qusedname$ always increases by enlarging the set of traces.
 
-Next we show the validation of the $\defbound$-bounded impact property when applied to $\qusedname$.
+Next, We show the validation of the $\defbound$-bounded impact property when applied to the $\qusedname$ impact definition.
+Note that, we employ the $\ge$ operator to allow semantics in our property, this choice is forced by the fact that the $\qusedname$ is anti-monotonic.
 
 \begin{theorem}\labthm{qused-validation}
   Whenever $\impactwrapper$ in $\revbounded$ is instantiated with $\qused$, the following holds:
@@ -477,18 +582,62 @@ Next we show the validation of the $\defbound$-bounded impact property when appl
     \collectingsemantics \subseteq \REVBOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\REVBOUNDED))
   \end{align*}
 \end{theorem}
+\begin{proof}
+  Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\bounded$ when instantiated with the $\qusedname$ impact definition:
+  \begin{eqnarray*}
+    \lefteqn{\outputvaluesabstraction(\dependencyabstraction(\bounded)) =} \\
+    &
+    \setdef{
+      \defsetofdependencies \in \outputvaluestype
+    }{
+      \sup\limits_{\retrieveoutput\defstate \in \stateandbottom}
+      \spacer\left|
+        \begin{array}{l}
+          \setdef{\retrieveinput\defstate(\definputvariable)}{\retrieveinput\defstate \in \state} \setminus \\
+          \quad \bigsetdef{
+            \retrieveinput{\defseq'}(\definputvariable)
+            }{
+              \deftrace' \in \defsetoftraces \LanD \\
+              \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD \\
+              \retrieveinput{\deftrace'} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace}
+            }
+        \end{array}
+      \right| \le \defbound
+    }
+  \end{eqnarray*}
+  As noticed before, the $\qusedname$ impact definition does not consider the intermediate states and abstracts the output states before any computation.
+  Hence, neither the abstraction to dependencies nor the abstraction to output values affect the validation of the property.
+\end{proof}
 
-Differently from the previous impact definitions, it holds that whenever $\qused(\tracesemanticsnoparam) = 0$, the program does not use the input variable $\definputvariable$, even in the presence of non-deterministic systems.
+
+Differently from the previous impact definitions, it holds that, whenever $\qused(\tracesemanticsnoparam) = 0$, the program does not use the input variable $\definputvariable$, even in the presence of non-deterministic systems.
 Thus, we can establish the following equivalence:
 
-\begin{remark}[Unused Equivalence]\labremark{qualitative-quantitative-equivalence}
+\begin{lemma}[Unused Equivalence]\lablemma{qualitative-quantitative-equivalence}
+  It holds that:
   \begin{gather*}
-    \unusediowrapper(\tracesemanticsnoparam) \IfF \qused(\tracesemanticsnoparam) = 0 \\
-    \neg\unused \spacearound{=} \mathscr{B}_{\definputvariable}^{\ge 1}
+    \unusediowrapper(\tracesemanticsnoparam) \IfF \qused(\tracesemanticsnoparam) = 0
   \end{gather*}
-\end{remark}
+\end{lemma}
+\begin{proof}
+  To show ($\Rightarrow$) we assume that $\unusediowrapper(\tracesemanticsnoparam)$.
+  As a consequence,
+\end{proof}
 
-In the rest of this chapter, we present the theoretical framework to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures.
+
+As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the unused property (\refdef*{unused}[*-3]) and the $\defbound$-bounded impact property (\refdef*{bounded}) instantiated with the $\qusedname$ impact definition:
+\[
+\neg\unused \spacearound{=} \mathscr{B}_{\definputvariable}^{\ge 1}
+\]
+meaning that if a program semantics does not use the variable $\definputvariable$, then it has an impact of at least $1$, and vice versa.
+\marginnote[*2]{
+  Instantiated with $\qusedname$:
+  \begin{eqnarray*}
+    \mathscr{B}_{\definputvariable}^{\ge 1} \DefeQ \setdef{\tracesemantics}{\qused(\defsetoftraces) \ge 1}
+  \end{eqnarray*}
+}
+
+In the rest of this chapter, we present the theoretical framework to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures introduced in the previous sections.
 
 \section{Abstract Quantitative Input Data Usage}
 \labsec{abstract-quantitative-input-data-usage}
