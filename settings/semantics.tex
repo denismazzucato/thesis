@@ -25,10 +25,12 @@
 \newcommand*{\dependencytype}{\setofsetof\pairofstates}
 \newsemantics{dependency}
 \renewcommand*{\dependencysubseteq}{\subseteq}
-\newcommandx{\reduce}[2][1=\dependencysemantics]{\restr{#1}{#2}}
-\newcommandx{\reducenoparam}[2][1=\dependencysemanticsnoparam]{\restr{#1}{#2}}
+\newcommandx{\reduce}[2][1=\outputsemantics]{\restr{#1}{#2}}
+\newcommandx{\reducenoparam}[2][1=\outputsemanticsnoparam]{\restr{#1}{#2}}
 \newcommand*{\reduceddependencysemantics}{\reduce[\dependencysemantics]{\abstractdomainconcretization(\bucket)}}
+\newcommand*{\reducedoutputsemantics}{\reduce[\outputsemantics]{\abstractdomainconcretization(\bucket)}}
 \newcommand*{\reduceddependencysemanticsnoparam}{\reduce[\dependencysemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
+\newcommand*{\reducedoutputsemanticsnoparam}{\reduce[\outputsemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
 \newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
 
 %% input-output

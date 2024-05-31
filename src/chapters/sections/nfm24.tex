@@ -256,12 +256,12 @@ For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 
 We show the validation of the $\defbound$-bounded impact property when applied to the $\outcomesname$ impact definition.
 
-\begin{theorem}\labthm{outcomes-validation}
+\begin{lemma}\lablemma{outcomes-validation}
   Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\outcomes$, the following holds:
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDED \IfF \outputvaluessemantics \subseteq \outputvaluesabstraction(\dependencyabstraction(\BOUNDED))
   \end{align*}
-\end{theorem}
+\end{lemma}
 \begin{proof}
   Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\bounded$ when instantiated with the $\outcomesname$ impact definition:
   \begin{eqnarray*}
@@ -394,12 +394,12 @@ For any set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 
 We show the validation of the $\defbound$-bounded impact property when applied to the $\rangename$ impact definition.
 
-\begin{theorem}\labthm{range-validation}
+\begin{lemma}\lablemma{range-validation}
   Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\range$, the following holds:
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDED))
   \end{align*}
-\end{theorem}
+\end{lemma}
 \begin{proof}
   Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\bounded$ when instantiated with the $\rangename$ impact definition:
   \begin{align*}
@@ -576,12 +576,12 @@ Hence, the value of $\qusedname$ always decreases by enlarging the set of traces
 Next, We show the validation of the $\defbound$-bounded impact property when applied to the $\qusedname$ impact definition.
 Note that, we employ the $\ge$ operator to allow semantics in our property, this choice is forced by the fact that the $\qusedname$ is anti-monotonic.
 
-\begin{theorem}\labthm{qused-validation}
+\begin{lemma}\lablemma{qused-validation}
   Whenever $\impactwrapper$ in $\revbounded$ is instantiated with $\qused$, the following holds:
   \begin{align*}
     \collectingsemantics \subseteq \REVBOUNDED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\REVBOUNDED))
   \end{align*}
-\end{theorem}
+\end{lemma}
 \begin{proof}
   Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\bounded$ when instantiated with the $\qusedname$ impact definition:
   \begin{eqnarray*}
@@ -648,7 +648,7 @@ In the rest of this chapter, we present the theoretical framework to verify the 
 \labsec{abstract-quantitative-input-data-usage}
 
 In this section, we introduce a sound and computable static analysis to verify the $\defbound$-bounded impact property of a program.
-The soundness of the approach leverages two elements: (1) the backward abstract semantics (\cf{} \refdef{?}), and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{}, written as $\abstractoutcomes$, $\abstractrange$, and $\abstractqused$ respectively.
+The soundness of the approach leverages two elements: (1) the backward abstract semantics (\cf{} \refdef{?}\sidenote{This definition will be defined in \refch{abstract-interpretation}}), and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{}, written as $\abstractoutcomes$, $\abstractrange$, and $\abstractqused$ respectively.
 
 
 To quantify the usage of an input variable, we need to determine the input configurations leading to specific output values.
@@ -656,20 +656,39 @@ As our impact definitions measure over the reachable output values (more precise
 Specifically, we abstract the concrete output values with an indexed set $\buckets\in\vectorbuckets$ of $n$ disjoint \textit{output buckets}, where $\abstractdomainlattice$ is an abstract state domain with concretization function  $\abstractdomainconcretization\in\abstractdomain\to\setof\stateandbottom$. The choice of these output buckets is essential for obtaining a precise and meaningful analysis result.
 
 For each output bucket $\bucket\in\abstractdomain$ where $1 \le j \le n$, our analysis computes an over-approximation of the dependency semantics restricted to the input configurations leading to $\abstractdomainconcretization(\bucket)$.
-More formally, the reduction of the dependency semantics $\dependencysemanticsnoparam$ (\refdef*{dependency-semantics}[*-2]) to the dependencies with final states in $X$ is defined as:
-\[\reduce[\dependencysemanticsnoparam]{X} \DefeQ \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in X}\]
+More formally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ (\refdef*{output-abstraction-semantics}[*-2]) to the dependencies with abstraction of a final state in $X$ is defined as:
+\[
+  \reduce[\outputsemanticsnoparam]{X} \DefeQ \setdef{
+    \setdef{
+      \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
+    }{
+      \retrieveoutput{\defstate} \in X
+      }
+  }{
+    \defsetofdependencies\in \outputsemanticsnoparam
+  }
+\]
 %
 Our static analysis is parametrized by an underlying backward abstract family\sidenote{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
-The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\setof\pairofstates$ employs the concretization of the abstract domain, \cf{}
-$\abstractdomainconcretization$, to restore all possible input-output dependencies, formally:
-\[\backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam(\bucket))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}\]
-We can thus define the soundness condition for the backward semantics with respect to the reduction of the dependency semantics.
+The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputvaluestype$ employs the concretization of the abstract domain, \cf{}
+$\abstractdomainconcretization$, to restore all possible dependencies from input states to output values, formally:
+\marginnote{The operator $\nonemptysetof{\cdot}$ returns the set of non-empty subsets of the given argument.}
+\[
+  \backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ
+  \nonemptysetof{\setdef{
+    \inputoutputtuple{\defstate}
+  }{
+    \retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam(\bucket))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)
+    }
+  }
+  \]
+We can thus define the soundness condition for the backward semantics with respect to the reduction of the output-abstraction semantics.
 
 
 \begin{definition}[Sound Over-Approximation for \texorpdfstring{$\backwardsemanticsnoparam$}{the backward semantics}]\labdef{sound-over-approximation}
-  For all programs $\defprogram$, and output bucket $\bucket\in\abstractdomain$, the family of semantics $\backwardsemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ reduced with  $\abstractdomainconcretization(\bucket)$, when it holds that:
-  \[\reduceddependencysemantics \SubseteQ \backwardconcretization(\backwardsemantics)\bucket\]
+  For all programs $\defprogram$, and output bucket $\bucket\in\abstractdomain$, the family of semantics $\backwardsemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$ reduced with  $\abstractdomainconcretization(\bucket)$, when it holds that:
+  \[\reducedoutputsemantics \SubseteQ \backwardconcretization(\backwardsemantics)\bucket\]
 \end{definition}
 
 We define
@@ -681,8 +700,11 @@ $\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a se
 \begin{align*}
 \multisemantics\buckets \DefeQ (\backwardsemantics\bucket)_{j\le n}
 \end{align*}
-where the concretization function $\multiconcretization\in(\multitype)\to\vectorbuckets\to\setof\pairofstates$ is defined as:
-\begin{align*}\multiconcretization(\multisemantics)\buckets \DefeQ \bigsetjoin_{j\le n} \setdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j)\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+where the concretization function $\multiconcretization$ is defined as:
+\begin{align*}
+  \multiconcretization &\IN (\multitype)\to\vectorbuckets\to\outputvaluestype \\
+  \multiconcretization(\multisemantics)\buckets &\DefeQ
+  \nonemptysetof*{\bigsetjoin_{j\le n} \bigsetdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j) \\ \land \retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}}
 \end{align*}
 \end{definition}
 
@@ -690,8 +712,8 @@ Next, we show the soundness of the multi-bucket semantics with respect to the de
 
 \begin{lemma}[Sound Over-Approximation for \texorpdfstring{$\multisemanticsnoparam$}{the Multi-Bucket Semantics}]\lablemma{sound-over-approximation-multi-bucket}
   For all programs $\defprogram$, output buckets $\buckets\in\vectorbuckets$, and a family of semantics $\backwardsemanticsnoparam$, the %multi-bucket family of
-  semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the dependency semantics $\dependencysemanticsnoparam$ when reduced to $\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)$:
-  \[\reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)} \SubseteQ \multiconcretization(\multisemantics)\buckets\]
+  semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$ when reduced to $\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)$:
+  \[\reduce{\bigsetjoin\limits_{j\le n}\abstractdomainconcretization(\bucket)} \SubseteQ \multiconcretization(\multisemantics)\buckets\]
 \end{lemma}
 \begin{proof}
   \begin{align*}
@@ -705,28 +727,39 @@ Next, we show the soundness of the multi-bucket semantics with respect to the de
     && \text{by $\backwardconcretization$} \\
     &= \bigsetjoin_{j \le n} \backwardconcretization(\backwardsemanticsnoparam)\bucket
   \end{align*}
-  From \refdef{sound-over-approximation}, we obtain that $\foralldef{j \le n}{\reduceddependencysemanticsnoparam \subseteq \backwardconcretization(\backwardsemanticsnoparam(\bucket))}$.
-  Thus, by monotonicity of the union operator over set inclusion, it holds that $\bigsetjoin_{j\le n}\reduceddependencysemanticsnoparam \subseteq \bigsetjoin_{j\le n}\backwardconcretization(\backwardsemanticsnoparam(\bucket))$. We conclude by:
+  From \refdef{sound-over-approximation}, we obtain that $\foralldef{j \le n}{\reducedoutputsemanticsnoparam \subseteq \backwardconcretization(\backwardsemanticsnoparam(\bucket))}$.
+  Thus, by monotonicity of the union operator over set inclusion, it holds that $\bigsetjoin_{j\le n}\reducedoutputsemanticsnoparam \subseteq \bigsetjoin_{j\le n}\backwardconcretization(\backwardsemanticsnoparam(\bucket))$. We conclude by:
   \begin{align*}
-    \bigsetjoin_{j\le n}\reduceddependencysemanticsnoparam &= \bigsetjoin_{j\le n} \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
+    \bigsetjoin_{j\le n}\reducedoutputsemanticsnoparam &= \bigsetjoin_{j\le n} \setdef{\inputoutputtuple{\defstate}\in\outputsemanticsnoparam}{\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}
       && \text{by $\reducenoparam{X}$} \\
-    &= \setdef{\inputoutputtuple{\defstate}\in\dependencysemanticsnoparam}{\retrieveoutput{\defstate}\in\bigsetjoin_{j \le n}\abstractdomainconcretization(\bucket)}
+    &= \setdef{\inputoutputtuple{\defstate}\in\outputsemanticsnoparam}{\retrieveoutput{\defstate}\in\bigsetjoin_{j \le n}\abstractdomainconcretization(\bucket)}
       && \text{by set definition} \\
     &= \reducenoparam{\bigsetjoin_{j \le n}\abstractdomainconcretization(\bucket)}
       && \text{by $\reducenoparam{X}$}
   \end{align*}
   \end{proof}
 
-
-Whenever the output buckets \textit{cover} the subset of outcomes abstracted by $\outputobs$, $\multisemanticsnoparam$ is a sound over-approximation of $\dependencysemanticsnoparam$.
-The concept of covering for output buckets ensures that no potential final state is missed from the analysis.
+We introduce the concept of \emph{covering} for output buckets to ensure that no potential final state is missed from the analysis.
 
 \begin{definition}[Covering]\label{def:covering}
-  We say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
+  The output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
   \[
     \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput{\defstate} \in \state} \subseteq \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}
   \]
 \end{definition}
+
+
+Whenever the output buckets \textit{cover} the subset of outcomes abstracted by $\outputobs$, $\multisemanticsnoparam$ is a sound over-approximation of $\outputsemanticsnoparam$.
+
+\begin{lemma}\lablemma{sound-approximation-covering}
+  Whenever the output buckets cover the subset of potential outcomes, it holds that the semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$ without restrictions:
+  \[
+    \outputsemanticsnoparam \SubseteQ \multiconcretization(\multisemantics)\buckets
+  \]
+\end{lemma}
+\begin{proof}
+  \denis{todo}
+\end{proof}
 
 Additionally, the output buckets needs to be compatible with the concrete outcomes of the program, meaning that two output states cannot map to the same output abstraction if they belong to different output buckets.
 
@@ -738,35 +771,59 @@ Additionally, the output buckets needs to be compatible with the concrete outcom
 We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or always lower depending on the ordering operator of $\genbounded$) than the concrete counterpart $\impactwrapper$.
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
-  % For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
-  % \[
-  %   \impactwrapper(
-  %     \multiconcretization(\multisemantics)\buckets
-  %   ) \LE \impactinstance(\multisemantics\buckets, \buckets)
-  % \]
-  The concretization of the abstract implementation $\impactinstance$ is $\impactinstanceconcretization\in\valuesposplus\to\outputvaluestype$, defined as:
+  For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrappername$, whenever it holds that:
+  \begin{eqnarray*}
+    \lefteqn{\forall{
+      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\multiconcretization(\multisemantics)\buckets))
+    }.} \\ & {
+        \impactwrapper(
+          \multiconcretization(\multisemantics)\buckets
+          ) \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
+          }
+  \end{eqnarray*}
+  % The concretization of the abstract implementation $\impactinstance$ is $\boundconcretization\in\valuesposplus\to\outputvaluestype$, defined as:
+  % \begin{align*}
+  %   \boundconcretization(\defbound) \DefeQ
+  %   \setdef{\defsetofdependencies \in \setof{\pair{\state}{\valuesposplus}}}{
+  %     \impactwrapper(\defsetofdependencies) \le \defbound
+  %   }
+  % \end{align*}
+\end{definition}
+
+
+We define the concretization of the abstract implementation $\impactwrappername$ as $\boundconcretization \in \valuesinf \to \collectingtype$. Such function should return the set of trace semantics that yield an impact lower (or bigger) than the bound $\defbound$.
+
+\begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
+  The concretization of a measured quantity $\defbound$ is $\boundconcretization\in\valuesinf\to\collectingtype$, defined as:
   \begin{align*}
-    \impactinstanceconcretization(\defbound) \DefeQ
-    \setdef{\defsetofdependencies \in \setof{\pair{\state}{\valuesposplus}}}{
-      \impactwrapper(\defsetofdependencies) \le \defbound
+    \boundconcretization(\defbound) \DefeQ
+    \setdef{\defsetoftraces \in \collectingtype}{
+      \impactwrapper(\defsetoftraces) \comparison \defbound
     }
   \end{align*}
 \end{definition}
 
+\marginnote{It holds an equivalence with the $\defbound$-bounded impact property:
+\[
+  \boundconcretization(\defbound) = \genbounded
+\]}
 
+We note that the concretization $\boundconcretization$ is monotonic in the bound $\defbound$.
 
-\begin{lemma}
-  \begin{align*}
-    \dependencyconcretization(\outputvaluesconcretization(\impactinstanceconcretization(\impactinstance(\multisemantics\buckets, \buckets)))) \subseteq \GENBOUNDED \ImplieS \defprogram \satisfies \GENBOUNDED
-  \end{align*}
+\begin{lemma}[Monotonicity of $\boundconcretization$]\lablemma{monotonicity-bound-concretization}
+  Depending on the comparison operator, for all $\defbound',\defbound\in\valuesposplus$ it holds that:
+  \begin{enumerate}[label=(\roman*)]
+    \item $\defbound' \le \defbound \ImplieS \leconcretization(\defbound') \subseteq \leconcretization(\defbound)$
+    \item $\defbound' \ge \defbound \ImplieS \geconcretization(\defbound') \supseteq \geconcretization(\defbound)$
+  \end{enumerate}
 \end{lemma}
 
-The next result shows that our static analysis is sound when employed to verify the property of interest $\bounded$ for the program $\defprogram$.
+The next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
 That is, if %the computation of
 $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\le\defbound$, then the program $\defprogram$ satisfies the property $\bounded$, \cf{} $\defprogram \satisfies \bounded$.
 
 \begin{theorem}[Soundness] \labthm{soundness}
-  Let $\bounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariable\in\inputvariables$.
+  Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariable\in\inputvariables$.
   Whenever,
   \begin{enumerate}[label=(\roman*)]
     \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
@@ -775,9 +832,48 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\le\defbound$, 
   \end{enumerate}
   the following implication holds:
   \begin{align*}
-    \impactinstance(\multisemantics\buckets, \buckets) \le \defbound \ImplieS \defprogram \satisfies \bounded
+    \impactinstance(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \comparison \defbound \ImplieS \defprogram \satisfies \GENBOUNDED
   \end{align*}
 \end{theorem}
+\begin{proof}
+  Assuming $\comparison$ is $\le$, the proof follows:
+  \begin{align*}
+    &\impactinstance(\multisemantics\buckets, \buckets) = \defbound'
+      && \text{by \ref{p:third}} \\
+    & \implies
+    \forall{
+      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\multiconcretization(\multisemantics)\buckets))
+    }. \\ & \phantom{\implies} \qquad
+        \impactwrapper(
+          \multiconcretization(\multisemantics)\buckets
+        ) \LE \defbound'
+      && \text{by \ref{p:first}} \\
+    & \implies
+    \forall{
+      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\outputsemantics))
+    }. \\ & \phantom{\implies} \qquad
+        \impactwrapper(
+          \multiconcretization(\multisemantics)\buckets
+        ) \LE \defbound'
+      && \text{by \refdef{concretization-quantitative}} \\
+    & \implies
+    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \leconcretization(\defbound')
+      && \text{by \reflemma{monotonicity-bound-concretization} and } \defbound' \le \defbound \\
+    & \implies
+    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \leconcretization(\defbound)
+      && \text{by } \bounded = \leconcretization(\defbound) \\
+    & \implies
+    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \bounded
+      && \text{by \refthm{collecting-dependency-galois-connection}} \\
+    & \implies
+    \outputconcretization(\outputsemantics) \SubseteQ \dependencyabstraction(\bounded)
+      && \text{by \refthm{dependency-output-galois-connection}} \\
+    & \implies
+    \outputsemantics \SubseteQ \outputabstraction(\dependencyabstraction(\bounded))
+  \end{align*}
+  In case $\impactwrappername$ is instantiated with $\outcomesname$, we obtain the result by \reflemma{outcomes-validation}. Otherwise, if $\impactwrappername$ is instantiated with $\rangename$, we obtain the result by \reflemma{range-validation}. On the other hand, if $\comparison$ is $\ge$ the proof follows by the same reasoning inverting $\subseteq$ with $\supseteq$ when \reflemma{monotonicity-bound-concretization} is applied.
+  In such case, $\impactwrappername$ is instantiated with $\qusedname$ and we conclude the proof following \reflemma{qused-validation}.
+\end{proof}
 
 
 Finally,
