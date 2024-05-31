@@ -1,9 +1,9 @@
 
 \begin{gather*}
   \range(\defsetoftraces) \DefeQ \sup_{\definput\in\reducedstate} \\
-      \length(\setdef{
-        \reader(\retrieveoutput{\defseq})
+      \length\left(\setdef*{
+        \outputobs(\retrieveoutput{\defseq})
       }{
-        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
-      })
+        \defseq \in \defsetoftraces \land{} \\ \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+      }\right)
 \end{gather*}

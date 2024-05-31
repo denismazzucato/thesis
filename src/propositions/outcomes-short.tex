@@ -1,9 +1,9 @@
 
 \begin{gather*}
   \outcomes(\defsetoftraces) \DefeQ \\ \sup_{\definput\in\reducedstate}
-      \cardinality{\setdef{
-        \reader(\retrieveoutput{\defseq})
+      \cardinality*{\bigsetdef{
+        \outputobs(\retrieveoutput{\defseq})
       }{
-        \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
+        \defseq \in \defsetoftraces \land{} \\ \retrieveinput{\defseq} \stateeq{\inputvariableswithouti} \definput
       }}
 \end{gather*}

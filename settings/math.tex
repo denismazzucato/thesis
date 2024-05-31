@@ -28,6 +28,7 @@
 \newcommand*{\setofsetofsetof}[1]{\setof{\setofsetof{#1}}}
 \newcommand*{\setdef}[2]{\{#1 \mid #2\}}
 \newcommand*{\bigsetdef}[2]{\left\{ #1 \spacer\left| \begin{array}{l} #2 \end{array} \right.\right\}}
+\WithSuffix\newcommand\setdef*[2]{\left\{ #1 \spacer\left| \begin{array}{l} #2 \end{array} \right.\right\}}
 \newcommand*{\seTDef}[2]{\setdef{#1\spacer}{\spacer#2}}
 \newcommand*{\vecdef}[2]{[#1\mid#2]}
 \newcommand*{\defeq}{\overset{\text{\scalebox{.5}{\textup{def}}}}{=}}
@@ -35,6 +36,7 @@
 \newcommand*{\SubseteQ}{\spacearound{\subseteq}}
 \newcommand*{\cardinalitynospaces}[1]{|#1|}
 \newcommand*{\cardinality}[1]{\cardinalitynospaces{\spacearound{#1}}}
+\WithSuffix\newcommand\cardinality*[1]{\left|#1\right|}
 \newcommand*{\satisfies}{\models}
 \newcommand*{\tuple}[2]{\langle #1, #2 \rangle}
 \newcommand*{\pair}[2]{#1\times#2}

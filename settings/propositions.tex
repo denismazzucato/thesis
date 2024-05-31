@@ -16,7 +16,13 @@
 
 \newcommandx{\side}[3][3=*0]{%
 \expandafter\marginnote[#3]{%
-\begin{named}[{\csname nref#1\endcsname{#2}}]%
+\begin{named}[
+  \ifcsname nref#1\endcsname
+    {\csname nref#1\endcsname{#2}}
+  \else
+    {\csname ref#1\endcsname{#2}}
+  \fi
+]%
   \input{src/propositions/#2-short}%
 \end{named}%
 }%
