@@ -400,11 +400,12 @@ Next we show that abstract non-interference matches the abstract unused predicat
   \end{align*}
 \end{proposition}
 \begin{proof}
-  Assuming that the program $\defprogram$ is deterministic implies that whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
-  Intuitively, whenever $\aniwrapper$ holds, the input variable $\definputvariable$ does not interfere with the output states (up to the abstraction $\aniobserver$).
+  By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  To show ($\implies$), we assume $\aniwrapper$.
+  For any two traces $\deftrace$ \dots \denis{SOno arrivato qui} the input variable $\definputvariable$ does not interfere with the output states (up to the abstraction $\aniobserver$).
   It is easy to note that, even without the assumption on the determinism of the program, if the variable $\definputvariable$ does not interfere, then it is unused in the sense of \nrefdef{abstract-unused}.
 
-  On the other hand, to prove the other implication, we need to show that $\forall \deftrace,\deftrace' \in \tracesemantics.\spacer \retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace' \implies \aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
+  On the other hand, to prove ($\Leftarrow$), we need to show that $\forall \deftrace,\deftrace' \in \tracesemantics.\spacer \retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace' \implies \aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
   From the assumption that the program $\defprogram$ is deterministic, we have that $\retrieveinput\deftrace = \retrieveinput\deftrace'$ implies $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$. Note that, $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$ implies $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$ as $\aniobserver$ is an upper-closure operator.
   Thus, we only need to prove that the output states are equivalent whenever $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$.
   From the definition of the abstract unused predicate, it holds that if $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace'$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
