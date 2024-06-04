@@ -388,7 +388,7 @@ Next we show that abstract non-interference matches the abstract unused predicat
 \begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
   If $\defprogram$ deterministic and the input abstraction is defined as:
   \begin{align*}
-    \aniselect(\defstate) \spacearound= \lambda \texttt{j}. \spacer
+    \aniselecti(\defstate) \spacearound= \lambda \texttt{j}. \spacer
     \begin{cases}
       \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \definputvariable \\
       \top & \text{otherwise}
@@ -396,20 +396,30 @@ Next we show that abstract non-interference matches the abstract unused predicat
   \end{align*}
   then, it holds that:
   \begin{align*}
-    \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
+    \aniwrapperi(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{align*}
 \end{proposition}
 \begin{proof}
-  By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
-  To show ($\implies$), we assume $\aniwrapper$.
-  For any two traces $\deftrace$ \dots \denis{SOno arrivato qui} the input variable $\definputvariable$ does not interfere with the output states (up to the abstraction $\aniobserver$).
-  It is easy to note that, even without the assumption on the determinism of the program, if the variable $\definputvariable$ does not interfere, then it is unused in the sense of \nrefdef{abstract-unused}.
+  % By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  To show ($\implies$), we assume $\aniwrapperi$.
+  Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariable$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$.
+  To prove $\unusediowrapper$, we assume that for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$ it holds that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$. We need to show that it exists a trace $\deftrace'\in\tracesemantics$ such that: (i) $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, (ii) $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and (iii) $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  The set $\values$ contains the values of any variable.
+  Hence, it has to exist a trace $\deftrace^\star\in\tracesemantics$ such that $\retrieveinput{\deftrace^\star}(\definputvariable) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, proving (i) and (ii).
+  Then, we have that the output abstraction match (iii) from $\aniwrapperi$ applied to (ii). Thus, concluding ($\implies$).
+  Note that, to show ($\implies$) we do not need the assumption that $\defprogram$ is deterministic.
 
-  On the other hand, to prove ($\Leftarrow$), we need to show that $\forall \deftrace,\deftrace' \in \tracesemantics.\spacer \retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace' \implies \aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
-  From the assumption that the program $\defprogram$ is deterministic, we have that $\retrieveinput\deftrace = \retrieveinput\deftrace'$ implies $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$. Note that, $\retrieveoutput\deftrace = \retrieveoutput\deftrace'$ implies $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$ as $\aniobserver$ is an upper-closure operator.
-  Thus, we only need to prove that the output states are equivalent whenever $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$.
-  From the definition of the abstract unused predicate, it holds that if $\retrieveinput\deftrace(\definputvariable) \neq \retrieveinput\deftrace'(\definputvariable)$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput\deftrace'$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput\deftrace')$.
-  Thus, the output states are equivalent and $\aniwrapper$ holds.
+  To show ($\implies$), we assume $\aniwrapperi$.
+  Thus, for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$, it holds that whenever $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
+  To prove $\aniwrapperi$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$. We need to show that the output abstraction of the two traces match, \ie{} $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  In such case, we also take into consideration that $\defprogram$ is deterministic.
+  Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  Let us fix the trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$, either we assume that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$ \ref{ani-predicate-equivalence-0} or $\retrieveinput{\deftrace}(\definputvariable) = \defvalue$ \ref{ani-predicate-equivalence-1} holds.
+  \begin{enumerate}[label=(\roman*)]
+    \item \label{ani-predicate-equivalence-0} In case we assume $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, then by $\unusediowrapper$ it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold. By assumption of $\aniwrapperi$, for all two traces $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ holds, hence we need to show that any trace $\deftrace'\in\tracesemantics$ share the same output abstraction as $\deftrace$. It is easy to see that if $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$ by $\unusediowrapper$ then they also share the same output abstraction.
+    \item \label{ani-predicate-equivalence-1} On the other hand, we assume that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, hence $\unusediowrapper$ cannot prove our conclusion when applied to $\deftrace$ and $\defvalue$. However, either it exists a value $\defvalue'\in\values$ such that $\defvalue \neq \defvalue'$ or $\values=\{\defvalue\}$. In the latter, $\aniwrapperi$ holds from the fact that any variable only input value is $\defvalue$ and the program $\defprogram$ is deterministic, thus $\tracesemantics$ contains only a single trace. Otherwise, we apply $\unusediowrapper$ to $\deftrace$ and the value $\defvalue'$.
+    From here, it follows the same conclusion of the previous point \ref{ani-predicate-equivalence-0}
+  \end{enumerate}
 \end{proof}
 
 \begin{example}
