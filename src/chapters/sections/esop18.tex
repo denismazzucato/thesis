@@ -13,36 +13,36 @@ Later in the next chapters, we will define a quantitative measure of usage of in
 \labsec{input-data-usage}
 
 \marginnote[*2]{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$.}
-Originally introduced by \textcite{Urban2018}, the notion of input data usage is a predicate to determine whether the input variable $\definputvariable\in\inputvariables$ is used in the computation of the program's output. It consists in a predicate
+Originally introduced by \textcite{Urban2018}, the notion of input data usage is a predicate to determine whether the input variables $\definputvariables\in\setof\inputvariables$ are used in the computation of the program's output. It consists in a predicate
 \[
   \unusedwrapper \in \tracetype \to \B
 \]
-that holds whenever the input variable $\definputvariable\in\inputvariables$ is not used by the program under evaluation.
+that holds whenever all the input variables in $\definputvariables$ are not used by the program under evaluation.
 
 
 \marginnote{
   Let $\deftrace\in\finiteinfinitesequences$ be a trace, $\retrieveinput{\deftrace}\in\state$ refers to the initial state and $\retrieveoutput{\deftrace}\in\stateandbottom$ to the final one if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
 }
 \begin{definition}[Unused]\labdef{unused-predicate}
-  Given a program $\defprogram$ and an input variable of interest $\definputvariable\in\inputvariables$, the variable $\definputvariable$ is \emph{unused} if the following predicate holds:
+  Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusedwrapper(\tracesemantics) \DefifF} \\
     & &\forall
-      \defseq\in\tracesemantics, \defvalue\in\values
+      \defseq\in\tracesemantics, \defvalue\in\valuesofvariables
     .\spacer
-      \retrieveinput{\defseq}(\definputvariable) \neq \defvalue \ImplieS \\
+      \retrieveinput{\defseq}(\definputvariables) \neq \defvalue \ImplieS \\
       & &\exists
         \defseq'\in\tracesemantics
       .\spacer
         \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
         \LanD
-        \retrieveinput{\defseq'}(\definputvariable) = \defvalue
+        \retrieveinput{\defseq'}(\definputvariables) = \defvalue
         \LanD
         \retrieveoutput{\defseq} = \retrieveoutput{\defseq'}
   \end{eqnarray*}
 \end{definition}
 
-Intuitively, an input variable $\definputvariable$ is unused if all feasible outcomes $\retrieveoutput{\defseq}$ are feasible from all possible initial values of $\definputvariable$.
+Intuitively, an input variable $\definputvariable\in \definputvariables$ is unused if all feasible outcomes $\retrieveoutput{\defseq}$ are feasible from all possible initial values of $\definputvariable$.
 That is, for all possible initial values $\defvalue$ that differ from the initial value of $\definputvariable$ in the trace $\defseq$, there exists another trace $\defseq'$ with initial value $\defvalue$ for $\definputvariable$ that leads to the same output $\retrieveoutput\defseq$.
 
 \begin{example}\labexample{school-year}
@@ -300,6 +300,50 @@ non_termination(x):
   In this example we conclude that the variable \texttt{x} is used since the non-termination is feasible only from positive values of \texttt{x}.
 \end{example}
 
+Note that, the $\unusediowrapper$ predicate (\refdef{unused-predicate}) states that the set of variables $\inputvariables$ is unused in the given program.
+Equivalently, the same could be achieved by checking whether each variable separately is unused in the program, we prefer the formalization using the set of variables as proposed in \sidetextcite{Urban2018,Urban2020}.
+
+\begin{lemma}\lablemma{single-vs-set-of-variables}
+  For all program $\defprogram$ and set of variables $\definputvariables\in\setof\inputvariables$, it holds that:
+\[\unusedwrapper(\tracesemantics) \IfF \foralldef{\definputvariable \in \definputvariables}{\unusedwrapperi(\tracesemantics)}
+\]
+\end{lemma}
+\begin{proof}
+  Let $\defprogram$ be a program and $\definputvariables\in\setof\inputvariables$ the set of variables of interest.
+  To show ($\implies$), we assume that $\unusedwrapper(\tracesemantics)$ holds.
+  We need to prove that for all $\definputvariable\in\definputvariables, \deftrace\in\tracesemantics$, and $\defvalue\in\values$ such that $\retrieveinput\deftrace(\definputvariable) \neq \defvalue$, there exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\retrieveoutput\deftrace = \retrieveoutput{\deftrace'}$ hold.
+  By the definition of $\unusedwrapper(\tracesemantics)$, we have that $\forall \deftrace\in\tracesemantics, \defvalue\in\valuesofvariables.\spacer \retrieveinput{\deftrace}(\definputvariables) \neq \defvalue \implies \exists \deftrace'\in\tracesemantics.\spacer \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace} \land \retrieveinput{\deftrace'}(\definputvariables) = \defvalue \land \retrieveoutput{\deftrace} = \retrieveoutput{\deftrace'}$. By expanding the definition we obtain:
+  \begin{align*}
+    &\forall \deftrace\in\tracesemantics, \defvalue_1\in\values, \dots, \defvalue_{\cardinalitynospaces{\definputvariables}}\in\values.\\
+    &\quad
+      \exists j \le \cardinalitynospaces{\definputvariables}.\spacer \retrieveinput{\deftrace}((\definputvariables)_j) \neq \defvalue_j \implies \\
+    &\quad\quad
+      \exists \deftrace'\in\tracesemantics.\spacer
+      \forall j \le \cardinalitynospaces{\definputvariables}.\spacer
+      \retrieveinput{\deftrace'}((\definputvariables)_j) = \defvalue_j \land \\
+    &\quad\quad\quad
+      \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace} \land \retrieveoutput{\deftrace} = \retrieveoutput{\deftrace'}
+  \end{align*}
+  Thus, to prove that it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\retrieveoutput\deftrace = \retrieveoutput{\deftrace'}$ we can take the trace $\deftrace'$ that satisfies the above property where the $j$-th variable of $\definputvariables$ is $\definputvariable$, and we pick the values $\defvalue_1\in\values, \dots, \defvalue_{\cardinalitynospaces{\definputvariables}}\in\values$ such that $\retrieveinput{\deftrace}((\definputvariables)_j) \neq \defvalue_j$ but $\retrieveinput{\deftrace}((\definputvariables)_l) = \defvalue_l$ for all the other indices $l$.
+  As a consequence, from $\retrieveinput{\deftrace'}((\definputvariables)_j) = \defvalue_j \land
+    \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}$
+  it follows that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ since all the values of variables in $\definputvariables\setminus{\{\definputvariable\}}$ and $\inputvariableswithoutw$ are equal in both $\deftrace$ and $\deftrace'$.
+  Hence, $\deftrace'$ is the trace that satisfies $\unusedwrapperi$, concluding ($\implies$).
+
+  To show ($\Leftarrow$), we assume that $\foralldef{\definputvariable \in \definputvariables}{\unusedwrapperi(\tracesemantics)}$ holds.
+  We need to prove that for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in \valuesofvariables$ such that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$ it exists $\defseq'\in\tracesemantics$ such that $\retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}$, $
+    \retrieveinput{\defseq'}(\definputvariables) = \defvalue$, and $
+    \retrieveoutput{\defseq} = \retrieveoutput{\defseq'}$ hold.
+  This direction of the implication is less intuitive than the previous one as it requires to show that no changes to multiple variables at the same time can affect the outcome of the program.
+  Thus, we focus on values $\defvalue\in\valuesofvariables$ that differ from $\retrieveinput\deftrace(\definputvariables)$ in more than one index, let us call this set of indices that differ as $D\in\setof{\setdef{j\in\N}{j\le\cardinalitynospaces{\definputvariables}}}$. For each $j\in D$, by hypothesis it exists a trace $\defseq^j\in\tracesemantics$ such that $\retrieveinput{\defseq^j} \stateeq{\inputvariables \setminus{\{(\definputvariables)_j\}}} \retrieveinput{\defseq}$, $
+  \retrieveinput{\defseq^j}((\definputvariables)_j) = \defvalue_j$, and $
+  \retrieveoutput{\defseq} = \retrieveoutput{\defseq^j}$.
+  Then, by considering $\defseq^j$ it has to exist another trace $\defseq^{j,l}\in\tracesemantics$ such that $\retrieveinput{\defseq^{j,l}} \stateeq{\inputvariables \setminus{\{(\definputvariables)_j, (\definputvariables)_l\}}} \retrieveinput{\defseq}$, $
+  \retrieveinput{\defseq^{j,l}}((\definputvariables)_j, (\definputvariables)_l) = [\defvalue_j\spacer \defvalue_l]$, and $
+  \retrieveoutput{\defseq} = \retrieveoutput{\defseq^{j,l}}$ where $l\in D$.
+  By repeating this process for all the indices in $D$, we obtain a trace $\defseq'$ that satisfies the property of $\unusedwrapper$. Hence concluding ($\Leftarrow$).
+\end{proof}
+
 \section{Abstract Input Data Usage}
 \labsec{abstract-input-data-usage}
 
@@ -317,7 +361,7 @@ Later, we will define the quantitative measure of input data usage, and use the 
   \end{gather*}
 where $\aniselect$ and $\aniobserver$ are upper closure operators on program states to abstract input and output states respectively.
 \end{definition}
-% We assume that the objective of the input abstraction $\aniselect$ is to monitor the interference of the input variable $\definputvariable$.
+% We assume that the objective of the input abstraction $\aniselect$ is to monitor the interference of the input variable $\definputvariables$.
 }
 
 In the following, we define the abstraction of output states, called output observer, as a map from states to an abstract domain.
@@ -332,19 +376,19 @@ We employ the output observer to define an abstract version of the unused predic
 
 
 \begin{definition}[Abstract Unused]\labdef{abstract-unused}
-  Given a program $\defprogram$, an output observer $\aniobserver\in \state \to \state$, and an input variable of interest $\definputvariable\in\inputvariables$, the variable $\definputvariable$ is (abstractly) \emph{unused} if the following predicate holds:
+  Given a program $\defprogram$, an output observer $\aniobserver\in \state \to \state$, and an input variable of interest $\definputvariables\in\setof\inputvariables$, the variable $\definputvariables$ is (abstractly) \emph{unused} if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusediowrapper(\tracesemantics) \DefifF} \\
     & &\forall
-      \defseq\in\tracesemantics, \defvalue\in\values
+      \defseq\in\tracesemantics, \defvalue\in\valuesofvariables
     .\spacer
-      \retrieveinput{\defseq}(\definputvariable) \neq \defvalue \ImplieS \\
+      \retrieveinput{\defseq}(\definputvariables) \neq \defvalue \ImplieS \\
       & &\exists
         \defseq'\in\tracesemantics
       .\spacer
         \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
         \LanD
-        \retrieveinput{\defseq'}(\definputvariable) = \defvalue
+        \retrieveinput{\defseq'}(\definputvariables) = \defvalue
         \LanD
         \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
   \end{eqnarray*}
@@ -368,7 +412,7 @@ parity(x):
 
 \nrefdef{abstract-unused} can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
 As a drawback, we lose the input abstraction: the tread-off allows non-determinism but does not permit input state abstractions in the sense of abstract non-interference.
-The reason is that to take into account non-determinism, for any value of the input variable $\definputvariable$, we need to consider all possible traces that start from a different initial value.
+The reason is that to take into account non-determinism, for any value of the input variable $\definputvariables$, we need to consider all possible traces that start from a different initial value.
 Such low-level detail cannot be captured anymore by the input abstraction employed in the definition of abstract non-interference.
 
 The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function.
@@ -383,14 +427,14 @@ The next result shows that the abstract unused predicate is equivalent to the or
   Indeed, the output observer $\aniobserver = \identity$ does not abstract the output states, and thus the two predicates are equivalent.
 \end{proof}
 
-Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction allows only the value of the variable $\definputvariable$, returning $\top$ in the other cases.
+Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction allows only the value of the variable $\definputvariables$, returning $\top$ in the other cases.
 
 \begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
   If $\defprogram$ deterministic and the input abstraction is defined as:
   \begin{align*}
     \aniselecti(\defstate) \spacearound= \lambda \texttt{j}. \spacer
     \begin{cases}
-      \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \definputvariable \\
+      \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \definputvariables \\
       \top & \text{otherwise}
     \end{cases}
   \end{align*}
@@ -402,22 +446,22 @@ Next we show that abstract non-interference matches the abstract unused predicat
 \begin{proof}
   % By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
   To show ($\implies$), we assume $\aniwrapperi$.
-  Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariable$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$.
-  To prove $\unusediowrapper$, we assume that for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$ it holds that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$. We need to show that it exists a trace $\deftrace'\in\tracesemantics$ such that: (i) $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, (ii) $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and (iii) $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
-  The set $\values$ contains the values of any variable.
-  Hence, it has to exist a trace $\deftrace^\star\in\tracesemantics$ such that $\retrieveinput{\deftrace^\star}(\definputvariable) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, proving (i) and (ii).
+  Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariables$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$.
+  To prove $\unusediowrapper$, we assume that for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$ it holds that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$. We need to show that it exists a trace $\deftrace'\in\tracesemantics$ such that: (i) $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, (ii) $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and (iii) $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  The set $\valuesofvariables$ contains the values of any variable.
+  Hence, it has to exist a trace $\deftrace^\star\in\tracesemantics$ such that $\retrieveinput{\deftrace^\star}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, proving (i) and (ii).
   Then, we have that the output abstraction match (iii) from $\aniwrapperi$ applied to (ii). Thus, concluding ($\implies$).
   Note that, to show ($\implies$) we do not need the assumption that $\defprogram$ is deterministic.
 
   To show ($\implies$), we assume $\aniwrapperi$.
-  Thus, for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$, it holds that whenever $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
+  Thus, for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, it holds that whenever $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
   To prove $\aniwrapperi$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$. We need to show that the output abstraction of the two traces match, \ie{} $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
   In such case, we also take into consideration that $\defprogram$ is deterministic.
   Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
-  Let us fix the trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\values$, either we assume that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$ \ref{ani-predicate-equivalence-0} or $\retrieveinput{\deftrace}(\definputvariable) = \defvalue$ \ref{ani-predicate-equivalence-1} holds.
+  Let us fix the trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, either we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$ \ref{ani-predicate-equivalence-0} or $\retrieveinput{\deftrace}(\definputvariables) = \defvalue$ \ref{ani-predicate-equivalence-1} holds.
   \begin{enumerate}[label=(\roman*)]
-    \item \label{ani-predicate-equivalence-0} In case we assume $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, then by $\unusediowrapper$ it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold. By assumption of $\aniwrapperi$, for all two traces $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ holds, hence we need to show that any trace $\deftrace'\in\tracesemantics$ share the same output abstraction as $\deftrace$. It is easy to see that if $\retrieveinput{\deftrace'}(\definputvariable) = \defvalue$ by $\unusediowrapper$ then they also share the same output abstraction.
-    \item \label{ani-predicate-equivalence-1} On the other hand, we assume that $\retrieveinput{\deftrace}(\definputvariable) \neq \defvalue$, hence $\unusediowrapper$ cannot prove our conclusion when applied to $\deftrace$ and $\defvalue$. However, either it exists a value $\defvalue'\in\values$ such that $\defvalue \neq \defvalue'$ or $\values=\{\defvalue\}$. In the latter, $\aniwrapperi$ holds from the fact that any variable only input value is $\defvalue$ and the program $\defprogram$ is deterministic, thus $\tracesemantics$ contains only a single trace. Otherwise, we apply $\unusediowrapper$ to $\deftrace$ and the value $\defvalue'$.
+    \item \label{ani-predicate-equivalence-0} In case we assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then by $\unusediowrapper$ it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold. By assumption of $\aniwrapperi$, for all two traces $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ holds, hence we need to show that any trace $\deftrace'\in\tracesemantics$ share the same output abstraction as $\deftrace$. It is easy to see that if $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ by $\unusediowrapper$ then they also share the same output abstraction.
+    \item \label{ani-predicate-equivalence-1} On the other hand, we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, hence $\unusediowrapper$ cannot prove our conclusion when applied to $\deftrace$ and $\defvalue$. However, either it exists a value $\defvalue'\in\valuesofvariables$ such that $\defvalue \neq \defvalue'$ or $\valuesofvariables=\{\defvalue\}$. In the latter, $\aniwrapperi$ holds from the fact that any variable only input value is $\defvalue$ and the program $\defprogram$ is deterministic, thus $\tracesemantics$ contains only a single trace. Otherwise, we apply $\unusediowrapper$ to $\deftrace$ and the value $\defvalue'$.
     From here, it follows the same conclusion of the previous point \ref{ani-predicate-equivalence-0}
   \end{enumerate}
 \end{proof}
@@ -477,8 +521,8 @@ The next result instead shows that whenever a variable is unused, it means that 
         \defseq'\in\tracesemantics.\spacer
         \aniobserver(\retrieveoutput\defseq) = \aniobserver(\retrieveoutput{\defseq'}) \\
       \lor \\
-      \foralldef{\defvalue\in\values}{\existsdef{\defseq'\in\tracesemantics}{
-        \retrieveinput{\defseq'}(\definputvariable) = \defvalue
+      \foralldef{\defvalue\in\valuesofvariables}{\existsdef{\defseq'\in\tracesemantics}{
+        \retrieveinput{\defseq'}(\definputvariables) = \defvalue
         \LanD
         \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})}}
   \end{gather*}
@@ -492,23 +536,26 @@ The next result instead shows that whenever a variable is unused, it means that 
 \labsec{unused-property-of-programs}
 
 In this section, we state the \emph{unused property} as a property of programs.
-Whenever a program does not use the input variable $\definputvariable$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
+Whenever a program does not use the input variable $\definputvariables$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
 
 \begin{definition}[Unused Property]\labdef{unused}
-  Given a program $\defprogram$, and an input variable of interest $\definputvariable\in\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
+  Given a program $\defprogram$, and an input variable of interest $\definputvariables\in\setof\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
   \begin{align*}
     \unused\DefeQ&
     \setdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
   \end{align*}
 \end{definition}
 
-The input data usage property $\unused$ defined above is not subset-closed, we cannot use the standard abstract interpretation framework to soundly prove that a program does not use (some of) its input variables by checking whether an over-approximation of the semantics of the program is included in the unused property.
-We solve this problem by lifting the trace semantics of the program to its collecting semantics.
-Therefore, a program $\defprogram$ satisfies the unused property $\unused\in\setofsetof\finiteinfinitesequences$ if and only if its collecting semantics $\collectingsemantics$ belongs to $\unused$, formally:
-\begin{align}\labeq{validation-unused}
-  \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
-\end{align}
-We develop our hierarchy of semantics to reason about the unused property starting from the collecting semantics.
+The next result shows that the unused property is a sound and complete verification for a program to not use the set of variables $\definputvariables$.
+
+\begin{theorem}\labthm{unused-validation}
+  \begin{math}
+    \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
+  \end{math}
+\end{theorem}
+\begin{proof}
+  The proof follows trivially from \refdef*{validation} and the definition of the unused property $\unused$, \refdef{unused}.
+\end{proof}
 
 \section{Dependency Semantics}
 \labsec{dependency-semantics}
@@ -559,7 +606,7 @@ We now derive the \emph{dependency semantics} $\dependencysemantics$ as an abstr
   \end{align*}
 \end{definition}
 
-The next result shows that the dependency semantics $\dependencysemantics$ allows a sound and complete verification that an input variable $\definputvariable$ is unused by the program $\defprogram$.
+The next result shows that the dependency semantics $\dependencysemantics$ allows a sound and complete verification that an input variable $\definputvariables$ is unused by the program $\defprogram$.
 
 \begin{theorem}\labthm{dependency-validation}
   \begin{math}
@@ -681,7 +728,7 @@ We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an a
   \end{align*}
 \end{definition}
 
-The next result shows that the output-abstraction semantics $\outputsemantics$ allows a sound and complete verification for proving that an input variable $\definputvariable$ is unused in the program $\defprogram$.
+The next result shows that the output-abstraction semantics $\outputsemantics$ allows a sound and complete verification for proving that an input variable $\definputvariables$ is unused in the program $\defprogram$.
 
 \begin{theorem}\labthm{output-validation}
   \begin{math}
@@ -700,15 +747,15 @@ It is interesting to note that removing intermediate states and abstracting outp
     \begin{gather*}
       \bigsetdef{\defsetofdependencies\in\setof\pairofstates}{
     \forall
-      \inputoutputtuple\defstate\in\defsetofdependencies, \defvalue\in\values
+      \inputoutputtuple\defstate\in\defsetofdependencies, \defvalue\in\valuesofvariables
     .\spacer
-      \retrieveinput{\defstate}(\definputvariable) \neq \defvalue \ImplieS \\
+      \retrieveinput{\defstate}(\definputvariables) \neq \defvalue \ImplieS \\
       \exists
       \inputoutputtuple{\defstate'}\in\defsetofdependencies
       .\spacer
         \retrieveinput{\defstate'} \stateeq{\inputvariableswithouti} \retrieveinput{\defstate}
         \LanD
-        \retrieveinput{\defstate'}(\definputvariable) = \defvalue \\
+        \retrieveinput{\defstate'}(\definputvariables) = \defvalue \\
         \LanD
        \retrieveoutput{\defstate} =\retrieveoutput{\defstate'}
       }

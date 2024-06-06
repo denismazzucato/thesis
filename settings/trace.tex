@@ -44,6 +44,7 @@
 %% values and variables
 
 \newcommand*{\values}{\mathbb{V}}
+\newcommand*{\valuesofvariables}{\values^{\cardinalitynospaces{\definputvariables}}}
 \newcommand*{\valuesinf}{\values^{\pm \infty}}
 \newcommand*{\valuesposplus}{\resize{\values}{\ge 0}[+ \infty]}
 \newcommand*{\inputvaluesof}[1]{\retrieveinput{#1}}
@@ -52,3 +53,4 @@
 \newcommand*{\variables}{\mathbb{Var}}
 \newcommand*{\inputvariables}{\Delta}
 \newcommand*{\inputvariableswithouti}{\inputvariables \setminus \{\definputvariable\}}
+\newcommand*{\inputvariableswithoutw}{\inputvariables \setminus \{\definputvariables\}}
