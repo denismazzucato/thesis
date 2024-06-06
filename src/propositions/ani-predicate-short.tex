@@ -1,0 +1,8 @@
+
+The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
+\begin{eqnarray*}
+  \lefteqn{\aniselect(\retrieveinput{\defseq}) = \aniselect(\retrieveinput{\defseq'})
+  \ImplieS} \\
+    & \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
+\end{eqnarray*}
+where $\aniselect$ and $\aniobserver$ are upper closure operators on program states to abstract input and output states respectively.
