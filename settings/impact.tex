@@ -35,12 +35,21 @@
 \newcommand*{\lek}{{\scaleto{\le}{5pt}\defbound}}
 \newcommand*{\gek}{{\scaleto{\ge}{5pt}\defbound}}
 \newcommand*{\comparisonk}{{\scaleto{\comparison}{5pt}\defbound}}
-\newcommand*{\genbounded}{\resize{\mathscr{B}}{\definputvariable}[\comparisonk]}
-\newcommand*{\GENBOUNDED}{\mathscr{B}_{\definputvariable}^{\comparisonk}}
-\newcommand*{\bounded}{\resize{\mathscr{B}}{\definputvariable}[\lek]}
-\newcommand*{\BOUNDED}{\mathscr{B}_{\definputvariable}^{\lek}}
-\newcommand*{\revbounded}{\resize{\mathscr{B}}{\definputvariable}[\gek]}
-\newcommand*{\REVBOUNDED}{\mathscr{B}_{\definputvariable}^{\gek}}
+\newcommand*{\genbounded}{\resize{\mathscr{B}}{\impactwrapper}[\comparisonk]}
+\newcommand*{\GENBOUNDED}{\mathscr{B}_{\impactwrapper}^{\comparisonk}}
+\newcommand*{\bounded}{\resize{\mathscr{B}}{\red{XXX}}[\lek]}
+\newcommand*{\BOUNDED}{\mathscr{B}_{\red{XXX}}^{\lek}}
+\newcommand*{\revbounded}{\resize{\mathscr{B}}{\red{XXX}}[\gek]}
+\newcommand*{\REVBOUNDED}{\mathscr{B}_{\red{XXX}}^{\gek}}
+
+\newcommand*{\boundedoutcomes}{\resize{\mathscr{B}}{\outcomes}[\lek]}
+\newcommand*{\BOUNDEDOUTCOMES}{\mathscr{B}_{\outcomes}^{\lek}}
+\newcommand*{\boundedrange}{\resize{\mathscr{B}}{\range}[\lek]}
+\newcommand*{\BOUNDEDRANGE}{\mathscr{B}_{\range}^{\lek}}
+\newcommand*{\boundedqused}{\resize{\mathscr{B}}{\qused}[\lek]}
+\newcommand*{\BOUNDEDQUSED}{\mathscr{B}_{\qused}^{\lek}}
+
+
 
 \newcommand*{\numberofbuckets}{n}
 \newcommand*{\bucketname}{B}

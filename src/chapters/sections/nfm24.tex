@@ -223,7 +223,7 @@ Formally, the $\outcomesname$ impact notion is defined as follows:
 
 \begin{definition}[\outcomesname]\labdef{outcomes}
   Given an input variable $\definputvariables\in\setof\inputvariables$ and output observer $\outputobs\in\stateandbottom\to\stateandbottom$,
-  the quantity $\outcomes\in\tracetype\to\Nplus$ is defined as:
+  the impact notion $\outcomes\in\tracetype\to\Nplus$ is defined as:
   \marginnote{
     The supremum operator $\sup$ yields the least upper bound of the given set, that is, the smallest $q$ such that $q$ is greater than or equal to all elements of the set.
   }
@@ -261,12 +261,12 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 \end{proof}
 
 \marginnote{\denis{fix missing Theorem label in side theorem references.}}
-As done in the previous chapter for the unused property, \cf{} \refthm*{output-validation}, we show the validation of the $\defbound$-bounded impact property when applied to the $\outcomesname$ impact notion.
+As done in the previous chapter for the unused property, \cf{} \refthm*{output-validation}, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\outcomesname$ impact notion.
 
+\siderefbox{def}{output-abstraction-semantics}
 \begin{lemma}\lablemma{outcomes-validation}
-  Whenever $\impactwrapper$ in $\bounded$ is instantiated with $\outcomes$, the following holds:
   \begin{align*}
-    \collectingsemantics \subseteq \BOUNDED \IfF \outputvaluessemantics \subseteq \outputvaluesabstraction(\dependencyabstraction(\BOUNDED))
+    \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputvaluessemantics \subseteq \outputvaluesabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
   \end{align*}
 \end{lemma}
 \begin{proof}
@@ -274,7 +274,7 @@ As done in the previous chapter for the unused property, \cf{} \refthm*{output-v
   \begin{eqnarray*}
     \lefteqn{\outputvaluesabstraction(\dependencyabstraction(\bounded)) =} \\
     & \setdef{
-      \defsetofdependencies \in \outputvaluestype
+      \defsetofdependencies \in \setof\pairofstates
     }{
       \sup_{\definput\in\state}
       \cardinality{\setdef{
@@ -284,18 +284,19 @@ As done in the previous chapter for the unused property, \cf{} \refthm*{output-v
       }} \le \defbound
     }
   \end{eqnarray*}
-  As you can notice, all the intermediate states from the trace semantics are abstracted to input-output dependencies.
+  Note that, all the intermediate states from the trace semantics are abstracted to input-output dependencies.
   The $\outcomesname$ impact notion does not consider the intermediate states, thus the abstraction to dependencies does not affect the validation of the property.
   Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to output values, does not affect the validation of the property as the $\outcomesname$ impact notion already abstracts the output values before counting them.
 \end{proof}
 
 \reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. Moreover, whenever the given program semantics is deterministic, an impact quantity of zero implies that the input variable has no impact on the program outcomes, in other words, the input variable is unused.
+On the other hand, non-deterministic statements in the program may mislead $\outcomesname$ to account differences in the program output as a result of variations in the input variable.
 
 \subsection{The \rangename{} Impact Notion}[\rangename]
 \labsec{range}
 
 The quantity $\range\in\tracetype\to\Rposplus$ determines the
-length of the range of output values from all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
+length of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
 
 \begin{margintable}
   \caption{Overview of the $\rangename$ impact notion for the variable $\texttt{angle}$ of \nrefprog{landing-alarm-system}.}
@@ -361,11 +362,11 @@ length of the range of output values from all the possible variations in the inp
   Respectively, \reftab{overview-range-angle} illustrates the steps for $\rangename_{\texttt{angle}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-range-speed} for $\rangename_{\texttt{speed}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
 
-  Formally, the $\rangename$ quantity is defined as follows:
+  Formally, the $\rangename$ impact notion is defined as follows:
 
 \begin{definition}[\rangename]\labdef{range}
   Given an input variable $\definputvariables\in\setof\inputvariables$,
-  the quantity $\range\in\tracetype\to\Rposplus$ is defined as
+  the impact notion $\range\in\tracetype\to\Rposplus$ is defined as
   %
   \begin{align*}
     \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
@@ -379,7 +380,7 @@ length of the range of output values from all the possible variations in the inp
 
 The above definition employs the auxiliary function $\length(X) \defeq \sup X - \inf X$ if $X$ is non-empty, otherwise $\length(X) \defeq 0$.
 
-We note that also $\rangename$ is monotonic in the amount of traces.
+We note that also $\rangename$ is monotonic in the amount of traces in $\defsetoftraces$.
 
 \begin{lemma}[\rangename{} is Monotonic]
   \lablemma{range-monotonic}
@@ -417,7 +418,7 @@ Similarly to $\outcomesname$, \cf{} \reflemma{outcomes-validation}, we show the 
     & \outputvaluesabstraction(\dependencyabstraction(\bounded)) = \\
     &\quad
     \setdef{
-      \defsetofdependencies \in \outputvaluestype
+      \defsetofdependencies \in \outputtype
     }{ \\ & \qquad
       \sup_{\definput\in\state}
       \length({\setdef{
@@ -432,14 +433,15 @@ Similarly to $\outcomesname$, \cf{} \reflemma{outcomes-validation}, we show the 
 \end{proof}
 
 Similarly to the $\outcomesname$ impact notion, \reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
+Otherwise, similarly to $\outcomesname$, the input variable may have an impact on the program computation even if not used
 
 \subsection{The \qusedname{} Impact Notion}[\qusedname]
 \labsec{qused}
 
 The quantity $\qused\in\tracetype\to\Nplus$ counts the number of input values that are not used to produce the outcomes.
-This definition is of significant importance as it natively handles non-deterministic systems.
+Distinctly, this notion natively handles non-deterministic programs, meaning that in $\qusedname$ the impact of the input variable is zero if the input variable is not used to produce the outcomes, even in the presence of non-deterministic statements.
 
-For each possible outcome state $\retrieveoutput\defstate\in\state$ and trace $\deftrace\in\defsetoftraces$ that holds the same output abstraction, \ie{} $\outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput\defstate)$, we collect the set of input values of $\definputvariables$ that can produce this outcome $\retrieveoutput\defstate$.
+For each possible outcome state $\retrieveoutput\defstate\in\state$ and trace $\deftrace\in\defsetoftraces$ that yields the same output abstraction, \ie{} $\outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput\defstate)$, we collect the set of input values of $\definputvariables$ that can produce this outcome $\retrieveoutput\defstate$.
 More specifically, we collect the set of input values that belong to traces $\deftrace'$ that have the same output abstraction as $\deftrace$, \ie{} $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$, and are a variation of $\deftrace$ on the input variables $\setof\inputvariableswithouti$.
 Then, we obtain the number of missing input values by subtracting the set of all input values from the set of input values that can produce the outcome $\retrieveoutput\defstate$.
 We return the maximum number of input values that are not used to produce the outcomes.
@@ -477,10 +479,9 @@ custom(x):
 \end{marginlisting}
 \begin{example}
   To explain the $\qusedname$ impact notion, we employ three simple programs.
-  The first program we consider, \refprog{id}, return the only input variable $\texttt{x}$ without any modification.
+  The first program we consider, \refprog{id}, returns the value of the only input variable $\texttt{x}$ without any modification.
   The second program, \refprog{random}, returns a random value.
   The last one, \refprog{mix}, returns a random value if the input variable $\texttt{x}$ is greater than $0$, otherwise it returns $0$.
-  We assume that the output observer $\outputobs$ returns the value of the return statement.
   For simplicity, the input space is $\state=\setdef{\langle x \rangle}{x\in\{0, 1, 2\}}$ and the input variable is $\texttt{x}$, thus the set of input values is $\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} = \{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ of cardinality $3$.
   The trace semantics of \refprog{id} is:
   \begin{align*}
@@ -508,7 +509,7 @@ custom(x):
   \end{align*}
   In this case, any outcome can be produced by any input value, thus the set of input values is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ for all outcomes.
   By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0$.
-  Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{random}})=0$, meaning that the input variable $\texttt{x}$ is not used\sidenote{As we will see later, a value of $0$ for $\qusedname$ means that the input variable is not used, even in the presence of non-determinism.}.
+  Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{random}})=0$, meaning that the input variable $\texttt{x}$ is not used.
   %
   The trace semantics of \refprog{mix} is:
   \begin{align*}
@@ -523,13 +524,17 @@ custom(x):
   In this case, the set of input values that can produce the outcome $0$ is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$, for the outcome $1$ is $\{\langle 1\rangle, \langle 2\rangle\}$, and for the outcome $2$ is $\{\langle 1\rangle, \langle 2\rangle\}$.
   By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0, 1, 1$, respectively.
   Thus, we yield the highest value, obtaining $\qused(\tracesemanticsnoparam\semanticsof{\texttt{custom}})=1$.
+
+  From these examples we notice that the $\qusedname$ impact notion is able to capture that a variable is not used in a program, even in the presence of non-deterministic statements, \cf{} \refprog{random}.
+  On the other hand, we notice that $\qusedname$ discriminates between different amount of impact from \refprog{id} and \refprog{mix}.
+  Indeed, \refprog{id} is, intuitively, the program with the highest impact possible as the output is exactly the input value, while \refprog{mix} sometimes returns a random value and sometimes $0$.
 \end{example}
 
-Formally, the $\qusedname$ quantity is defined as follows:
+Formally, the $\qusedname$ impact notion is defined as follows:
 
 \begin{definition}[\qusedname]\labdef{qused}
   Given an input variable $\definputvariables\in\setof\inputvariables$,
-  the quantity $\qused\in\tracetype\to\Nplus$ is defined as
+  the impact notion $\qused\in\tracetype\to\Nplus$ is defined as
   %
   \marginnote[*2]{Note that, $\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}$ is the set of all input values for the variable $\definputvariables$.}
   \begin{eqnarray*}
@@ -551,7 +556,7 @@ Formally, the $\qusedname$ quantity is defined as follows:
 \end{definition}
 
 We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-empty sets of traces.
-In fact, $\qused(\emptyset) = \sup \emptyset = 0$ as the set of states is also empty.
+In fact, $\qused(\emptyset) = \sup \emptyset = 0$.
 On the other hand, the set of traces with at least one trace yields the highest value of $\qusedname$, \ie{} $\cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}} - 1$.
 Hence, the value of $\qusedname$ always decreases by enlarging the set of traces. Until the set of traces contains all possible traces\sidenote{The set of traces containing all the possible traces can be obtained by the random program, \cf{} \refprog{random}.} and the value of $\qusedname$ is $0$.
 
@@ -586,7 +591,7 @@ Hence, the value of $\qusedname$ always decreases by enlarging the set of traces
 \end{proof}
 
 
-Next, we show the validation of the $\defbound$-bounded impact property when applied to the $\qusedname$ impact notion.
+Next, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\qusedname$ impact notion.
 Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} and \rangename{} impact notions, the $\defbound$-bounded impact property employed the $\le$ comparison operator.} in our property $\revbounded$, this choice is forced by the fact that the $\qusedname$ is anti-monotonic.
 
 \begin{lemma}\lablemma{qused-validation}
@@ -601,7 +606,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
     \lefteqn{\outputvaluesabstraction(\dependencyabstraction(\bounded)) =} \\
     &
     \setdef{
-      \defsetofdependencies \in \outputvaluestype
+      \defsetofdependencies \in \outputtype
     }{
       \sup\limits_{\retrieveoutput\defstate \in \stateandbottom}
       \spacer\left|
@@ -626,6 +631,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
 Differently from the previous impact notions, it holds that, whenever $\qused(\tracesemantics) = 0$, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
 Thus, we can establish the following equivalence:
 
+\siderefbox{def}{abstract-unused}
 \begin{lemma}[Unused Equivalence]\lablemma{qualitative-quantitative-equivalence}
   For all program $\defprogram$, it holds that:
   \begin{gather*}
@@ -634,7 +640,7 @@ Thus, we can establish the following equivalence:
 \end{lemma}
 \begin{proof}
   To show ($\Rightarrow$) we assume that $\unusediowrapper(\tracesemantics)$.
-  From \refprop*{abstract-unused-property}[*-2] we have that any outcome either is not reachable or is reachable from every input value of the variable $\definputvariables$.
+  As a consequence, we have that any outcome either is not reachable or is reachable from every input value of the variable $\definputvariables$.
   Thus, the set of input values that can produce the outcome $\retrieveoutput\defstate$ is the set of all input values.
   By subtracting this set from the set of input values that can produce the outcome $\retrieveoutput\defstate$, we obtain the value $0$, concluding that $\qused(\tracesemanticsnoparam) = 0$.
 
@@ -644,33 +650,27 @@ Thus, we can establish the following equivalence:
 \end{proof}
 
 
-As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the unused property (\refdef*{unused}[*-6]) and the $\defbound$-bounded impact property (\refdef*{bounded}[*-2]) instantiated with the $\qusedname$ impact notion:
+As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the (un)used property (\refdef*{unused}[*-6]) and the $\defbound$-bounded impact property (\refdef*{bounded}[*-2]) instantiated with the $\qusedname$ impact notion:
 \[
 \neg\unused \spacearound{=} \mathscr{B}_{\definputvariables}^{\ge 1}
 \]
-meaning that if a program semantics does not use the variable $\definputvariables$, then it has an impact of at least $1$, and vice versa.
-\marginnote{
-  Instantiated with $\qusedname$:
-  \begin{eqnarray*}
-    \mathscr{B}_{\definputvariables}^{\ge 1} \DefeQ \setdef{\tracesemantics}{\qused(\defsetoftraces) \ge 1}
-  \end{eqnarray*}
-}
+meaning that if a program semantics uses the variable $\definputvariables$, then it has an impact of at least $1$, and vice versa.
 
-In the rest of this chapter, we present the theoretical framework to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures introduced in the previous sections.
+In the rest of this chapter, we present the static analysis to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures introduced in this chapter.
 
 \section{Abstract Quantitative Input Data Usage}
 \labsec{abstract-quantitative-input-data-usage}
 
 In this section, we introduce a sound and computable static analysis to verify the $\defbound$-bounded impact property of a program.
-The soundness of the approach leverages two elements: (1) the backward abstract semantics, and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{}, written as $\abstractoutcomes$, $\abstractrange$, and $\abstractqused$ respectively.
+The soundness of the approach leverages two elements: (1) a backward abstract semantics, and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{} (written as $\abstractoutcomes$, $\abstractrange$, and $\abstractqused$ respectively).
 
 
 To quantify the usage of an input variable, we need to determine the input configurations leading to specific output values.
 As our impact notions measure over the reachable output values (more precisely, over their abstraction by $\outputobs$) our underlying abstract semantics will be a \emph{backward} (co-)reachability semantics starting from \emph{disjoint} abstract post-conditions, over-approximating the (concrete) output values of the dependency semantics.
-Specifically, we abstract the concrete output values with an indexed set $\buckets\in\vectorbuckets$ of $n$ disjoint \textit{output buckets}, where $\abstractdomainlattice$ is an abstract state domain with concretization function  $\abstractdomainconcretization\in\abstractdomain\to\setof\stateandbottom$. The choice of these output buckets is essential for obtaining a precise and meaningful analysis result.
+Specifically, we abstract the concrete output values with an indexed set $\buckets\in\vectorbuckets$ of $n$ disjoint \textit{output buckets}, where $\abstractdomainlattice$ is an abstract state domain with concretization function  $\abstractdomainconcretization\in\abstractdomain\to\setof\stateandbottom$. The choice of these output buckets is a parameter of the analysis and a \emph{good} choice is essential for obtaining a precise and meaningful analysis result.
 
-For each output bucket $\bucket\in\abstractdomain$ where $1 \le j \le n$, our analysis computes an over-approximation of the dependency semantics restricted to the input configurations leading to $\abstractdomainconcretization(\bucket)$.
-More formally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ (\refdef*{output-abstraction-semantics}[*-2]) to the dependencies with abstraction of a final state in $X$ is defined as:
+For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our analysis computes an over-approximation of the dependency semantics restricted to the input configurations leading to $\abstractdomainconcretization(\bucket)$.
+More formally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ to the dependencies with abstraction of a final state in $X$ is defined as:
 \[
   \reduce[\outputsemanticsnoparam]{X} \DefeQ \setdef{
     \setdef{
@@ -686,7 +686,7 @@ More formally, the reduction of the output-abstraction semantics $\outputsemanti
 Our static analysis is parametrized by an underlying backward abstract family\sidenote{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
 For instance, we could use the backward semantics \refdef{?}\sidenote{This definition will be defined in \refch{abstract-interpretation}, and referenced on the side here} to compute $\backwardsemanticsnoparam(\bucket)$.
-The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputvaluestype$ employs the concretization of the abstract domain, \cf{}
+The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain, \cf{}
 $\abstractdomainconcretization$, to restore all possible dependencies from input states to output values, formally:
 \[
   \backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ
@@ -715,9 +715,20 @@ $\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a se
 \begin{align*}
 \multisemantics\buckets \DefeQ (\backwardsemantics\bucket)_{j\le n}
 \end{align*}
-where the concretization function $\multiconcretization$ is defined as:
+\end{definition}
+
+
+The concretization function $\multiconcretization$ maps the multi-bucket semantics $\multisemanticsnoparam$ from a given set of output buckets $\buckets$ to set of sets of dependencies in $\outputtype$.
+Specifically, for each output bucket $\bucket\in\buckets$, $\multiconcretization$ concretizes the output from $\abstractdomainconcretization(\bucket)$ and the input states from the application of the backward semantics to $\bucket$, \ie{} $\abstractdomainconcretization((\multisemantics\buckets)_j)$.
+Hence, all the possible input-output dependencies are collected for all buckets.
+Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the power set operator $\wp_{+}$.
+\marginnote{
+  \[\nonemptysetof{X} \DefeQ \setof{X} \setminus \emptyset\]
+}
+\begin{definition}[Multi-Bucket Concretization \texorpdfstring{$\multiconcretization$}{}]\labdef{multi-concretization}
+  We define the concretization function $\multiconcretization\in(\multitype)\to\vectorbuckets\to\outputtype$ as:
 \begin{align*}
-  \multiconcretization &\IN (\multitype)\to\vectorbuckets\to\outputvaluestype \\
+  \multiconcretization &\IN (\multitype)\to\vectorbuckets\to\outputtype \\
   \multiconcretization(\multisemantics)\buckets &\DefeQ
   \nonemptysetof*{\bigsetjoin_{j\le n} \bigsetdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j) \land{} \\ \retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}}
 \end{align*}
@@ -757,9 +768,9 @@ Next, we show the soundness of the multi-bucket semantics with respect to the ou
 We introduce the concept of \emph{covering} for output buckets to ensure that no potential final state is missed from the analysis.
 
 \begin{definition}[Covering]\label{def:covering}
-  The output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
+  Let $\outputobs\in\stateandbottom\to\stateandbottom$ be the output observer, we say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
   \[
-    \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput{\defstate} \in \state} \subseteq \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}
+    \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput{\defstate} \in \stateandbottom} \subseteq \setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}
   \]
 \end{definition}
 
@@ -767,7 +778,7 @@ We introduce the concept of \emph{covering} for output buckets to ensure that no
 Whenever the output buckets \textit{cover} the subset of outcomes abstracted by $\outputobs$, $\multisemanticsnoparam$ is a sound over-approximation of $\outputsemanticsnoparam$.
 
 \begin{lemma}\lablemma{sound-approximation-covering}
-  Whenever the output buckets cover the subset of potential outcomes, it holds that the semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$ without restrictions:
+  Let $\buckets\in\vectorbuckets$ be the set of output buckets such that it covers the subset of potential outcomes of a program $\defprogram$.Then, it holds that the semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$:
   \[
     \outputsemanticsnoparam \SubseteQ \multiconcretization(\multisemantics)\buckets
   \]
@@ -776,6 +787,8 @@ Whenever the output buckets \textit{cover} the subset of outcomes abstracted by 
   Follows directly from \reflemma{sound-over-approximation-multi-bucket} and \refdef{covering}. The covering of the output buckets ensures that no potential final state is missed and thus let the reduction of the output-abstraction semantics unnecessary, as it holds that $\outputsemanticsnoparam = \reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}$.
 \end{proof}
 
+
+
 % Additionally, the output buckets needs to be compatible with the concrete outcomes of the program, meaning that two output states cannot map to the same output abstraction if they belong to different output buckets.
 
 % \begin{definition}[Compatibility]\labdef{compatibility}
@@ -783,6 +796,8 @@ Whenever the output buckets \textit{cover} the subset of outcomes abstracted by 
 %   \[ \foralldef{\defstate_j \in \abstractdomainconcretization(\bucket), \defstate_p \in \abstractdomainconcretization(\bucket[p])}{\outputobs(\defstate_j) \neq \outputobs(\defstate_p)} \ImplieS \bucket \neq \bucket[p] \]
 % \end{definition}
 
+So far, we presented the semantics $\multisemanticsnoparam$ as an abstraction of the output-abstraction semantics $\outputsemanticsnoparam$ via \reflemma{sound-approximation-covering}.
+Next, this section shows the concept of sound implementation of the impact notions.
 We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or always lower depending on the ordering operator of $\genbounded$) than the concrete counterpart $\impactwrapper$.
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
@@ -792,11 +807,11 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
       \defsetoftraces\in \dependencyconcretization(\outputconcretization(\multiconcretization(\multisemantics)\buckets))
     }.} \\ & {
         \impactwrapper(
-          \multiconcretization(\multisemantics)\buckets
+          \defsetoftraces
           ) \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
           }
   \end{eqnarray*}
-  % The concretization of the abstract implementation $\impactinstance$ is $\boundconcretization\in\valuesposplus\to\outputvaluestype$, defined as:
+  % The concretization of the abstract implementation $\impactinstance$ is $\boundconcretization\in\valuesposplus\to\outputtype$, defined as:
   % \begin{align*}
   %   \boundconcretization(\defbound) \DefeQ
   %   \setdef{\defsetofdependencies \in \setof{\pair{\state}{\valuesposplus}}}{
@@ -807,24 +822,24 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
 
 \refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg{} set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
 
-We define the concretization of the bound $\defbound\in\values$ as $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on $\comparison$) than the bound $\defbound$.
+We define the concretization of the bound computed by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on $\comparison$) than the computed bound.
 
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
   The concretization of a measured quantity $\defbound$ is $\boundconcretization\in\valuesinf\to\collectingtype$, defined as:
-  \begin{align*}
-    \boundconcretization(\defbound) \DefeQ
-    \setdef{\defsetoftraces \in \tracetype}{
-      \impactwrapper(\defsetoftraces) \comparison \defbound
+  \begin{eqnarray*}
+    \lefteqn{\boundconcretization(\impactinstance(\multisemantics\buckets, \buckets)) \DefeQ} \\
+    & \setdef{\defsetoftraces \in \tracetype}{
+      \impactwrapper(\defsetoftraces) \comparison \impactinstance(\multisemantics\buckets, \buckets)
     }
-  \end{align*}
+  \end{eqnarray*}
 \end{definition}
 
-It is easy to notice that it holds an equivalence with the $\defbound$-bounded impact property:
-\[
-  \boundconcretization(\defbound) = \genbounded
-\]
+% Note that, it holds an equivalence with the $\defbound$-bounded impact property:
+% \[
+%   \boundconcretization(\defbound) = \genbounded
+% \]
 
-Additionally, we note that the concretization $\boundconcretization$ is monotonically increasing, respectively decreasing depending on $\comparison$, in the bound $\defbound$.
+Additionally, we note that the concretization $\boundconcretization$ is monotonically increasing, respectively decreasing depending on $\comparison$.
 
 \begin{lemma}[Monotonicity of $\boundconcretization$]\lablemma{monotonicity-bound-concretization}
   Depending on the comparison operator, for all $\defbound',\defbound\in\valuesposplus$ it holds that:
@@ -839,7 +854,7 @@ Additionally, we note that the concretization $\boundconcretization$ is monotoni
 
 The next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
 That is, if %the computation of
-$\impactinstance$ returns the bound $\defbound'$, and $\defbound'\le\defbound$, then the program $\defprogram$ satisfies the property $\bounded$, \cf{} $\defprogram \satisfies \bounded$.
+$\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\defbound$, then the program $\defprogram$ satisfies the property $\genbounded$, \cf{} $\defprogram \satisfies \genbounded$.
 
 \begin{theorem}[Soundness] \labthm{soundness}
   Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
@@ -902,7 +917,7 @@ as possible implementations for $\range$ and $\outcomes$, respectively.
 %
 We assume the underlying abstract state domain $\abstractdomain$ is equipped with an
 operator $\abstractdomainproject\in\abstractdomain\to\abstractdomain$
-to project away the input variable $\definputvariables$.
+to project away the input variables $\definputvariables$, that is, the reduction in dimensionality of the abstract element by projecting its image to the reduced variable space.
 \begin{example}
 In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainproject(\langle\definputvariables \mapsto [1, 3], j \mapsto [2, 4]\rangle) = \langle \definputvariables \mapsto [-\infty, \infty], j \mapsto [2, 4] \rangle$
   removes the constraints related to $\definputvariables$.
