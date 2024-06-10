@@ -543,12 +543,11 @@ Formally, the $\qusedname$ impact notion is defined as follows:
       \spacer\left|
         \begin{array}{l}
           \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
-          \quad \bigsetdef{
+          \quad \setdef{
             \retrieveinput{\defseq'}(\definputvariables)
             }{
-              \deftrace' \in \defsetoftraces \LanD \\
-              \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD \\
-              \retrieveinput{\deftrace'} \stateeq{\setof\inputvariableswithouti} \retrieveinput{\deftrace}
+              \deftrace' \in \defsetoftraces \LanD
+                  \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)
             }
         \end{array}
       \right|
@@ -842,7 +841,7 @@ We define the concretization of the bound computed by the abstract impact $\impa
 Additionally, we note that the concretization $\boundconcretization$ is monotonically increasing, respectively decreasing depending on $\comparison$.
 
 \begin{lemma}[Monotonicity of $\boundconcretization$]\lablemma{monotonicity-bound-concretization}
-  Depending on the comparison operator, for all $\defbound',\defbound\in\valuesposplus$ it holds that:
+  Depending on the comparison operator, for all quantities $\defbound',\defbound\in\valuesposplus$ measured by the abstract impact $\impactinstance$ it holds that:
   \begin{enumerate}[label=(\roman*)]
     \item $\defbound' \le \defbound \ImplieS \leconcretization(\defbound') \subseteq \leconcretization(\defbound)$
     \item $\defbound' \ge \defbound \ImplieS \geconcretization(\defbound') \supseteq \geconcretization(\defbound)$
@@ -923,30 +922,34 @@ In the context of the interval domain, where each input variable is related to a
   removes the constraints related to $\definputvariables$.
 \end{example}
 %
-We assume a soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
+% We define the soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
+We define the condition a sound projection operator $\abstractdomainproject$ must satisfy to ensure that no concrete state is missed by the projection.
+In fact, the projection operator is sound whenever the projection of variable $\definputvariable$ from the abstract value $\defstate^\natural$ contains all the concrete states that can be obtained by perturbing the variable $\definputvariable$ from a concrete state represented by $\defstate^\natural$.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainproject$}{Project}]\labdef{soundness-project}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$, for all $\defstate \in \abstractdomainconcretization(\defstate^\natural)$, whenever it exists a state $\defstate'$ such that $\defstate \stateeq{\setof\inputvariableswithouti} \defstate'$, then it holds that $\defstate' \in \abstractdomainconcretization(\abstractdomainproject(\defstate^\natural))$.
+  Given an abstract value $\defstate^\natural\in\abstractdomain$, we say that the projection operator $\abstractdomainproject$ is \textup{sound} whenever it holds that:
+  \[
+    \setdef{\defstate'\in\stateandbottom}{\defstate\in\abstractdomainconcretization(\defstate^\natural) \land \defstate \stateeq{\inputvariableswithouti} \defstate'} \SubseteQ \abstractdomainconcretization(\abstractdomainproject(\defstate^\natural))
+  \]
 \end{definition}
-The above condition ensures that no intersection is missed, potentially spurious ones are allowed by the abstraction.
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}}[Abstract \texorpdfstring{$\abstractoutcomes$}{Outcomes}]
 \labsec{abstract-outcomes}
 
 
-The definition of $\abstractoutcomes$ first projects away the input variable $\definputvariables$ from all the given abstract values, then it collects all intersecting abstract values via the meet operator $\abstractdomainmeet$.
-These intersections represent potential concrete input configurations where variations on the value of $\definputvariables$ lead to changes of program outcome, from a bucket to another.
-We return the maximum number of abstract values that intersects after projections:
+The definition of $\abstractoutcomes$ first projects away the input variable $\definputvariables$ from all the given abstract values, then it collects all possible abstract values resulting from the meet operation over any two resulting abstract domain elements.
+These intersections represent concrete input configurations where variations on the value of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
+We return the maximum number of abstract values that intersect after projections:
 \begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
   We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
   \begin{equation*}
   \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
   \end{equation*}
 \end{definition}
-Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}) since the number of intersecting abstract values is bounded by $n$, the number of output buckets.
+Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}) since the number of intersecting abstract values is finite and bounded by $n$, the number of output buckets.
 The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
 
-\begin{definition}[Intersect All Function \texorpdfstring{$\intersectallfunction$}{}]\labdef{intersect-all-function}
+\begin{definition}[\texorpdfstring{$\intersectallfunction$}{}]\labdef{intersect-all-function}
   \begin{eqnarray*}
     \lefteqn{\intersectallfunction(X^\natural\in\vectorbuckets) \DefeQ} \\
     & \setdef{J \subseteq \N}{\forall j\le n, p\le n.~ j\in J \land p\in J \LanD X^\natural_j \abstractdomainmeet X^\natural_{p}}
@@ -956,9 +959,11 @@ The function $\intersectallfunction$ takes as input an indexed set of abstract v
 
 Finding all the indices of intersecting abstract values is equivalent to find cliques in a graph, where each node represents an abstract value and an edge exists between two nodes if and only if the corresponding abstract values intersect.
 Therefore, $\intersectallfunction$ can be efficiently implemented based on the graph algorithm by~\sidetextcite{Bron1973}.
+All together, the abstract implementation $\abstractoutcomes$ returns the value of the maximum among all the sizes of the maximum cliques for each projection.
 %
 
 In order to prove that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$, we require the output buckets $\buckets$ to be \textit{compatible} with the output observer $\outputobs$.
+That is, any two output states $\retrieveoutput\defstate, \retrieveoutput\defstate'$ that produce different output readings, \ie, $\outputobs(\retrieveoutput\defstate) \neq \outputobs(\retrieveoutput\defstate')$, belong to different buckets, \ie, $\retrieveoutput\defstate \in \abstractdomainconcretization(\bucket) \land \retrieveoutput\defstate' \in \abstractdomainconcretization(\bucket[p]) \land \bucket \neq \bucket[p]$.
 Intuitively, compatibility ensures that the counting intersecting buckets in the abstract does not miss any concrete outcome.
 %
 \begin{definition}[Compatibility]\labdef{compatibility}
@@ -968,12 +973,12 @@ Intuitively, compatibility ensures that the counting intersecting buckets in the
 %
 Note that, $\outcomes$ is bounded by the number of buckets when the conditions of covering and compatibility hold for the output buckets.
 \begin{lemma}[$\outcomes$ Upper Bound]\lablemma{outcomes-upper-bound}
-  When the buckets $\buckets$ are compatible, \cf{} \refdef{compatibility}, and cover the subset of potential outcomes, \cf{} \refdef{covering}, it holds that
+  When the $numberofbuckets$ buckets $\buckets\in\vectorbuckets$ are compatible, \cf{} \refdef{compatibility}, and cover the subset of potential outcomes, \cf{} \refdef{covering}, it holds that
   $\outcomes(\dependencysemanticsnoparam) \le n$.
 \end{lemma}
 \begin{proof}
-  We notice that $\outcomes(\dependencysemanticsnoparam) \le \cardinalitynospaces{\setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\finalstatesdependency}}$ as the set of outputs for the dependency semantics is always bigger than any set of outputs.
-  It is easy to note that the cardinality of $\setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\finalstatesdependency}$ is upper bounded by $n$ since any two output states $\retrieveoutput\defstate, \retrieveoutput\defstate'$ that produce different output readings, \ie, $\outputobs(\retrieveoutput\defstate) \neq \outputobs(\retrieveoutput\defstate')$, belong to different buckets, \ie, $\retrieveoutput\defstate \in \abstractdomainconcretization(\bucket) \land \retrieveoutput\defstate' \in \abstractdomainconcretization(\bucket[p]) \land \bucket \neq \bucket[p]$ (by compatibility, \cf{} \refdef{compatibility}).
+  We notice that $\outcomes(\dependencysemanticsnoparam) \le \cardinalitynospaces{\setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\stateandbottom}}$ as the set of outputs for the dependency semantics is always bigger than any set of outputs.
+  It is easy to note that the cardinality of $\setdef{\outputobs(\retrieveoutput\defstate)}{\retrieveoutput\defstate\in\finalstatesdependency}$ is bounded from above by $n$ since any two output states $\retrieveoutput\defstate, \retrieveoutput\defstate'$ that produce different output readings, \ie, $\outputobs(\retrieveoutput\defstate) \neq \outputobs(\retrieveoutput\defstate')$, belong to different buckets, \ie, $\retrieveoutput\defstate \in \abstractdomainconcretization(\bucket) \land \retrieveoutput\defstate' \in \abstractdomainconcretization(\bucket[p]) \land \bucket \neq \bucket[p]$ (by compatibility, \cf{} \refdef{compatibility}).
   Where the existence of the two buckets is guaranteed by covering (\cf{} \refdef{covering}).
   Therefore, there are at most $n$ different output readings.
 \end{proof}
@@ -1025,8 +1030,18 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
 \subsection{Abstract Implementation \texorpdfstring{$\abstractrange$}{Abstract Range}}[Abstract \texorpdfstring{$\abstractrange$}{Range}]
 \labsec{abstract-range}
 
-Similarly, we define $\abstractrange$ as the maximum length of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
-In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainlength\in\abstractdomain\to\valuesposplus$, which returns the length of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
+We define $\abstractrange$ as the maximum distance of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
+In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainlength\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
+
+\begin{example}
+  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainlength([2, 4]) = 2$.
+  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainlength([0, +\infty]) = +\infty$.
+\end{example}
+
+The abstract range $\abstractrange$ first projects away the input variable $\definputvariables$ from all the given abstract values.
+Then, it collects all the possible intersections among the projected abstract values.
+These intersections represent concrete input configurations where variations on the value of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
+All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
@@ -1044,7 +1059,7 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
   \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
 
-As previously done, the next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
+The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
 
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
   Let  $\definputvariables\in\variables$ the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -1069,9 +1084,7 @@ We define $\abstractqused$ as the difference between the total number of input c
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractqused(X^\natural, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\max~  \seTDef{\abstractdomaincount(K)}{K \in I} \\
-    \text{where}~
-    I ~=~& \setdef*{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+    \abstractqused(X^\natural, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\max~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(X^\natural_j))}{j \le n}
   \end{align*}
 \end{definition}
 
