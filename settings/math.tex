@@ -62,7 +62,7 @@
 \newcommand*{\DefifF}{\spacearound{\defiff}}
 \newcommand*{\LE}{\spacearound{\le}}
 \newcommand*{\GE}{\spacearound{\ge}}
-\newcommand*{\comparison}{\oplus}
+\newcommand*{\comparison}{\oleq}
 \newcommand*{\ComparisoN}{\spacearound{\comparison}}
 \newcommand*{\LanD}{\spacearound{\land}}
 \newcommand*{\LoR}{\spacearound{\lor}}
@@ -91,3 +91,27 @@
   \galoiS{\csname #2abstraction\endcsname}{\csname #2concretization\endcsname}
   {\csname #2poset\endcsname}
 }
+
+\makeatletter
+\newcommand{\ogeneric}[2][0.7]{%
+  \vphantom{\oplus}\mathpalette\o@generic{{#1}{#2}}%
+}
+\newcommand{\o@generic}[2]{\o@@generic#1#2}
+\newcommand{\o@@generic}[3]{%
+  \begingroup
+  \sbox\z@{$\m@th#1\oplus$}%
+  \dimen@=\dimexpr\ht\z@+\dp\z@\relax
+  \savebox\tw@[\totalheight]{$\m@th#1\bigcirc$}%
+  \makebox[\wd\z@]{%
+    \ooalign{%
+      $#1\vcenter{\hbox{\resizebox{\dimen@}{!}{\usebox\tw@}}}$\cr
+      \hidewidth
+      $#1\vcenter{\hbox{\resizebox{#2\dimen@}{!}{$#1\vphantom{\oplus}{#3}$}}}$%
+      \hidewidth
+      \cr
+    }%
+  }%
+  \endgroup
+}
+\makeatother
+\newcommand*{\oleq}{\mathrel{\ogeneric[1]{<}}}

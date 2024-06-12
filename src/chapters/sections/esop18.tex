@@ -760,18 +760,22 @@ We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an a
   \end{align*}
 \end{definition}
 
-Additionally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ to the dependencies with abstraction of a final state in $X$ is defined as:
-\[
-  \reduce[\outputsemanticsnoparam]{X} \DefeQ \setdef{
-    \setdef{
-      \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
-    }{
-      \retrieveoutput{\defstate} \in X
-      }
+Additionally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ to the dependencies with abstraction of a final state in $X$ is defined as follows.
+\begin{definition}[Output Reduction]\labdef{output-reduction}
+  Let $X\in\setof\stateandbottom$ be a set of output states.
+  The \emph{output reduction} $\reduce[\outputsemanticsnoparam]{X}\in\outputtype$ of the output-abstraction semantics $\outputsemanticsnoparam$ is defined as:
+\begin{align*}
+\reduce[\outputsemanticsnoparam]{X} \DefeQ \setdef{
+  \setdef{
+    \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
   }{
-    \defsetofdependencies\in \outputsemanticsnoparam
+    \retrieveoutput{\defstate} \in X
   }
-\]
+}{
+  \defsetofdependencies\in \outputsemanticsnoparam
+}
+\end{align*}
+\end{definition}
 Such reduction is useful to analyze the dependencies that lead to a specific set of output states.
 Note that, in case no dependency in $\outputsemanticsnoparam$ ends in an output state in $X$, the reduction is $\{\emptyset\}$.
 The next result shows that the output-abstraction semantics $\outputsemantics$ allows a sound and complete verification for proving that an input variable $\definputvariables$ is unused in the program $\defprogram$, \refdef*{unused}.

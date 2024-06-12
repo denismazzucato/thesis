@@ -8,5 +8,5 @@ https://github.com/denismazzucato/thesis/blob/build/thesis.pdf
 - remove boundle (≤) bounds as there are now impact definitions
 - check the use of the output observer in definitions of chapter 4
 - size instead of length, and distance when text
+- range should pick the output variable
 - recall definitions on the side
-- add examples for abstract operators
