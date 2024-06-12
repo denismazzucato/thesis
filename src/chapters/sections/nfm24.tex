@@ -65,7 +65,7 @@ With such a definition, we allow further abstractions of computable semantics to
 \end{remark}
 
 Next, we instantiate the general definition $\impactwrappername$ with the impact notions \outcomesname{}, \rangename{}, and \qusedname{}. Each of these notions differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are not used to produce the outcomes.
-To this end, these definitions employ the concept of output abstraction, \cf{} \refdef*{output-observer}[*-4].
+To this end, these notions employ the concept of output abstraction, \cf{} \refdef*{output-observer}[*-4].
 % We expect the output observer $\outputobs$ (\refdef*{output-observer}[*-2]) to return a quantifiable element, \ie{}, a value in $\valuesinf$.
 % An output observer $\outputobs$ that returns a quantifiable element is called an \emph{output observer}.
 
@@ -239,7 +239,7 @@ Formally, the $\outcomesname$ impact notion is defined as follows:
   \reftab{overview-outcomes-angle} illustrate the steps for $\outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-outcomes-speed} for $\outcomesname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
 
-We note that the above definition is monotone in the amount of traces in $\defsetoftraces$.
+We note that the above notion is monotone in the amount of traces in $\defsetoftraces$.
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
@@ -299,7 +299,9 @@ On the other hand, non-deterministic statements in the program may mislead $\out
 \labsec{range}
 
 The quantity $\range\in\tracetype\to\Rposplus$ determines the
-length of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
+size of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
+Additionally, we define $\defoutputvariable$ as the output variable where the impact is measured.
+Differently from the previous notion, in this case, we are interested in the difference between the extreme values of the variable $\defoutputvariable$.
 
 \begin{margintable}
   \caption{Overview of the $\rangename$ impact notion for the variable $\texttt{angle}$ of \nrefprog{landing-alarm-system}.}
@@ -360,7 +362,7 @@ length of the range of the output values for all the possible variations in the 
       \retrieveinput{\defseq}(\texttt{speed}) = 1
   }=\{0,3\}$.
 %
-  Here, instead of counting the distinct outcomes, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the function $\length$: $\length(\{0,3\})=3$.
+  Here, instead of counting the distinct outcomes, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the function $\size$: $\size(\{0,3\})=3$.
   By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=3$.
   Respectively, \reftab{overview-range-angle} illustrates the steps for $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-range-speed} for $\rangename_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
@@ -368,20 +370,20 @@ length of the range of the output values for all the possible variations in the 
   Formally, the $\rangename$ impact notion is defined as follows:
 
 \begin{definition}[\rangename]\labdef{range}
-  Given an input variable $\definputvariables\in\setof\inputvariables$,
+  Given the set of input variables of interest $\definputvariables\in\setof\inputvariables$ and the output variable $\defoutputvariable$,
   the impact notion $\range\in\tracetype\to\Rposplus$ is defined as
   %
   \begin{align*}
     \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
-      \length(\setdef{
-        \outputobs(\retrieveoutput{\defseq})
+      \size(\setdef{
+        \outputobs(\retrieveoutput{\defseq})(\defoutputvariable)
       }{
         \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
       })
   \end{align*}
 \end{definition}
 
-The above definition employs the auxiliary function $\length(X) \defeq \sup X - \inf X$ if $X$ is non-empty, otherwise $\length(X) \defeq 0$.
+The above notion employs the auxiliary function $\size(X) \defeq \sup X - \inf X$ if $X$ is non-empty, otherwise $\size(X) \defeq 0$.
 
 We note that also $\rangename$ is monotonic in the amount of traces in $\defsetoftraces$.
 
@@ -394,15 +396,15 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 \end{lemma}
 \begin{proof}
   Similarly to \reflemma{outcomes-monotonic}, the proof is based on the observation that the set of output values $\setdef{
-    \outputobs(\retrieveoutput{\defseq})
+    \outputobs(\retrieveoutput{\defseq})(\defoutputvariable)
   }{
     \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
   }$ is a subset of the set of output values $\setdef{
-    \outputobs(\retrieveoutput{\defseq})
+    \outputobs(\retrieveoutput{\defseq})(\defoutputvariable)
   }{
     \defseq \in \defsetoftraces' \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
   }$ since by hypothesis we have that $\defsetoftraces \subseteq \defsetoftraces'$.
-  Hence, the length of the first set is less than or equal to the cardinality of the second set.
+  Hence, the size of the first set is less than or equal to the cardinality of the second set.
   We conclude that $\range(\defsetoftraces) \le \range(\defsetoftraces')$.
 \end{proof}
 
@@ -424,14 +426,14 @@ We call such property $\boundedrange$.
       \defsetofdependencies \in \outputtype
     }{ \\ & \qquad
       \sup_{\definput\in\state}
-      \length({\setdef{
-        \defoutput
+      \size({\setdef{
+        \retrieveoutput{\defstate}(\defoutputvariable)
       }{
-        \tuple{\retrieveinput{\defstate}}{\defoutput} \in \defsetofdependencies \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
+        \inputoutputtuple{\defstate} \in \defsetofdependencies \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
       }}) \le \defbound
     }
   \end{align*}
-  As noticed before, the $\rangename$ impact notion does not consider the intermediate states and abstracts the output states before applying the length function.
+  As noticed before, the $\rangename$ impact notion does not consider the intermediate states and abstracts the output states before applying the size function.
   Hence, neither the abstraction to dependencies nor the abstraction to output values affect the validation of the property.
 \end{proof}
 
@@ -1101,11 +1103,11 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
 \labsec{abstract-range}
 
 We define $\abstractrange$ as the maximum distance of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
-In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainlength\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
+In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainsize\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
 
 \begin{example}
-  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainlength(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
-  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainlength(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
+  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainsize(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
+  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainsize(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
 \end{example}
 
 The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values.
@@ -1116,7 +1118,7 @@ All the possible combination of intersections are joined together to find the ma
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomainlength(K)}{K \in I} \\
+    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
     \text{where}~
     I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
   \end{align*}
@@ -1131,7 +1133,7 @@ All the possible combination of intersections are joined together to find the ma
   & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
   \end{eqnarray*}
   Next, $\abstractrangename^\natural_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
-  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie{} $\abstractdomainlength(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainlength(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
+  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie{} $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
   Therefore, $\abstractrangename^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 3$.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{eqnarray*}
@@ -1147,23 +1149,23 @@ All the possible combination of intersections are joined together to find the ma
   \end{eqnarray*}
   In this case, we obtain the following sizes for the combination of buckets:
   \begin{align*}
-    \abstractdomainlength(\bucket[\textup{low}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto 0 \rangle) \spacearound{=} 0 \\
-    \abstractdomainlength(\bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto 1 \rangle) \spacearound{=} 0 \\
-    \abstractdomainlength(\bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto 2 \rangle) \spacearound{=} 0 \\
-    \abstractdomainlength(\bucket[\textup{high}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto 3 \rangle) \spacearound{=} 0 \\
-    \abstractdomainlength(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto [0, 1] \rangle) \spacearound{=} 1 \\
-    \abstractdomainlength(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
-    \abstractdomainlength(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
-    \abstractdomainlength(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainlength(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
+    \abstractdomainsize(\bucket[\textup{low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 0 \rangle) \spacearound{=} 0 \\
+    \abstractdomainsize(\bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 1 \rangle) \spacearound{=} 0 \\
+    \abstractdomainsize(\bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 2 \rangle) \spacearound{=} 0 \\
+    \abstractdomainsize(\bucket[\textup{high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 3 \rangle) \spacearound{=} 0 \\
+    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 1] \rangle) \spacearound{=} 1 \\
+    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
+    \abstractdomainsize(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
+    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
   \end{align*}
   Therefore, $\abstractrangename^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 2$.
 \end{example}
 
-To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainlength$ to ensure that the abstract length is always greater than the concrete one.
+To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract size is always greater than the concrete one.
 
-\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainlength$}{Length}]\labdef{soundness-length}
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Size}]\labdef{soundness-size}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
-  \[\abstractdomainlength(\defstate^\natural) \ge \length(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  \[\abstractdomainsize(\defstate^\natural) \ge \size(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
