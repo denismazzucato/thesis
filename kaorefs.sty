@@ -29,9 +29,12 @@
 \newcommand{\eqname}{}
 \newcommand{\eqnameshort}{}
 \newcommand{\defname}{}
+\newcommand{\defnameshort}{}
 \newcommand{\assumname}{}
 \newcommand{\thmname}{}
+\newcommand{\thmnameshort}{}
 \newcommand{\propname}{}
+\newcommand{\propnameshort}{}
 \newcommand{\lemmaname}{}
 \newcommand{\remarkname}{}
 \newcommand{\examplename}{}
@@ -69,9 +72,12 @@
   \renewcommand{\eqname}{Equation}
   \renewcommand{\eqnameshort}{Eq.}
   \renewcommand{\defname}{Definition}
+  \renewcommand{\defnameshort}{Def.}
   \renewcommand{\assumname}{Assumption}
   \renewcommand{\thmname}{Theorem}
+  \renewcommand{\thmnameshort}{Thm.}
   \renewcommand{\propname}{Proposition}
+  \renewcommand{\propnameshort}{Prop.}
   \renewcommand{\lemmaname}{Lemma}
   \renewcommand{\remarkname}{Remark}
   \renewcommand{\examplename}{Example}
@@ -167,16 +173,23 @@
 \newcommand{\vrefeq}[1]{\hyperref[eq:#1]\eqname\xspace\vref{eq:#1}}
 
 \newcommand{\refdef}[1]{\hyperref[def:#1]\defname\xspace\ref{def:#1}}
+\newcommand{\refdefshort}[1]{\hyperref[def:#1]\defnameshort\xspace\ref{def:#1}}
 \newcommand{\vrefdef}[1]{\hyperref[def:#1]\defname\xspace\vref{def:#1}}
+\newcommand{\vrefdefshort}[1]{\hyperref[def:#1]\defnameshort\xspace\vref{def:#1}}
 
 \newcommand{\refassum}[1]{\hyperref[assum:#1]\assumname\xspace\ref{assum:#1}}
 \newcommand{\vrefassum}[1]{\hyperref[assum:#1]\assumname\xspace\vref{assum:#1}}
 
 \newcommand{\refthm}[1]{\hyperref[thm:#1]\thmname\xspace\ref{thm:#1}}
+\newcommand{\refthmshort}[1]{\hyperref[thm:#1]\thmnameshort\xspace\ref{thm:#1}}
+\newcommand{\nrefthm}[1]{\hyperref[thm:#1]\thmname\xspace\ref{thm:#1} \ifstrempty{\nameref{thm:#1}}{}{(\nameref{thm:#1})}}
+\newcommand{\nrefthmshort}[1]{\hyperref[thm:#1]\thmnameshort\xspace\ref{thm:#1} \ifstrempty{\nameref{thm:#1}}{}{(\nameref{thm:#1})}}
 \newcommand{\vrefthm}[1]{\hyperref[thm:#1]\thmname\xspace\vref{thm:#1}}
 
 \newcommand{\refprop}[1]{\hyperref[prop:#1]\propname\xspace\ref{prop:#1}}
+\newcommand{\refpropshort}[1]{\hyperref[prop:#1]\propnameshort\xspace\ref{prop:#1}}
 \newcommand{\vrefprop}[1]{\hyperref[prop:#1]\propname\xspace\vref{prop:#1}}
+\newcommand{\vrefpropshort}[1]{\hyperref[prop:#1]\propnameshort\xspace\vref{prop:#1}}
 
 \newcommand{\reflemma}[1]{\hyperref[lemma:#1]\lemmaname\xspace\ref{lemma:#1}}
 \newcommand{\vreflemma}[1]{\hyperref[lemma:#1]\lemmaname\xspace\vref{lemma:#1}}

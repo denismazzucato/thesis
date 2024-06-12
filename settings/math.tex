@@ -29,6 +29,14 @@
 \newcommand*{\setdef}[2]{\{#1 \mid #2\}}
 \newcommand*{\bigsetdef}[2]{\left\{ #1 \spacer\left| \begin{array}{l} #2 \end{array} \right.\right\}}
 \WithSuffix\newcommand\setdef*[2]{\left\{ #1 \spacer\left| \begin{array}{l} #2 \end{array} \right.\right\}}
+\WithSuffix\newcommand\setdef@[2]{
+  \left\{
+  \begin{array}{l}
+  #1 \\
+  \qquad\mid\spacer #2
+\end{array}
+\right\}
+}
 \newcommand*{\seTDef}[2]{\setdef{#1\spacer}{\spacer#2}}
 \newcommand*{\vecdef}[2]{[#1\mid#2]}
 \newcommand*{\defeq}{\overset{\text{\scalebox{.5}{\textup{def}}}}{=}}
@@ -114,4 +122,5 @@
   \endgroup
 }
 \makeatother
-\newcommand*{\oleq}{\mathrel{\ogeneric[1]{<}}}
+% \newcommand*{\oleq}{\mathrel{\ogeneric[1]{<}}}
+\DeclareMathOperator*{\oleq}{\mathrel{\ogeneric[1]{<}}}

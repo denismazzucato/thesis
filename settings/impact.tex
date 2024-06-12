@@ -30,10 +30,10 @@
 \newcommand*{\comparisonk}{{\scaleto{\comparison}{5pt}\defbound}}
 \newcommand*{\genbounded}{\resize{\mathscr{B}}{\impactwrapper}[\comparisonk]}
 \newcommand*{\GENBOUNDED}{\mathscr{B}_{\impactwrapper}^{\comparisonk}}
-\newcommand*{\bounded}{\resize{\mathscr{B}}{\red{XXX}}[\lek]}
-\newcommand*{\BOUNDED}{\mathscr{B}_{\red{XXX}}^{\lek}}
-\newcommand*{\revbounded}{\resize{\mathscr{B}}{\red{XXX}}[\gek]}
-\newcommand*{\REVBOUNDED}{\mathscr{B}_{\red{XXX}}^{\gek}}
+\newcommand*{\bounded}{\resize{\mathscr{B}}{\impactwrapper}[\lek]}
+\newcommand*{\BOUNDED}{\mathscr{B}_{\impactwrapper}^{\lek}}
+\newcommand*{\revbounded}{\resize{\mathscr{B}}{\impactinstance}[\gek]}
+\newcommand*{\REVBOUNDED}{\mathscr{B}_{\impactinstance}^{\gek}}
 
 \newcommand*{\boundedoutcomes}{\resize{\mathscr{B}}{\outcomes}[\lek]}
 \newcommand*{\BOUNDEDOUTCOMES}{\mathscr{B}_{\outcomes}^{\lek}}
@@ -49,6 +49,7 @@
 \newcommand*{\buckets}{\bucketname^\natural}
 \newcommand*{\bucket}[1][j]{\resize{\bucketname}{#1}[\natural][f^2]}
 \newcommand*{\vectorbuckets}[1][\numberofbuckets]{\resize{\abstractdomain}{}[#1]}
+\newcommand*{\presfrombuckets}{X^\natural}
 \newcommand{\prefrombucket}[1][j]{\resize{X}{#1}[\natural][f^2]}
 
 \newcommand*{\abstractrangename}{\textup{\texttt{Range}}}

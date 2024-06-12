@@ -133,10 +133,28 @@
     ]{kaoexercise}
 		\declaretheoremstyle[
 			style=kaoplain,
-			spaceabove=\topsep, spacebelow=\topsep,
+			% spaceabove=\topsep,
+			% spacebelow=\topsep,
 			headfont=\normalfont\bfseries,
 			notefont=\bfseries, notebraces={}{},
 			bodyfont=\normalfont\itshape,
+			postheadspace=0.5em,
+			name={\ignorespaces},
+			numbered=no,
+			headpunct={},
+			mdframed={
+				style=mdfkao,
+						backgroundcolor=\kaotheorems@theorembackground,
+				%frametitlebackgroundcolor=\@theorembackground,
+			},
+		]{kaonamed}
+		\declaretheoremstyle[
+			style=kaoplain,
+			% spaceabove=\topsep,
+			spacebelow=\topsep,
+			headfont=\normalfont\bfseries,
+			notefont=\bfseries, notebraces={}{},
+			bodyfont=\normalfont,
 			postheadspace=0.5em,
 			name={\ignorespaces},
 			numbered=no,
@@ -146,7 +164,7 @@
 						backgroundcolor=\kaotheorems@theorembackground,
 				%frametitlebackgroundcolor=\@theorembackground,
 			},
-		]{kaonamed}
+		]{kaoprog}
 
     \theoremstyle{kaoplain}
     \declaretheorem[
@@ -210,7 +228,7 @@
 			},
 		]{named}
 
-		\theoremstyle{kaonamed}
+		\theoremstyle{kaoprog}
 		\declaretheorem[
 			name={\ignorespaces},
 			numbered=no,

@@ -32,7 +32,7 @@ To this end, we develop the \emph{$\defbound$-bounded impact property} $\genboun
 The set $\valuesposplus$ contains non-negative numerical values enhanced with $+\infty$.
 }
 Depending on the comparison operator $\comparison\in\{\le,\ge\}$, the impact quantity is bounded by $\defbound$ either from above or below.
-We employ the notion of \emph{impact notion}:
+We employ the \emph{impact notion}:
 \[\impactwrapper\in\tracetype\to\valuesposplus\]
 to quantify the impact of the input variables $\definputvariables$ on the outcome of program computations.
 
@@ -64,7 +64,7 @@ With such a definition, we allow further abstractions of computable semantics to
   \end{align*}
 \end{remark}
 
-Next, we instantiate the general definition $\impactwrappername$ with the impact notions \outcomesname{}, \rangename{}, and \qusedname{}. Each of these notions differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are not used to produce the outcomes.
+Next, we instantiate $\impactwrappername$ with the impact notions of \outcomesname{}, \rangename{}, and \qusedname{}. Each of these notions differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are not used to produce the outcomes.
 To this end, these notions employ the concept of output abstraction, \cf{} \refdef*{output-observer}[*-4].
 % We expect the output observer $\outputobs$ (\refdef*{output-observer}[*-2]) to return a quantifiable element, \ie{}, a value in $\valuesinf$.
 % An output observer $\outputobs$ that returns a quantifiable element is called an \emph{output observer}.
@@ -128,10 +128,10 @@ Then, we collect the output values of this set of traces by means of the output 
 }{
   \defseq \in \defsetoftraces \land
     \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
-}$. Specifically, this set contains all the output readings performed by $\outputobs$.
+}$. Specifically, this set contains all the output abstractions performed by $\outputobs$.
 %
 Afterwards, we extract the number of elements via the cardinality operator $\cardinality{\cdot}$.
-Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure that the greatest impact is preserved, through the supremum operator $\sup$.
+Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure that the greatest impact is preserved, through the supremum operator: $\sup$.
 \marginnote[*-3]{
   The supremum operator $\sup$ yields the least upper bound of the given set, that is, the smallest $q$ such that $q$ is greater than or equal to all elements of the set.
 }
@@ -222,8 +222,8 @@ Formally, the $\outcomesname$ impact notion is defined as follows:
   starting from an input configuration that is a variation of $\inputa$, \ie, $\setdef{
     \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram}
   }{
-    \retrieveinput{\defseq} \stateeq{\setof\inputvariables\setminus\{\texttt{angle}\}} \inputa
-  }$, where $\setof\inputvariables\setminus\{\texttt{angle}\} = \{\texttt{speed}\}$ and consequently $\retrieveinput{\defseq} \stateeq{\{\texttt{speed}\}} \inputa$ holds whenever the initial state of $\defseq$ has $\texttt{speed}=1$. A possible trace (with the intermediate states and the value of all the 4 variables) of this set is $\langle 1, 1, 0, 0\rangle \to \langle 1, 1, 2, 0\rangle\to\langle 1, 1, 2, 0\rangle$ where, at the beginning, we randomly assign $\texttt{landing\_risk}=0$ and $\texttt{risk}=0$, respectively the third and fourth component of the initial state.
+    \retrieveinput{\defseq} \stateeq{\inputvariables\setminus\{\texttt{angle}\}} \inputa
+  }$, where $\inputvariables\setminus\{\texttt{angle}\} = \{\texttt{speed}\}$ and consequently $\retrieveinput{\defseq} \stateeq{\{\texttt{speed}\}} \inputa$ holds whenever the initial state of $\defseq$ has $\texttt{speed}=1$. A possible trace (with the intermediate states and the value of all the 4 variables) of this set is $\langle 1, 1, 0, 0\rangle \to \langle 1, 1, 2, 0\rangle\to\langle 1, 1, 2, 0\rangle$ where, at the beginning, we randomly assign $\texttt{landing\_risk}=0$ and $\texttt{risk}=0$, respectively the third and fourth component of the initial state.
 %
   We collect the output values of this set of traces, $\setdef{
     \retrieveoutput\defseq(\texttt{risk})
@@ -239,7 +239,7 @@ Formally, the $\outcomesname$ impact notion is defined as follows:
   \reftab{overview-outcomes-angle} illustrate the steps for $\outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-outcomes-speed} for $\outcomesname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
 
-We note that the above notion is monotone in the amount of traces in $\defsetoftraces$.
+The notion presented above is monotone in the amount of traces in $\defsetoftraces$.
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
@@ -262,20 +262,20 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
   We conclude that $\outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')$.
 \end{proof}
 
-\marginnote{\denis{fix missing Theorem label in side theorem references.}}
+\marginnote{\denis{fix Theorem label name when not there (in side refs).}}
 As done in the previous chapter for the unused property, \cf{} \refthm*{output-validation}, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\outcomesname$ impact notion.
 We call such property $\boundedoutcomes$.
 
 \siderefbox{def}{output-abstraction-semantics}
 \begin{lemma}\lablemma{outcomes-validation}
   \begin{align*}
-    \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputvaluessemantics \subseteq \outputvaluesabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
+    \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
   \end{align*}
 \end{lemma}
 \begin{proof}
   Let us consider the $\outputabstraction \circ \dependencyabstraction$ abstraction of the $\defbound$-bounded impact property $\boundedoutcomes$:
   \begin{eqnarray*}
-    \lefteqn{\outputvaluesabstraction(\dependencyabstraction(\boundedoutcomes)) =} \\
+    \lefteqn{\outputabstraction(\dependencyabstraction(\boundedoutcomes)) =} \\
     & \setdef{
       \defsetofdependencies \in \setof\pairofstates
     }{
@@ -289,7 +289,7 @@ We call such property $\boundedoutcomes$.
   \end{eqnarray*}
   Note that, all the intermediate states from the trace semantics are abstracted to input-output dependencies.
   The $\outcomesname$ impact notion does not consider the intermediate states, thus the abstraction to dependencies does not affect the validation of the property.
-  Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to output values, does not affect the validation of the property as the $\outcomesname$ impact notion already abstracts the output values before counting them.
+  Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\outcomesname$ impact notion already abstracts the output values before counting them.
 \end{proof}
 
 \reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. Moreover, whenever the given program semantics is deterministic, an impact quantity of zero implies that the input variables of interest have no impact on the program outcomes, in other words, the set of input variables is unused.
@@ -352,17 +352,17 @@ Differently from the previous notion, in this case, we are interested in the dif
 
 \begin{example}
   \labexample{range}
-  We revisit again the example of the landing alarm system.
-  Assuming $\definputvariables=\texttt{angle}$, $\tuple{-4}{1}$ is the first input configuration to be explored, we collect all traces that are
+  We revisit again the example of the landing alarm system, called $\landingprogram$.
+  Assuming $\definputvariables=\{\texttt{angle}\}$, $\tuple{-4}{1}$ is the first input configuration to be explored, we collect all traces that are
   starting from an input configuration that is a variation of $\tuple{-4}{1}$.
   As before, we obtain $\setdef{
     \retrieveoutput\defseq(\texttt{risk})
   }{
     \defseq \in \defsetoftraces \land
       \retrieveinput{\defseq}(\texttt{speed}) = 1
-  }=\{0,3\}$.
+  }=\{0,3\}$ as the set of output values for the output variable \texttt{risk}.
 %
-  Here, instead of counting the distinct outcomes, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the function $\size$: $\size(\{0,3\})=3$.
+  Here, instead of counting the distinct outcomes, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the size function: $\size(\{0,3\})=3$.
   By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=3$.
   Respectively, \reftab{overview-range-angle} illustrates the steps for $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-range-speed} for $\rangename_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
@@ -420,7 +420,7 @@ We call such property $\boundedrange$.
 \begin{proof}
   Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\boundedrange$:
   \begin{align*}
-    & \outputvaluesabstraction(\dependencyabstraction(\boundedrange)) = \\
+    & \outputabstraction(\dependencyabstraction(\boundedrange)) = \\
     &\quad
     \setdef{
       \defsetofdependencies \in \outputtype
@@ -438,7 +438,7 @@ We call such property $\boundedrange$.
 \end{proof}
 
 Similarly to the $\outcomesname$ impact notion, \reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
-Otherwise, similarly to $\outcomesname$, the input variable may have an impact on the program computation even if not used
+Otherwise, similarly to $\outcomesname$, the input variable may have an impact on the program computation even if not used.
 
 \subsection{The \qusedname{} Impact Notion}[\qusedname]
 \labsec{qused}
@@ -475,15 +475,7 @@ Formally, the $\qusedname$ impact notion is defined as follows:
   \end{eqnarray*}
 \end{definition}
 
-\begin{marginlisting}[*3]
-  \caption{The identity program.}
-  \labprog{id}
-  \vspace{\lineheight}
-\begin{lstlisting}
-id(x):
-  return x;
-\end{lstlisting}
-\end{marginlisting}
+
 \begin{example}
   To explain the $\qusedname$ impact notion, we employ three simple programs.
   The first program we consider, \refprog{id}, returns the value of the only input variable $\texttt{x}$ without any modification.
@@ -536,6 +528,15 @@ id(x):
   Moreover, $\qusedname$ also discriminates between different amount of impact from \refprog{id} and \refprog{mix}.
   Indeed, \refprog{id} is, intuitively, the program with the highest impact possible as the output is exactly the input value, while \refprog{mix} sometimes returns a random value and sometimes $0$.
 \end{example}
+\begin{marginlisting}[*-38]
+  \caption{The identity program.}
+  \labprog{id}
+  \vspace{\lineheight}
+\begin{lstlisting}
+id(x):
+  return x;
+\end{lstlisting}
+\end{marginlisting}
 \begin{marginlisting}[*-28]
   \caption{The random program.}
   \labprog{random}
@@ -606,7 +607,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
 \begin{proof}
   Let us consider the $\outputabstraction \circ \dependencyabstraction$ abstraction of the $\defbound$-bounded impact property $\boundedqused$:
   \begin{eqnarray*}
-    \lefteqn{\outputvaluesabstraction(\dependencyabstraction(\boundedqused)) =} \\
+    \lefteqn{\outputabstraction(\dependencyabstraction(\boundedqused)) =} \\
     &
     \setdef{
       \defsetofdependencies \in \outputtype
@@ -634,7 +635,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
 Differently from the previous impact notions, it holds that, whenever $\qused(\tracesemantics) = 0$, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
 Thus, we can establish the following equivalence:
 
-\siderefbox{def}{abstract-unused}
+\siderefbox{def}{abstract-unused}[*-5]
 \begin{lemma}[Unused Equivalence]\lablemma{qualitative-quantitative-equivalence}
   For all program $\defprogram$, it holds that:
   \begin{gather*}
@@ -658,6 +659,7 @@ As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain a
 \neg\unused \spacearound{=} \mathscr{B}_{\qused}^{\ge 1}
 \]
 meaning that if a program semantics utilizes the variables $\definputvariables$, then it has an impact of at least $1$, and vice versa.
+\marginnote{\denis{how to make the command marginnote remove the little space and be totally anonymous in the text? see the space in front of Definition 4.1.1}}
 
 In the rest of this chapter, we present the static analysis to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures introduced in this chapter.
 
@@ -686,7 +688,7 @@ For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our a
 %   }
 % \]
 %
-Our static analysis is parametrized by an underlying backward abstract family\sidenote{A family of semantics is a set of program semantics parametrized by an initialization.}
+Our static analysis is parametrized by an underlying backward abstract family\sidenote[][*-2]{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
 For instance, we could use the backward semantics \refdef{?}\sidenote{This definition will be defined in \refch{abstract-interpretation}, and referenced on the side here} to compute $\backwardsemanticsnoparam(\bucket)$.
 The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain, \cf{}
@@ -701,7 +703,7 @@ $\abstractdomainconcretization$, to restore all possible dependencies from input
   }
   \]
 In words, $\backwardconcretization$ collects all the input-output dependencies from the application of the backward semantics to each output bucket $\bucket$.
-Since the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the power set operator $\wp_{+}$.
+Since the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the non-empty power set operator $\wp_{+}$.
 In such a way, we ensure that the (restriction of the) output-abstraction semantics is a subset of the abstract one.
 %
 We can thus define the soundness condition for the backward semantics with respect to the reduction of the output-abstraction semantics.
@@ -730,17 +732,16 @@ $\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a se
 The concretization function $\multiconcretization$ maps the multi-bucket semantics $\multisemanticsnoparam$ from a given set of output buckets $\buckets$ to a set of sets of dependencies in $\outputtype$.
 Specifically, for each output bucket $\bucket\in\buckets$, $\multiconcretization$ concretizes the output from $\abstractdomainconcretization(\bucket)$ and the input states from the application of the backward semantics to $\bucket$, \ie{} $\abstractdomainconcretization((\multisemantics\buckets)_j)$.
 Hence, all the possible input-output dependencies are collected for all buckets.
-Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the power set operator $\wp_{+}$.
+Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the non-empty power set operator $\wp_{+}$.
 \marginnote{
-  \[\nonemptysetof{X} \DefeQ \setof{X} \setminus \emptyset\]
+  \begin{math}\nonemptysetof{X} \DefeQ \setof{X} \setminus \emptyset\end{math}
 }
 \begin{definition}[Multi-Bucket Concretization \texorpdfstring{$\multiconcretization$}{}]\labdef{multi-concretization}
   We define the concretization function $\multiconcretization\in(\multitype)\to\vectorbuckets\to\outputtype$ as:
-\begin{align*}
-  \multiconcretization &\IN (\multitype)\to\vectorbuckets\to\outputtype \\
-  \multiconcretization(\multisemantics)\buckets &\DefeQ
+\begin{gather*}
+  \multiconcretization(\multisemantics)\buckets \DefeQ
   \nonemptysetof*{\bigsetjoin_{j\le n} \bigsetdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j) \land{} \\ \retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}}
-\end{align*}
+\end{gather*}
 \end{definition}
 
 Next, we show the soundness of the multi-bucket semantics with respect to the output-abstraction semantics.
@@ -789,11 +790,11 @@ Whenever the output buckets \textit{cover} the subset of outcomes abstracted by 
 \begin{lemma}\lablemma{sound-approximation-covering}
   Let $\buckets\in\vectorbuckets$ be the set of output buckets such that it covers the subset of potential outcomes of a program $\defprogram$.Then, it holds that the semantics $\multisemanticsnoparam$ is a \textup{sound over-approximation} of the output-abstraction semantics $\outputsemanticsnoparam$:
   \[
-    \outputsemanticsnoparam \SubseteQ \multiconcretization(\multisemantics)\buckets
+    \outputsemantics \SubseteQ \multiconcretization(\multisemantics)\buckets
   \]
 \end{lemma}
 \begin{proof}
-  Follows directly from \reflemma{sound-over-approximation-multi-bucket} and \refdef{covering}. The covering of the output buckets ensures that no potential final state is missed and thus let the reduction of the output-abstraction semantics unnecessary, as it holds that $\outputsemanticsnoparam = \reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}$.
+  Follows directly from \reflemma{sound-over-approximation-multi-bucket} and \refdef{covering}. The covering of the output buckets ensures that no potential final state is missed and thus let the reduction of the output-abstraction semantics unnecessary, as it holds that $\outputsemantics = \reduce{\bigsetjoin_{j\le n}\abstractdomainconcretization(\bucket)}$.
 \end{proof}
 
 
@@ -813,7 +814,7 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
   For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrapper$, whenever it holds that:
   \begin{eqnarray*}
     \lefteqn{\forall{
-      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\multiconcretization(\multisemantics)\buckets))
+      \defsetoftraces\in \dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemantics)\buckets)
     }.} \\ & {
         \impactwrapper(
           \defsetoftraces
@@ -829,7 +830,7 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
   % \end{align*}
 \end{definition}
 
-\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg{} set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
+\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg{} a set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
 
 We define the concretization of the bound computed by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
 
@@ -920,8 +921,8 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
 
 
 Finally,
-we define $\abstractrange$, $\abstractoutcomes$, and $\abstractqused$
-as possible implementations for $\range$ and $\outcomes$, respectively.
+we define $\abstractrangename^\natural$, $\abstractoutcomesname^\natural$, and $\abstractqusedname^\natural$
+as possible implementations for $\rangename$, $\outcomesname$, and $\qusedname$, respectively.
 
 %
 We assume the underlying abstract state domain $\abstractdomain$ is equipped with an
@@ -930,7 +931,7 @@ to project away the input variables $\definputvariables$, that is, the reduction
 \begin{example}
 In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainprojecti(\langle\definputvariable \mapsto [1, 3], j \mapsto [2, 4]\rangle) = \langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$
   removes the constraints related to the variables in $\{\definputvariable\}$.
-  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently $[-\infty, +\infty]$, we hide it from the abstract element, \eg{} $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle = \langle j \mapsto [2, 4] \rangle$.
+  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently $[-\infty, +\infty]$, we hide it from the abstract element, \eg{} instead of $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$ we often write $\langle j \mapsto [2, 4] \rangle$.
 \end{example}
 %
 % We define the soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
@@ -954,16 +955,17 @@ We return the maximum number of abstract values that intersect after projections
 \begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
   We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
   \begin{equation*}
-  \abstractoutcomes(X^\natural, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+  \abstractoutcomes(\presfrombuckets, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
   \end{equation*}
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
 \end{definition}
 Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}) since the number of intersecting abstract values is finite and bounded by $n$, the number of output buckets.
 The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
 
 \begin{definition}[\texorpdfstring{$\intersectallfunction$}{}]\labdef{intersect-all-function}
   \begin{eqnarray*}
-    \lefteqn{\intersectallfunction(X^\natural\in\vectorbuckets) \DefeQ} \\
-    & \setdef{J \subseteq \N}{\forall j\le n, p\le n.~ j\in J \land p\in J \LanD X^\natural_j \abstractdomainmeet X^\natural_{p}}
+    \lefteqn{\intersectallfunction(\presfrombuckets\in\vectorbuckets) \DefeQ} \\
+    & \setdef{J \subseteq \N}{\forall j\le n, p\le n.~ j\in J \land p\in J \LanD \prefrombucket \abstractdomainmeet \prefrombucket[p]}
   \end{eqnarray*}
 \end{definition}
 
@@ -978,36 +980,36 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
   \nrefdef{covering} is satisfied as the output buckets cover all the possible outcomes of the program for the variable \texttt{risk}.
   We assume the backward analysis to return the following intervals:
   \begin{align*}
-    \backwardsemanticsnoparam(\bucket[\textup{low}]) \spacearound{&=} X^\natural_{\textup{low}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [1, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{mid\-/low}]) \spacearound{&=} X^\natural_{\textup{mid\-/low}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{mid\-/high}]) \spacearound{&=} X^\natural_{\textup{mid\-/high}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{high}]) \spacearound{&=} X^\natural_{\textup{high}} \spacearound{=} \langle \texttt{angle} \mapsto -4, \texttt{speed} \mapsto [1, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{low}]) \spacearound{&=} \prefrombucket[\textup{low}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [1, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{mid\-/low}]) \spacearound{&=} \prefrombucket[\textup{mid\-/low}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{mid\-/high}]) \spacearound{&=} \prefrombucket[\textup{mid\-/high}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{high}]) \spacearound{&=} \prefrombucket[\textup{high}] \spacearound{=} \langle \texttt{angle} \mapsto -4, \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
   Indeed, the backward analysis over-approximates the concrete semantics as, for example, the input configuration $\texttt{angle} = 1$ and $\texttt{speed} = 3$ does not lead to a low risk of approach.
   We are interested in the input variable \texttt{angle}, thus the projections are:
   \begin{align*}
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{low}}) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{mid\-/low}}) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{mid\-/high}}) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{high}}) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{mid\-/low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
   It is easy to notice that the abstract elements resulting from the projection intersect between each other. Therefore, we obtain that the set of indices of buckets that intersect is:
   \begin{eqnarray*}
-  \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{low}}), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{high}}))) ={}} \\
+  \lefteqn[\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]))) ={}] \\
 & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
 \end{eqnarray*}
   The maximum size is $4$ at $\cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}$.
-  Therefore, $\abstractoutcomes(X^\natural, \buckets) = 4$, meaning that variations of the input variable \texttt{angle} may lead to changes of program outcome from four different buckets.
+  Therefore, $\abstractoutcomes(\presfrombuckets, \buckets) = 4$, meaning that variations of the input variable \texttt{angle} may lead to changes of program outcome from four different buckets.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{align*}
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{low}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{mid\-/low}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{mid\-/high}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{high}}) \spacearound{&=} \langle \texttt{angle} \mapsto -4 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{mid\-/low}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{angle} \mapsto -4 \rangle \\
   \end{align*}
   In this case, only a few abstract elements intersect, specifically:
   \begin{eqnarray*}
-    \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{low}}), \dots, \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{high}}))) ={}} \\
+    \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]))) ={}} \\
   & \left\{
     \begin{array}{l}
     \{\textup{low}\}, \{\textup{mid\-/low}\}, \{\textup{mid\-/high}\}, \{\textup{high}\}, \\
@@ -1017,7 +1019,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
     \end{array}
     \right\}
   \end{eqnarray*}
-  The maximum clique is of size $3$, \cf{} \cardinalitynospaces{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}}, hence $\abstractoutcomes(X^\natural, \buckets) = 3$. This means that variations of the input variable \texttt{speed} may lead to changes of program outcome in three different buckets.
+  The maximum clique is of size $3$, \cf{} \cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}\}}, hence $\abstractoutcomes(\presfrombuckets, \buckets) = 3$. This means that variations of the input variable \texttt{speed} may lead to changes of program outcome in three different buckets.
 \end{example}
 
 In order to prove that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$, we require the output buckets $\buckets$ to be \textit{compatible} with the output observer $\outputobs$.
@@ -1055,19 +1057,19 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{lemma}
 \begin{proof}
-  \marginnote{\denis{Incoherent with last modifications}}
-  From \ref{proof:a}, \ref{proof:b2}, and the fact that $\outcomes$ is monotone, we obtain that $\outcomes(\dependencysemanticsnoparam) \le \outcomes(\multiconcretization(\multisemanticsnoparam)\buckets)$.
+  From \ref{proof:a} and \ref{proof:b2}, \reflemma{sound-approximation-covering} demonstrates that $\outputsemantics \subseteq \multiconcretization(\multisemantics)\buckets$.
+  Since $\outcomes$ and $\dependencyconcretization \circ \outputconcretization$ are monotone (respectively by \reflemma{outcomes-monotonic} and both \refthm{collecting-dependency-galois-connection}, \refthm{dependency-output-galois-connection}) we obtain that $\outcomes(\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)) \le \outcomes(\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets))$.
   By definitions of $\abstractoutcomes$, \cf{} \refdef{abstract-outcomes}, and $\outcomes$, \cf{} \refdef{outcomes}, we need to show that:
   \begin{gather*}
-    \outcomes(\dependencysemanticsnoparam) = \sup_{\definputvariables\in\reducedstate}
-    \cardinality{\setdef{\outputobs(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\dependencysemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \definputvariables}} \\
+    \outcomes(\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)) = \sup_{\definput\in\reducedstate}
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\defstate'})}{\inputoutputtuple{\defstate'}\in\outputsemanticsnoparam\land\retrieveinput{\defstate'} \stateeq{\inputvariableswithoutw} \definput}} \\
     \le \\
-    \abstractoutcomes(X^\natural, \buckets) = \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+    \abstractoutcomes(\presfrombuckets, \buckets) = \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
   \end{gather*}
-  where $X^\natural = \multisemanticsnoparam(\buckets)$.
+  where $\presfrombuckets = \multisemanticsnoparam(\buckets)$.
 %
   First, from \ref{proof:b1} and \reflemma{outcomes-upper-bound} we know that $\outcomes$ is limited by the number of buckets $n$.
-  Notably, $\outcomes$ cannot be unbounded, but it has to be a number, at most $n$. Thus, it exists an initial state $\overline\defstate\in\reducedstate$ such that $\outcomes(\dependencysemanticsnoparam) = \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$, where $\defsetoftraces{\overline\defstate} = \setdef{\outputobs(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\dependencysemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \overline\defstate}$.
+  Notably, $\outcomes$ cannot be unbounded, but it has to be a number, at most $n$. Thus, it exists an initial state $\overline\defstate\in\reducedstate$ such that $\outcomes(\outputsemanticsnoparam) = \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$, where $\defsetoftraces{\overline\defstate} = \setdef{\outputobs(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\outputsemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \overline\defstate}$.
   We conclude in case this cardinality is $0$ as anything returned by $\abstractoutcomes$ would be greater. In the other case, by covering (\cf{} \ref{proof:b2}), for all dependencies in $\defsetoftraces{\overline\defstate}$
   it exists a bucket $\bucket$ such that $\retrieveoutput{\defstate'}\in\abstractdomainconcretization(\bucket)$.
 
@@ -1079,7 +1081,7 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   By the soundness condition of $\abstractdomainproject$, \cf{} \ref{proof:d}, we obtain that both states $\retrieveinput\defstate$ and $\retrieveinput\defstate'$ belong to each other projection, \ie, $\retrieveinput\defstate \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket))$ and $\retrieveinput{\defstate'} \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket[p]))$.
 
   Finally, the function \intersectallfunction{} applied to the projected preconditions $\prefrombucket$ and $\prefrombucket[p]$ finds an intersection between the indices $j$ and $p$ as $\abstractdomainproject(\prefrombucket) \abstractdomainmeet \abstractdomainproject(\prefrombucket[p])$ definitely holds since they share concrete states. Therefore, whenever it exists an intersection in the concrete, the two indices representing the respective precondition discovered by the backward analysis belong to the set $J$ in \refdef{abstract-outcomes}.
-  As a consequence, the maximum cardinality of $J$ takes into account all the possible intersections in $\defsetoftraces{\overline\defstate}$, hence $\abstractoutcomes(X^\natural, \buckets) \ge \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$.
+  As a consequence, the maximum cardinality of $J$ takes into account all the possible intersections in $\defsetoftraces{\overline\defstate}$, hence $\abstractoutcomes(\presfrombuckets, \buckets) \ge \cardinalitynospaces{\defsetoftraces{\overline\defstate}}$.
 \end{proof}
 
 \begin{example}
@@ -1089,11 +1091,11 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   The bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
   \begin{align*}
     & \outcomesname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
-    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 4
+    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4
   \end{align*}
   \begin{align*}
     & \outcomesname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
-    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 3 \\
+    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 \\
   \end{align*}
   as expected by \reflemma{abstractoutcomes-is-sound}.
 \end{example}
@@ -1118,10 +1120,11 @@ All the possible combination of intersections are joined together to find the ma
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
+    \abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
     \text{where}~
-    I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
+    I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
   \end{align*}
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
 \end{definition}
 
 \begin{example}\labexample{abstract-range}
@@ -1129,15 +1132,15 @@ All the possible combination of intersections are joined together to find the ma
   The computation of $\abstractrange$ works as for $\abstractoutcomes$ until the computation of the intersections.
   Hence, we obtain the same projections for the variable \texttt{angle}:
   \begin{eqnarray*}
-    \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{low}}), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{high}}))) ={}} \\
+    \lefteqn[\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]))) ={}] \\
   & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
   \end{eqnarray*}
   Next, $\abstractrangename^\natural_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
   The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie{} $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
-  Therefore, $\abstractrangename^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 3$.
+  Therefore, $\abstractrangename^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{eqnarray*}
-    \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{low}}), \dots, \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{high}}))) ={}} \\
+    \lefteqn[\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]))) ={}] \\
   & \left\{
     \begin{array}{l}
     \{\textup{low}\}, \{\textup{mid\-/low}\}, \{\textup{mid\-/high}\}, \{\textup{high}\}, \\
@@ -1158,7 +1161,7 @@ All the possible combination of intersections are joined together to find the ma
     \abstractdomainsize(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
     \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
   \end{align*}
-  Therefore, $\abstractrangename^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 2$.
+  Therefore, $\abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
 
 To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract size is always greater than the concrete one.
@@ -1189,11 +1192,11 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   The quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$:
   \begin{align*}
     & \rangename_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
-    &\qquad\LE \abstractrangename^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 3
+    &\qquad\LE \abstractrangename^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3
   \end{align*}
   \begin{align*}
     & \rangename_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
-    &\qquad\LE \abstractrangename^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 2
+    &\qquad\LE \abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
   as expected by \reflemma{abstractrange-is-sound}.
 \end{example}
@@ -1211,38 +1214,39 @@ The result is a measure of the influence of the input variables on the output of
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractqused(X^\natural, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(X^\natural_j))}{j \le n}
+    \abstractqused(\presfrombuckets, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\prefrombucket))}{j \le n}
   \end{align*}
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
 \end{definition}
 
 \begin{example}\labexample{qused-sound}
   We show the computation of $\abstractqused$ for the program \refprog*{landing-alarm-system}.
   The backward analysis returns the following intervals:
   \begin{align*}
-    \backwardsemanticsnoparam(\bucket[\textup{low}]) \spacearound{&=} X^\natural_{\textup{low}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [1, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{mid\-/low}]) \spacearound{&=} X^\natural_{\textup{mid\-/low}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{mid\-/high}]) \spacearound{&=} X^\natural_{\textup{mid\-/high}} \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
-    \backwardsemanticsnoparam(\bucket[\textup{high}]) \spacearound{&=} X^\natural_{\textup{high}} \spacearound{=} \langle \texttt{angle} \mapsto -4, \texttt{speed} \mapsto [1, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{low}]) \spacearound{&=} \prefrombucket[\textup{low}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [1, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{mid\-/low}]) \spacearound{&=} \prefrombucket[\textup{mid\-/low}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{mid\-/high}]) \spacearound{&=} \prefrombucket[\textup{mid\-/high}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
+    \backwardsemanticsnoparam(\bucket[\textup{high}]) \spacearound{&=} \prefrombucket[\textup{high}] \spacearound{=} \langle \texttt{angle} \mapsto -4, \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
   We are interested in the impact of the input variable \texttt{angle}, hence we project away the variable \texttt{speed} from the abstract intervals, obtaining:
   \begin{align*}
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{low}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{mid\-/low}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{mid\-/high}}) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(X^\natural_{\textup{high}}) \spacearound{&=} \langle \texttt{angle} \mapsto -4 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{mid\-/low}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{angle} \mapsto -4 \rangle \\
   \end{align*}
   Then, $\abstractqusedname^\natural_{\{\texttt{angle}\}}$ counts the number of input configurations:
   \begin{align*}
     \abstractdomaincount(\langle \texttt{angle} \mapsto 1 \rangle) \spacearound{&=} 1 \\
     \abstractdomaincount(\langle \texttt{angle} \mapsto -4 \rangle) \spacearound{&=} 1 \\
   \end{align*}
-  The total number of input configurations is $2$ for the variable \texttt{angle}, hence $\abstractqusedname^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 2 - 1 = 1$.
+  The total number of input configurations is $2$ for the variable \texttt{angle}, hence $\abstractqusedname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 2 - 1 = 1$.
   On the other hand, when interested in the variable \texttt{speed} we project away the variable \texttt{angle} from the abstract intervals, obtaining:
   \begin{align*}
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{low}}) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{mid\-/low}}) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{mid\-/high}}) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
-    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(X^\natural_{\textup{high}}) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{mid\-/low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
+    \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
   Then, $\abstractqusedname^\natural_{\{\texttt{speed}\}}$ counts the number of input configurations:
   \begin{align*}
@@ -1250,7 +1254,7 @@ The result is a measure of the influence of the input variables on the output of
     \abstractdomaincount(\langle \texttt{speed} \mapsto [2, 3] \rangle) \spacearound{&=} \cardinalitynospaces{\{2, 3\}} \spacearound{=} 2 \\
   \end{align*}
   Differently from before, $\abstractqused$ yields the minimum among the counts of the input configurations, as this variable is subtracted from the total number of input configurations.
-  The total number of input configurations is $3$ for the variable \texttt{speed}, hence $\abstractqusedname^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 3 - 2 = 1$.
+  The total number of input configurations is $3$ for the variable \texttt{speed}, hence $\abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 - 2 = 1$.
   Overall, the impact of both variables \texttt{angle} and \texttt{speed} is $1$,
 \end{example}
 
@@ -1282,11 +1286,11 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
   \begin{align*}
     & \qusedname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
-    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{angle}\}}(X^\natural, \buckets) = 1
+    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
   \begin{align*}
     & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
-    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{speed}\}}(X^\natural, \buckets) = 1
+    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
   as expected by \reflemma{abstractqused-is-sound}.
 \end{example}

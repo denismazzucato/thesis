@@ -1,12 +1,11 @@
 \begin{eqnarray*}
 \lefteqn{\reduce[\outputsemanticsnoparam]{X} \DefeQ} \\
-& \setdef{
+& \setdef@{
   \setdef{
     \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
   }{
     \retrieveoutput{\defstate} \in X
   }
-}{
-  \defsetofdependencies\in \outputsemanticsnoparam
+}{\defsetofdependencies\in \outputsemanticsnoparam
 }
 \end{eqnarray*}
