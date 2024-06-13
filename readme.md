@@ -4,3 +4,4 @@ https://github.com/denismazzucato/thesis/blob/build/thesis.pdf
 
 - recall definitions on the side
 - proofs
+- check the use of let + ... + be

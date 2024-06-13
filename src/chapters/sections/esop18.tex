@@ -730,7 +730,7 @@ The function $\outputabstraction$ abstracts the output states of the dependencie
 Note that, the abstraction function $\outputabstraction$ is well-defined as it preserves set joins, \ie{} $\forall \defsetofdependencies, \defsetofdependencies' \in\outputtype.\spacer \outputabstraction(\defsetofdependencies \setjoin \defsetofdependencies') = \outputabstraction(\defsetofdependencies) \setjoin \outputabstraction(\defsetofdependencies')$ as $\outputabstraction$ preserves the set structure of its parameters.
 
 \begin{theorem}\labthm{dependency-output-galois-connection}
-  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois connection}:
+  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois injection}:
 \begin{align*}
   \galoisinjbetweensemantics{dependency}{output}
 \end{align*}
