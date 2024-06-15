@@ -1,0 +1,15 @@
+\begin{gather*}
+  \qused(\defsetoftraces) \DefeQ \\
+  \sup_{\deftrace \in \defsetoftraces}
+    \spacer\left|
+      \begin{array}{l}
+        \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
+        \quad \setdef*{
+          \retrieveinput{\defseq'}(\definputvariables)
+          }{
+            \deftrace' \in \defsetoftraces \LanD \\
+                \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+          }
+      \end{array}
+    \right|
+\end{gather*}

@@ -267,7 +267,7 @@ As done in the previous chapter for the unused property, \cf{} \refthm*{output-v
 We call such property $\boundedoutcomes$.
 
 \siderefbox{def}{output-abstraction-semantics}
-\begin{lemma}\lablemma{outcomes-validation}
+\begin{lemma}[$\boundedoutcomes$ Validation]\lablemma{outcomes-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
   \end{align*}
@@ -412,7 +412,7 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 Similarly to $\outcomesname$, \cf{} \reflemma{outcomes-validation}, we show the validation of the $\defbound$-bounded impact property when applied to the $\rangename$ impact notion.
 We call such property $\boundedrange$.
 
-\begin{lemma}\lablemma{range-validation}
+\begin{lemma}[$\boundedrange$ Validation]\lablemma{range-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDRANGE))
   \end{align*}
@@ -599,7 +599,7 @@ Hence, the value of $\qusedname$ always decreases by enlarging the set of traces
 Next, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\qusedname$ impact notion.
 Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} and \rangename{} impact notions, the $\defbound$-bounded impact property employed the $\le$ comparison operator.} in our property $\boundedqused$, this choice is forced by the fact that the $\qusedname$ is anti-monotonic.
 
-\begin{lemma}\lablemma{qused-validation}
+\begin{lemma}[$\boundedqused$ Validation]\lablemma{qused-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDQUSED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDQUSED))
   \end{align*}
@@ -1116,7 +1116,7 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
       \bucket[\textup{mid\-/high}] \spacearound{&=} \langle \texttt{risk} \mapsto 2 \rangle \\
       \bucket[\textup{high}] \spacearound{&=} \langle \texttt{risk} \mapsto 3 \rangle
     \end{align*}}
-  As expected by \refthm*{soundness}, the bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
+  As expected by \refthm*{soundness}[*6], the bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
   \begin{align*}
     & \outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
     &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4
@@ -1125,7 +1125,7 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
     & \outcomesname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
     &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 \\
   \end{align*}
-  where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog*{landing-alarm-system}[*-7].
+  where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
 
 
@@ -1260,7 +1260,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     & \rangename_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
     &\qquad\LE \abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
-  as expected by \refthm*{soundness}.
+  as expected by \refthm*{soundness}[*-4].
 \end{example}
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
@@ -1327,16 +1327,16 @@ To prove that $\abstractqused$ is a sound implementation of $\qused$, we require
   \[\abstractdomaincount(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef{qused}.
+The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}.
 
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering},
-    \item \label{pp2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility},
-    \item \label{pp3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}, and
-    \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef{soundness-count};
+    \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+    \item \label{pp2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+    \item \label{pp3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
+    \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef*{soundness-count}[*12];
   \end{enumerate}
   then, $\abstractqused$ is a sound implementation of $\qused$.
 \end{lemma}
@@ -1434,14 +1434,14 @@ Therefore, we only need to show that the minimum of the abstract counts is alway
 \begin{example}
   The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
   \begin{align*}
-    & \qusedname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
+    & \qusedname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
     &\qquad\GE \abstractqusedname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
   \begin{align*}
-    & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
+    & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
     &\qquad\GE \abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
-  as expected by \refthm*{soundness}.
+  as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
 
 \section{Summary}
