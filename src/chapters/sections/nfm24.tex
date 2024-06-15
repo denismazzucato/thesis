@@ -1048,14 +1048,15 @@ Note that, $\outcomes$ is bounded by the number of buckets when the conditions o
 
 The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$.
 
+\refdef@{outcomes}[*-2]
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     % \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation},
-    \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering},
-    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}, and
-    \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project};
+    \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1],
+    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*5], and
+    \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*10];
   \end{enumerate}
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{lemma}
@@ -1064,45 +1065,34 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   \begin{gather*}
     \outcomes(\defsetoftraces) = \sup_{\definput\in\reducedstate}
     \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}} \\
-    \le \\
-    \abstractoutcomes(\presfrombuckets, \buckets) = \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
+    \LE \\
+    \abstractoutcomes(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \\
+    \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}
   \end{gather*}
-  Let $\outcomes(\defsetoftraces)=\defbound$ be any of the quantity measured by the concrete $\outcomes$.
-  By contradiction, we assume that the higher cardinality set from $\intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})$ is lower than $\defbound$.
-  Such a set contains all the indices that intersect after projection.
-
-  \denis{To finish, and coherently adapt side references once done.}
-  % First we notice that $\tracesemanticsnoparam\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$ as by definition of the concretization functions and that for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$ it holds that $\outcomes(\defsetoftraces) \le \outcomes(\tracesemanticsnoparam)$, as the output-abstraction semantics $\outputsemanticsnoparam$ is sound and complete.
-  % From \ref{proof:a} and \ref{proof:b2}, \reflemma*{sound-approximation-covering} demonstrates that $\outputsemanticsnoparam \subseteq \multiconcretization(\multisemanticsnoparam)\buckets$.
-  % Since $\dependencyconcretization \circ \outputconcretization$ are monotone, \cf{} \refthm{collecting-dependency-galois-connection} and \refthm{dependency-output-galois-connection}, we obtain that
-  % $\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam) \subseteq \dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$.
-  % Next, from the monotonicity of $\outcomes$, \cf{} \reflemma*{outcomes-monotonic}, we have that for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$ it exists $\defsetoftraces'\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ such that
-  % $\outcomes(\defsetoftraces) \le \outcomes(\defsetoftraces')$.
-  % We notice that $\tracesemanticsnoparam\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$ as by definition of the concretization functions.
-%   Furthermore, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$ it holds that $\outcomes(\defsetoftraces) \le \outcomes(\tracesemanticsnoparam)$, as the output-abstraction semantics $\outputsemanticsnoparam$ is sound and complete.
-%   By definitions of $\abstractoutcomes$, \cf{} \refdef{abstract-outcomes}, and $\outcomes$, \cf{} \refdef{outcomes}, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\outputsemanticsnoparam)$, we need to show that
-%   \begin{gather*}
-%     \outcomes(\defsetoftraces) = \sup_{\definput\in\reducedstate}
-%     \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}} \\
-%     \le \\
-%     \abstractoutcomes(\presfrombuckets, \buckets) = \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
-%   \end{gather*}
-%   where $\presfrombuckets = \multisemanticsnoparam(\buckets)$.
-% %
-%   First, from \ref{proof:b2} and \ref{proof:b1}, \reflemma*{outcomes-upper-bound} demonstrates that $\outcomes(\tracesemanticsnoparam)$ is limited by the number of buckets $n$.
-%   Notably, $\outcomes$ cannot be unbounded, but it has to be a finite number, at most $n$. Thus, it exists an initial state $\overline\defstate\in\reducedstate$ such that $\outcomes(\outputsemanticsnoparam) = \cardinalitynospaces{\defsetoftraces_{\overline\defstate}}$, where $\defsetoftraces_{\overline\defstate} = \setdef{\outputobs(\retrieveoutput{\defstate})}{\inputoutputtuple\defstate\in\outputsemanticsnoparam\land\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \overline\defstate}$.
-%   We conclude in case this cardinality is $0$ as any value returned by $\abstractoutcomes$ would be greater or equal. In the other case, by covering (\cf{} \ref{proof:b2}), for all dependencies in $\defsetoftraces_{\overline\defstate}$
-%   it exists a bucket $\bucket$ such that $\retrieveoutput{\defstate'}\in\abstractdomainconcretization(\bucket)$.
-
-%   Furthermore, by compatibility (\cf{} \ref{proof:b1}), for any pair $\inputoutputtuple\defstate, \inputoutputtuple{\defstate'}\in\defsetoftraces_{\overline\defstate}$ leading to two different outcomes $\outputobs(\retrieveoutput{\defstate}) \neq \outputobs(\retrieveoutput{\defstate'})$, we have two different buckets $\bucket, \bucket[p]$ such that $\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)$ and $\retrieveoutput{\defstate'}\in\abstractdomainconcretization(\bucket[p])$.
-%   Note that, by definition of $\defsetoftraces_{\overline\defstate}$ it holds that $\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \overline{\defstate} \stateeq{\inputvariableswithoutw} \retrieveinput{\defstate'}$, by transitivity $\retrieveinput\defstate \stateeq{\inputvariableswithoutw} \retrieveinput{\defstate'}$.
-
-%   Let us call $\prefrombucket$ and $\prefrombucket[p]$ the corresponding abstract values from the backward analysis applied to the buckets $\bucket$ and $\bucket[p]$, respectively.
-%   From the fact that $\backwardsemanticsnoparam$ is sound with respect to $\dependencysemanticsnoparam$, \cf{} \ref{proof:a}, it holds that $\retrieveinput\defstate \in \abstractdomainconcretization(\prefrombucket)$ and $\retrieveinput{\defstate'} \in \abstractdomainconcretization(\prefrombucket[p])$.
-%   By the soundness condition of $\abstractdomainproject$, \cf{} \ref{proof:d}, we obtain that both states $\retrieveinput\defstate$ and $\retrieveinput\defstate'$ belong to each other projection, \ie, $\retrieveinput\defstate \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket))$ and $\retrieveinput{\defstate'} \in \abstractdomainconcretization(\abstractdomainproject(\prefrombucket[p]))$.
-
-%   Finally, the function \intersectallfunction{} applied to the projected preconditions $\prefrombucket$ and $\prefrombucket[p]$ finds an intersection between the indices $j$ and $p$ as $\abstractdomainproject(\prefrombucket) \abstractdomainmeet \abstractdomainproject(\prefrombucket[p])$ definitely holds since they share concrete states. Therefore, whenever it exists an intersection in the concrete, the two indices representing the respective precondition discovered by the backward analysis belong to the set $J$ in \nrefdef{abstract-outcomes}.
-%   As a consequence, the maximum cardinality of $J$ takes into account all the possible intersections in $\defsetoftraces_{\overline\defstate}$, hence $\abstractoutcomes(\presfrombuckets, \buckets) \ge \cardinalitynospaces{\defsetoftraces_{\overline\defstate}}$.
+  Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
+  \begin{gather*}
+    \sup_{\definput\in\reducedstate}
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}}
+    \spacearound{=} \\
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}}
+  \end{gather*}
+  Let $\overline{J} \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$ be such that:
+  \begin{gather*}
+    \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}
+    \spacearound{=}
+    \cardinalitynospaces{\overline{J}}
+  \end{gather*}
+  We need to show that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} \le \cardinalitynospaces{\overline{J}}$.
+  By contradiction, we assume that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} > \cardinalitynospaces{\overline{J}}$, meaning that the number of distinct output abstraction from states in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ is higher than the number of indices in the abstract. Hence, either:
+  \begin{enumerate}[label=(\alph*)]
+    \item \label{dsa1} there exist output abstractions that are not matched by any output bucket,
+    \item \label{dsa2} some output abstractions are matched by the same output bucket, or
+    \item \label{dsa3} there are output abstractions in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract.
+  \end{enumerate}
+  By \ref{proof:b1}, the first case \ref{dsa1} is not possible as covering, \cf{} \refdef{covering}, ensures that all the output abstractions are matched by the output buckets.
+  By \ref{proof:b2}, the second case \ref{dsa2} is not possible as compatibility, \cf{} \refdef{compatibility}, ensures that any two output abstractions that produce different outputs belong to different output buckets.
+  The third case \ref{dsa3} is not possible by \ref{proof:d} as the soundness of the projection operator ensures that all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$ are considered in the abstract.
+  Therefore, the assumption is false, and we conclude that $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{proof}
 
 \begin{example}
@@ -1126,7 +1116,7 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
       \bucket[\textup{mid\-/high}] \spacearound{&=} \langle \texttt{risk} \mapsto 2 \rangle \\
       \bucket[\textup{high}] \spacearound{&=} \langle \texttt{risk} \mapsto 3 \rangle
     \end{align*}}
-  As expected by \refthm{soundness}, the bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
+  As expected by \refthm*{soundness}, the bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
   \begin{align*}
     & \outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
     &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4
@@ -1157,13 +1147,13 @@ These intersections represent concrete input configurations where variations on 
 All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
-  We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
-  \begin{align*}
-    \abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
-    \text{where}~
-    I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
-  \end{align*}
-  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
+We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
+\begin{align*}
+\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
+\text{where}~
+I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
+\end{align*}
+where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
 \end{definition}
 
 \begin{example}\labexample{abstract-range}
@@ -1206,8 +1196,8 @@ All the possible combination of intersections are joined together to find the ma
 To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract size is always greater than the concrete one.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Size}]\labdef{soundness-size}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
-  \[\abstractdomainsize(\defstate^\natural) \GE \size(\setdef{\outputobs(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the output variable of interest $\defoutputvariable$, it holds that:
+  \[\abstractdomainsize(\defstate^\natural) \GE \size(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
@@ -1216,16 +1206,47 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{proof:ra} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
-    \item \label{proof:rb} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item \label{proof:rc} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility},
-    \item \label{proof:rd} $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project}, and
-    \item \label{proof:re} $\abstractdomainsize$ is sound, \cf{} \refdef{soundness-size};
+    \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+    \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+    \item \label{proof:ad} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
+    \item \label{proof:ae} $\abstractdomainsize$ is sound, \cf{} \refdef*{soundness-size}[*12];
   \end{enumerate}
   then, $\abstractrange$ is a sound implementation of $\range$.
 \end{lemma}
 \begin{proof}
-  \denis{todo}
+  We need to prove, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$, that
+  \begin{gather*}
+    \range(\defsetoftraces) = \sup_{\definput\in\reducedstate}
+    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \LE \\
+    \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomainsize(K)}{K \in I}
+  \end{gather*}
+  where $I = \setdef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}$.
+  Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
+  \begin{gather*}
+    \sup_{\definput\in\reducedstate}
+    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \spacearound{=} \\
+    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}})
+  \end{gather*}
+  Let $\overline{K} \in I$ be such that:
+  \begin{gather*}
+    \max~\setdef{\abstractdomainsize(K)}{K \in I}
+    \spacearound{=}
+    \abstractdomainsize(\overline{K})
+  \end{gather*}
+  where $\overline{K} = \abstractdomainjoin\seTDef{\bucket}{j\in J}$ and $J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$.
+  We need to show that $\size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomainsize(\overline{K})$.
+  By contradiction, we assume that $\size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomainsize(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
+  \begin{enumerate}[label=(\alph*)]
+    \item \label{au1} there exist output abstractions that are not matched by any output bucket,
+    \item \label{au2} some output abstractions are matched by the same output bucket,
+    \item \label{au3} there are output abstractions in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract, or
+    \item \label{au4} the size of the abstract element is not greater than the size of the output abstraction.
+  \end{enumerate}
+  Similarly to the proof of \reflemma{abstractoutcomes-is-sound}, we can show that the first three cases are not possible by \ref{proof:ab}, \ref{proof:ac}, and \ref{proof:ad}.
+  The fourth case \ref{au4} is not possible by \ref{proof:ae} as the soundness of the size operator ensures that the size of the abstract element is always greater than the size of the output abstraction.
+  Therefore, the assumption is false, and we conclude that $\abstractrange$ is a sound implementation of $\range$.
 \end{proof}
 
 \begin{example}
@@ -1233,13 +1254,13 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   The quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$.
   \begin{align*}
     & \rangename_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
-    &\qquad\LE \abstractrangename^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3
+    &\qquad\LE \abstractrangename^\natural_{\{\texttt{angle}\}}(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = 3
   \end{align*}
   \begin{align*}
     & \rangename_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
     &\qquad\LE \abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
-  as expected by \reflemma{abstractrange-is-sound}.
+  as expected by \refthm*{soundness}.
 \end{example}
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
@@ -1255,12 +1276,12 @@ The result is a measure of the influence of the input variables on the output of
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractqused(\presfrombuckets, \buckets) \DefeQ& \cardinality{\inputvaluesof{\state}} -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\prefrombucket))}{j \le n}
+    \abstractqused(\presfrombuckets, \buckets) \DefeQ& l -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\prefrombucket))}{j \le n}
   \end{align*}
-  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input configurations for the variables $\definputvariables$, \ie{} $l = \cardinalitynospaces{\setdef{\definput(\definputvariables)}{\definput\in\reducedstate}}$.
 \end{definition}
 
-\begin{example}\labexample{qused-sound}
+\begin{example}\labexample{abstract-qused}
   We show the computation of $\abstractqused$ for the program \refprog*{landing-alarm-system}.
   The backward analysis returns the following intervals:
   \begin{align*}
@@ -1302,7 +1323,7 @@ The result is a measure of the influence of the input variables on the output of
 To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the following soundness condition on the abstract operator $\abstractdomaincount$ to ensure that the abstract count is always greater than the concrete one.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
+  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
   \[\abstractdomaincount(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
 \end{definition}
 
@@ -1312,16 +1333,103 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef{sound-over-approximation},
-    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef{covering},
-    \item $\buckets$ is compatible with $\outputobs$, \cf{} \refdef{compatibility}, and
-    \item $\abstractdomainproject$ is sound, \cf{} \refdef{soundness-project};
+    \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering},
+    \item \label{pp2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility},
+    \item \label{pp3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}, and
+    \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef{soundness-count};
   \end{enumerate}
   then, $\abstractqused$ is a sound implementation of $\qused$.
 \end{lemma}
 \begin{proof}
-  \denis{todo}
+  We need to prove, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$, that
+    \begin{eqnarray*}
+      \qused(\defsetoftraces) \DefeQ
+      \sup_{\deftrace \in \defsetoftraces}
+        \spacer\left|
+          \begin{array}{l}
+            \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
+            \quad \setdef{
+              \retrieveinput{\defseq'}(\definputvariables)
+              }{
+                \deftrace' \in \defsetoftraces \LanD
+                    \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+              }
+          \end{array}
+        \right|
+    \LE \\
+    \abstractqused(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = l -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\backwardconcretization(\backwardsemanticsnoparam)\bucket))}{j \le n}
+  \end{eqnarray*}
+  where $l = \cardinalitynospaces{\setdef{\definput(\definputvariables)}{\definput\in\reducedstate}}$.
+  First, we notice that $\qused$ could be alternatively defined as the number of input configurations of the variables $\definputvariables$ minus the lowest possible number of input configurations leading to the same output. Formally:
+  \begin{gather*}
+    \qused(\defsetoftraces) \spacearound{=} \\
+    \cardinality{\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}} -
+    \inf_{\deftrace \in \defsetoftraces}
+    \cardinality{\setdef{
+      \retrieveinput{\defseq'}(\definputvariables)
+      }{
+        \deftrace' \in \defsetoftraces \LanD
+            \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+      }}
+\end{gather*}
+Therefore, we only need to show that the minimum of the abstract counts is always greater than the infimum of the concrete counts:
+\begin{gather*}
+  \inf_{\deftrace \in \defsetoftraces}
+  \cardinality{\setdef{
+    \retrieveinput{\defseq'}(\definputvariables)
+    }{
+      \deftrace' \in \defsetoftraces \LanD
+          \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+    }}
+  \LE \\
+  \min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\backwardconcretization(\backwardsemanticsnoparam)\bucket))}{j \le n}
+\end{gather*}
+  Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\defseq}\in\overline{\defsetoftraces}$ be such that:
+  \begin{gather*}
+    \inf_{\deftrace \in \defsetoftraces}
+    \cardinality{\setdef{
+      \retrieveinput{\defseq'}(\definputvariables)
+      }{
+        \deftrace' \in \defsetoftraces \LanD
+            \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+      }}
+    \spacearound{=} \\
+    \cardinality{\setdef{
+      \retrieveinput{\defseq'}(\definputvariables)
+      }{
+        \deftrace' \in \overline{\defsetoftraces} \LanD
+            \outputobs(\retrieveoutput{\overline{\deftrace}}) = \outputobs(\retrieveoutput{\deftrace'})
+      }}
+  \end{gather*}
+  Let $\overline{K} \in \setdef{\abstractdomainprojectothers(\backwardconcretization(\backwardsemanticsnoparam)\bucket)}{j \le n}$ be such that:
+  \begin{gather*}
+    \min~  \seTDef{\abstractdomaincount(K)}{K \in \setdef{\abstractdomainprojectothers(\backwardconcretization(\backwardsemanticsnoparam)\bucket)}{j \le n}}
+    \spacearound{=}
+    \abstractdomaincount(\overline{K})
+  \end{gather*}
+  We need to show that $\cardinality{\setdef{
+    \retrieveinput{\defseq'}(\definputvariables)
+    }{
+      \deftrace' \in \overline{\defsetoftraces} \LanD
+          \outputobs(\retrieveoutput{\overline{\deftrace}}) = \outputobs(\retrieveoutput{\deftrace'})
+    }} \LE \abstractdomaincount(\overline{K})$.
+  By contradiction, we assume that $\cardinality{\setdef{
+    \retrieveinput{\defseq'}(\definputvariables)
+    }{
+      \deftrace' \in \overline{\defsetoftraces} \LanD
+          \outputobs(\retrieveoutput{\overline{\deftrace}}) = \outputobs(\retrieveoutput{\deftrace'})
+    }} > \abstractdomaincount(\overline{K})$, meaning that the number of input configurations leading to the same output in the concrete is higher than the number of input configurations leading to the same output in the abstract. Hence, either:
+  \begin{enumerate}[label=(\alph*)]
+    \item \label{qw1} there exist output abstractions that are not matched by any output bucket,
+    \item \label{qw2} some output abstractions are matched by the same output bucket,
+    \item \label{qw3} there are output abstractions in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract, or
+    \item \label{qw4} counting the number of input configurations in the abstract is not greater than the number of input configurations in the concrete.
+  \end{enumerate}
+  Again, we can show that the first three cases are not possible by hypothesis \ref{pp1}, \ref{pp2}, and \ref{pp3}.
+  By hypothesis \ref{pp4}, the soundness of the count operator ensures that the number of input configurations in the abstract is always greater than the number of input configurations in the concrete.
+  Therefore, the assumption is false, and we conclude that $\abstractqused$ is a sound implementation of $\qused$.
 \end{proof}
+
 
 \begin{example}
   The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
@@ -1333,7 +1441,7 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
     & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
     &\qquad\GE \abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
-  as expected by \refthm{soundness}.
+  as expected by \refthm*{soundness}.
 \end{example}
 
 \section{Summary}
