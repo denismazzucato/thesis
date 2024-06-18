@@ -23,6 +23,7 @@
 
 \newcommand*{\qlibraname}{\textup{\textsc{QLibra}}}
 \newcommand*{\qlibra}{\qlibraname_\definputvariables}
+\newcommand*{\volume}{\textup{\textsc{Volume}}}
 
 \newcommand*{\LEK}{{\le\defbound}}
 \newcommand*{\lek}{{\scaleto{\le}{5pt}\defbound}}
@@ -41,7 +42,10 @@
 \newcommand*{\BOUNDEDRANGE}{\mathscr{B}_{\range}^{\lek}}
 \newcommand*{\boundedqused}{\resize{\mathscr{B}}{\qused}[\gek]}
 \newcommand*{\BOUNDEDQUSED}{\mathscr{B}_{\qused}^{\gek}}
-
+\newcommand*{\boundedchanges}{\resize{\mathscr{B}}{\changes}[\lek]}
+\newcommand*{\BOUNDEDCHANGES}{\mathscr{B}_{\changes}^{\lek}}
+\newcommand*{\boundedqlibra}{\resize{\mathscr{B}}{\qlibra}[\gek]}
+\newcommand*{\BOUNDEDQLIBRA}{\mathscr{B}_{\qlibra}^{\gek}}
 
 
 \newcommand*{\numberofbuckets}{n}
@@ -52,13 +56,13 @@
 \newcommand*{\presfrombuckets}{X^\natural}
 \newcommand{\prefrombucket}[1][j]{\resize{X}{#1}[\natural][f^2]}
 
-\newcommand*{\abstractrangename}{\textup{\texttt{Range}}}
-\newcommand*{\abstractrange}{\resize{\abstractrangename}{\definputvariables}[\natural]}
-\newcommand*{\abstractoutcomesname}{\textup{\texttt{Outcomes}}}
-\newcommand*{\abstractoutcomes}{\resize{\abstractoutcomesname}{\definputvariables}[\natural]}
-\newcommand*{\abstractqusedname}{\textup{\texttt{QUsed}}}
-\newcommand*{\abstractqused}{\resize{\abstractqusedname}{\definputvariables}[\natural]}
-\newcommand*{\abstractchangesname}{\textup{\texttt{Changes}}}
-\newcommand*{\abstractchanges}{\resize{\abstractchangesname}{\definputvariables}[\natural]}
-\newcommand*{\abstractqlibraname}{\textup{\texttt{QLibra}}}
-\newcommand*{\abstractqlibra}{\resize{\abstractqlibraname}{\definputvariables}[\natural]}
+\newcommand*{\abstractrangename}{\resize{\textup{\texttt{Range}}}{}[\natural]}
+\newcommand*{\abstractrange}{\resize{\textup{\texttt{Range}}}{\definputvariables}[\natural]}
+\newcommand*{\abstractoutcomesname}{\resize{\textup{\texttt{Outcomes}}}{}[\natural]}
+\newcommand*{\abstractoutcomes}{\resize{\textup{\texttt{Outcomes}}}{\definputvariables}[\natural]}
+\newcommand*{\abstractqusedname}{\resize{\textup{\texttt{QUsed}}}{}[\natural]}
+\newcommand*{\abstractqused}{\resize{\textup{\texttt{QUsed}}}{\definputvariables}[\natural]}
+\newcommand*{\abstractchangesname}{\resize{\textup{\texttt{Changes}}}{}[\natural]}
+\newcommand*{\abstractchanges}{\resize{\textup{\texttt{Changes}}}{\definputvariables}[\natural]}
+\newcommand*{\abstractqlibraname}{\resize{\textup{\texttt{QLibra}}}{}[\natural]}
+\newcommand*{\abstractqlibra}{\resize{\textup{\texttt{QLibra}}}{\definputvariables}[\natural]}

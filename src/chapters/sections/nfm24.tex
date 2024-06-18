@@ -666,7 +666,7 @@ In the rest of this chapter, we present the static analysis to verify the $\defb
 \labsec{abstract-quantitative-input-data-usage}
 
 In this section, we introduce a sound and computable static analysis to verify the $\defbound$-bounded impact property of a program.
-The soundness of the approach leverages two elements: (1) a backward abstract semantics, and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{} (written as $\abstractoutcomesname^\natural$, $\abstractrangename^\natural$, and $\abstractqusedname^\natural$ respectively).
+The soundness of the approach leverages two elements: (1) a backward abstract semantics, and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{} (written as $\abstractoutcomesname$, $\abstractrangename$, and $\abstractqusedname$ respectively).
 
 
 To quantify the usage of the input variables $\definputvariables$, we mostly need to determine the input configurations leading to specific output values.
@@ -923,7 +923,7 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
 
 
 Finally,
-we define $\abstractrangename^\natural$, $\abstractoutcomesname^\natural$, and $\abstractqusedname^\natural$
+we define $\abstractrangename$, $\abstractoutcomesname$, and $\abstractqusedname$
 as possible implementations for $\rangename$, $\outcomesname$, and $\qusedname$, respectively.
 
 %
@@ -1002,7 +1002,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
 & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
 \end{eqnarray*}
   The maximum size is $4$ at $\cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}$.
-  Therefore, $\abstractoutcomesname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4$, meaning that variations of the input variable \texttt{angle} may lead to changes of program outcome from four different buckets.
+  Therefore, $\abstractoutcomesname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4$, meaning that variations of the input variable \texttt{angle} may lead to changes of program outcome from four different buckets.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{align*}
     \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
@@ -1022,7 +1022,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
     \end{array}
     \right\}
   \end{eqnarray*}
-  The maximum clique is of size $3$, \cf{} \cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}\}}, hence $\abstractoutcomesname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3$. This means that variations of the input variable \texttt{speed} may lead to changes of program outcome in three different buckets.
+  The maximum clique is of size $3$, \cf{} \cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}\}}, hence $\abstractoutcomesname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3$. This means that variations of the input variable \texttt{speed} may lead to changes of program outcome in three different buckets.
 \end{example}
 
 In order to prove that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$, we require the output buckets $\buckets$ to be \textit{compatible} with the output observer $\outputobs$.
@@ -1119,11 +1119,11 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   As expected by \refthm*{soundness}[*6], the bound computed by the abstract implementation $\abstractoutcomes$ is always greater or equal to the concrete one:
   \begin{align*}
     & \outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
-    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4
+    &\qquad\LE \abstractoutcomesname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 4
   \end{align*}
   \begin{align*}
     & \outcomesname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
-    &\qquad\LE \abstractoutcomesname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 \\
+    &\qquad\LE \abstractoutcomesname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 \\
   \end{align*}
   where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
@@ -1164,9 +1164,9 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
     \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]))) ={}} \\
   & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
   \end{eqnarray*}
-  Next, $\abstractrangename^\natural_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
+  Next, $\abstractrangename_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
   The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie{} $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
-  Therefore, $\abstractrangename^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
+  Therefore, $\abstractrangename_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{eqnarray*}
     \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]))) ={}} \\
@@ -1190,7 +1190,7 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
     \abstractdomainsize(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
     \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
   \end{align*}
-  Therefore, $\abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
+  Therefore, $\abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
 
 To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract size is always greater than the concrete one.
@@ -1254,11 +1254,11 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   The quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$.
   \begin{align*}
     & \rangename_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
-    &\qquad\LE \abstractrangename^\natural_{\{\texttt{angle}\}}(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = 3
+    &\qquad\LE \abstractrangename_{\{\texttt{angle}\}}(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = 3
   \end{align*}
   \begin{align*}
     & \rangename_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
-    &\qquad\LE \abstractrangename^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
+    &\qquad\LE \abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
   as expected by \refthm*{soundness}[*-4].
 \end{example}
@@ -1297,12 +1297,12 @@ The result is a measure of the influence of the input variables on the output of
     \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{angle} \mapsto 1 \rangle \\
     \texttt{Proj}^\natural_{\{\texttt{speed}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{angle} \mapsto -4 \rangle \\
   \end{align*}
-  Then, $\abstractqusedname^\natural_{\{\texttt{angle}\}}$ counts the number of input configurations:
+  Then, $\abstractqusedname_{\{\texttt{angle}\}}$ counts the number of input configurations:
   \begin{align*}
     \abstractdomaincount(\langle \texttt{angle} \mapsto 1 \rangle) \spacearound{&=} 1 \\
     \abstractdomaincount(\langle \texttt{angle} \mapsto -4 \rangle) \spacearound{&=} 1 \\
   \end{align*}
-  The total number of input configurations is $2$ for the variable \texttt{angle}, hence $\abstractqusedname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 2 - 1 = 1$.
+  The total number of input configurations is $2$ for the variable \texttt{angle}, hence $\abstractqusedname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 2 - 1 = 1$.
   On the other hand, when interested in the variable \texttt{speed} we project away the variable \texttt{angle} from the abstract intervals, obtaining:
   \begin{align*}
     \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
@@ -1310,13 +1310,13 @@ The result is a measure of the influence of the input variables on the output of
     \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
     \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
-  Then, $\abstractqusedname^\natural_{\{\texttt{speed}\}}$ counts the number of input configurations:
+  Then, $\abstractqusedname_{\{\texttt{speed}\}}$ counts the number of input configurations:
   \begin{align*}
     \abstractdomaincount(\langle \texttt{speed} \mapsto [1, 3] \rangle) \spacearound{&=} \cardinalitynospaces{\{1, 2, 3\}} \spacearound{=} 3 \\
     \abstractdomaincount(\langle \texttt{speed} \mapsto [2, 3] \rangle) \spacearound{&=} \cardinalitynospaces{\{2, 3\}} \spacearound{=} 2 \\
   \end{align*}
   Differently from before, $\abstractqused$ yields the minimum among the counts of the input configurations, as this variable is subtracted from the total number of input configurations.
-  The total number of input configurations is $3$ for the variable \texttt{speed}, hence $\abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 - 2 = 1$.
+  The total number of input configurations is $3$ for the variable \texttt{speed}, hence $\abstractqusedname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3 - 2 = 1$.
   Overall, the impact of both variables \texttt{angle} and \texttt{speed} is $1$,
 \end{example}
 
@@ -1435,11 +1435,11 @@ Therefore, we only need to show that the minimum of the abstract counts is alway
   The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
   \begin{align*}
     & \qusedname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
-    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
+    &\qquad\GE \abstractqusedname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
   \begin{align*}
     & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
-    &\qquad\GE \abstractqusedname^\natural_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
+    &\qquad\GE \abstractqusedname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
   \end{align*}
   as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
