@@ -18,28 +18,39 @@ fi
 #   mkdir "$PSL_TEMPLATE/$OUTPUT"
 # fi
 
+# Clean the output directory
+# rm -rf "$OUTPUT"/*
+
 ## do thesis.tex
 
 # Comment out \drafttrue for final compilation
-sed -i.bak 's/\\drafttrue/%\\drafttrue/g' "$PACKAGES"
+# sed -i.bak 's/\\drafttrue/%\\drafttrue/g' "$PACKAGES"
 
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+echo "Finished first compilation"
 # Compile nomenclature
 makeindex "$OUTPUT/$PDF_NAME.nlo" -s nomencl.ist -o "$OUTPUT/$PDF_NAME.nls"
+echo "Finished nomenclature"
 # Compile index
 makeindex "$OUTPUT/$PDF_NAME"
+echo "Finished index"
 # Compile bibliography
 biber "$OUTPUT/$PDF_NAME"
+echo "Finished bibliography"
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+echo "Finished second compilation"
 # Compile glossary
 cd "$OUTPUT"
 makeglossaries "$PDF_NAME"
+echo "Finished glossary"
 cd ..
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+echo "Finished third compilation"
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+echo "Finished fourth compilation"
 
 # Uncomment \drafttrue for draft compilation
-sed -i.bak 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
+# sed -i.bak 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
 
 ## do psl/thesis.tex
 
@@ -52,3 +63,4 @@ sed -i.bak 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
 # merge the two
 pdftk pdf/thesis.pdf cat 2-end output pdf/thesis-tail.pdf
 pdftk psl-first.pdf pdf/thesis-tail.pdf cat output pdf/thesis.pdf
+echo "Finished merging"
