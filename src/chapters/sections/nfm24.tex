@@ -940,6 +940,7 @@ In the context of the interval domain, where each input variable is related to a
 We define the condition a sound projection operator $\abstractdomainproject$ must satisfy to ensure that no concrete state is missed by the projection.
 In fact, the projection operator is sound whenever the projection of the variables $\definputvariables$ from the abstract value $\defstate^\natural$ contains all the concrete states that can be obtained by perturbing the variables $\definputvariables$ from a concrete state represented by $\defstate^\natural$.
 
+\marginnote{\denis{add concrete project opertator (explain that we didn't do it before to not overload impact notin definitions) and fix soundness definitions as remarks}}
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainproject$}{Project}]\labdef{soundness-project}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, we say that the projection operator $\abstractdomainproject$ is \textup{sound} whenever it holds that:
   \[

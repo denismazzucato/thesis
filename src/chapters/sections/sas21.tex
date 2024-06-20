@@ -257,8 +257,9 @@ To this end, we define the \qlibraname{} impact notion as the volume of input sp
 The higher the volume, the lower the amount of space that is prone to bias, and thus the higher the fairness of the model.
 
 In practice, we collect the input space, without the input variables $\definputvariables$ to account for any possible permutations of their input values, where the variables $\definputvariables$ do not influence the network outcome.
-To do so, we employ the $\unusediowrapper$ predicate to check whether a subset of the given set of traces $\defsetoftraces$ is not able to change the network outcome.
-Among all the possible subsets, we consider the maximal one, that is, the one that cannot be extended without changing the network outcome.
+% To do so, we employ the $\unusediowrapper$ predicate to check whether a subset of the given set of traces $\defsetoftraces$ is not able to change the network outcome.
+% Among all the possible subsets, we consider the maximal one, that is, the one that cannot be extended without changing the network outcome.
+To do so, we retrieve the input values of traces that do not change the network outcome when the input variables $\definputvariables$ are modified, similarly to the $\unusediowrapper$ predicate.
 We determine the volume of this set of points by applying the standard volume operation inherent to metric spaces.
 Formally, the \qlibraname{} impact notion is defined as follows:
 
@@ -283,13 +284,36 @@ Formally, the \qlibraname{} impact notion is defined as follows:
   %       \defoutput\in\stateandbottom
   %     }
   % \end{align*}
+  % \begin{align*}
+  %   &\qlibra(\defsetoftraces) \DefeQ
+  %       \volume(\setdef{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{\deftrace\in\defsetoftraces'}) \\
+  %   &\quad\text{where } \defsetoftraces' \subseteq \defsetoftraces \text{ such that } \forall \defsetoftraces'' \supseteq \defsetoftraces'.\spacer
+  %     \unusediowrapper(\defsetoftraces') \land \neg\unusediowrapper(\defsetoftraces'')
+  % \end{align*}
   \begin{align*}
-    &\qlibra(\defsetoftraces) \DefeQ
-        \volume(\setdef{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{\deftrace\in\defsetoftraces'}) \\
-    &\quad\text{where } \defsetoftraces' \subseteq \defsetoftraces \text{ such that } \forall \defsetoftraces'' \supseteq \defsetoftraces'.\spacer
-      \unusediowrapper(\defsetoftraces') \land \neg\unusediowrapper(\defsetoftraces'')
+    &\qlibra(\defsetoftraces) \DefeQ \\
+    &\quad \volume\left(\setdef*{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
+      \deftrace\in\defsetoftraces \LanD \forall \defvalue\in\values.\spacer
+      \retrieveinput\deftrace(\definputvariables) \neq \defvalue \implies \\
+      \exists \deftrace'\in\defsetoftraces.\spacer
+      \retrieveinput{\deftrace'}(\definputvariables) = \defvalue \LanD \retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'} \LanD \\
+      \quad \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+    }\right)
   \end{align*}
 \end{definition}
+
+In other words, the \qlibraname{} quantifies the volume of the biggest set of traces $\defsetoftraces' \subseteq \defsetoftraces$ that does not contain bias, \ie{} where the predicate $\unusediowrapper$ holds.
+Indeed, the \qlibraname{} impact notion could be rewritten as:
+\begin{align*}
+  &\qlibra(\defsetoftraces) \spacearound= \\
+     &\quad \volume(\setdef{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
+        \unusediowrapper(\setdef{\deftrace'\in\defsetoftraces}{\retrieveinput{\deftrace'}(\inputvariableswithoutw) = \retrieveinput{\deftrace}(\inputvariableswithoutw)})
+      })
+\end{align*}
+
+Such a definition is important because it highlights the relation between the \qlibraname{} impact notion and the $\unusediowrapper$ predicate.
+In fact, the \qlibraname{} impact notion quantifies the volume of input space where the $\unusediowrapper$ predicate holds.
+
 
 \begin{example}
   \denis{Example of the qlibra function on\reffig{irregular}.}
@@ -328,8 +352,37 @@ we call such property $\boundedqlibra$.
 
 \reflemma{qlibra-monotonic} and \reflemma{qlibra-validation} are of significant importance as they show that the $\qlibraname$ impact notion can be used to certify that a program has impact of \emph{at least} $\defbound$, meaning that the input variables $\definputvariables$ of a network are fair for at least $\defbound$ fraction of the input space.
 
+For clarity, we unfold the $\unusediowrapper$ predicate in the definition of the \qlibraname{} impact notion (assuming the set of traces $\defsetoftraces$ is deterministic).
+From \refprop{ani-predicate-equivalence}, we notice that the $\unusediowrapper$ predicate is equivalent to the $\aniwrapper$ predicate whenever the set of traces is deterministic, thus obtaining the following definition:
+
+\begin{align*}
+  &\qlibra(\defsetoftraces) \\
+    &\quad\spacearound=
+    \volume\left(\setdef*{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
+      \deftrace\in\defsetoftraces \LanD \forall \deftrace' \in \defsetoftraces.\spacer \\
+      \retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'} \implies \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+    }\right)
+\end{align*}
+
+Furthermore, we could also devise a notion that reverse the amount of bias, that is, the volume of the input space that contains bias.
+
+\begin{align*}
+  &\qlibra(\defsetoftraces) \\
+    &\quad\spacearound=
+    1 - \volume\left(
+      \setdef*{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
+        \deftrace\in\defsetoftraces \LanD \exists \deftrace' \in \defsetoftraces.\spacer \\
+        \retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'} \LanD \outputobs(\retrieveoutput{\deftrace}) \neq \outputobs(\retrieveoutput{\deftrace'})
+      }
+      \right)
+\end{align*}
+
+
+
 \section{Quantitative Analysis of Neural Networks}
 \labsec{quantitative-analysis-neural-networks}
+
+\marginnote{\denis{Is it clear that $\changesname$ requires an exact semantics because otherwise non-determinism would imply a bound of $+\infty$? Instead, $\qlibraname$ prefers an exact semantics to not drop precision.}}
 
 This section presents the abstract implementations of the \changesname{} and \qlibraname{} impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$.
 We show how to validate the $\defbound$-bounded impact property for both notions.
@@ -401,7 +454,7 @@ Whenever the backward semantics $\backwardsemantics$ is both sound and complete,
   Trivially follows from the definitions of soundness (\refdef{sound-over-approximation}) and completeness (\refdef{complete-under-approximation}).
 \end{proof}
 
-It follows that whenever the program is deterministic, the traces concretized from the backward analysis are deterministic as well.
+Note that, whenever the given program is deterministic, the traces concretized from the backward analysis are deterministic as well.
 With the exactness of the backward analysis, we show that $\abstractchanges$ is a sound implementation of $\changes$.
 
 \begin{lemma}[$\abstractchanges$ is a Sound Implementation of $\changes$]\lablemma{abstractchanges-is-sound}
@@ -410,74 +463,121 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
   \begin{enumerate}[label=(\roman*)]
     \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
     \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{nioa3} $\abstractdomain$ is an exact backward semantics, \cf{} \reflemma{exact-backward-analysis},
-    \item \label{nioa4} $\abstractdomain$ is equipped with the abstract operator $\abstractdomainproject$ that projects away the input variables $\definputvariables$ from the abstract values,
+    \item \label{nioa3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
+    \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
-  then it holds that:
-  \[\abstractchanges(\presfrombuckets, \buckets) \GE \changes(\presfrombuckets, \buckets)\]
+  then, $\abstractchanges$ is a sound implementation of $\changes$.
 \end{lemma}
+\begin{proof}
+  \denis{todo}
+\end{proof}
+
+\denis{Maybe a recap of the exact backward analysis does not scale well but as a first step it is a good start.}
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
 \labsec{abstract-qlibra}
 
 
-We introduce $\abstractqlibra$ as a sound implementation of $\qlibra$.
-We assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainvolume\in\abstractdomain\to[0, 1]$, which returns the volume of the given abstract element normalized in the interval $[0, 1]$.
-The abstract implementation $\abstractqlibra$ is defined as the volume of the intersecting abstract regions leading to different output buckets.
-Specifically, the volume is computed by first projecting away the input variables $\definputvariables$ from all the given abstract values resulting from the backward analysis, \cf{} $\presfrombuckets$.
-Then, it collects together all the possible pairwise intersections among the projected abstract values to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
-Assuming that all the input variables are bounded in $[0, 1]$, which is a common practice in neural networks, the volume of the abstract element is normalized in the interval $[0, 1]$.
+% We assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainvolume\in\abstractdomain\to[0, 1]$, which returns the volume of the given abstract element normalized in the interval $[0, 1]$.
+% The abstract implementation $\abstractqlibra$ is defined as the volume of the intersecting abstract regions leading to different output buckets.
+% Specifically, the volume is computed by first projecting away the input variables $\definputvariables$ from all the given abstract values resulting from the backward analysis, \cf{} $\presfrombuckets$.
+% Then, it collects together all the possible pairwise intersections among the projected abstract values to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
+% Assuming that all the input variables are bounded in $[0, 1]$, which is a common practice in neural networks, the volume of the abstract element is normalized in the interval $[0, 1]$.
 
-\begin{example}
-  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainvolume(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
-  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainvolume(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
-  The function $\abstractdomainvolume$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
-\end{example}
+% \begin{example}
+%   In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainvolume(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
+%   On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainvolume(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
+%   The function $\abstractdomainvolume$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
+% \end{example}
 
-The abstract range $\abstractqlibra$ first projects away the input variables $\definputvariables$ from all the given abstract values.
-Then, it collects all the possible intersections among the projected abstract values.
-These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
-All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
-Formally, the abstract implementation $\abstractqlibra$ is defined as follows:
+% The abstract range $\abstractqlibra$ first projects away the input variables $\definputvariables$ from all the given abstract values.
+% Then, it collects all the possible intersections among the projected abstract values.
+% These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
+% All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
+% Formally, the abstract implementation $\abstractqlibra$ is defined as follows:
 
-\begin{definition}[$\abstractqlibra$]\labdef{abstractqlibra}
-  We define $\abstractqlibra\in\pair\vectorbuckets\vectorbuckets\to[0, 1]$ as:
-  \begin{align*}
-    &\abstractqlibra(\presfrombuckets, \buckets) \DefeQ \\
-      &\quad \abstractdomainvolume\left(
-        \bigjoin_{
-          J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})
-        }
-          \setdef{
-            \prefrombucket[j] \abstractdomainmeet \prefrombucket[k]
-          }{
-            j, k \in J \land j \neq k
-          }
-      \right)
-  \end{align*}
-\end{definition}
+% \begin{definition}[$\abstractqlibra$]\labdef{abstractqlibra}
+%   We define $\abstractqlibra\in\pair\vectorbuckets\vectorbuckets\to[0, 1]$ as:
+%   \begin{align*}
+%     &\abstractqlibra(\presfrombuckets, \buckets) \DefeQ \\
+%       &\quad \abstractdomainvolume\left(
+%         \bigjoin_{
+%           J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})
+%         }
+%           \setdef{
+%             \prefrombucket[j] \abstractdomainmeet \prefrombucket[k]
+%           }{
+%             j, k \in J \land j \neq k
+%           }
+%       \right)
+%   \end{align*}
+% \end{definition}
 
-\begin{example}
-  \denis{Example of the abstractqlibra function on the previous network space.}
-\end{example}
+% \begin{example}
+%   \denis{Example of the abstractqlibra function on the previous network space.}
+% \end{example}
 
-To prove that $\abstractqlibra$ is a sound implementation of $\qlibra$, we require the following soundness condition on the abstract operator $\abstractdomainvolume$ to ensure that the abstract volume is always greater than the concrete one.
+% To prove that $\abstractqlibra$ is a sound implementation of $\qlibra$, we require the following soundness condition on the abstract operator $\abstractdomainvolume$ to ensure that the abstract volume is always greater than the concrete one.
 
-\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainvolume$}{Volume}]\labdef{soundness-volume}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
-  \[\abstractdomainvolume(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
-\end{definition}
+% \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainvolume$}{Volume}]\labdef{soundness-volume}
+%   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
+%   \[\abstractdomainvolume(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
+% \end{definition}
 
-The next result shows that the abstract impact $\abstractqlibra$ is a sound over-approximation of the concrete impact $\qlibra$, \cf{} \refdef{qlibra}.
+% The next result shows that the abstract impact $\abstractqlibra$ is a sound over-approximation of the concrete impact $\qlibra$, \cf{} \refdef{qlibra}.
+
+% \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
+%   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+%   Whenever the following conditions hold:
+%   \begin{enumerate}[label=(\roman*)]
+%     \item \label{rts1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+%     \item \label{rts2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+%     \item \label{rts3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
+%     \item \label{rts4} $\abstractdomainvolume$ is sound, \cf{} \refdef{soundness-volume}[*12];
+%   \end{enumerate}
+%   then, $\abstractqlibra$ is a sound implementation of $\qlibra$.
+% \end{lemma}
+% \begin{proof}
+%   \denis{todo}
+% \end{proof}
+
+
+% \begin{example}
+%   The quantities computed by the abstract implementation $\abstractqlibra$ in \refexample{abstract-qlibra} are sound over-approximations of the concrete implementation $\qlibra$:
+%   \begin{align*}
+%     & \qlibraname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
+%     &\qquad\GE \abstractqlibraname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
+%   \end{align*}
+%   \begin{align*}
+%     & \qlibraname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
+%     &\qquad\GE \abstractqlibraname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
+%   \end{align*}
+%   as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
+% \end{example}
+
+
+In this section, we present $\abstractqlibra$ as a sound implementation of $\qlibra$, computing an over-approximation of the volume of input space that may contain bias. Conversely, $\abstractqlibra$ computes an under-approximation of the fair input space.
+As introduced at the beginning of this chapter, this analysis is too na\"ive to be practical, it is still useful for building upon later in the next section.
+
+Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code algorithm: \reffig{abstract-qlibra}.
+The algorithm takes as input the neural-network model $\defmodel$, a set of input variables of interest $\definputvariables$ (the sensitive features), the $\numberofbuckets$ output buckets $\buckets$, and an abstract domain $\abstractdomain$.
+The output buckets $\buckets$ represent all the possible classification targets of the neural network.
+In this way, both covering (\refdef{covering}) and compatibility (\refdef{compatibility}) conditions are satisfied as all the target classes are covered and for any two different target classes, there exist two different output buckets representing them.
+The analysis proceeds backwardly from each output bucket $\bucket$ via the backward semantics $\backwardsemanticsnoparam$ in order to determine an over-approximation of the initial states $\prefrombucket$.
+
+Finally, the algorithm projects the input variables $\definputvariables$ from the abstract states $\prefrombucket$ to account for any possible permutations of their input values.
+Then, it computes the pairwise intersections among the projected abstract states to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
+The complement of such a volume is an over-approximation of the biased input space, hence an under-approximation of the fair input space.
+The quantity measured by $\abstractqlibra$, algorithm in \reffig{abstract-qlibra}, is always lower than the concrete $\qlibra$.
 
 \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{rts1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
-    \item \label{rts2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{rts3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
-    \item \label{rts4} $\abstractdomainvolume$ is sound, \cf{} \refdef{soundness-volume}[*12];
+    \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+    \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+    \item \label{nioa3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
+    \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
   then, $\abstractqlibra$ is a sound implementation of $\qlibra$.
 \end{lemma}
@@ -486,22 +586,6 @@ The next result shows that the abstract impact $\abstractqlibra$ is a sound over
 \end{proof}
 
 
-\begin{example}
-  The quantities computed by the abstract implementation $\abstractqlibra$ in \refexample{abstract-qlibra} are sound over-approximations of the concrete implementation $\qlibra$:
-  \begin{align*}
-    & \qlibraname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
-    &\qquad\GE \abstractqlibraname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 1
-  \end{align*}
-  \begin{align*}
-    & \qlibraname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
-    &\qquad\GE \abstractqlibraname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 1
-  \end{align*}
-  as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
-\end{example}
-
-
-
-\section{Parallel Analysis for Efficient Validation of the \texorpdfstring{$\boundedqlibra$ Property}{k-Bounded Impact Property applied to qlibra}}[Parallel Analysis]
 
 Although sound, the abstract implementation $\abstractqlibra$ does not work well in presence of imprecision from the abstract domain employed during the backward analysis.
 In fact, the abstract implementation $\abstractqlibra$ applied directly to the backward analysis represents the so called \emph{na\"ive casual-fairness analysis}~\sidecite{Urban2020}.
@@ -510,112 +594,144 @@ Indeed, even using the polyhedra domain for the backward analysis, handling the 
 On the other hand, one could use a disjunctive completion of the polyhedra domain~\sidecite{Cousot1979}, which would retain a separate polyhedron each condition.
 However, this analysis would be extremely slow.
 
-To overcome this limitation, we first reason at a concrete-semantics level, introducing two additional semantics, the \emph{partitioning} and \emph{parallel semantics}.
+\section{Parallel Analysis for Efficient Validation of the \texorpdfstring{$\boundedqlibra$ Property}{k-Bounded Impact Property applied to qlibra}}[Parallel Analysis]
+
+To overcome the limitation of $\abstractqlibra$ described above, we first reason at a concrete-semantics level, introducing two additional semantics, the \emph{partitioning} and \emph{parallel semantics}.
 Intuitively, we show how partitioning the input space into \emph{fair} partitions still allows for property validation.
 Then, we show how to abstract the partitioning semantics into the parallel semantics, which is a sound over-approximation of the partitioning semantics.
 Finally, we show how to validate the $\defbound$-bounded impact property for the parallel semantics.
 In the abstract, such validation can now compute different fair partitions in parallel, the total volume is the sum of the volumes of the individual partitions.
 
+\subsection{Parallel Semantics}\labsec{parallel-semantics}
 
+We observe that the dependency semantics of a program satisfying the $\boundedqlibra$ property induces a partition of the input space restricted to the input variables in $\inputvariableswithoutw$.
+We call this input partition \emph{fair}.
 
-
-
-
-
-\subsection{Partitioning Semantics}
-
-In order to determine whether how fair the input variables $\definputvariables$ of a neural-network model are, we can independently verify, for each of its possible target class, the volume of input space
-
-
-\begin{definition}[Adjoints for the Partitioning Semantics]
-  \labdef{adjoints-outcome-semantics}
-  \begin{align*}
-    \outcomeabstraction \IN& \inputoutputtype \to \outcometype \\
-    \outcomeabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \setdef{\inputoutputtuple{\defseq} \in\defsetofdependencies}{\retrieveoutput{\defseq} = \defstate}
-    }{
-      \defsetofdependencies\in\defsetofsetofdependencies \land
-      \defstate \in \stateandbottom
-    }\\
-    \outcomeconcretization \IN& \outcometype \to \inputoutputtype \\
-    \outcomeconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \dots
-    }{
-      \dots
-    }
-  \end{align*}
+\begin{definition}[Fair Input Partition]\labdef{fair-input-partition}
+  An input partition $\definputpartitions$ of $\reducedstate$ is \emph{fair} if all value choices $\values$ for the variables of interest $\definputvariables$ are possible in all the partitions:
+  \begin{math}
+    \forall \definputpartition\in\definputpartitions,\defvalue\in\values.\spacer
+    \exists \retrieveinput\defstate\in\definputpartition.\spacer
+    \retrieveinput\defstate(\definputvariables) = \defvalue
+  \end{math}
 \end{definition}
 
-\begin{theorem}\labthm{inputoutput-outcome-galois-connection}
-  The input-output $\inputoutputsemanticsnoparam$ and outcome $\outcomesemanticsnoparam$ semantics form a \emph{Galois Connection}:
+Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can verify whether a program $\defprogram$ has an impact of $\defbound$ for each element $\definputpartition\in\definputpartitions$, \emph{independently}, and aggregate the results.
+
+\begin{lemma}
+  \begin{math}
+    \defprogram \satisfies \boundedqlibra \IfF
+    \sum_{\definputpartition\in\definputpartitions} \qlibra(\tracesemantics) \ge \defbound
+  \end{math}
+\end{lemma}
+
+We exploit the above insight to further abstract the output-abstraction semantics $\outputabstraction$ to the \emph{parallel semantics} $\parallelsemantics$.
+Formally, the right adjoint\sidenote{The left adjoint is uniquely defined by the right one.} $\parallelabstraction$ for the parallel semantics is defined as:
+%
+\begin{definition}[Right Adjoint for the Parallel Semantics]\labdef{right-adjoint-for-the-parallel-abstraction-semantics}
 \begin{align*}
-  \galoisbetweensemantics{inputoutput}{outcome}
+  \parallelabstraction \IN& \outputtype \to \paralleltype \\
+  \parallelabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+    \partition{\defsetofdependencies}{\definputpartition}
+  }{
+    \defsetofdependencies \in \defsetofsetofdependencies \LanD \definputpartition\in\definputpartitions
+  }
+\end{align*}
+\end{definition}
+
+The order of the parallel semantics $\parallelsubseteq$ is the pointwise ordering between sets of pairs of states restricted to the same input partition of $\definputpartitions$. Formally,
+\begin{align*}
+  \defsetofsetofdependencies \parallelsubseteq \defsetofsetofdependencies' \IfF
+  \forall \defsetofdependencies\in\defsetofsetofdependencies, \defsetofdependencies'\in\defsetofsetofdependencies'.\spacer
+  \defsetofdependencies \neq \emptyset \land \defsetofdependencies' \neq \emptyset \ImplieS
+  \bigwedge_{\definputpartition\in\definputpartitions}\partition{\defsetofdependencies}{\definputpartition} \subseteq \partition{\defsetofdependencies'}{\definputpartition}
+\end{align*}
+
+Ensuring that all the non-empty set of dependencies in $\defsetofsetofdependencies$ are included in $\defsetofsetofdependencies'$ for each input partition $\definputpartition$.
+We have the following result:
+
+
+\begin{theorem}\labthm{output-parallel-galois-connection}
+  The two adjoints $\tuple{\parallelabstraction}{\parallelconcretization}$ form a \emph{Galois connection}:
+\begin{align*}
+  \galoisbetweensemantics{output}{parallel}
 \end{align*}
 \end{theorem}
+\begin{proof}
+  \denis{todo}
+\end{proof}
 
-\begin{definition}[Outcome Semantics]\labdef{outcome-semantics}
+
+We can now derive the parallel semantics as an abstraction of the output-abstraction semantics.
+
+\begin{definition}[Parallel Abstraction Semantics]\labdef{parallel-abstraction-semantics}
+  The \emph{parallel-abstraction semantics} $\parallelsemanticsnoparam\in\paralleltype$ is defined as:
   \begin{align*}
-    \outcomesemanticsnoparam\DefeQ& \outcomeabstraction(\inputoutputsemanticsnoparam)
+    \parallelsemanticsnoparam\DefeQ&\parallelabstraction(\outputsemanticsnoparam) \\
+    % \spacearound{=}&\parallelabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
+    \spacearound{=}&
+    \setdef{\spacearound{
+      \setdef{
+        \tuple{\retrieveinput{\deftrace}}{\outputobs(\retrieveoutput{\deftrace})}
+      }{
+        \deftrace \in \partition\tracesemanticsnoparam\definputpartition
+      }
+    }}{\definputpartition\in\definputpartitions}
   \end{align*}
 \end{definition}
 
-\begin{theorem}\labthm{outcome-validation}
-  \begin{align*}
-    \inputoutputsemantics \subseteq \unused \IfF \outcomesemantics \subseteq \outcomeabstraction(\unused)
-  \end{align*}
+It remains to show soundness and completeness for the parallel semantics when applied to the $\boundedqlibra$ property.
+\begin{theorem}
+  \begin{math}
+    \defprogram \satisfies \boundedqlibra \IfF
+    \parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))
+  \end{math}
 \end{theorem}
+\begin{proof}
+  \denis{todo}
+\end{proof}
+
+\subsection{Parallel Implementation \texorpdfstring{$\abstractqlibra$}{QLibra}}[Parallel \texorpdfstring{$\abstractqlibra$}{QLibra}]
+
+In this section, we build upon the parallel semantics to design an abstract implementation $\abstractqlibra$ that computes an over-approximation of the volume of input space that may be fair.
+This static analysis automatically find a fair partition of the input space, then computes the volume of the fair input space.
+The abstract implementation $\abstractqlibra$ is defined as the sum of the volumes of the fair partitions, presented in \reffig{abstract-qlibra-parallel}.
 
 
-\subsection{Parallel Semantics}
-
-
-\begin{definition}[Adjoints for the Parallel Semantics]
-  \labdef{adjoints-parallel-semantics}
-  \begin{align*}
-    \parallelabstraction \IN& \outcometype \to \paralleltype \\
-    \parallelabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \dots
-    }{
-      \dots
-    }\\
-    \parallelconcretization \IN& \paralleltype \to \outcometype \\
-    \parallelconcretization(\defsetofsetofdependencies) \DefeQ& \setdef{
-      \dots
-    }{
-      \dots
-    }
-  \end{align*}
-\end{definition}
-
-\begin{theorem}\labthm{outcome-parallel-galois-connection}
-  The input-output $\outcomesemanticsnoparam$ and parallel $\parallelsemanticsnoparam$ semantics form a \emph{Galois Connection}:
-\begin{align*}
-  \galoisbetweensemantics{outcome}{parallel}
-\end{align*}
-\end{theorem}
-
-\begin{definition}[Parallel Semantics]\labdef{parallel-semantics}
-  \begin{align*}
-    \parallelsemanticsnoparam\DefeQ& \parallelabstraction(\outcomesemanticsnoparam)
-  \end{align*}
-\end{definition}
-
-\begin{theorem}\labthm{parallel-validation}
-  \begin{align*}
-    \outcomesemantics \subseteq \unused \IfF \parallelsemantics \subseteq \parallelabstraction(\unused)
-  \end{align*}
-\end{theorem}
 
 \subsection{Abstract Domains for Neural Network Analysis}
 
+Different abstract domains can be used for the forward pre-analysis of neural networks.
+The choice of the abstract domain depends on the trade-off between precision and scalability.
+Here, we present four abstract domains: \boxes, \symbolic, \deeppoly, and \neurify. Additionally, a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
+
 \paragraph{Boxes}
+
+
+The \boxes{} domain simply uses interval arithmetic \cite{Hickey2001} to compute concrete lower and upper bound estimations $l$ and $u$ for the value of each neuron \texttt{x} in the neural network.
+
 
 \paragraph{Symbolic Constant Propagation}
 
+The \symbolic{} domain combines \boxes{} with symbolic constant propagation \cite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed ReLUs in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+
+
 \paragraph{DeepPoly}
+
+The \deeppoly{} domain associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
+%
+The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed ReLUs are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
 
 \paragraph{Neurify}
 
-\paragraph{Convex Polyhedra}
+The \neurify{} domain similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
+%
+The over-approximation of non-fixed ReLUs is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
+%
+\reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
 
-\subsection{Reduced Product}
+\paragraph{Reduced Product}
+
+Finally, the \emph{Product Builder} provides a parametric interface for constructing the product of any of the above domains.
+The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the ReLUs.
+New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.

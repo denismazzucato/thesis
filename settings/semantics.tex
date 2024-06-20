@@ -46,15 +46,12 @@
 \newsemantics{output}
 \renewcommand*{\outputsubseteq}{\subseteq}
 
-%% outcomes
-\newcommand*{\outcomesym}{\defpartitioning}
-\newcommand*{\outcometype}{\dependencytype}
-\newsemantics{outcome}
-
 %% parallel
-\newcommand*{\parallelsym}{\mathbb{I}}
+\newcommand*{\parallelsym}{\definputpartitions}
 \newcommand*{\paralleltype}{\dependencytype}
 \newsemantics{parallel}
+
+\newcommand*{\partition}[2]{#1^{#2}}
 
 %% backward
 \newcommand*{\backwardsym}{\leftarrow}
