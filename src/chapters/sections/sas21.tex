@@ -601,6 +601,7 @@ Intuitively, we show how partitioning the input space into \emph{fair} partition
 Then, we show how to abstract the partitioning semantics into the parallel semantics, which is a sound over-approximation of the partitioning semantics.
 Finally, we show how to validate the $\defbound$-bounded impact property for the parallel semantics.
 In the abstract, such validation can now compute different fair partitions in parallel, the total volume is the sum of the volumes of the individual partitions.
+This section is based on the work presented in \sidetextcite{Urban2020} and \sidetextcite{Mazzucato2021}.
 
 \subsection{Parallel Semantics}\labsec{parallel-semantics}
 
@@ -708,12 +709,12 @@ Here, we present four abstract domains: \boxes, \symbolic, \deeppoly, and \neuri
 \paragraph{Boxes}
 
 
-The \boxes{} domain simply uses interval arithmetic \cite{Hickey2001} to compute concrete lower and upper bound estimations $l$ and $u$ for the value of each neuron \texttt{x} in the neural network.
+The \boxes{} domain simply uses interval arithmetic \sidecite{Hickey2001} to compute concrete lower and upper bound estimations $l$ and $u$ for the value of each neuron \texttt{x} in the neural network.
 
 
 \paragraph{Symbolic Constant Propagation}
 
-The \symbolic{} domain combines \boxes{} with symbolic constant propagation \cite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed ReLUs in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+The \symbolic{} domain combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed ReLUs in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
 
 
 \paragraph{DeepPoly}
