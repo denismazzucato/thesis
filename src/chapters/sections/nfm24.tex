@@ -938,14 +938,20 @@ In the context of the interval domain, where each input variable is related to a
 %
 % We define the soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
 We define the condition a sound projection operator $\abstractdomainproject$ must satisfy to ensure that no concrete state is missed by the projection.
-In fact, the projection operator is sound whenever the projection of the variables $\definputvariables$ from the abstract value $\defstate^\natural$ contains all the concrete states that can be obtained by perturbing the variables $\definputvariables$ from a concrete state represented by $\defstate^\natural$.
 
-\marginnote{\denis{add concrete project opertator (explain that we didn't do it before to not overload impact notin definitions) and fix soundness definitions as remarks}}
-\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainproject$}{Project}]\labdef{soundness-project}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$, we say that the projection operator $\abstractdomainproject$ is \textup{sound} whenever it holds that:
+The projection operator is sound whenever the projection of the variables $\definputvariables$ from the abstract value $\defstate^\natural$ contains all the concrete states that can be obtained by perturbing the variables $\definputvariables$ from a concrete state represented by $\defstate^\natural$.
+In fact, we could define the \emph{concrete} project operator $\project\in\setof\state\to\setof\state$ as it follows:
+\[
+  \project(\defsetofstates) \DefeQ \setdef{\defstate'}{\defstate\in\defsetofstates \land \defstate \stateeq{\definputvariables} \defstate'}
+\]
+
+It follows the classic definition of soundness.
+\begin{definition}[Sound Projection Operator]\labdef{soundness-project}
+  For all abstract states $\defstate^\natural$, the projection of the abstract state $\abstractdomainproject(\defstate^\natural)$ is sound whenever it holds that:
+
   \[
-    \setdef{\defstate'\in\stateandbottom}{\defstate\in\abstractdomainconcretization(\defstate^\natural) \land \defstate \stateeq{\inputvariableswithoutw} \defstate'} \SubseteQ \abstractdomainconcretization(\abstractdomainproject(\defstate^\natural))
-  \]
+    \project(\abstractdomainconcretization(\defstate^\natural)) \subseteq \abstractdomainproject(\defstate^\natural)
+    \]
 \end{definition}
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}}[Abstract \texorpdfstring{$\abstractoutcomes$}{Outcomes}]
@@ -1194,11 +1200,11 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
   Therefore, $\abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
 
-To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract size is always greater than the concrete one.
+To prove that $\abstractrange$ is a sound implementation of $\range$, we require the classic soundness condition on the abstract operator $\abstractdomainsize$, ensuring that the abstract size is always greater than the concrete one.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Size}]\labdef{soundness-size}
   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the output variable of interest $\defoutputvariable$, it holds that:
-  \[\abstractdomainsize(\defstate^\natural) \GE \size(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  \[\size(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomainsize(\defstate^\natural)\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
@@ -1321,7 +1327,8 @@ The result is a measure of the influence of the input variables on the output of
   Overall, the impact of both variables \texttt{angle} and \texttt{speed} is $1$,
 \end{example}
 
-To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the following soundness condition on the abstract operator $\abstractdomaincount$ to ensure that the abstract count is always greater than the concrete one.
+To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the classic soundness condition on the abstract operator $\abstractdomaincount$, ensuring that the abstract count is always greater than the concrete one.
+Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is the cardinality operator $\cardinalitynospaces{\cdot}$.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
