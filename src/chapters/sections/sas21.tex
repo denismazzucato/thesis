@@ -19,79 +19,56 @@ Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analys
 \labsec{neural-networks}
 
 This section introduces the computational model of a feed forward neural network and how it can be used for classification purposes.
-
 \subsection{Feed-Forward Deep Neural Networks}
 
-A \emph{feed-forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons.
-The nodes are arranged in layers, where the first layer is the input layer ($\inputlayer$), the last layer is the output layer ($\outputlayer$), and the layers in between are called hidden layers ($\hiddenlayers$).
-Each layer $\hiddenlayer{i}$ is composed of a set of $\cardinalitynospaces{\hiddenlayer{i}}$ nodes, and is connected to the previous layer $\hiddenlayer{i-1}$ through a weight $\cardinalitynospaces{\hiddenlayer{i}}\times\cardinalitynospaces{\hiddenlayer{i-1}}$-matrix $\weightmatrix{i}$ and a bias $\cardinalitynospaces{\hiddenlayer{i}}$-vector $\biasvector{i}$.
-The set of all nodes is denoted by $\networknodes$ and the set of nodes in layer $\hiddenlayer{i}$ is denoted by $\networknodesinlayer{i}$. The $j$-th node in layer $\hiddenlayer{i}$ is denoted by $\node$.
-In this thesis, we focus on feed-forward neural networks used for classification tasks, where each node in the output layer represents a class, and the output of the network is the class yielding the highest value. In total, the network has $\cardinalitynospaces{\outputlayer}$ number of target classes.
+A \emph{feed-forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons. The nodes are organized into layers: the first layer is the input layer ($\inputlayer$), the last layer is the output layer ($\outputlayer$), and the layers in between are called hidden layers ($\hiddenlayers$). Each hidden layer $\hiddenlayer{i}$ consists of $\cardinalitynospaces{\hiddenlayer{i}}$ nodes and is connected to the previous layer $\hiddenlayer{i-1}$ through a weight matrix $\weightmatrix{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}\times\cardinalitynospaces{\hiddenlayer{i-1}}$ and a bias vector $\biasvector{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}$.
 
-An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\networknodesinlayer{0}$; for simplicity, we assume that the input values are normalized to the interval $[0,1]$.
-The value of each hidden and output node is computed by applying an activation function to the weighted sum of the values of the nodes in the previous layer and the bias. The activation function is usually a non-linear function, we consider the \relu{} activation function in this work, which is defined as $\relu(x) = \max(0,x)$. Thus, the value of node $\node$ in layer $\hiddenlayer{i}$ is computed as:
+The entire set of nodes in the network is denoted by $\networknodes$, and the set of nodes in layer $\hiddenlayer{i}$ is denoted by $\networknodesinlayer{i}$. The $j$-th node in layer $\hiddenlayer{i}$ is denoted by $\node$. In this thesis, we focus on feed-forward neural networks used for classification tasks, where each node in the output layer represents a class, and the output of the network is the class corresponding to the highest value. The network has $\cardinalitynospaces{\outputlayer}$ target classes in total.
+
+An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\networknodesinlayer{0}$. For simplicity, we assume that the input values are normalized to the interval $[0,1]$. The value of each hidden and output node is computed by applying an activation function to the weighted sum of the values of the nodes in the previous layer and the bias. The activation function is usually a non-linear function; in this work, we use the \relu{} activation function, defined as $\relu(x) = \max(0, x)$. Thus, the value of node $\node$ in layer $\hiddenlayer{i}$ is computed as:
 \begin{align*}
-  \node = \relu\left(
-    \sum_{k}^{\cardinalitynospaces{\hiddenlayer{i-1}}}\weight_{j, k}^{i} \node[i-1][k] + \bias_{j}^{i}
-  \right)
+\node = \relu\left(
+\sum_{k=1}^{\cardinalitynospaces{\hiddenlayer{i-1}}} \weight_{j,k}^{i} \node[i-1][k] + \bias_{j}^{i}
+\right)
 \end{align*}
-where $\weight_{j, k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider already trained networks.
+where $\weight_{j,k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider already trained networks.
 
-For the rest of the chapter, the letter $\defmodel$ denotes a neural network model (similarly to the letter $\defprogram$ for generic programs).
-The trace semantics of a neural network model is then $\tracesemanticsnoparam\semanticsof{\defmodel}$.
-
+For the rest of this chapter, the letter $\defmodel$ denotes a neural network model (analogous to the letter $\defprogram$ for generic programs). The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
+Note that, under the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration and that all the traces terminate after a specific number of steps, which is the number of nodes of the network.
 
 \subsection{Classification Task}
 
-In this thesis, we focus on feed forward neural networks used for classification tasks.
-That is, given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer.
-The way the network classifies an input vector is by computing the value of the nodes in the output layer, and then selecting the class associated with the node with the highest value, \ie{} $\argmax_{j} \node[\lastlayerindex][j]$.
+In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, i.e., $\argmax_{j} \node[\lastlayerindex][j]$.
 
-The classification task is formalized by the means of the output observer $\outputobs$ (\refdef*{output-observer}) which maps the output values of the network to the target classes.
-We define the output observer to return $1$ if the index of the node with the highest value is equal to the target class, and $0$ otherwise.
-In such a way, when the output state of a trace from the network computation is passed to the output observer, the only non-zero value is the one corresponding to the target class. Formally, the output observer is defined as:
+The classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the network's output values to the target classes. The output observer returns $1$ if the index of the node with the highest value matches the target class, and $0$ otherwise. Thus, when the output state of a trace from the network computation is passed to the output observer, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+
 \begin{align*}
-  \outputobs(\defstate) \DefeQ \lambda \defvariable.\spacer
-  \begin{cases}
-    1 & \text{if } \argmax_{j} \defstate(j) = \defvariable \\
-    0 & \text{otherwise}
-  \end{cases}
+\outputobs(\defstate) \DefeQ \lambda \defvariable.\spacer
+\begin{cases}
+1 & \text{if } \argmax_{j} \defstate(j) = \defvariable \\
+0 & \text{otherwise}
+\end{cases}
 \end{align*}
-The characterization above shows that two different states of the network can be distinguished by the output observer if and only if they are associated with different target classes, yielding in fact different outcomes.
 
+This characterization shows that two different states of the network can be distinguished by the output observer if and only if they are associated with different target classes, thus yielding different outcomes.
 
 \begin{example}
-  Consider a simple neural network with two input and two output variables.
-  The weights and biases connecting the input with the output layer are irrelevant for this example.
-  Therefore, the network states are defined as $\defstate = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in \R}$. For simplicity, we assume all the variables to be real\sidenote{often neural networks normalize inputs in the interval [0, 1].}.
-  Given, for instance, the network state $\langle 0, 1, 0, 1 \rangle$, the output observer $\outputobs$ returns the state $\outputobs(\defstate) = \langle 0, 0, 0, 1 \rangle$ to indicate that the target class is the second one, \cf{} the one relating $x_{1, 1}$.
-  Given instead the network state $\langle 0.5, 1, 0.7, 0.2 \rangle$, the output observer returns the state $\outputobs(\defstate) = \langle 0, 0, 1, 0\rangle$ to indicate that the target class is the first one (the first two variables are the input variables), and so on.
+Consider a simple neural network with two input and two output variables. The weights and biases connecting the input to the output layer are irrelevant for this example. Therefore, the network states are defined as $\defstate = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in \R}$. For simplicity, we assume all the variables to be real\sidenote{often neural networks normalize inputs to the interval $[0,1]$}.
+
+Given, for instance, the network state $\langle 0, 1, 0, 1 \rangle$, the output observer $\outputobs$ returns the state $\outputobs(\defstate) = \langle 0, 0, 0, 1 \rangle$ to indicate that the target class is the second one, corresponding to $x_{1, 1}$. Given the network state $\langle 0.5, 1, 0.7, 0.2 \rangle$, the output observer returns the state $\outputobs(\defstate) = \langle 0, 0, 1, 0 \rangle$ to indicate that the target class is the first one (the first two variables are the input variables), and so on.
 \end{example}
 
-Note that, the output observer always maps to zero the values of neural-network nodes that do not belong to the output layer.
+Note that the output observer always maps the values of neural network nodes that do not belong to the output layer to zero.
 
 \subsection{Neural Network Abstract Analysis}
 
-The abstract interpretation of a neural-network model is the propagation of an abstract element through each neuron of the network, over-approximating the possible states the model may reach.
-The analysis either goes forward, from the input layer to the output layer, or backward, from the output layer to the input layer.
-The forward analysis receives an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes.
-On the other hand, the backward analysis receives an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
+Abstract interpretation of a neural network model involves propagating an abstract element through each neuron of the network, over-approximating the possible states the model may reach. The analysis can be performed in two directions: forward, from the input layer to the output layer, or backward, from the output layer to the input layer. The forward analysis starts with an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes. Conversely, the backward analysis begins with an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
 
-When a neural network is given an input vector, the network computes the value of each node in the network via an affine transformation and the application of an activation function, in our case a \relu{} function.
-The \relu{} flattens the negative values to zero, and keeps the positive values unchanged.
-We say that the \relu{} node (or better, the node after the application of the \relu{} function) is \emph{active} if the value is positive, and \emph{inactive} otherwise.
-The active or inactive flag of a node is called its \emph{activation status}.
-The set of activation statuses of all the nodes in the network is called the \emph{activation pattern} of the network, inducing a \emph{path} in the neural network from input space regions where the network behaves similarly.
+When a neural network processes an input vector, it computes the value of each node via an affine transformation followed by an activation function, in our case, the \relu{} function. The \relu{} function sets negative values to zero and leaves positive values unchanged. A node is said to be \emph{active} if its value is positive and \emph{inactive} otherwise. This flag is called the node's \emph{activation status}. The set of activation statuses of all nodes in the network is called the \emph{activation pattern}, which induces a \emph{path} in the neural network from
+regions in the input space where the network behaves similarly.
 
-An \emph{abstract activation pattern} gives an activation pattern only to a subset of \relu{} nodes, hence representing a set of activation patterns.
-\relu{} nodes whose corresponding flag does not have a fixed value are considered to have an unknown activation status.
-The abstract activation pattern is very useful for the abstract interpretation of neural networks, as the knowledge that a node has an inactive status can be used to prune the search space of the analysis, and thus reduce the computational cost.
-Specifically, the \relu{} activation function is much simpler to handle when the activation status is known, as the \relu{} function is the identity function for active, and the constant zero for inactive nodes.
-The abstract activation function can easily be collected from a forward analysis of the network, whenever the over-approximation of input values of a node is greater than zero, the node is considered active, whenever it is less than zero, the node is considered inactive, otherwise unknown.
 
-Hence, given an abstract domain $\abstractdomain$ with sound forward and backward operators for the affine and \relu{} operations, the forward analysis can be defined as the network computation where we replace concrete operators with their abstract sound counterparts.
-\reffig{forward-neural-networks} presents a forward abstract analysis of neural-network models, parametric on the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the input values.
-Specifically, the abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of the given node, and the abstract operator $\abstractdomainforwardrelu$ takes care of the \relu{} activation function and the computation of the activation status of the node.
+An \emph{abstract activation pattern} is a partial activation pattern that assigns a fixed activation status only to a subset of \relu{} nodes, thus representing a set of possible activation patterns. \relu{} nodes with an unknown activation status are those whose corresponding flag does not have a fixed value. Abstract activation patterns are valuable for the abstract analysis of networks as the knowledge of a node status can prune the search space, reducing computational cost. Specifically, the \relu{} function is simpler to handle when the activation status is known: it behaves as the identity function for active nodes and as a constant zero for inactive nodes. The abstract activation pattern can be discovered from a forward analysis of the network: if the over-approximation of input values to a node is greater than zero, the node is considered active; if less than zero, inactive; otherwise, unknown.
 
 \marginnote[*-15]{\denis{fix the name for programs and algorithms}}
 \begin{marginlisting}
@@ -102,7 +79,7 @@ Specifically, the abstract operator $\abstractdomainforwardaffine$ computes the 
   language=algorithm,
   escapechar=\%,
   ]
-forward(%$\abstractdomain$%, %$x^\natural$%):
+Forward(%$\abstractdomain$%, %$x^\natural$%):
   p = %$\emptyset$%
   for %$i$% = 1 up to %$\lastlayerindex$%:
     for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$%:
@@ -112,11 +89,49 @@ forward(%$\abstractdomain$%, %$x^\natural$%):
 \end{lstlisting}
 \end{marginlisting}
 
-Conversely, the backward analysis of neural networks is defined as the network computation where we replace concrete operators with their abstract sound \emph{backward} counterparts.
-The backward analysis is parametric on the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the target classes.
 
-Both analyses are sound in the sense that they over-approximate the possible states the network may reach.
-Indeed, the trace semantics of the network computation is soundly abstracted by the abstract semantics of the forward and backward analyses.
+Given an abstract domain $\abstractdomain$ with sound forward and backward operators for affine and \relu{} operations, the forward analysis can be defined as network computation using abstract sound counterparts of the concrete operators. \reffig{forward-neural-networks} illustrates a forward abstract analysis of neural network models, parameterized by the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the input values. The abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of a given node, while $\abstractdomainforwardrelu$ handles the \relu{} activation function and determines the node's activation status.
+
+Conversely, backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the target classes.
+\reffig{backward-neural-networks} depicts the backward abstract analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the backward affine transformation of a given node, and $\abstractdomainbackwardrelu$ manages the \relu{} activation function given the node's activation status.
+
+Both analyses are sound, meaning they over-approximate the possible states the network may reach.
+Before formally showing the soundness of the forward and backward analyses, we introduce the forward concretization $\forwardconcretization$.
+Similar to the backward concretization $\backwardconcretization$, it is defined as:
+\[
+  \forwardconcretization(\forwardsemanticsnoparam)x^\natural \DefeQ
+  \nonemptysetof{\setdef{
+    \inputoutputtuple{\defstate}
+  }{
+    \retrieveinput{\defstate}\in\abstractdomainconcretization(\forwardsemanticsnoparam(x^\natural))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(x^\natural)
+    }
+  }
+  \]
+
+\begin{lemma}[Soundness of Forward Neural Network Analysis]\lablemma{soundness-forward-network}
+  Given a neural network model $\defmodel$ and an abstract domain $\abstractdomain$ with sound forward operators for affine and \relu{} operations, the forward analysis of the network is sound whenever it holds that:
+  \[
+    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(x^\natural)} \SubseteQ \forwardconcretization(\abstractdomainforward(\defmodel))x^\natural
+  \]
+\end{lemma}
+\begin{proof}
+  Trivially follows from the definition of the forward concretization and the soundness of the network operators.
+\end{proof}
+
+
+The next result instead shows the soundness of the backward analysis of neural networks.
+
+\begin{lemma}[Soundness of Backward Neural Network Analysis]\lablemma{soundness-backward-network}
+  Given a neural network model $\defmodel$ and an abstract domain $\abstractdomain$ with sound backward operators for affine and \relu{} operations, the backward analysis of the network is sound whenever it holds that:
+  \[
+    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(x^\natural)} \SubseteQ \backwardconcretization(\abstractdomainbackward(\defmodel))x^\natural
+  \]
+\end{lemma}
+\begin{proof}
+  Trivially follows from the definition of the backward concretization and the soundness of the network operators.
+\end{proof}
+
+\denis{fix lemmas }
 
 % \denis{Add lemmas showing that the forward and backward analyses are sound (maybe compared to the output semantics).}
 
@@ -233,10 +248,115 @@ Note that, the auxiliary function $\phi$ partitions the set of traces $\defsetof
 The function $\segments$ then returns the maximal subsets (3) that satisfy the first two conditions.
 To better illustrate how the function $\segments$ works, consider the following example.
 
+\begin{marginfigure}
+  \begin{tikzpicture}[scale=0.9]
+    % Grid
+    % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
+    % x-axis ticks
+    % \foreach \x in {-4,-3,-2,-1,0,1,2,3,4}
+    %     \draw (\x+5,0.1) -- (\x+5,-0.1) node[below] {\x};
+    % % y-axis ticks
+    % \foreach \y in {1,2,3}
+    %     \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+    % Polyhedra
+    \fill[color=seabornYellow, opacity=0.5] (1,1.75) -- (2,2.75) -- (2.5,1.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+    % \draw[color=seabornYellow, ultra thick] (1,1.75) -- (2,2.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+    % Polyhedra
+    \fill[color=seabornGreen, opacity=0.5] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+    \draw[color=seabornGreen, ultra thick] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+    \fill[color=seabornGreen, opacity=0.5] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+    \draw[color=seabornGreen, ultra thick] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+    % Polyhedra
+    \fill[color=seabornRed, opacity=0.5] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+    \draw[color=seabornRed, ultra thick] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+    % Nodes
+    % \fill[color=seabornRed] (0+1,0+1) circle[radius=2pt];
+    % \node[above left] at (0+1,0+1) {$3$};
+    % x-axis
+    \draw[->,ultra thick] (0,0)--(4.3,0) node[below]{$x$};
+    \draw[ultra thick] (0,4)--(4,4);
+    % y-axis
+    \draw[->,ultra thick] (0,0)--(0,4.3) node[left]{$y$};
+    \draw[ultra thick] (4,0)--(4,4);
+
+
+    \draw[color=white] (0,-1) node[left, color=black] {$\green{\defsetoftraces'}\left\{\right.$} -- (4,-1) node[right, color=black] {$\left.\right\}$};
+    \draw[color=white] (0,-1.5) node[left, color=black] {$\yellow{\defsetoftraces''}\left\{\right.$} -- (4,-1.5) node[right, color=black] {$\left.\right\}$};
+    \draw[color=white] (0,-2) node[left, color=black] {$\red{\defsetoftraces'''}\left\{\right.$} -- (4,-2) node[right, color=black] {$\left.\right\}$};
+
+    % horizontal line at y_0
+    \draw[very thick] (0,2.1) node[left] {$y_0$} -- (4,2.1);
+
+    \draw[dashed] (0, -2) -- (0, 4);
+    \draw[dashed] (0.65,-2) -- (0.65,4);
+    \draw[dashed] (1.15,-1.5) -- (1.15,4);
+    \draw[dashed] (1.35,-2) -- (1.35,4);
+    \draw[dashed] (2.3,-2) -- (2.3,4);
+    \draw[dashed] (2.68,-2) -- (2.68,4);
+    \draw[dashed] (3.5,-2) -- (3.5,4);
+    \draw[dashed] (4,-1) -- (4,4);
+
+    \draw[very thick] (0.65,2) -- (0.65,2.2);
+    \draw[very thick] (1.15,2) -- (1.15,2.2);
+    \draw[very thick] (1.35,2) -- (1.35,2.2);
+    \draw[very thick] (2.3,2) -- (2.3,2.2);
+    \draw[very thick] (2.68,2) -- (2.68,2.2);
+    \draw[very thick] (3.5,2) -- (3.5,2.2);
+
+    \draw[very thick, color=seabornRed] (0,-0.5) node[left, color=black] {$y_0$} -- (0.65,-0.5);
+    \draw[very thick, color=seabornGreen] (0.65,-0.5) -- (1.15,-0.5);
+    \draw[very thick, color=seabornYellow] (1.15,-0.5) -- (1.35,-0.5);
+    \draw[very thick, color=seabornRed] (1.35,-0.5) -- (2.3,-0.5);
+    \draw[very thick, color=seabornYellow] (2.3,-0.5) -- (2.68,-0.5);
+    \draw[very thick, color=seabornRed] (2.68,-0.5) -- (3.5,-0.5);
+    \draw[very thick, color=seabornGreen] (3.5,-0.5) -- (4,-0.5);
+
+    \draw[very thick] (0,-0.6) -- (0,-0.4);
+    \draw[very thick] (0.65,-0.6) -- (0.65,-0.4);
+    \draw[very thick] (1.15,-0.6) -- (1.15,-0.4);
+    \draw[very thick] (1.35,-0.6) -- (1.35,-0.4);
+    \draw[very thick] (2.3,-0.6) -- (2.3,-0.4);
+    \draw[very thick] (2.68,-0.6) -- (2.68,-0.4);
+    \draw[very thick] (3.5,-0.6) -- (3.5,-0.4);
+    \draw[very thick] (4,-0.6) -- (4,-0.4);
+
+    \draw[very thick, color=seabornGreen] (0.65,-1) -- (1.15,-1);
+    \draw[very thick, color=seabornGreen] (3.5,-1) -- (4,-1);
+
+    \draw[very thick] (0.65,-1.1) -- (0.65,-0.9);
+    \draw[very thick] (1.15,-1.1) -- (1.15,-0.9);
+    \draw[very thick] (3.5,-1.1) -- (3.5,-0.9);
+    \draw[very thick] (4,-1.1) -- (4,-0.9);
+
+    \draw[very thick, color=seabornYellow] (1.15,-1.5) -- (1.35,-1.5);
+    \draw[very thick, color=seabornYellow] (2.3,-1.5) -- (2.68,-1.5);
+
+    \draw[very thick] (1.15,-1.6) -- (1.15,-1.4);
+    \draw[very thick] (1.35,-1.6) -- (1.35,-1.4);
+    \draw[very thick] (2.3,-1.6) -- (2.3,-1.4);
+    \draw[very thick] (2.68,-1.6) -- (2.68,-1.4);
+
+    \draw[very thick, color=seabornRed] (0,-2) -- (0.65,-2);
+    \draw[very thick, color=seabornRed] (1.35,-2) -- (2.3,-2);
+    \draw[very thick, color=seabornRed] (2.68,-2) -- (3.5,-2);
+
+    \draw[very thick] (0,-2.1) -- (0,-1.9);
+    \draw[very thick] (0.65,-2.1) -- (0.65,-1.9);
+    \draw[very thick] (1.35,-2.1) -- (1.35,-1.9);
+    \draw[very thick] (2.3,-2.1) -- (2.3,-1.9);
+    \draw[very thick] (2.68,-2.1) -- (2.68,-1.9);
+    \draw[very thick] (3.5,-2.1) -- (3.5,-1.9);
+
+
+  \end{tikzpicture}
+    \caption{Function \segments.}
+    \label{fig:segments}
+  \end{marginfigure}
+
 \begin{example}
   Let us consider the set of traces from the neural network in \reffig{irregular} with $y=y_0$, we call this set $\defsetoftraces$.
   The function $\segments$ partitions the set of traces $\defsetoftraces$ into three subsets, each containing the traces leading to the same output value.
-  \denis{Illustration of the segments function on the line with $y = y_0$.}
+  \reffig{segments} shows the three partitions graphically, respectively for the outcome green ($\green{\defsetoftraces'}$), yellow ($\yellow{\defsetoftraces''}$), and red ($\red{\defsetoftraces'''}$).
 \end{example}
 
 Formally, \changesname{} is defined as the maximum, for each input configuration, of the number of continuous regions in which the output value changes.
@@ -260,11 +380,93 @@ In words, a set of input variables $\definputvariables$ has a high impact on the
 \end{definition}
 The auxiliary set $Q_{\definputvariables, \definput, \defoutput}$ contains the set of continuous regions leading to an output value different from $\defoutput$.
 Additionally, $\changes$ requires the set of traces $\defsetoftraces$ to be deterministic, that is, for each input configuration, there is only one output value. Such a requirement is necessary to ensure that segments are well-defined, as the function $\segments$ partitions the input space into continuous regions leading to the same output value. Otherwise, in a portion of input space where the output value is not deterministic, the number of possible outcomes changes would be infinite.
+Therefore, the \changesname{} impact notion would be meaningless in such a setting.
 Nevertheless, since we consider neural networks for classification tasks in this chapter, the output value is deterministic for each input configuration, and thus the set of traces $\defsetoftraces$ is deterministic.
-\denis{Fix above paragraph: whenever continuous regions have non-deterministic output values, the number of possible outcomes changes would be infinite.}
+
+\begin{marginfigure}
+  \begin{tikzpicture}[scale=0.9]
+
+    \draw[very thick, color=seabornRed] (0,1) node[left, color=black] {$y_0$} -- (0.65,1);
+    \draw[very thick, color=seabornGreen] (0.65,1) -- (1.15,1);
+    \draw[very thick, color=seabornYellow] (1.15,1) -- (1.35,1);
+    \draw[very thick, color=seabornRed] (1.35,1) -- (2.3,1);
+    \draw[very thick, color=seabornYellow] (2.3,1) -- (2.68,1);
+    \draw[very thick, color=seabornRed] (2.68,1) -- (3.5,1);
+    \draw[very thick, color=seabornGreen] (3.5,1) -- (4,1);
+
+    \draw[very thick] (0,0.9) -- (0,1.1);
+    \draw[very thick] (0.65,0.9) -- (0.65,1.1);
+    \draw[very thick] (1.15,0.9) -- (1.15,1.1);
+    \draw[very thick] (1.35,0.9) -- (1.35,1.1);
+    \draw[very thick] (2.3,0.9) -- (2.3,1.1);
+    \draw[very thick] (2.68,0.9) -- (2.68,1.1);
+    \draw[very thick] (3.5,0.9) -- (3.5,1.1);
+    \draw[very thick] (4,0.9) -- (4,1.1);
+
+    \draw[thick, ->] (0.9, 1.1) to[out=120, in=45] (0.32, 1.1);
+    \draw[thick, ->] (0.9, 1.1) to[out=45, in=120] (1.28, 1.1);
+    \draw[thick, ->] (0.9, 1.1) to[out=45, in=120] (1.9, 1.1);
+    \draw[thick, ->] (0.9, 1.1) to[out=45, in=120] (2.5, 1.1);
+    \draw[thick, ->] (0.9, 1.1) to[out=45, in=120] (3.1, 1.1);
+
+
+
+    \draw[very thick, color=seabornRed] (0,0) node[left, color=black] {$y_0$} -- (0.65,0);
+    \draw[very thick, color=seabornGreen] (0.65,0) -- (1.15,0);
+    \draw[very thick, color=seabornYellow] (1.15,0) -- (1.35,0);
+    \draw[very thick, color=seabornRed] (1.35,0) -- (2.3,0);
+    \draw[very thick, color=seabornYellow] (2.3,0) -- (2.68,0);
+    \draw[very thick, color=seabornRed] (2.68,0) -- (3.5,0);
+    \draw[very thick, color=seabornGreen] (3.5,0) -- (4,0);
+
+    \draw[very thick] (0,-0.1) -- (0,0.1);
+    \draw[very thick] (0.65,-0.1) -- (0.65,0.1);
+    \draw[very thick] (1.15,-0.1) -- (1.15,0.1);
+    \draw[very thick] (1.35,-0.1) -- (1.35,0.1);
+    \draw[very thick] (2.3,-0.1) -- (2.3,0.1);
+    \draw[very thick] (2.68,-0.1) -- (2.68,0.1);
+    \draw[very thick] (3.5,-0.1) -- (3.5,0.1);
+    \draw[very thick] (4,-0.1) -- (4,0.1);
+
+    \draw[thick, ->] (1.28, 0.1) to[out=120, in=45] (0.32, 0.1);
+    \draw[thick, ->] (1.28, 0.1) to[out=120, in=45] (0.9, 0.1);
+    \draw[thick, ->] (1.28, 0.1) to[out=45, in=120] (1.9, 0.1);
+    \draw[thick, ->] (1.28, 0.1) to[out=45, in=120] (3, 0.1);
+    \draw[thick, ->] (1.28, 0.1) to[out=45, in=120] (3.7, 0.1);
+
+
+    \draw[very thick, color=seabornRed] (0,-1) node[left, color=black] {$y_0$} -- (0.65,-1);
+    \draw[very thick, color=seabornGreen] (0.65,-1) -- (1.15,-1);
+    \draw[very thick, color=seabornYellow] (1.15,-1) -- (1.35,-1);
+    \draw[very thick, color=seabornRed] (1.35,-1) -- (2.3,-1);
+    \draw[very thick, color=seabornYellow] (2.3,-1) -- (2.68,-1);
+    \draw[very thick, color=seabornRed] (2.68,-1) -- (3.5,-1);
+    \draw[very thick, color=seabornGreen] (3.5,-1) -- (4,-1);
+
+    \draw[very thick] (0,-1.1) -- (0,-0.9);
+    \draw[very thick] (0.65,-1.1) -- (0.65,-0.9);
+    \draw[very thick] (1.15,-1.1) -- (1.15,-0.9);
+    \draw[very thick] (1.35,-1.1) -- (1.35,-0.9);
+    \draw[very thick] (2.3,-1.1) -- (2.3,-0.9);
+    \draw[very thick] (2.68,-1.1) -- (2.68,-0.9);
+    \draw[very thick] (3.5,-1.1) -- (3.5,-0.9);
+    \draw[very thick] (4,-1.1) -- (4,-0.9);
+
+    \draw[thick, ->] (0.32, -0.9) to[out=45, in=120] (0.9, -0.9);
+    \draw[thick, ->] (0.32, -0.9) to[out=45, in=120] (1.28, -0.9);
+    \draw[thick, ->] (0.32, -0.9) to[out=45, in=120] (2.5, -0.9);
+    \draw[thick, ->] (0.32, -0.9) to[out=45, in=120] (3.7, -0.9);
+  \end{tikzpicture}
+    \caption{Function \changesname.}
+    \label{fig:changes}
+  \end{marginfigure}
 
 \begin{example}
-  \denis{The changes function applied to the neural network in \reffig{irregular}.}
+  \reffig{changes} shows the \changesname{} impact notion applied to the input space of the neural network in \reffig{irregular}.
+  The function $\changes$ returns the maximum number of continuous regions in which the output value changes when the input variables are modified.
+  As you can see, for the variable $x$, this can only happen when $y=y_0$ as all the other values of $y$ lead to the same or less changes.
+  Consider the outcomes green, yellow, and red (graphically represented by the three figures in \reffig{changes}, top to bottom), modifying the input variable $x$ may lead to 5, 5, and 4 different outcomes, respectively.
+  Therefore, the \changesname{} impact notion for the input variable $x$ is 5.
 \end{example}
 
 
@@ -297,6 +499,7 @@ we call such property $\boundedchanges$.
 \end{proof}
 
 \reflemma{changes-monotonic} and \reflemma{changes-validation} are of significant importance as they show that the $\changesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
+In case of non-deterministic set of traces, the $\changesname$ impact notion would not be meaningful, as the number of continuous regions leading to a different output value would be infinite.
 
 
 \subsection{The \qlibraname{} Impact Notion}[\qlibraname]
@@ -309,7 +512,7 @@ In our setting, the sensitive input variables are the represented by the set of 
 To this end, we define the \qlibraname{} impact notion as the volume of input space that is not able to change the model classification by perturbation of the input variables $\definputvariables$.
 The higher the volume, the lower the amount of space that is prone to bias, and thus the higher the fairness of the model.
 
-In practice, we collect the input space, without the input variables $\definputvariables$ to account for any possible permutations of their input values, where the variables $\definputvariables$ do not influence the network outcome.
+In practice, we collect the input space\sidenote{The input space is assumed to be normalized in the box $[0, 1]$.} (without the input variables $\definputvariables$ to account for any possible permutations of their input values) where the variables $\definputvariables$ do not influence the network outcome.
 % To do so, we employ the $\unusediowrapper$ predicate to check whether a subset of the given set of traces $\defsetoftraces$ is not able to change the network outcome.
 % Among all the possible subsets, we consider the maximal one, that is, the one that cannot be extended without changing the network outcome.
 To do so, we retrieve the input values of traces that do not change the network outcome when the input variables $\definputvariables$ are modified, similarly to the $\unusediowrapper$ predicate.
@@ -360,16 +563,66 @@ Indeed, the \qlibraname{} impact notion could be rewritten as:
 \begin{align*}
   &\qlibra(\defsetoftraces) \spacearound= \\
      &\quad \volume(\setdef{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
-        \unusediowrapper(\setdef{\deftrace'\in\defsetoftraces}{\retrieveinput{\deftrace'}(\inputvariableswithoutw) = \retrieveinput{\deftrace}(\inputvariableswithoutw)})
+        \unusediowrapper(\setdef{\deftrace'\in\defsetoftraces}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}})
       })
 \end{align*}
 
 Such a definition is important because it highlights the relation between the \qlibraname{} impact notion and the $\unusediowrapper$ predicate.
-In fact, the \qlibraname{} impact notion quantifies the volume of input space where the $\unusediowrapper$ predicate holds.
+In fact, the \qlibraname{} impact notion quantifies the bigger volume of input space where the $\unusediowrapper$ predicate holds.
 
+\begin{marginfigure}
+  \begin{tikzpicture}[scale=0.9]
+    % Grid
+    % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
+    % x-axis ticks
+    % \foreach \x in {-4,-3,-2,-1,0,1,2,3,4}
+    %     \draw (\x+5,0.1) -- (\x+5,-0.1) node[below] {\x};
+    % % y-axis ticks
+    % \foreach \y in {1,2,3}
+    %     \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+    % Polyhedra
+    \fill[color=seabornYellow, opacity=0.5] (1,1.75) -- (2,2.75) -- (2.5,1.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+    % \draw[color=seabornYellow, ultra thick] (1,1.75) -- (2,2.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+    % Polyhedra
+    \fill[color=seabornGreen, opacity=0.5] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+    \draw[color=seabornGreen, ultra thick] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+    \fill[color=seabornGreen, opacity=0.5] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+    \draw[color=seabornGreen, ultra thick] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+    % Polyhedra
+    \fill[color=seabornRed, opacity=0.5] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+    \draw[color=seabornRed, ultra thick] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+    % Nodes
+    % \fill[color=seabornRed] (0+1,0+1) circle[radius=2pt];
+    % \node[above left] at (0+1,0+1) {$3$};
+    % x-axis
+    \draw[->,ultra thick] (0,0)--(4.3,0) node[below]{$x$};
+    \draw[ultra thick] (0,4)--(4,4);
+    % y-axis
+    \draw[->,ultra thick] (0,0)--(0,4.3);
+    \draw[ultra thick] (4,0)--(4,4);
+
+
+    \draw[->,ultra thick] (-0.5,0)--(-0.5,4.3) node[left]{$y$};
+    \draw[very thick] (-0.4,0) -- (-0.6,0);
+    \draw[very thick] (-0.4,1.5) -- (-0.6,1.5);
+    % \draw[very thick] (-0.4, 4) -- (-0.6, 4);
+
+    \draw[dashed] (-0.5,1.5) -- (4,1.5);
+    % \draw[dashed] (-0.5,4) -- (0,4);
+    \draw[dashed] (-0.5,0) -- (0,0);
+
+    \fill[color=black,opacity=0.2] (0,1.5) -- (4,1.5) -- (4,4) -- (0,4) -- cycle;
+
+    \draw[thick,decorate,decoration={brace,amplitude=3pt,raise=4pt}] (-0.5,0) -- (-0.5,1.5) node[midway, left, xshift=-5pt] {$\defbound_x$};
+  \end{tikzpicture}
+    \caption{Function \qlibraname.}
+    \label{fig:qlibra}
+  \end{marginfigure}
 
 \begin{example}
-  \denis{Example of the qlibra function on\reffig{irregular}.}
+Consider the network of example presented in \reffig{irregular}.
+The \qlibraname{} impact notion quantifies the volume of the input space where the input variable $x$ does not influence the network outcome.
+In \reffig{qlibra}, it is clear that the input variable $x$ does not influence the network outcome when $y$ is below a certain threshold. This volume is denoted by $\defbound_x$ in the figure.
 \end{example}
 
 As noticed for the previous impact notion $\changesname$, neural-network models produce deterministic set of traces.
@@ -430,12 +683,13 @@ Furthermore, we could also devise a notion that reverse the amount of bias, that
       \right)
 \end{align*}
 
+In the latter, we quantify the volume of the input space that contains bias, and then we subtract this volume from 1 to obtain the volume of the input space that does not contain bias. All these definitions are equivalent.
+
 
 
 \section{Quantitative Analysis of Neural Networks}
 \labsec{quantitative-analysis-neural-networks}
 
-\marginnote{\denis{Is it clear that $\changesname$ requires an exact semantics because otherwise non-determinism would imply a bound of $+\infty$? Instead, $\qlibraname$ prefers an exact semantics to not drop precision.}}
 
 This section presents the abstract implementations of the \changesname{} and \qlibraname{} impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$.
 We show how to validate the $\defbound$-bounded impact property for both notions.
@@ -444,19 +698,29 @@ We show how to validate the $\defbound$-bounded impact property for both notions
 \subsection{Abstract Implementation \texorpdfstring{$\abstractchanges$}{Abstract Changes}}[Abstract \texorpdfstring{$\abstractchanges$}{Changes}]
 
 In this section, we introduce $\abstractchanges$ as a sound implementation of $\changes$.
-First, we describe the implementation, then we present the validation of the $\defbound$-bounded impact property $\boundedchanges$.
+First, we describe the implementation, followed by the validation of the $\defbound$-bounded impact property $\boundedchanges$.
 
-The underlying idea is to gather together abstract elements that represent distinct continuous regions.
-To this end, any convex abstract domains, such as polyhedra, octagons, or intervals introduced in the background (\refsec{abstract-domains}), fall short in representing multiple distinct continuous regions as they would also include the points in between.
-Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ a notion of disjunctive sets, which allows us to represent sets of distinct continuous regions.
+% As previously noted, the $\changesname$ impact notion suffers from non-deterministic set of traces, which would render it meaningless.
+% The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
+% In this case, whenever the over-approximation overlaps the result of the abstract backward analysis coming from different output buckets, in the concrete, this would be like having non-deterministic set of traces.
+% To address this issue, we need an abstract domain that is exact for our property and underlying network model.
+
+As previously noted, the $\changesname$ impact notion suffers from the case in which the input is a non-deterministic set of traces, rendering it ineffective.
+The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
+In cases where this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it would correspond to a non-deterministic set of traces when concretized.
+To address this issue, we require an abstract domain that is exact for our property and underlying network model.
+
+The core idea of the $\changesname$ impact notion is to group together abstract elements representing distinct continuous regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{abstract-domains}), are inadequate for representing multiple distinct continuous regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct continuous regions.
+%
 We leverage the \textit{disjunctive polyhedra abstract domain} $\disjunctivepolyabstractdomain$, defined as
 $
   \langle \disjunctivepolyabstractdomaintype, \disjunctivepolyabstractdomainsubseteq \rangle
 $, where $\polyabstractdomain$ represents the \textit{convex polyhedra abstract domain}~\sidecite{Cousot1978} and $\disjunctivepolyabstractdomaintype$ is the set of all finite subset of $\polyabstractdomain$.
 From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ computes the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973}.
 Specifically, $\abstractdomainproject$ takes as input a set of variables $\definputvariables$ and a polyhedron in $d$-dimensions where $d \ge \cardinalitynospaces{\definputvariables}$, returning a polyhedron in $(d-\cardinalitynospaces{\definputvariables})$-dimensions, removing the variable $\definputvariables$.
+Importantly, this domain is exact for the property of interest, as it allows us to represent multiple distinct continuous regions, and for feed-forward \relu-activated neural networks.
 
-The function $\abstractchanges$ takes as input the variables of interest $\definputvariables$, $\numberofbuckets$ output buckets $\buckets\in\vectorbuckets$, and $\numberofbuckets$ disjunctions of polyhedra $\prefrombucket\in\disjunctivepolyabstractdomaintype^\numberofbuckets$ obtained from the backward pre-analysis.
+The function $\abstractchanges$ takes as input the variables of interest $\definputvariables$, $\numberofbuckets$ output buckets $\buckets\in\vectorbuckets$, and $\numberofbuckets$ disjunctions of polyhedra $\prefrombucket\in\disjunctivepolyabstractdomaintype^\numberofbuckets$ obtained from the backward analysis.
 For clarity, we access each polyhedron and disjunctions of polyhedra via indexing as in a matrix-based structure, that is, $\prefrombucket=\{\{P_{1,1}\vee \dots\vee P_{1,p}\},\dots,\{P_{n,1}\vee \dots\vee P_{n,q}\}\}$ where $p = \cardinalitynospaces{\prefrombucket[1]}$ and $q = \cardinalitynospaces{\prefrombucket[n]}$. For instance, $\prefrombucket[j]$ refers to the disjunction of polyhedra $\{P_{j,1}\vee \dots\vee P_{j,k}\vee \dots\}$, for $j\le n$, and $\prefrombucket[{j, k}]$ refers to the polyhedron $P_{j,k}\in\polyabstractdomain$.
 The projection of disjunctions of polyhedra applies, in turn, the polyhedron projection to each polyhedron in the disjunction, then collects the projected polyhedra in a disjunction of polyhedra, \ie{} $\abstractdomainproject(\prefrombucket \in \disjunctivepolyabstractdomaintype) \defeq \bigvee_{k \le \cardinalitynospaces{\prefrombucket}} \abstractdomainproject(\prefrombucket[j, k])$.
 
@@ -514,10 +778,10 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
-    \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{nioa3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
-    \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
+    \item \label{tio1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+    \item \label{tio2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+    \item \label{tio3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
+    \item \label{tio4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
   then, $\abstractchanges$ is a sound implementation of $\changes$.
 \end{lemma}
@@ -525,7 +789,8 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
   \denis{todo}
 \end{proof}
 
-\denis{Maybe a recap of the exact backward analysis does not scale well but as a first step it is a good start.}
+While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires to explore all the possible paths of the network.
+In the next section, we introduce the \qlibraname{} impact notion, which--in a sense--still requires an exact backward analysis, but is more scalable and efficient thanks to the use or parallelization.
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
 \labsec{abstract-qlibra}
@@ -649,18 +914,16 @@ However, this analysis would be extremely slow.
 
 \section{Parallel Analysis for Efficient Validation of the \texorpdfstring{$\boundedqlibra$ Property}{k-Bounded Impact Property applied to qlibra}}[Parallel Analysis]
 
-To overcome the limitation of $\abstractqlibra$ described above, we first reason at a concrete-semantics level, introducing two additional semantics, the \emph{partitioning} and \emph{parallel semantics}.
+To overcome the limitation of $\abstractqlibra$ described above, we first reason at a concrete-semantics level, introducing an additional semantics: the \emph{parallel semantics}.
 Intuitively, we show how partitioning the input space into \emph{fair} partitions still allows for property validation.
-Then, we show how to abstract the partitioning semantics into the parallel semantics, which is a sound over-approximation of the partitioning semantics.
+Thus, we could measure the amount of bias in the input space in parallel for each partition, and then aggregate the quantity.
 Finally, we show how to validate the $\defbound$-bounded impact property for the parallel semantics.
-In the abstract, such validation can now compute different fair partitions in parallel, the total volume is the sum of the volumes of the individual partitions.
 This section is based on the work presented in \sidetextcite{Urban2020} and \sidetextcite{Mazzucato2021}.
 
-Other than the backward semantics $\backwardsemanticsnoparam$, we assume a forward
 
 \subsection{Parallel Semantics}\labsec{parallel-semantics}
 
-We observe that the dependency semantics of a program satisfying the $\boundedqlibra$ property induces a partition of the input space restricted to the input variables in $\inputvariableswithoutw$.
+We observe that the semantics of a program satisfying the $\boundedqlibra$ property induces a partition of the input space restricted to the input variables in $\inputvariableswithoutw$.
 We call this input partition \emph{fair}.
 
 \begin{definition}[Fair Input Partition]\labdef{fair-input-partition}
@@ -680,6 +943,9 @@ Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can ve
     \sum_{\definputpartition\in\definputpartitions} \qlibra(\tracesemantics) \ge \defbound
   \end{math}
 \end{lemma}
+\begin{proof}
+  \denis{todo}
+\end{proof}
 
 We exploit the above insight to further abstract the output-abstraction semantics $\outputabstraction$ to the \emph{parallel semantics} $\parallelsemantics$.
 Formally, the right adjoint\sidenote{The left adjoint is uniquely defined by the right one.} $\parallelabstraction$ for the parallel semantics is defined as:
@@ -747,27 +1013,22 @@ It remains to show soundness and completeness for the parallel semantics when ap
   \denis{todo}
 \end{proof}
 
-\subsection{Parallel Implementation \texorpdfstring{$\abstractqlibra$}{QLibra}}[Parallel \texorpdfstring{$\abstractqlibra$}{QLibra}]
 
-In this section, we build upon the parallel semantics to design an abstract implementation $\abstractqlibra$ that computes an over-approximation of the volume of input space that may be fair.
+
+\subsection{Parallel Implementation \texorpdfstring{$\parallelqlibra$}{QLibra}}[Parallel \texorpdfstring{$\parallelqlibra$}{QLibra}]
+
+In this section, we build upon the parallel semantics to design an abstract implementation $\abstractqlibra$, called $\parallelqlibra$, that computes an over-approximation of the volume of input space that may be fair.
 This static analysis automatically find a fair partition of the input space, then computes the volume of the fair input space.
-The abstract implementation $\abstractqlibra$ is defined as the sum of the volumes of the fair partitions.
+The abstract implementation $\parallelqlibra$ is defined as the sum of the volumes of the fair partitions.
 
 The algorithm is presented in \reffig{abstract-qlibra-parallel}, it combines a forward with a backward analysis.
 The forward analysis uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
 Then, we perform the quantification of the biased space.
-Note that, the backward analysis is exact for each partition, thus very expensive.
 
 More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
-We represent each path by an \emph{activation pattern}, which determines the activation status of every \relu{} operation in the network model.
-An activation pattern is a binary vector of length equal to the number of \relu{} operations in the network model.
-Each flag in the vector could be either active or inactive depending on the status of the corresponding \relu{} operation.
-
-On the other hand, an \emph{abstract activation pattern} gives an activation pattern only to a subset of \relu{} nodes, hence representing a set of activation patterns.
-\relu{} nodes whose corresponding flag does not have a fixed value are considered to have an unknown activation status.
-
-We set up an analysis \emph{budget} by providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie{} the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
-The forward analysis starts with the trivial partition $\definputpartitions = \{\reducedstate\}$.
+We represent each path by an activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model.}.
+The analysis receives a \emph{budget} providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie{} the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
+The forward analysis starts with the trivial partition of the whole input space, \ie{} $\definputpartitions = \{\reducedstate\}$.
 Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$, starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome, then the partition is already fair without further analysis.
 Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$.
 On the other hand, if abstract activation pattern $\defabstractactivationpattern$ fixes the activation status of enough \relu{} nodes, then we declare the partition $\definputpartition$ \emph{feasible} and ready for the backward analysis.
@@ -782,16 +1043,19 @@ Then, the analysis proceeds backwardly, independently for each abstract activati
 By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status.
 This is also why it is advantageous to merge subsumed abstract activation paths in the forward analysis.
 
-Finally, the abstract implementation $\abstractqlibra$ computes the sum of the volumes of the fair portion of each partition together.
-The next result shows that the abstract implementation $\abstractqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
+Finally, the abstract implementation $\parallelqlibra$ computes the sum of the volumes of the fair portion of each partition together.
+The next result shows that the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
 Therefore, it can be used to validate the $\boundedqlibra$ property.
 
 \begin{theorem}
-  Given the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\abstractqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
+  Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
   \begin{align*}
-    \abstractqlibra(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \comparison \defbound \ImplieS \defprogram \satisfies \GENBOUNDED
+    \parallelqlibra(\defmodel, \buckets) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRA
   \end{align*}
 \end{theorem}
+\begin{proof}
+  \denis{todo}
+\end{proof}
 
 
 \subsection{Abstract Domains for Neural Network Analysis}
@@ -808,25 +1072,25 @@ The \boxes{} domain simply uses interval arithmetic \sidecite{Hickey2001} to com
 
 \paragraph{Symbolic Constant Propagation}
 
-The \symbolic{} domain combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed ReLUs in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+The \symbolic{} domain combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
 
 
 \paragraph{DeepPoly}
 
-The \deeppoly{} domain associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
+The \deeppoly{} domain \sidecite{Singh19} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
 %
-The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed ReLUs are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
+The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
 
 \paragraph{Neurify}
 
-The \neurify{} domain similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
+The \neurify{} domain \sidecite{Wang18} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
 %
-The over-approximation of non-fixed ReLUs is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
+The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
 %
 \reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
 
 \paragraph{Reduced Product}
 
-Finally, the \emph{Product Builder} provides a parametric interface for constructing the product of any of the above domains.
-The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the ReLUs.
+Finally, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains.
+The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the \relu{} nodes.
 New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.

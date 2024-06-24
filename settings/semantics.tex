@@ -58,6 +58,11 @@
 \newcommand*{\backwardtype}{\abstractdomain\to\abstractdomain}
 \newsemantics{backward}
 
+%% forward
+\newcommand*{\forwardsym}{\rightarrow}
+\newcommand*{\forwardtype}{\abstractdomain\to\abstractdomain}
+\newsemantics{forward}
+
 
 \newcommand*{\multisym}{\times}
 \newcommand*{\multitype}{\vectorbuckets\to\vectorbuckets}
@@ -80,10 +85,13 @@
 
 \newcommand*{\abstractdomainassume}{\textup{\texttt{Assume}}^\natural}
 \newcommand*{\abstractdomainnew}{\textup{\texttt{New}}^\natural}
-\newcommand*{\abstractdomainforwardrelu}{\overleftarrow{\textup{\texttt{ReLU}}}^\natural_p}
+\newcommand*{\abstractdomainforwardrelu}{\overrightarrow{\textup{\texttt{ReLU}}}^\natural_p}
 \newcommand*{\abstractdomainbackwardrelu}{\overleftarrow{\textup{\texttt{ReLU}}}^\natural_p}
-\newcommand*{\abstractdomainforwardaffine}{\overleftarrow{\textup{\texttt{Affine}}}^\natural}
+\newcommand*{\abstractdomainforwardaffine}{\overrightarrow{\textup{\texttt{Affine}}}^\natural}
 \newcommand*{\abstractdomainbackwardaffine}{\overleftarrow{\textup{\texttt{Affine}}}^\natural}
+
+\newcommand*{\abstractdomainforward}{\textup{\texttt{Forward}}^\natural}
+\newcommand*{\abstractdomainbackward}{\textup{\texttt{Backward}}^\natural}
 
 
 \newcommand*{\lengthfunction}{\textup{\texttt{Length}}}
