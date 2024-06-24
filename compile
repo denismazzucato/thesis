@@ -64,3 +64,5 @@ echo "Finished fourth compilation"
 pdftk pdf/thesis.pdf cat 2-end output pdf/thesis-tail.pdf
 pdftk psl-first.pdf pdf/thesis-tail.pdf cat output pdf/thesis.pdf
 echo "Finished merging"
+
+echo "Done"

@@ -1,13 +1,13 @@
-\chapter{Quantitative Fairness for Neural Networks}
+\chapter{Quantitative Verification for Neural Networks}
 \labch{quantitative-fairness}
 
 In this chapter, we introduce the context of neural network formal analysis, we define formally the concept of feed-forward deep neural networks for classification purposes.
-We introduce two quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of bias of a neural network. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel analysis for efficient neural network verification of the $\abstractqlibraname$ impact notion.
+We introduce two quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of bias of a neural network. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact notion.
 This chapter is based on the work presented at the 28th Static Analysis Symposium (SAS 2021)~\cite{Mazzucato2021}.
 
-\emph{Dans ce chapitre, nous introduisons le contexte de l'analyse formelle des réseaux neuronaux, et nous définissons formellement le concept de réseaux neuronaux profonds à propagation avant pour des objectifs de classification.
-Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau neuronal. Nous présentons ensuite l'implémentation abstraite de \changesname{} et \qlibraname{}, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons l'analyse parallèle pour la vérification efficace des réseaux neuronaux selon la notion d'impact $\abstractqlibraname$.
-Ce chapitre est basé sur les travaux présentés lors du 28e Symposium sur l'Analyse Statique (SAS 2021)~\sidecite{Mazzucato2021}.}
+\emph{Dans ce chapitre, nous introduisons le contexte de l'analyse formelle des réseaux de neurones et nous définissons formellement le concept des réseaux de neurones profonds feed-forward à des fins de classification.
+Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau de neurones. Nous présentons ensuite l'implémentation abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons l'implémentation parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux de neurones selon la notion d'impact \qlibraname{}.
+Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analyse Statique (SAS 2021)~\sidecite{Mazzucato2021}.}
 
 % \input{src/chapters/extensional/sas21/overview}
 % \input{src/chapters/extensional/sas21/changes}
@@ -22,11 +22,11 @@ This section introduces the computational model of a feed forward neural network
 
 \subsection{Feed-Forward Deep Neural Networks}
 
-A \emph{feed forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons.
+A \emph{feed-forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons.
 The nodes are arranged in layers, where the first layer is the input layer ($\inputlayer$), the last layer is the output layer ($\outputlayer$), and the layers in between are called hidden layers ($\hiddenlayers$).
 Each layer $\hiddenlayer{i}$ is composed of a set of $\cardinalitynospaces{\hiddenlayer{i}}$ nodes, and is connected to the previous layer $\hiddenlayer{i-1}$ through a weight $\cardinalitynospaces{\hiddenlayer{i}}\times\cardinalitynospaces{\hiddenlayer{i-1}}$-matrix $\weightmatrix{i}$ and a bias $\cardinalitynospaces{\hiddenlayer{i}}$-vector $\biasvector{i}$.
 The set of all nodes is denoted by $\networknodes$ and the set of nodes in layer $\hiddenlayer{i}$ is denoted by $\networknodesinlayer{i}$. The $j$-th node in layer $\hiddenlayer{i}$ is denoted by $\node$.
-In this thesis we focus on feed forward neural networks used for classification tasks, where each node in the output layer represents a class, and the output of the network is the class yielding the highest value. In total, the network has $\cardinalitynospaces{\outputlayer}$ number of target classes.
+In this thesis, we focus on feed-forward neural networks used for classification tasks, where each node in the output layer represents a class, and the output of the network is the class yielding the highest value. In total, the network has $\cardinalitynospaces{\outputlayer}$ number of target classes.
 
 An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\networknodesinlayer{0}$; for simplicity, we assume that the input values are normalized to the interval $[0,1]$.
 The value of each hidden and output node is computed by applying an activation function to the weighted sum of the values of the nodes in the previous layer and the bias. The activation function is usually a non-linear function, we consider the \relu{} activation function in this work, which is defined as $\relu(x) = \max(0,x)$. Thus, the value of node $\node$ in layer $\hiddenlayer{i}$ is computed as:
@@ -36,6 +36,9 @@ The value of each hidden and output node is computed by applying an activation f
   \right)
 \end{align*}
 where $\weight_{j, k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider already trained networks.
+
+For the rest of the chapter, the letter $\defmodel$ denotes a neural network model (similarly to the letter $\defprogram$ for generic programs).
+The trace semantics of a neural network model is then $\tracesemanticsnoparam\semanticsof{\defmodel}$.
 
 
 \subsection{Classification Task}
@@ -66,6 +69,56 @@ The characterization above shows that two different states of the network can be
 \end{example}
 
 Note that, the output observer always maps to zero the values of neural-network nodes that do not belong to the output layer.
+
+\subsection{Neural Network Abstract Analysis}
+
+The abstract interpretation of a neural-network model is the propagation of an abstract element through each neuron of the network, over-approximating the possible states the model may reach.
+The analysis either goes forward, from the input layer to the output layer, or backward, from the output layer to the input layer.
+The forward analysis receives an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes.
+On the other hand, the backward analysis receives an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
+
+When a neural network is given an input vector, the network computes the value of each node in the network via an affine transformation and the application of an activation function, in our case a \relu{} function.
+The \relu{} flattens the negative values to zero, and keeps the positive values unchanged.
+We say that the \relu{} node (or better, the node after the application of the \relu{} function) is \emph{active} if the value is positive, and \emph{inactive} otherwise.
+The active or inactive flag of a node is called its \emph{activation status}.
+The set of activation statuses of all the nodes in the network is called the \emph{activation pattern} of the network, inducing a \emph{path} in the neural network from input space regions where the network behaves similarly.
+
+An \emph{abstract activation pattern} gives an activation pattern only to a subset of \relu{} nodes, hence representing a set of activation patterns.
+\relu{} nodes whose corresponding flag does not have a fixed value are considered to have an unknown activation status.
+The abstract activation pattern is very useful for the abstract interpretation of neural networks, as the knowledge that a node has an inactive status can be used to prune the search space of the analysis, and thus reduce the computational cost.
+Specifically, the \relu{} activation function is much simpler to handle when the activation status is known, as the \relu{} function is the identity function for active, and the constant zero for inactive nodes.
+The abstract activation function can easily be collected from a forward analysis of the network, whenever the over-approximation of input values of a node is greater than zero, the node is considered active, whenever it is less than zero, the node is considered inactive, otherwise unknown.
+
+Hence, given an abstract domain $\abstractdomain$ with sound forward and backward operators for the affine and \relu{} operations, the forward analysis can be defined as the network computation where we replace concrete operators with their abstract sound counterparts.
+\reffig{forward-neural-networks} presents a forward abstract analysis of neural-network models, parametric on the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the input values.
+Specifically, the abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of the given node, and the abstract operator $\abstractdomainforwardrelu$ takes care of the \relu{} activation function and the computation of the activation status of the node.
+
+\marginnote[*-15]{\denis{fix the name for programs and algorithms}}
+\begin{marginlisting}
+  \caption{Forward analysis of neural networks.}
+  \labfig{forward-neural-networks}
+\vspace{0.8cm}
+\begin{lstlisting}[
+  language=algorithm,
+  escapechar=\%,
+  ]
+forward(%$\abstractdomain$%, %$x^\natural$%):
+  p = %$\emptyset$%
+  for %$i$% = 1 up to %$\lastlayerindex$%:
+    for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$%:
+      %$x^\natural$% = %$\abstractdomainforwardaffine\semanticsof{\node}x^\natural$%
+      %$x^\natural, p$% = %$\abstractdomainforwardrelu\semanticsof{\node}x^\natural$%
+  return %$x^\natural, p$%
+\end{lstlisting}
+\end{marginlisting}
+
+Conversely, the backward analysis of neural networks is defined as the network computation where we replace concrete operators with their abstract sound \emph{backward} counterparts.
+The backward analysis is parametric on the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the target classes.
+
+Both analyses are sound in the sense that they over-approximate the possible states the network may reach.
+Indeed, the trace semantics of the network computation is soundly abstracted by the abstract semantics of the forward and backward analyses.
+
+% \denis{Add lemmas showing that the forward and backward analyses are sound (maybe compared to the output semantics).}
 
 \section{Quantitative Impact Notions}
 \labsec{quantitative-impact-notions}
@@ -603,6 +656,8 @@ Finally, we show how to validate the $\defbound$-bounded impact property for the
 In the abstract, such validation can now compute different fair partitions in parallel, the total volume is the sum of the volumes of the individual partitions.
 This section is based on the work presented in \sidetextcite{Urban2020} and \sidetextcite{Mazzucato2021}.
 
+Other than the backward semantics $\backwardsemanticsnoparam$, we assume a forward
+
 \subsection{Parallel Semantics}\labsec{parallel-semantics}
 
 We observe that the dependency semantics of a program satisfying the $\boundedqlibra$ property induces a partition of the input space restricted to the input variables in $\inputvariableswithoutw$.
@@ -696,8 +751,47 @@ It remains to show soundness and completeness for the parallel semantics when ap
 
 In this section, we build upon the parallel semantics to design an abstract implementation $\abstractqlibra$ that computes an over-approximation of the volume of input space that may be fair.
 This static analysis automatically find a fair partition of the input space, then computes the volume of the fair input space.
-The abstract implementation $\abstractqlibra$ is defined as the sum of the volumes of the fair partitions, presented in \reffig{abstract-qlibra-parallel}.
+The abstract implementation $\abstractqlibra$ is defined as the sum of the volumes of the fair partitions.
 
+The algorithm is presented in \reffig{abstract-qlibra-parallel}, it combines a forward with a backward analysis.
+The forward analysis uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
+Then, we perform the quantification of the biased space.
+Note that, the backward analysis is exact for each partition, thus very expensive.
+
+More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
+We represent each path by an \emph{activation pattern}, which determines the activation status of every \relu{} operation in the network model.
+An activation pattern is a binary vector of length equal to the number of \relu{} operations in the network model.
+Each flag in the vector could be either active or inactive depending on the status of the corresponding \relu{} operation.
+
+On the other hand, an \emph{abstract activation pattern} gives an activation pattern only to a subset of \relu{} nodes, hence representing a set of activation patterns.
+\relu{} nodes whose corresponding flag does not have a fixed value are considered to have an unknown activation status.
+
+We set up an analysis \emph{budget} by providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie{} the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
+The forward analysis starts with the trivial partition $\definputpartitions = \{\reducedstate\}$.
+Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$, starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome, then the partition is already fair without further analysis.
+Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$.
+On the other hand, if abstract activation pattern $\defabstractactivationpattern$ fixes the activation status of enough \relu{} nodes, then we declare the partition $\definputpartition$ \emph{feasible} and ready for the backward analysis.
+In this case, the pair of $\defabstractactivationpattern$ and $\definputpartition$ is added into a map $\feasiblepartitions$ from abstract activation patterns to input partitions.
+The insertion takes care of merging the activation patterns that are subsumed by other (weaker) activation patterns.
+Otherwise, the partition $\definputpartition$ needs to be further refined, with respect to the variables in $\inputvariableswithoutw$.
+Partitioning may continue until the volume of the partition is below a certain threshold $\lowerbound$.
+Finally, whenever the partition is smaller than $\lowerbound$, we exclude it from the set of partitions to be analyzed until more resources become available.
+Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
+
+Then, the analysis proceeds backwardly, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$.
+By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status.
+This is also why it is advantageous to merge subsumed abstract activation paths in the forward analysis.
+
+Finally, the abstract implementation $\abstractqlibra$ computes the sum of the volumes of the fair portion of each partition together.
+The next result shows that the abstract implementation $\abstractqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
+Therefore, it can be used to validate the $\boundedqlibra$ property.
+
+\begin{theorem}
+  Given the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\abstractqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
+  \begin{align*}
+    \abstractqlibra(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \comparison \defbound \ImplieS \defprogram \satisfies \GENBOUNDED
+  \end{align*}
+\end{theorem}
 
 
 \subsection{Abstract Domains for Neural Network Analysis}

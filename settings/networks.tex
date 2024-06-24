@@ -1,9 +1,10 @@
 
 
-\newcommand*{\inputlayer}{\textsc{l}_0}
-\newcommand*{\lastlayerindex}{\textsc{n}}
-\newcommand*{\outputlayer}{\textsc{l}_\lastlayerindex}
-\newcommand*{\hiddenlayer}[1]{\textsc{l}_{#1}}
+\newcommand*{\layername}{\textup{\textsc{l}}}
+\newcommand*{\inputlayer}{\layername_0}
+\newcommand*{\lastlayerindex}{\textup{\textsc{n}}}
+\newcommand*{\outputlayer}{\layername_\lastlayerindex}
+\newcommand*{\hiddenlayer}[1]{\layername_{#1}}
 \newcommand*{\hiddenlayers}{\hiddenlayer{1},\ldots,\hiddenlayer{\lastlayerindex-1}}
 
 \newcommand*{\weightmatrix}[1]{W_{#1}}
