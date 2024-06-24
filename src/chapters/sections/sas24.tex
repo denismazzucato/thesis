@@ -1,17 +1,47 @@
 \chapter{Quantitative Static Timing Analysis}
 \labch{quantitative-static-timing-analysis}
 
-\section{Static Analysis for Global Loop Bound}
-\labsec{static-analysis-global-loop-bound}
+This chapter presents a static analysis for quantifying the impact of input variables on the number of iterations of a program.
+The analysis is based on abstract interpretation and combines a syntactic dependency analysis with a global loop bound analysis to derive an over-approximation of the impact quantity.
+First, we introduce a concrete semantics augmented with a global loop counter to model the number of iterations of a loop.
+Then, we show a global loop bound analysis, followed by the impact quantification, which is employed to verify the $\defbound$-impact property.
+Finally, we discuss some implementation details and optimizations.
+This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024sas}.
+
+\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse est basée sur l'interprétation abstraite et combine une analyse de dépendance syntaxique avec une analyse globale des bornes de boucle pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons une sémantique concrète augmentée avec un compteur de boucle global pour modéliser le nombre d'itérations d'une boucle. Ensuite, nous montrons une analyse globale des bornes de boucle, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact $\defbound$. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté au 31e Symposium d'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024sas}.}
+
+
 
 \section{Global Loop Bound Semantics}
-\labsec{global-loop-bound-semantics}
+
+
+In this section, we present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
+We recall that the variables of the program are represented by the set $\variables$, where the finite set $\inputvariables\subseteq\variables$ contains the input variables.
+
+\marginnote{
+  \begin{align*}
+    \defaexp \grammardef \defvalue  \sep \defvariable \sep \defaexp + \defaexp \sep \defaexp - \defaexp  \\
+    \defbexp \grammardef \defaexp \leq \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
+    \defstmt \grammardef \skipstmt
+    \sep \assignstmt
+    \sep \assertstmt\\
+    \linesep \ifstmt \\
+    \linesep \whilestmt \\
+    \linesep \compstmt \\
+    \defprogram \grammardef \progstmt
+  \end{align*}
+}
+
+
+
+In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
+Consequently, we extend the program states to include the value of the global loop counter, \ie $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
+
+
+\section{Static Analysis for Global Loop Bound}
 
 \section{An Abstract Range Implementation via Linear Programming Encoding}
-\labsec{abstract-range-implementation}
 
-\section{Syntactic Dependency Analysis}
-\labsec{syntactic-dependency-analysis}
+\section{Implementation Details}
 
 \section{Optimizations}
-\labsec{optimizations}

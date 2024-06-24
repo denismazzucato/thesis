@@ -1,0 +1,17 @@
+
+\newcommand{\skipstmt}{\texttt{skip}}
+\newcommandx{\assignstmt}[2][1=\deflhs,2=\defaexp]{#1 := #2}
+\newcommandx{\assertstmt}[1][1=\defbexp]{\texttt{assert } #1}
+\newcommandx{\compstmt}[2][1=\defstmt,2=\defstmt]{#1;~#2}
+\newcommandx{\ifstmt}[3][1=\defstmt,2=\defstmt,3=\defbexp]{\texttt{if }  #3 \texttt{ then } #1 \texttt{ else } #2}
+\newcommandx{\whilestmt}[2][1=\defstmt,2=\defbexp]{\texttt{while }  #2 \texttt{ do } #1 \texttt{ done}}
+\newcommand{\progstmt}{\texttt{entry }\defstmt}
+
+\newcommand{\grammardef}{\quad&{::=}\quad}
+\newcommand{\sep}{~|~}
+\newcommand{\linesep}{\quad&\hphantom{::}|~\,\quad}
+\newcommand{\updatemem}[3]{#1[#2 \leftarrow #3]}
+\newcommand{\fixpointfunction}{\textup{F}}
+\newcommand{\incr}{\textup{\textsc{Incr}}_\counter}
+\newcommand{\bwddecr}{\textup{\textsc{Decr}}^\reabwdsym_\counter}
+\newcommand{\linearize}{\textup{\textsc{Lin}}}
