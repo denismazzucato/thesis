@@ -9,6 +9,10 @@
 \newcommand*{\tracetype}{\setof\finiteinfinitesequences}
 \newsemantics{trace}
 
+%% trace semantics
+\newcommand*{\countertracesemanticsnoparam}{\semanticsletter_\counter}
+\newcommand*{\countertracesemantics}{\countertracesemanticsnoparam \semanticsof\defprogram}
+
 % collecting
 \newcommand*{\collectingsym}{\mathbb{C}}
 \newcommand*{\collectingtype}{\setofsetof\finiteinfinitesequences}
@@ -19,6 +23,9 @@
 \newcommand*{\collectingbottom}{\setof\finiteinfinitesequences}
 \newsemantics{collecting}
 \renewcommand*{\collectingsubseteq}{\subseteq}
+
+\newcommand*{\countercollectingsemanticsnoparam}{\resize{\semanticsletter}{\counter}[\collectingsym]}
+\newcommand*{\countercollectingsemantics}{\countercollectingsemanticsnoparam \semanticsof\defprogram}
 
 %% dependency semantics
 \newcommand*{\dependencysym}{\rightsquigarrow}
@@ -33,11 +40,9 @@
 \newcommand*{\reducedoutputsemanticsnoparam}{\reduce[\outputsemanticsnoparam]{\abstractdomainconcretization(\bucket)}}
 \newcommand*{\finalstatesdependency}{\finalstates^\dependencysym}
 
-%% input-output
-\newcommand*{\inputoutputsym}{\red{XXX}}
-\newcommand*{\inputobs}{\red{XXX}}
-\newcommand*{\inputoutputtype}{\red{XXX}}
-\newsemantics{inputoutput}
+
+\newcommand*{\counterdependencysemanticsnoparam}{\resize{\semanticsletter}{\counter}[\dependencysym]}
+\newcommand*{\counterdependencysemantics}{\counterdependencysemanticsnoparam \semanticsof\defprogram}
 
 %% output
 \newcommand*{\outputobs}{\aniobserver}
@@ -45,6 +50,10 @@
 \newcommand*{\outputtype}{\dependencytype}
 \newsemantics{output}
 \renewcommand*{\outputsubseteq}{\subseteq}
+
+
+\newcommand*{\counteroutputsemanticsnoparam}{\resize{\semanticsletter}{\counter}[\outputsym]}
+\newcommand*{\counteroutputsemantics}{\counteroutputsemanticsnoparam \semanticsof\defprogram}
 
 %% parallel
 \newcommand*{\parallelsym}{\definputpartitions}
@@ -93,6 +102,10 @@
 \newcommand*{\abstractdomainforward}{\textup{\texttt{Forward}}^\natural}
 \newcommand*{\abstractdomainbackward}{\textup{\texttt{Backward}}^\natural}
 
+\newcommand*{\abstractdomainsubstitute}{\textup{\texttt{Substitute}}^\natural}
+\newcommand*{\abstractdomainwidening}{\nabla^\natural}
+\newcommand*{\abstractdomainfilter}{\textup{\texttt{Filter}}^\natural}
+
 
 \newcommand*{\lengthfunction}{\textup{\texttt{Length}}}
 \newcommand*{\rangefunction}{\textup{\texttt{Range}}}
@@ -102,3 +115,11 @@
 \newcommand*{\disjunctivepolyabstractdomain}{\mathbb{D}\polyabstractdomain}
 \newcommand*{\disjunctivepolyabstractdomaintype}{\finitesetof{\polyabstractdomain}}
 \newcommand*{\disjunctivepolyabstractdomainsubseteq}{\subseteq^{\disjunctivepolyabstractdomain}}
+
+\newcommand{\aexpsym}{\mathcal{A}}
+\newcommand{\aexpsemantics}{\aexpsym\semanticsof\defaexp}
+\newcommand{\aexpsemanticsnoparam}{\aexpsym}
+
+\newcommand{\bexpsym}{\mathcal{B}}
+\newcommand{\bexpsemantics}{\bexpsym\semanticsof\defbexp}
+\newcommand{\bexpsemanticsnoparam}{\bexpsym}

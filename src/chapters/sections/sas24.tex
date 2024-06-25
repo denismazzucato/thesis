@@ -3,12 +3,13 @@
 
 This chapter presents a static analysis for quantifying the impact of input variables on the number of iterations of a program.
 The analysis is based on abstract interpretation and combines a syntactic dependency analysis with a global loop bound analysis to derive an over-approximation of the impact quantity.
-First, we introduce a concrete semantics augmented with a global loop counter to model the number of iterations of a loop.
-Then, we show a global loop bound analysis, followed by the impact quantification, which is employed to verify the $\defbound$-impact property.
+First, we introduce the maximal trace semantics augmented with a global loop counter to model the number of iterations of all the loops of a program.
+Then, we show an abstract global loop bound analysis, followed by the impact quantification, which is employed to verify the $\defbound$-impact property.
+The output buckets are handled symbolically in order to reduce the number of backward passes the static analysis needs to perform.
 Finally, we discuss some implementation details and optimizations.
 This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024sas}.
 
-\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse est basée sur l'interprétation abstraite et combine une analyse de dépendance syntaxique avec une analyse globale des bornes de boucle pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons une sémantique concrète augmentée avec un compteur de boucle global pour modéliser le nombre d'itérations d'une boucle. Ensuite, nous montrons une analyse globale des bornes de boucle, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact $\defbound$. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté au 31e Symposium d'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024sas}.}
+\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse repose sur l'interprétation abstraite et combine une analyse de dépendance syntaxique avec une analyse globale des limites de boucle pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur de boucle global pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous présentons une analyse globale des limites de boucle abstraite, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact $\defbound$. Les seaux de sortie sont traités de manière symbolique afin de réduire le nombre de passages en arrière que l'analyse statique doit effectuer. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté lors du 31ème Symposium d'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024sas}.}
 
 
 
@@ -36,9 +37,105 @@ We recall that the variables of the program are represented by the set $\variabl
 
 In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
 Consequently, we extend the program states to include the value of the global loop counter, \ie $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
+The maximal trace semantics is extended to include the global loop counter as follows:
 
+\begin{align*}
+  % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
+  &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
+  \defsetoftraces
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ
+  \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\assertstmt}\defsetoftraces \DefeQ
+  \bexpsemantics\defsetoftraces
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  \\
+  &\qquad
+  \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces) \spacearound\setjoin
+  \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
+  \lfp{}\fixpointfunction\\
+  &\qquad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \spacearound\setjoin  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ
+  \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0}) \\
+  \text{\denis{fix it}}
+\end{align*}
+
+The above semantics is quite standard, see for reference the maximal trace semantics of \refsec{maximal-trace-semantics}.
+The differences are in the handling of loop constructs, and in the initialization of the global loop counter $\counter$.
+The semantics is designed backwardly, at the end of the program execution the global loop counter $\counter$ is $0$.
+During the program computation, the global loop counter is decremented backwardly at each iteration of all the loops.
+Therefore, at the beginning of the program, the global loop counter $\counter$ contains the number of iterations of all the loops in the program.
+To some extent, the maximal trace semantics augmented with the global loop counter foresees the global number of iterations before computing the program traces as whenever $\counter$ reaches $0$, the program will terminate without further loop iterations.
+
+The hierarchy of semantics applies accordingly from the maximal trace semantics.
+Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 
 \section{Static Analysis for Global Loop Bound}
+
+We present a sound computable static analysis to propagate the global loop counter $\counter$ through the program.
+An over-approximation of the global loop counter is computed by analyzing the program backwardly.
+The soundness of the approach leverages: $(1)$ an abstract domain of conjunctions of linear constraints, $(2)$ a sound global loop bound analysis to collect the dependencies of the loop counter $\counter$ from the input variables, and $(3)$ a linear programming encoding as a sound implementation of the impact $\rangename$.
+
+\subsection{Conjunctions of Linear Constraints}
+
+We define the numerical abstract state domain used in the global loop bound analysis.
+In principle, our abstract domain could be any convex abstract domain subsumed by the polyhedra domain~\sidecite{Cousot1978}, such as the interval domain, octagon domain~\sidecite{Mine2006octagon}, or the polyhedra domain itself.
+The elements of the abstract domain are conjunctions of linear constraints of the form:
+%
+\begin{equation*}
+  c_1\cdot\defvariable_1 \spacearound+ \ldots \spacearound+ c_n\cdot\defvariable_n \spacearound+ c_{n+1} \spacearound\ge 0
+\end{equation*}
+%
+where $\defvariable_j\in\variablesandcounter$ are variables and $c_j \in \values$ are constant values.
+For a better readability, we avoid writing the constant-variable multiplication term $c_i\cdot\defvariable_i$ when $c_i=0$; and we abuse the notation, \eg{} for the constraint $\defvariable_1 = \defvariable_2$, to denote the conjunction of the two linear constraints $\defvariable_1 - \defvariable_2 \ge 0$ and $\defvariable_2 - \defvariable_1 \ge 0$.
+The abstract domain is a lattice $\langle\abstractdomain, \abstractdomainsubseteq, \abstractdomainjoin, \abstractdomainmeet, \abstractdomaintop, \abstractdomainbottom\rangle$ equipped with a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof\state$, defined as:
+%
+\begin{align*}
+  \abstractdomainconcretization(\defabstractvalue) \DefeQ \setdef{\defstate\in\state}{&\spacer
+    \forall  \left(c_1\cdot\defvariable_1 + \ldots + c_n\cdot\defvariable_n + c_{n+1} \ge 0\right) \in \defabstractvalue. \\ &\spacer
+      c_1\cdot\defstate(\defvariable_1) + \ldots + c_n\cdot\defstate(\defvariable_n) + c_{n+1} \ge 0
+  }
+\end{align*}
+Additionally, in order to be effectively used in the context of the global loop bound analysis, we assume:
+\begin{enumerate}[label=(\roman*)]
+  \item an operator $\abstractdomainsubstitute{\defvariable}{\defaexp}\in\abstractdomain\to\abstractdomain$ to substitute the variable $\defvariable\in\variablesandcounter$ with the expression $\defaexp$,
+  \item an operator $\abstractdomainfilter\semanticsof{\defbexp}\in\abstractdomain\to\abstractdomain$ to handle boolean expressions $\defbexp$,
+  \item a widening operator $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ to ensure termination of the analysis, and
+  \item a project operator $\abstractdomainproject_\defvariable\in\abstractdomain\to\abstractdomain$ to remove the input variable $\defvariable$ from the given abstract state.
+\end{enumerate}
+
+
+
+\section{Quantification of the Global Number of Iterations}
+
+To quantify the impact of input variables on the global loop counter, we employ the $\rangename$ impact notion (\refdef*{range}) instrumented with $\counter$ as output variable.
+Here is the formal definition where $\outputobs = \identity$:
+
+\begin{align*}
+  \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+    \size(\setdef{
+      \retrieveoutput{\defseq}(\counter)
+    }{
+      \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
+    })
+\end{align*}
+
+For the property of interest, \cf{} the $\defbound$-impact property (\refdef*{bounded}), we are interested in the impact of the input variables on the global loop counter.
+By extension, $\boundedrange$ is the set of trace semantics extended with the global loop counter with an impact bounded by $\defbound$:
+
+\begin{align*}
+  \BOUNDEDRANGE \DefeQ \setdef{\countertracesemantics \in \tracetype}{\range(\countertracesemantics) \le \defbound}
+\end{align*}
+
+
 
 \section{An Abstract Range Implementation via Linear Programming Encoding}
 

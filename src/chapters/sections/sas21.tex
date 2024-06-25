@@ -1,11 +1,11 @@
 \chapter{Quantitative Verification for Neural Networks}
 \labch{quantitative-fairness}
 
-In this chapter, we introduce the context of neural network formal analysis, we define formally the concept of feed-forward deep neural networks for classification purposes.
+In this chapter, we introduce the context of neural network analysis, we define formally the concept of feed-forward deep neural networks for classification purposes.
 We introduce two quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of bias of a neural network. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact notion.
 This chapter is based on the work presented at the 28th Static Analysis Symposium (SAS 2021)~\cite{Mazzucato2021}.
 
-\emph{Dans ce chapitre, nous introduisons le contexte de l'analyse formelle des réseaux de neurones et nous définissons formellement le concept des réseaux de neurones profonds feed-forward à des fins de classification.
+\emph{Dans ce chapitre, nous introduisons le contexte de l'analyse des réseaux de neurones et nous définissons formellement le concept des réseaux de neurones profonds feed-forward à des fins de classification.
 Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau de neurones. Nous présentons ensuite l'implémentation abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons l'implémentation parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux de neurones selon la notion d'impact \qlibraname{}.
 Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analyse Statique (SAS 2021)~\sidecite{Mazzucato2021}.}
 
@@ -18,7 +18,7 @@ Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analys
 \section{Neural Networks}
 \labsec{neural-networks}
 
-This section introduces the computational model of a feed forward neural network and how it can be used for classification purposes.
+This section introduces the computational model of a feed-forward neural network and how it can be used for classification purposes.
 \subsection{Feed-Forward Deep Neural Networks}
 
 A \emph{feed-forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons. The nodes are organized into layers: the first layer is the input layer ($\inputlayer$), the last layer is the output layer ($\outputlayer$), and the layers in between are called hidden layers ($\hiddenlayers$). Each hidden layer $\hiddenlayer{i}$ consists of $\cardinalitynospaces{\hiddenlayer{i}}$ nodes and is connected to the previous layer $\hiddenlayer{i-1}$ through a weight matrix $\weightmatrix{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}\times\cardinalitynospaces{\hiddenlayer{i-1}}$ and a bias vector $\biasvector{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}$.
@@ -33,14 +33,14 @@ An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\net
 \end{align*}
 where $\weight_{j,k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider already trained networks.
 
-For the rest of this chapter, the letter $\defmodel$ denotes a neural network model (analogous to the letter $\defprogram$ for generic programs). The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
+For the rest of this chapter, the letter $\defmodel$ denotes a neural network model\sidenote{Analogous to the letter $\defprogram$ for generic programs.}. The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
 Note that, under the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration and that all the traces terminate after a specific number of steps, which is the number of nodes of the network.
 
 \subsection{Classification Task}
 
 In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, i.e., $\argmax_{j} \node[\lastlayerindex][j]$.
 
-The classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the network's output values to the target classes. The output observer returns $1$ if the index of the node with the highest value matches the target class, and $0$ otherwise. Thus, when the output state of a trace from the network computation is passed to the output observer, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+The classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the network's output values to the target classes. The output observer returns $1$ if the index of the node with the highest value matches the target class, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
 
 \begin{align*}
 \outputobs(\defstate) \DefeQ \lambda \defvariable.\spacer
@@ -53,8 +53,7 @@ The classification task is formalized using the output observer $\outputobs$ (\r
 This characterization shows that two different states of the network can be distinguished by the output observer if and only if they are associated with different target classes, thus yielding different outcomes.
 
 \begin{example}
-Consider a simple neural network with two input and two output variables. The weights and biases connecting the input to the output layer are irrelevant for this example. Therefore, the network states are defined as $\defstate = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in \R}$. For simplicity, we assume all the variables to be real\sidenote{often neural networks normalize inputs to the interval $[0,1]$}.
-
+Consider a simple neural network with two input and two output variables. The weights and biases connecting the input to the output layer are irrelevant for this example. Therefore, the network states are defined as $\defstate = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in [0,1]}$.
 Given, for instance, the network state $\langle 0, 1, 0, 1 \rangle$, the output observer $\outputobs$ returns the state $\outputobs(\defstate) = \langle 0, 0, 0, 1 \rangle$ to indicate that the target class is the second one, corresponding to $x_{1, 1}$. Given the network state $\langle 0.5, 1, 0.7, 0.2 \rangle$, the output observer returns the state $\outputobs(\defstate) = \langle 0, 0, 1, 0 \rangle$ to indicate that the target class is the first one (the first two variables are the input variables), and so on.
 \end{example}
 
@@ -62,13 +61,16 @@ Note that the output observer always maps the values of neural network nodes tha
 
 \subsection{Neural Network Abstract Analysis}
 
-Abstract interpretation of a neural network model involves propagating an abstract element through each neuron of the network, over-approximating the possible states the model may reach. The analysis can be performed in two directions: forward, from the input layer to the output layer, or backward, from the output layer to the input layer. The forward analysis starts with an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes. Conversely, the backward analysis begins with an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
+Abstract interpretation of a neural network model involves propagating an abstract element through each neuron of the network, over-approximating the possible states the model may reach. The analysis can be performed in two directions: forward, from the input layer to the output layer, or backward, from the output layer to the input layer.
+The networks considered in this thesis are acyclic, meaning that the abstract iterator reaches the fixpoint after a finite number of iterations, without the need of traverse the same node multiple times.
+The forward analysis starts with an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes. Conversely, the backward analysis begins with an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
 
 When a neural network processes an input vector, it computes the value of each node via an affine transformation followed by an activation function, in our case, the \relu{} function. The \relu{} function sets negative values to zero and leaves positive values unchanged. A node is said to be \emph{active} if its value is positive and \emph{inactive} otherwise. This flag is called the node's \emph{activation status}. The set of activation statuses of all nodes in the network is called the \emph{activation pattern}, which induces a \emph{path} in the neural network from
 regions in the input space where the network behaves similarly.
 
 
 An \emph{abstract activation pattern} is a partial activation pattern that assigns a fixed activation status only to a subset of \relu{} nodes, thus representing a set of possible activation patterns. \relu{} nodes with an unknown activation status are those whose corresponding flag does not have a fixed value. Abstract activation patterns are valuable for the abstract analysis of networks as the knowledge of a node status can prune the search space, reducing computational cost. Specifically, the \relu{} function is simpler to handle when the activation status is known: it behaves as the identity function for active nodes and as a constant zero for inactive nodes. The abstract activation pattern can be discovered from a forward analysis of the network: if the over-approximation of input values to a node is greater than zero, the node is considered active; if less than zero, inactive; otherwise, unknown.
+
 
 \marginnote[*-15]{\denis{fix the name for programs and algorithms}}
 \begin{marginlisting}
@@ -79,31 +81,31 @@ An \emph{abstract activation pattern} is a partial activation pattern that assig
   language=algorithm,
   escapechar=\%,
   ]
-Forward(%$\abstractdomain$%, %$x^\natural$%):
+Forward(%$\abstractdomain$%, %$\defabstractvalue$%):
   p = %$\emptyset$%
   for %$i$% = 1 up to %$\lastlayerindex$%:
     for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$%:
-      %$x^\natural$% = %$\abstractdomainforwardaffine\semanticsof{\node}x^\natural$%
-      %$x^\natural, p$% = %$\abstractdomainforwardrelu\semanticsof{\node}x^\natural$%
-  return %$x^\natural, p$%
+      %$\defabstractvalue$% = %$\abstractdomainforwardaffine\semanticsof{\node}\defabstractvalue$%
+      %$\defabstractvalue, p$% = %$\abstractdomainforwardrelu\semanticsof{\node}\defabstractvalue$%
+  return %$\defabstractvalue, p$%
 \end{lstlisting}
 \end{marginlisting}
 
 
-Given an abstract domain $\abstractdomain$ with sound forward and backward operators for affine and \relu{} operations, the forward analysis can be defined as network computation using abstract sound counterparts of the concrete operators. \reffig{forward-neural-networks} illustrates a forward abstract analysis of neural network models, parameterized by the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the input values. The abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of a given node, while $\abstractdomainforwardrelu$ handles the \relu{} activation function and determines the node's activation status.
+Given an abstract domain $\abstractdomain$ with sound forward and backward operators for affine and \relu{} operations, the forward analysis can be defined as network computation using abstract sound counterparts of the concrete operators. \reffig{forward-neural-networks} illustrates a forward abstract analysis of neural network models, parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the input values. The abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of a given node, while $\abstractdomainforwardrelu$ handles the \relu{} activation function and determines the node's activation status.
 
-Conversely, backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $x^\natural$ representing the target classes.
+Conversely, backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the target classes.
 \reffig{backward-neural-networks} depicts the backward abstract analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the backward affine transformation of a given node, and $\abstractdomainbackwardrelu$ manages the \relu{} activation function given the node's activation status.
 
 Both analyses are sound, meaning they over-approximate the possible states the network may reach.
 Before formally showing the soundness of the forward and backward analyses, we introduce the forward concretization $\forwardconcretization$.
 Similar to the backward concretization $\backwardconcretization$, it is defined as:
 \[
-  \forwardconcretization(\forwardsemanticsnoparam)x^\natural \DefeQ
+  \forwardconcretization(\forwardsemanticsnoparam)\defabstractvalue \DefeQ
   \nonemptysetof{\setdef{
     \inputoutputtuple{\defstate}
   }{
-    \retrieveinput{\defstate}\in\abstractdomainconcretization(\forwardsemanticsnoparam(x^\natural))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(x^\natural)
+    \retrieveinput{\defstate}\in\abstractdomainconcretization(\forwardsemanticsnoparam(\defabstractvalue))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\defabstractvalue)
     }
   }
   \]
@@ -111,7 +113,7 @@ Similar to the backward concretization $\backwardconcretization$, it is defined 
 \begin{lemma}[Soundness of Forward Neural Network Analysis]\lablemma{soundness-forward-network}
   Given a neural network model $\defmodel$ and an abstract domain $\abstractdomain$ with sound forward operators for affine and \relu{} operations, the forward analysis of the network is sound whenever it holds that:
   \[
-    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(x^\natural)} \SubseteQ \forwardconcretization(\abstractdomainforward(\defmodel))x^\natural
+    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(\defabstractvalue)} \SubseteQ \forwardconcretization(\abstractdomainforward(\defmodel))\defabstractvalue
   \]
 \end{lemma}
 \begin{proof}
@@ -124,14 +126,51 @@ The next result instead shows the soundness of the backward analysis of neural n
 \begin{lemma}[Soundness of Backward Neural Network Analysis]\lablemma{soundness-backward-network}
   Given a neural network model $\defmodel$ and an abstract domain $\abstractdomain$ with sound backward operators for affine and \relu{} operations, the backward analysis of the network is sound whenever it holds that:
   \[
-    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(x^\natural)} \SubseteQ \backwardconcretization(\abstractdomainbackward(\defmodel))x^\natural
+    \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(\defabstractvalue)} \SubseteQ \backwardconcretization(\abstractdomainbackward(\defmodel))\defabstractvalue
   \]
 \end{lemma}
 \begin{proof}
   Trivially follows from the definition of the backward concretization and the soundness of the network operators.
 \end{proof}
 
-\denis{fix lemmas }
+
+\subsection{Abstract Domains for Neural Network Analysis}
+
+Different abstract domains can be used for the forward pre-analysis of neural networks.
+The choice of the abstract domain depends on the trade-off between precision and scalability.
+Here, we present four abstract domains: \boxes, \symbolic, \deeppoly, and \neurify. Additionally, a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
+
+\paragraph{Boxes}
+
+
+The \boxes{} domain simply uses interval arithmetic \sidecite{Hickey2001} to compute concrete lower and upper bound estimations $l$ and $u$ for the value of each neuron \texttt{x} in the neural network.
+
+
+\paragraph{Symbolic Constant Propagation}
+
+The \symbolic{} domain combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+
+
+\paragraph{DeepPoly}
+
+The \deeppoly{} domain \sidecite{Singh19} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
+%
+The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
+
+\paragraph{Neurify}
+
+The \neurify{} domain \sidecite{Wang18} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
+%
+The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
+%
+\reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
+
+\paragraph{Reduced Product}
+
+Finally, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains.
+The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the \relu{} nodes.
+New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.
+
 
 % \denis{Add lemmas showing that the forward and backward analyses are sound (maybe compared to the output semantics).}
 
@@ -1057,40 +1096,9 @@ Therefore, it can be used to validate the $\boundedqlibra$ property.
   \denis{todo}
 \end{proof}
 
+\section{Summary}
 
-\subsection{Abstract Domains for Neural Network Analysis}
-
-Different abstract domains can be used for the forward pre-analysis of neural networks.
-The choice of the abstract domain depends on the trade-off between precision and scalability.
-Here, we present four abstract domains: \boxes, \symbolic, \deeppoly, and \neurify. Additionally, a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
-
-\paragraph{Boxes}
-
-
-The \boxes{} domain simply uses interval arithmetic \sidecite{Hickey2001} to compute concrete lower and upper bound estimations $l$ and $u$ for the value of each neuron \texttt{x} in the neural network.
-
-
-\paragraph{Symbolic Constant Propagation}
-
-The \symbolic{} domain combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
-
-
-\paragraph{DeepPoly}
-
-The \deeppoly{} domain \sidecite{Singh19} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
-%
-The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
-
-\paragraph{Neurify}
-
-The \neurify{} domain \sidecite{Wang18} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
-%
-The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
-%
-\reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
-
-\paragraph{Reduced Product}
-
-Finally, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains.
-The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the \relu{} nodes.
-New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.
+In this chapter, we presented the \changesname{} and \qlibraname{} impact notions, and their abstract implementations, $\abstractchangesname$ and $\abstractqlibraname$, respectively.
+We validated the $\defbound$-bounded impact property for both notions.
+To address the scalability issues of the backward analysis, we introduced the parallel semantics and the abstract implementation $\parallelqlibraname$.
+In the settings of timing analyses, the next chapter presents a quantitative analysis of the impact of input variables on the number of iterations of a program.
