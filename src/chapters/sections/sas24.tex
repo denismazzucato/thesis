@@ -534,7 +534,7 @@ To some extent, the output buckets are handled symbolically.
   \begin{proof}
 %     We show that $\range(\backwardconcretization(\counterbackwardsemantics)) \le \counterrange(\counterbackwardsemantics)$ by contradiction.
 %     Let us assume that $\range(\backwardconcretization(\counterbackwardsemantics)) > \counterrange(\counterbackwardsemantics)$ and $\counterrange(\counterbackwardsemantics) = \defbound$.
-%     Then, by definition of $\range$, \cf{} \refeq{range}, there exists two concrete states, differing only in the value of $\definputvariable$, such that the difference in the value of the global loop counter $\counter$ is greater than $\defbound$.
+%     Then, by definition of $\range$, \cf{} \refeq{range}, there exists two concrete states, differing only in the value of $\definputvariables$, such that the difference in the value of the global loop counter $\counter$ is greater than $\defbound$.
 %     As a consequence, in the abstract implementation $\counterrange$, the distance between $\counterup$ and $\counterdown$ should maximize at a value greater than $\defbound$. This contradicts the assumption that $\defbound = \counterrange(\counterbackwardsemantics)$.
 % %
 %     From \refthm{candidate-backward} and the fact that $\range$ is monotonic, \cf{} \refeq{monotonic}, we conclude that:
@@ -622,7 +622,7 @@ The missing information is that the value of \texttt{r} is always non-negative a
 However, a forward pre-analysis could easily propagate such information to the backward analysis.
 As a consequence, the backward analysis would infer that the global number of iterations is always equal to the initial value of \texttt{r}.
 The main difference of the two approaches can be observed when the result of the backward analysis is used to verify the global loop bound property.
-With the invariant discovered without the forward analysis, \cf~$\texttt{r} \ge \counter$, the impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} \ge \counter)$ to $u$ (\cf~$0 \le \texttt{r} \le u$), for any input variable $\definputvariable$, even when $\definputvariable \neq \texttt{r}$.
+With the invariant discovered without the forward analysis, \cf~$\texttt{r} \ge \counter$, the impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} \ge \counter)$ to $u$ (\cf~$0 \le \texttt{r} \le u$), for all input variables $\definputvariables$, even when $\definputvariable \neq \texttt{r}$.
 The linear programming problem $\counterrange(\texttt{r} \ge \counter)$ is:
 \begin{align}
   \text{maximize} \spacer\spacer& \defbound \\
