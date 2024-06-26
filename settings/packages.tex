@@ -27,8 +27,16 @@
 \usepackage{multirow} %% merge cells verticall
 
 \usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,calligraphy} %% for curly brackets in graphs
+\usetikzlibrary{calc}
 \usepackage{pgfplots}
 \pgfplotsset{compat=newest}
 \usepackage{pgfplotstable}
 
 \usepackage[shortcuts]{extdash} %% for non-breaking hyphens
+
+
+\usepackage{makecell} %% easy newline inside tables
+\usepackage{multirow} %% merge cells vertically
+\usepackage{booktabs} %% for toprule, midrule, bottomrule in tables
+\usepackage{adjustbox} %% for adjusting table width

@@ -43,6 +43,7 @@
 
 \newcommand*{\counterdependencysemanticsnoparam}{\resize{\semanticsletter}{\counter}[\dependencysym]}
 \newcommand*{\counterdependencysemantics}{\counterdependencysemanticsnoparam \semanticsof\defprogram}
+\newcommand*{\counterdependencyconcretization}{\dependencyconcretization}
 
 %% output
 \newcommand*{\outputobs}{\aniobserver}
@@ -67,6 +68,11 @@
 \newcommand*{\backwardtype}{\abstractdomain\to\abstractdomain}
 \newsemantics{backward}
 
+
+\newcommand*{\counterbackwardsemanticsnoparam}{\resize{\semanticsletter}{\counter}[\backwardsym]}
+\newcommand*{\counterbackwardsemantics}{\counterbackwardsemanticsnoparam \semanticsof\defprogram}
+\newcommand*{\counterbackwardconcretization}{\backwardconcretization}
+
 %% forward
 \newcommand*{\forwardsym}{\rightarrow}
 \newcommand*{\forwardtype}{\abstractdomain\to\abstractdomain}
@@ -84,7 +90,7 @@
 \newcommand*{\abstractdomainbottom}{\bottom^\natural}
 \newcommand*{\abstractdomainjoin}{\join}
 \newcommand*{\abstractdomainmeet}{\meet}
-\newcommand*{\abstractdomainproject}{\resize{\textup{\texttt{Proj}}}{\definputvariables}[\natural]}
+\newcommand*{\abstractdomainproject}[1][\definputvariables]{\resize{\textup{\texttt{Proj}}}{#1}[\natural]}
 \newcommand*{\abstractdomainprojecti}{\resize{\textup{\texttt{Proj}}}{\{\definputvariable\}}[\natural]}
 \newcommand*{\abstractdomainprojectothers}{\resize{\textup{\texttt{Proj}}}{\inputvariableswithoutw}[\natural]}
 \newcommand*{\abstractdomainlattice}{\langle \abstractdomain,\abstractdomainsubseteq, \abstractdomainbottom, \abstractdomaintop, \abstractdomainjoin, \abstractdomainmeet \rangle}
@@ -102,9 +108,10 @@
 \newcommand*{\abstractdomainforward}{\textup{\texttt{Forward}}^\natural}
 \newcommand*{\abstractdomainbackward}{\textup{\texttt{Backward}}^\natural}
 
-\newcommand*{\abstractdomainsubstitute}{\textup{\texttt{Substitute}}^\natural}
+\newcommand*{\abstractdomainsubstitute}[2]{\textup{\texttt{Subs}}^\natural\semanticsof{#1\leftarrow#2}}
 \newcommand*{\abstractdomainwidening}{\nabla^\natural}
 \newcommand*{\abstractdomainfilter}{\textup{\texttt{Filter}}^\natural}
+\newcommand*{\abstractdomainfixpoint}{F^\natural}
 
 
 \newcommand*{\lengthfunction}{\textup{\texttt{Length}}}
