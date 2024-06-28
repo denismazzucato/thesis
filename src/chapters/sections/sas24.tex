@@ -39,7 +39,6 @@ In order to accumulate the number of iterations of (all) loops in the program, w
 Consequently, we extend the program states to include the value of the global loop counter, \ie $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
 The maximal trace semantics is extended to include the global loop counter as follows:
 
-\marginnote{\denis{fix it with the maximal trace semantics}}
 \begin{align*}
   % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
   &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
@@ -66,6 +65,7 @@ The maximal trace semantics is extended to include the global loop counter as fo
   \\
   &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ
   \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0}) \\
+  \text{\denis{fix}}
 \end{align*}
 
 The above semantics is quite standard, see for reference the maximal trace semantics of \refsec{maximal-trace-semantics}.
@@ -466,7 +466,9 @@ By extension, $\boundedrange$ is the set of trace semantics extended with the gl
 \end{example}
 
 Finally, we present a linear programming encoding $\counterrange\in\abstractdomain\to\valuesposplus$ to compute the abstract implementation of the impact $\range$ from the result of the global loop bound analysis $\counterbackwardsemanticsnoparam$.
-For all programs $\defprogram$, $\counterrange(\counterbackwardsemantics\abstractdomaintop) \DefeQ$ is defined as:
+
+\begin{definition}[$\counterrange$]\labdef{counterrange}
+  For all programs $\defprogram$, $\counterrange(\counterbackwardsemantics\abstractdomaintop) \DefeQ$ is defined as:
 \begin{align}
   \label{eq:obj}
   \text{maximize} \spacer\spacer& \defbound \\
@@ -479,6 +481,7 @@ For all programs $\defprogram$, $\counterrange(\counterbackwardsemantics\abstrac
     \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
 \end{align}
 where $\counterup,\counterdown$ are fresh variables.
+\end{definition}
 Since $\defbound$ should be an integer variable, we specifically solve a mixed-integer linear programming problem.
 As seen in the overview, \refeq{a} substitutes the variable $\counter$ with $\counterup$ to account for the maximal value of the global loop counter $\counter$.
 Then, it
@@ -528,7 +531,7 @@ To some extent, the output buckets are handled symbolically.
   For any program $\defprogram$ and set of traces $\defsetoftraces$ in $\counterdependencyconcretization(\counterbackwardconcretization(\counterbackwardsemantics\abstractdomaintop))$,
   the following holds:
   \begin{equation*}
-    \range(\defsetoftraces) \LE \counterrange(\counterbackwardsemantics)
+    \range(\defsetoftraces) \LE \counterrange(\counterbackwardsemantics\abstractdomaintop)
   \end{equation*}
 \end{lemma}
   \begin{proof}
@@ -557,7 +560,7 @@ Here, we show \refthm{soundness} with the output buckets symbolically handled by
   \end{align*}
 \end{theorem}
 \begin{proof}
-  From the fact that the abstract semantics $\counterbackwardsemantics$ is sound with respect to the dependency semantics $\dependencysemantics$, \cf~\reflemma{candidate-backward}, and that $\counterrange$ is a sound implementation of the impact $\range$, \cf~\reflemma{sound-implementation}, we obtain that $\range(\dependencysemantics) \le \defbound$.
+  \denis{Fix.} From the fact that the abstract semantics $\counterbackwardsemantics$ is sound with respect to the dependency semantics $\dependencysemantics$, \cf~\reflemma{candidate-backward}, and that $\counterrange$ is a sound implementation of the impact $\range$, \cf~\reflemma{sound-implementation}, we obtain that $\range(\dependencysemantics) \le \defbound$.
   Hence, it means that the collecting semantics $\collectingsemantics$ is a subset of the property $\bounded$.
   By \reflemma{range-validation} we conclude that $\defprogram \satisfies \bounded$.
 \end{proof}

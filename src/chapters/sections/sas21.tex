@@ -1,13 +1,13 @@
 \chapter{Quantitative Verification for Neural Networks}
 \labch{quantitative-fairness}
 
-In this chapter, we introduce the context of neural network analysis, we define formally the concept of feed-forward deep neural networks for classification purposes.
+In this chapter, we formally define the concept of feed-forward deep neural networks for classification purposes.
 We introduce two quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of bias of a neural network. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact notion.
 This chapter is based on the work presented at the 28th Static Analysis Symposium (SAS 2021)~\cite{Mazzucato2021}.
 
-\emph{Dans ce chapitre, nous introduisons le contexte de l'analyse des réseaux de neurones et nous définissons formellement le concept des réseaux de neurones profonds feed-forward à des fins de classification.
-Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau de neurones. Nous présentons ensuite l'implémentation abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons l'implémentation parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux de neurones selon la notion d'impact \qlibraname{}.
-Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analyse Statique (SAS 2021)~\sidecite{Mazzucato2021}.}
+\emph{Dans ce chapitre, nous définissons formellement le concept de réseaux neuronaux profonds à propagation avant à des fins de classification.
+Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau neuronal. Nous présentons ensuite la mise en œuvre abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons la mise en œuvre parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux neuronaux selon la notion d'impact $\qlibraname$.
+Ce chapitre est basé sur les travaux présentés au 28ème Symposium d'Analyse Statique (SAS 2021)~\sidecite{Mazzucato2021}.}
 
 % \input{src/chapters/extensional/sas21/overview}
 % \input{src/chapters/extensional/sas21/changes}
@@ -18,14 +18,14 @@ Ce chapitre est basé sur le travail présenté au 28ème Symposium sur l'Analys
 \section{Neural Networks}
 \labsec{neural-networks}
 
-This section introduces the computational model of a feed-forward neural network and how it can be used for classification purposes.
+This section introduces the computational model of a feed-forward deep neural network and how it can be used for classification purposes.
 \subsection{Feed-Forward Deep Neural Networks}
 
 A \emph{feed-forward deep neural network} is a directed acyclic graph where each node represents a neuron, and each edge represents a connection between neurons. The nodes are organized into layers: the first layer is the input layer ($\inputlayer$), the last layer is the output layer ($\outputlayer$), and the layers in between are called hidden layers ($\hiddenlayers$). Each hidden layer $\hiddenlayer{i}$ consists of $\cardinalitynospaces{\hiddenlayer{i}}$ nodes and is connected to the previous layer $\hiddenlayer{i-1}$ through a weight matrix $\weightmatrix{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}\times\cardinalitynospaces{\hiddenlayer{i-1}}$ and a bias vector $\biasvector{i}$ of size $\cardinalitynospaces{\hiddenlayer{i}}$.
 
 The entire set of nodes in the network is denoted by $\networknodes$, and the set of nodes in layer $\hiddenlayer{i}$ is denoted by $\networknodesinlayer{i}$. The $j$-th node in layer $\hiddenlayer{i}$ is denoted by $\node$. In this thesis, we focus on feed-forward neural networks used for classification tasks, where each node in the output layer represents a class, and the output of the network is the class corresponding to the highest value. The network has $\cardinalitynospaces{\outputlayer}$ target classes in total.
 
-An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\networknodesinlayer{0}$. For simplicity, we assume that the input values are normalized to the interval $[0,1]$. The value of each hidden and output node is computed by applying an activation function to the weighted sum of the values of the nodes in the previous layer and the bias. The activation function is usually a non-linear function; in this work, we use the \relu{} activation function, defined as $\relu(x) = \max(0, x)$. Thus, the value of node $\node$ in layer $\hiddenlayer{i}$ is computed as:
+An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\networknodesinlayer{0}$. For simplicity, we assume that the input values are normalized to the interval $[0,1]$. The value of each hidden and output node is computed by applying an activation function to the weighted sum of the values of the nodes in the previous layer and the bias. The activation function is usually a non-linear function; in this work, we consider the \relu{} activation function, defined as $\relu(x) = \max(0, x)$. Thus, the value of node $\node$ in layer $\hiddenlayer{i}$ is computed as:
 \begin{align*}
 \node = \relu\left(
 \sum_{k=1}^{\cardinalitynospaces{\hiddenlayer{i-1}}} \weight_{j,k}^{i} \node[i-1][k] + \bias_{j}^{i}
@@ -34,13 +34,13 @@ An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\net
 where $\weight_{j,k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider already trained networks.
 
 For the rest of this chapter, the letter $\defmodel$ denotes a neural network model\sidenote{Analogous to the letter $\defprogram$ for generic programs.}. The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
-Note that, under the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration and that all the traces terminate after a specific number of steps, which is the number of nodes of the network.
+Note that, under the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration and that all the traces terminate after a specific number of steps, which is exactly the number of nodes of the network.
 
 \subsection{Classification Task}
 
 In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, i.e., $\argmax_{j} \node[\lastlayerindex][j]$.
 
-The classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the network's output values to the target classes. The output observer returns $1$ if the index of the node with the highest value matches the target class, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+In the quantitative framework, the classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the network's output values to the target classes. The output observer returns $1$ if the index of the node with the highest value matches the target class, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
 
 \begin{align*}
 \outputobs(\defstate) \DefeQ \lambda \defvariable.\spacer
@@ -53,8 +53,8 @@ The classification task is formalized using the output observer $\outputobs$ (\r
 This characterization shows that two different states of the network can be distinguished by the output observer if and only if they are associated with different target classes, thus yielding different outcomes.
 
 \begin{example}
-Consider a simple neural network with two input and two output variables. The weights and biases connecting the input to the output layer are irrelevant for this example. Therefore, the network states are defined as $\defstate = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in [0,1]}$.
-Given, for instance, the network state $\langle 0, 1, 0, 1 \rangle$, the output observer $\outputobs$ returns the state $\outputobs(\defstate) = \langle 0, 0, 0, 1 \rangle$ to indicate that the target class is the second one, corresponding to $x_{1, 1}$. Given the network state $\langle 0.5, 1, 0.7, 0.2 \rangle$, the output observer returns the state $\outputobs(\defstate) = \langle 0, 0, 1, 0 \rangle$ to indicate that the target class is the first one (the first two variables are the input variables), and so on.
+Consider a simple neural network with two input and two output variables. The weights and biases connecting the input to the output layer are irrelevant for this example. Therefore, the network states are defined as $\state = \setdef{\langle x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \rangle}{x_{0, 0}, x_{0, 1}, x_{1, 0}, x_{1, 1} \in [0,1]}$.
+Given, for instance, the neural-network state $\defstate=\langle 0, 1, 0, 1 \rangle$, the output observer $\outputobs$ returns the state $\outputobs(\defstate) = \langle 0, 0, 0, 1 \rangle$ to indicate that the target class is the second one, corresponding to $x_{1, 1}$. Given the network state $\langle 0.5, 1, 0.7, 0.2 \rangle$, the output observer returns the state $\outputobs(\defstate) = \langle 0, 0, 1, 0 \rangle$ to indicate that the target class is the first one (the first two variables are the input variables), and so on.
 \end{example}
 
 Note that the output observer always maps the values of neural network nodes that do not belong to the output layer to zero.
@@ -62,7 +62,7 @@ Note that the output observer always maps the values of neural network nodes tha
 \subsection{Neural Network Abstract Analysis}
 
 Abstract interpretation of a neural network model involves propagating an abstract element through each neuron of the network, over-approximating the possible states the model may reach. The analysis can be performed in two directions: forward, from the input layer to the output layer, or backward, from the output layer to the input layer.
-The networks considered in this thesis are acyclic, meaning that the abstract iterator reaches the fixpoint after a finite number of iterations, without the need of traverse the same node multiple times.
+The networks considered in this thesis are acyclic, meaning that the abstract iterator always reaches the fixpoint after a finite number of iterations, without the need of traverse the same node multiple times.
 The forward analysis starts with an abstract element representing the input values and returns an abstract element representing an over-approximation of the reachable target classes. Conversely, the backward analysis begins with an abstract element representing the target classes and returns an abstract element representing an over-approximation of the input values that may lead to one of the given target classes.
 
 When a neural network processes an input vector, it computes the value of each node via an affine transformation followed by an activation function, in our case, the \relu{} function. The \relu{} function sets negative values to zero and leaves positive values unchanged. A node is said to be \emph{active} if its value is positive and \emph{inactive} otherwise. This flag is called the node's \emph{activation status}. The set of activation statuses of all nodes in the network is called the \emph{activation pattern}, which induces a \emph{path} in the neural network from
@@ -72,7 +72,7 @@ regions in the input space where the network behaves similarly.
 An \emph{abstract activation pattern} is a partial activation pattern that assigns a fixed activation status only to a subset of \relu{} nodes, thus representing a set of possible activation patterns. \relu{} nodes with an unknown activation status are those whose corresponding flag does not have a fixed value. Abstract activation patterns are valuable for the abstract analysis of networks as the knowledge of a node status can prune the search space, reducing computational cost. Specifically, the \relu{} function is simpler to handle when the activation status is known: it behaves as the identity function for active nodes and as a constant zero for inactive nodes. The abstract activation pattern can be discovered from a forward analysis of the network: if the over-approximation of input values to a node is greater than zero, the node is considered active; if less than zero, inactive; otherwise, unknown.
 
 
-\marginnote[*-15]{\denis{fix the name for programs and algorithms}}
+\marginnote[*-10]{\denis{In Latex, make two different enviroments for algorithms and programs, so that in the text we can just reference ALgorithm 1. Similar to how we handle Programs.}}
 \begin{marginlisting}
   \caption{Forward analysis of neural networks.}
   \labfig{forward-neural-networks}
@@ -92,10 +92,12 @@ Forward(%$\abstractdomain$%, %$\defabstractvalue$%):
 \end{marginlisting}
 
 
-Given an abstract domain $\abstractdomain$ with sound forward and backward operators for affine and \relu{} operations, the forward analysis can be defined as network computation using abstract sound counterparts of the concrete operators. \reffig{forward-neural-networks} illustrates a forward abstract analysis of neural network models, parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the input values. The abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of a given node, while $\abstractdomainforwardrelu$ handles the \relu{} activation function and determines the node's activation status.
+Given an abstract domain $\abstractdomain$ with sound forward and backward operators for affine and \relu{} operations, the forward analysis can be defined as network computation using the abstract sound counterparts of the concrete operators. \reffig{forward-neural-networks} illustrates a forward abstract analysis of neural network models, parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the input values. The abstract operator $\abstractdomainforwardaffine$ computes the affine transformation of a given node, while $\abstractdomainforwardrelu$ handles the \relu{} activation function and determines the node's activation status.
 
+\marginnote{\denis{I should say that given input partition for forward analysis and target class for backward analysis as in oopsla, so that the first line of the algorithm create the initial abstract value.}}
 Conversely, backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the target classes.
 \reffig{backward-neural-networks} depicts the backward abstract analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the backward affine transformation of a given node, and $\abstractdomainbackwardrelu$ manages the \relu{} activation function given the node's activation status.
+\marginnote{\denis{Add algorithm backward analysis here on the side.}}
 
 Both analyses are sound, meaning they over-approximate the possible states the network may reach.
 Before formally showing the soundness of the forward and backward analyses, we introduce the forward concretization $\forwardconcretization$.
@@ -119,6 +121,7 @@ Similar to the backward concretization $\backwardconcretization$, it is defined 
 \begin{proof}
   Trivially follows from the definition of the forward concretization and the soundness of the network operators.
 \end{proof}
+\marginnote{\denis{Missing definition of semantics restriction over the input states.}}
 
 
 The next result instead shows the soundness of the backward analysis of neural networks.
@@ -136,6 +139,7 @@ The next result instead shows the soundness of the backward analysis of neural n
 
 \subsection{Abstract Domains for Neural Network Analysis}
 
+\marginnote{\denis{Add figures on the side.}}
 Different abstract domains can be used for the forward pre-analysis of neural networks.
 The choice of the abstract domain depends on the trade-off between precision and scalability.
 Here, we present four abstract domains: \boxes, \symbolic, \deeppoly, and \neurify. Additionally, a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
@@ -230,9 +234,9 @@ Therefore, these metrics would not provide any meaningful information about how 
     \label{fig:irregular}
   \end{marginfigure}
   Consider a simple neural network with two input variables $x$ and $y$, and three possible outcomes, denoted by the colors green, yellow, and red.
-  A potential input space of such a model is represented in \reffig{irregular}, indeed each outcome is reachable by the portion of the input space that is colored with the corresponding color.
-  In this case, the \outcomesname{} impact notion would not be useful as all the outcomes are reachable by perturbations of any input value. Consider for example the point $(x_0, y_0)$ in the input space of outcome red, by applying a perturbation of one axis, the outcome can change to green or yellow, for both axes. Thus, the impact of both $x$ and $y$ is maximal, \cf{} $\outcomesname_x = \outcomesname_y = 3$.
-  A similar reasoning applies to the \rangename{} or \qusedname{} impact notions, hence neither they cannot provide any insight.
+  A potential input space of such a model $\defmodel$ is represented in \reffig{irregular}, indeed each outcome is reachable by the portion of the input space that is colored with the corresponding color.
+  In this case, the \outcomesname{} impact notion would not be useful as all the outcomes are reachable by perturbations of any input value. Consider for example the point $(x_0, y_0)$ in the input space of outcome red, by applying a perturbation of one axis, the outcome can change to green or yellow, for both axes. Thus, the impact of both $x$ and $y$ is maximal, \cf{} $\outcomesname_x(\semanticsof\defmodel) = \outcomesname_y(\semanticsof\defmodel) = 3$.
+  A similar reasoning applies to the \rangename{} or \qusedname{} impact notions, hence neither of them provides any insight.
 
   On the other hand, we notice that one way to discriminate which input variable is more impactful is to consider the number of times the classification changes when the input variables are modified.
   To this end, we develop a quantitative notion, called \changesname{} impact notion, that measures exactly this property.
@@ -240,10 +244,11 @@ Therefore, these metrics would not provide any meaningful information about how 
 
 
 The \changesname{} impact notion is designed to count how many times the network outcome changes by modification in the value of the input variables $\definputvariables$.
-Notably, we recall similarities with the previously defined $\outcomesname$ impact notion: in this case, we consider changes in the outcome \emph{with repetitions}, that is, if two different variations in $\definputvariable$ result in the same change in outcome, it counts as double change.
+Notably, we recall similarities with the previously defined $\outcomesname$ impact notion: in this case, we consider changes in the outcome \emph{with repetitions}, that is, if two different variations in $\definputvariables$ result in the same change in outcome, it counts as double change.
 The higher the number of changes in the outcome, the greater the influence on the program outcome.
 Therefore, this notion demonstrates its effectiveness when the same outcomes are reachable by multiple variations.
-Intuitively, such situation often arises in the presence of neural networks, where generally all the possible input variations lead to every possible outcome.
+Intuitively, \emph{such situation often arises in the presence of neural networks, where generally all the possible input variations lead to every possible outcome}.
+The design of this notion builds on this key observation.
 Thus, counting the repetitions is a potential solution to define a meaningful impact definition for neural networks.
 
 
@@ -418,7 +423,7 @@ In words, a set of input variables $\definputvariables$ has a high impact on the
   \end{align*}
 \end{definition}
 The auxiliary set $Q_{\definputvariables, \definput, \defoutput}$ contains the set of continuous regions leading to an output value different from $\defoutput$.
-Additionally, $\changes$ requires the set of traces $\defsetoftraces$ to be deterministic, that is, for each input configuration, there is only one output value. Such a requirement is necessary to ensure that segments are well-defined, as the function $\segments$ partitions the input space into continuous regions leading to the same output value. Otherwise, in a portion of input space where the output value is not deterministic, the number of possible outcomes changes would be infinite.
+Additionally, $\changes$ requires the set of traces $\defsetoftraces$ to be deterministic, that is, for each input configuration, there is only one output value. Such a requirement is necessary to ensure that segments are well-defined, as the function $\segments$ partitions the input space into continuous regions leading to the same output value. Otherwise, in a continuous portion of input space where the output value is not deterministic, the number of possible outcomes changes would be infinite.
 Therefore, the \changesname{} impact notion would be meaningless in such a setting.
 Nevertheless, since we consider neural networks for classification tasks in this chapter, the output value is deterministic for each input configuration, and thus the set of traces $\defsetoftraces$ is deterministic.
 
@@ -538,7 +543,7 @@ we call such property $\boundedchanges$.
 \end{proof}
 
 \reflemma{changes-monotonic} and \reflemma{changes-validation} are of significant importance as they show that the $\changesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
-In case of non-deterministic set of traces, the $\changesname$ impact notion would not be meaningful, as the number of continuous regions leading to a different output value would be infinite.
+In case of non-deterministic set of traces, the $\changesname$ impact notion would not be meaningful, as the number of continuous regions leading to a different output value would be always infinite.
 
 
 \subsection{The \qlibraname{} Impact Notion}[\qlibraname]
@@ -757,7 +762,7 @@ $
 $, where $\polyabstractdomain$ represents the \textit{convex polyhedra abstract domain}~\sidecite{Cousot1978} and $\disjunctivepolyabstractdomaintype$ is the set of all finite subset of $\polyabstractdomain$.
 From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ computes the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973}.
 Specifically, $\abstractdomainproject$ takes as input a set of variables $\definputvariables$ and a polyhedron in $d$-dimensions where $d \ge \cardinalitynospaces{\definputvariables}$, returning a polyhedron in $(d-\cardinalitynospaces{\definputvariables})$-dimensions, removing the variable $\definputvariables$.
-Importantly, this domain is exact for the property of interest, as it allows us to represent multiple distinct continuous regions, and for feed-forward \relu-activated neural networks.
+Importantly, this domain is exact for the property of interest, as it allows us to represent multiple distinct continuous regions, when applied to feed-forward \relu-activated neural networks.
 
 The function $\abstractchanges$ takes as input the variables of interest $\definputvariables$, $\numberofbuckets$ output buckets $\buckets\in\vectorbuckets$, and $\numberofbuckets$ disjunctions of polyhedra $\prefrombucket\in\disjunctivepolyabstractdomaintype^\numberofbuckets$ obtained from the backward analysis.
 For clarity, we access each polyhedron and disjunctions of polyhedra via indexing as in a matrix-based structure, that is, $\prefrombucket=\{\{P_{1,1}\vee \dots\vee P_{1,p}\},\dots,\{P_{n,1}\vee \dots\vee P_{n,q}\}\}$ where $p = \cardinalitynospaces{\prefrombucket[1]}$ and $q = \cardinalitynospaces{\prefrombucket[n]}$. For instance, $\prefrombucket[j]$ refers to the disjunction of polyhedra $\{P_{j,1}\vee \dots\vee P_{j,k}\vee \dots\}$, for $j\le n$, and $\prefrombucket[{j, k}]$ refers to the polyhedron $P_{j,k}\in\polyabstractdomain$.
@@ -916,6 +921,7 @@ In the next section, we introduce the \qlibraname{} impact notion, which--in a s
 In this section, we present $\abstractqlibra$ as a sound implementation of $\qlibra$, computing an over-approximation of the volume of input space that may contain bias. Conversely, $\abstractqlibra$ computes an under-approximation of the fair input space.
 As introduced at the beginning of this chapter, this analysis is too na\"ive to be practical, it is still useful for building upon later in the next section.
 
+\marginnote{\denis{No. Give the definition of $\abstractqlibra$ as done in the previous sections.}}
 Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code algorithm: \reffig{abstract-qlibra}.
 The algorithm takes as input the neural-network model $\defmodel$, a set of input variables of interest $\definputvariables$ (the sensitive features), the $\numberofbuckets$ output buckets $\buckets$, and an abstract domain $\abstractdomain$.
 The output buckets $\buckets$ represent all the possible classification targets of the neural network.
@@ -933,7 +939,7 @@ The quantity measured by $\abstractqlibra$, algorithm in \reffig{abstract-qlibra
   \begin{enumerate}[label=(\roman*)]
     \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
     \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{nioa3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
+    \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \reflemma{sound-over-approximation}, and
     \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
   then, $\abstractqlibra$ is a sound implementation of $\qlibra$.
@@ -1045,8 +1051,12 @@ It remains to show soundness and completeness for the parallel semantics when ap
 \begin{theorem}
   \begin{math}
     \defprogram \satisfies \boundedqlibra \IfF
-    \parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))
+    \sum_{j} \defbound_j \ge \defbound
   \end{math}
+  such that:
+  \begin{align*}
+    \parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\resize{\mathscr{B}}{\qlibra}[\ge\defbound_j])))
+  \end{align*}
 \end{theorem}
 \begin{proof}
   \denis{todo}
@@ -1060,6 +1070,7 @@ In this section, we build upon the parallel semantics to design an abstract impl
 This static analysis automatically find a fair partition of the input space, then computes the volume of the fair input space.
 The abstract implementation $\parallelqlibra$ is defined as the sum of the volumes of the fair partitions.
 
+\marginnote{\denis{Add the algorithm as definition of $\parallelqlibra$ as margin figure.}}
 The algorithm is presented in \reffig{abstract-qlibra-parallel}, it combines a forward with a backward analysis.
 The forward analysis uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
 Then, we perform the quantification of the biased space.
@@ -1077,6 +1088,8 @@ Otherwise, the partition $\definputpartition$ needs to be further refined, with 
 Partitioning may continue until the volume of the partition is below a certain threshold $\lowerbound$.
 Finally, whenever the partition is smaller than $\lowerbound$, we exclude it from the set of partitions to be analyzed until more resources become available.
 Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
+
+The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic}. By default, whenever an input partition exceeds the current configuration, the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.).
 
 Then, the analysis proceeds backwardly, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$.
 By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status.
