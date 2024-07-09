@@ -1,14 +1,55 @@
 \chapter{Introduction}
 \labch{introduction}
 
-\section{Principles of Software Verification}
-\labsec{software-verification}
+In recent years, software has become increasingly widespread in all kinds of systems.
+Nowadays, software rules safety-critical systems such as nuclear power plants, car engines, airplane control systems, and medical devices.
+Furthermore, regulations and standard authorities require that software in these systems is validated and do not reveal sensitive information.
+As software complexity grows, the likelihood that software contains bugs increases.
+The consequences of software failures become more severe, resulting in significant financial losses and endangering human lives.
+Notable examples include the Therac-25 radiation therapy\sidecite{Leveson1993} machine where at least six patients received massive overdoses of radiation due to race conditions; the Ariane 5 rocket failure\sidenote{\url{https://esamultimedia.esa.int/docs/esa-x-1819eng.pdf}} in 1996 caused by an integer overflow bug resulting in a loss of \$370 million; and the Toyota unintended acceleration\sidenote{\url{https://www.embeddedrelated.com/showarticle/1574.php}} case where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion; and the roundoff error in the Patriot missile system\sidenote{\url{https://www.ima.umn.edu/~arnold/disasters/patriot.html}} that caused the death of 28 people during the Gulf War.
 
-\section{Verification of Program Properties}
-\labsec{program-properties}
+Nowadays, machine learning software has an ever increasing societal impact by assisting or even automating decision making in fields such as social welfare, criminal justice, and even health care.
+At the same time, a number of recent cases have shown that such software may reproduce, or even reinforce, bias directly or indirectly present in the training data \cite{BuolamwiniGebru2018,KayMatuszek2015,COMPAS,ObermeyerPowers2019}.
+In April 2021, the European Commission proposed a first legal framework on machine learning software -- the Artificial Intelligence Act~\cite{ArtIntAct}
+--- which imposes strict requirements to minimize the risk of discriminatory outcomes.
+
+Recent advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications. Agents like OpenAI's ChatGPT and Google's Gemini are gaining widespread use. Specifically designed for coding, GitHub Copilot assists programmers within IDEs and has over a million subscribers. Despite their benefits, AI-generated code can introduce as many bugs as human-written code, making it crucial to use techniques that detect software errors or certifyt intended behaviors.
+
+\section{Software Quality}
+
+Software quality is a measure of how well software meets its requirements.
+The most common method to ensure software quality is \emph{testing}.
+The correct behavior of software is tested for finite number of inputs against a set of assertions that specify the functional requirements of the code.
+Achieving high software quality through testing is challenging as the test suite has to be manually written by developers and maintained as the software evolves.
+However, testing is not sufficient to guarantee the absence of bugs in software\sidenote{``program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- Edsger W. Dijkstra \cite{Dijkstra1976}}.
+While in some cases it is acceptable to deploy software with bugs (and rely on patches to fix them), in the case of safety-critical systems, it is necessary to ensure that the software is free of bugs before deployment to avoid catastrophic consequences.
+
+On the other hand, \emph{formal methods} provide rigorous mathematical guarantees about the correctness of software.
+By trusting a precise formalization of the software and its requirements, formal methods reason about the semantics of program properties and verify that the software satisfies these properties.
+The idea of formally verifying software is not new, and it has been around since the late 1960s with program proofs and invariants from \sidetextcite{Floyd1967} and \sidetextcite{Hoare1969}.
+Even before, formal methods may be traced back to the work of \sidetextcite{Church1936} and \sidetextcite{Turing1936} on the foundations of computation.
+However, Rice's undecidability theorem \sidecite{Rice1993} states that all non-trivial properties\sidenote{
+  A property is non-trivial if it is not true for all programs or false for all programs.
+} are undecidable, which means that there is no terminating algorithm that can decide whether a program satisfies a non-trivial property.
+Therefore, as a consequence of Rice's theorem, formal methods either sacrifice \emph{completeness}, \emph{soundness}, or \emph{automation}.
+Current formal methods can be classified into three categories\sidecite{Cousot2010}: \emph{deductive methods}, \emph{model checking}, and \emph{Static Analysis}.
+
+Formal deductive methods produce proofs of correctness employing proof assistants such as Coq, Isabelle, and HOL Light, or theorem provers like Z3 and CVC4.
+Ultimately, user interaction is required to guide the proof search. Deductive methods are complete and sound, but they are not fully automated.
+
+Formal methods based on model checking explore completely and automatically the state space of a program's model to verify whether undesirable states are reachable.
+\sidetextcite{Clarke2004} apply model checking to prove the correctness of ANSI-C programs.
+However, model checking-based methods are limited by the state explosion problem: since the number of feasible execution paths grows exponentially with the size of the model, this category of formal methods trade soundness for completeness and automation.
+
+\denis{static analysis}
+
+\denis{abstract interpretation}
+
+\section{Quantitative Properties}
+
+\section{Input Data Usage}
 
 \section{Contributions and Outline}
-\labsec{contributions-and-outline}
 
 
 \begin{definition}[Validation]
