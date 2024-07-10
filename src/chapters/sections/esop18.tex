@@ -12,13 +12,15 @@ Later in the next chapters, we will define a quantitative measure of usage of in
 \section{Input Data Usage}
 \labsec{input-data-usage}
 
-\marginnote[*2]{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$.}
-Originally introduced by \textcite{Urban2018}, the notion of input data usage is a predicate to determine whether the input variables $\definputvariables\in\setof\inputvariables$ are used in the computation of the program's output. It consists in a predicate
+\marginnote{
+  The set $\inputvariables$ contains all the input variables of the program $\defprogram$, \cf{} \refsec{syntax}.
+}
+\marginnote[*2]{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
+Originally introduced by \textcite{Urban2018}, the notion of input data usage consists in the predicate $\unusedwrapper$ to determine whether the input variables $\definputvariables\in\setof\inputvariables$ are used in the computation of the program's output. The predicate
 \[
   \unusedwrapper \in \tracetype \to \B
 \]
-that holds whenever all the input variables in $\definputvariables$ are not used by the program under evaluation.
-
+holds whenever all the input variables in $\definputvariables$ are not used by the program under evaluation.
 
 \marginnote{
   Let $\deftrace\in\finiteinfinitesequences$ be a trace, $\retrieveinput{\deftrace}\in\state$ refers to the initial state and $\retrieveoutput{\deftrace}\in\stateandbottom$ to the final one if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
@@ -27,10 +29,10 @@ that holds whenever all the input variables in $\definputvariables$ are not used
   Given a set of variables $\definputvariables\in\setof\inputvariables$, the notation $\retrieveinput{\deftrace}(\definputvariables)\in\valuesofvariables$ refers to the initial values of the variables in $\definputvariables$ in the trace $\deftrace$, where $\valuesofvariables$ is the vector of values for $\cardinalitynospaces{\definputvariables}$ variables.
 }
 \marginnote{
-  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie{} $\forall \defvariable\in\inputvariableswithoutw.\spacer \defstate(\defvariable) = \defstate'(\defvariable)$.
+  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie, $\forall \defvariable\in\inputvariableswithoutw.\spacer \defstate(\defvariable) = \defstate'(\defvariable)$.
 }
 \begin{definition}[Unused]\labdef{unused-predicate}
-  Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if the following predicate holds:
+  Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if and only if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusedwrapper(\tracesemantics) \DefifF} \\
     & &\forall
@@ -55,58 +57,61 @@ That is, for all possible initial values $\defvalue$ that differ from the initia
 Let us consider the example program presented in \textcite{Urban2018}, \cf{} \refprog{school-year}.
 Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}.
 The program should determine whether a student has passed the year or not, and store the result in the variable \texttt{passing}. Additionally, the student is allowed a bonus to help with math and science.
-However, there are two mistakes in the program: the first conditional statement should be \texttt{passing = False} (\cf{} \refline{err1}), and the third condition should be \texttt{not science} instead of \texttt{not math} (\cf{} \refline{err2}).
+However, there are two mistakes in the program: the statement inside the first conditional should be \texttt{passing = False} (\cf{} \refline{err1}), and the third condition should be \texttt{not science} instead of \texttt{not math} (\cf{} \refline{err2}).
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused by \refprog{school-year}.
 Let us consider the input variable \texttt{science}.
-The trace semantics of the program simplified to consider only the variables \texttt{science} and \texttt{passing} is:
-\marginnote[*2]{
-  The notation \[\tuple{\defvalue_1}{\defvalue_2}\rightarrow\tuple{\defvalue'_1}{\defvalue'_2}\]
-  denotes a trace that starts with the initial state $\tuple{\defvalue_1}{\defvalue_2}$, referring to the initial values of the variables \texttt{science} and \texttt{passing} respectively, and ends with the final state $\tuple{\defvalue'_1}{\defvalue'_2}$. For brevity, we omit the intermediate states of the trace.
+The trace semantics of the program simplified to consider only the variables \texttt{science} and \texttt{passing} and omitting intermediate state computations is:
+\marginnote[*3]{
+  The notation \[
+  \tracetuple{\locinit}{\tuple{\defvalue_1}{\defvalue_2}}\tracearrow\tracetuple{\locend}{\tuple{\defvalue'_1}{\defvalue'_2}}
+  \]
+  denotes a trace that starts with the state $\tuple{\defvalue_1}{\defvalue_2}$ at the initial location $\locinit$, referring to the initial values of the variables \texttt{science} and \texttt{passing} respectively, and ends with the final state $\tuple{\defvalue'_1}{\defvalue'_2}$ at the last program location $\locend$. For brevity, we omit the intermediate states of the trace.
 }
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-  =
-  \left\{
+  &{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+  =}\\
+  &\quad\left\{
     \begin{array}{l}
-      \tuple\true\anyvalue\rightarrow\tuple\true\true, \\
-      \tuple\true\anyvalue\rightarrow\tuple\true\false, \\
-      \tuple\false\anyvalue\rightarrow\tuple\false\true, \\
-      \tuple\false\anyvalue\rightarrow\tuple\false\false
+      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\true}}, \\
+      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\false}}, \\
+      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\true}}, \\
+      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\false}}
     \end{array}
   \right\}
 \end{align*}
-where the symbol $\anyvalue$ denotes any boolean value.
+where the symbol $\anyvalue$ denotes any boolean value, the location $\locinit$ is the initial location (\refline{initial}), and $\loc{10}$ is the last location (\refline{last}).
 The input variable \texttt{science} is unused, since each result value for \texttt{passing} is feasible from all possible initial values of \texttt{science}.
 
 Instead, if we consider the variable \texttt{math}, the simplified trace semantics considering only the variables \texttt{math} and \texttt{passing} is:
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
-  =
-  \left\{
+  &{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}
+  =}\\
+  &\quad\left\{
     \begin{array}{l}
-    \tuple\true\anyvalue\rightarrow\tuple\true\true, \\
-    \tuple\false\anyvalue\rightarrow\tuple\false\true, \\
-    \tuple\false\anyvalue\rightarrow\tuple\false\false
+    \tracetuple{\locinit}{\tuple\true\anyvalue}\tracearrow\tracetuple{\loc{10}}{\tuple\true\true}, \\
+    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc{10}}{\tuple\false\true}, \\
+    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc{10}}{\tuple\false\false}
   \end{array}
   \right\}
 \end{align*}
 The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
 Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
 \end{example}
-\begin{marginlisting}[*-30]
+\begin{marginlisting}[*-35]
   \caption{Program to check if a student passed the school year.}
   \labprog{school-year}
   \vspace{2\lineheight}
 \begin{lstlisting}[language=Python,escapechar=|]
 is_passed(eng, math, science,
     bonus):
-  passing = True;
+  passing = True;|\labline{initial}|
   if not eng:
     eng = False;|\labline{err1}|
   if not math:
     passing = bonus;
   if not math:|\labline{err2}|
     passing = bonus;
+|\labline{last}|
 \end{lstlisting}
 \end{marginlisting}
 
@@ -118,18 +123,18 @@ is_passed(eng, math, science,
   \begin{lstlisting}[language=Python]
 x_plus_rand(x):
   return x + rand();
-\end{lstlisting}
+ \end{lstlisting}
   \end{marginlisting}
-With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie present in the code, but it could be semantically unused, \ie it does not affect the computation of the program; and vice versa.
+With this second example we highlight the difference between the syntactic and semantic meaning of using a variable. Indeed, a variable could be syntactically used in the program, \ie, present in the code, but it could be semantically unused, \ie, it does not affect the computation of the program.
 Consider \refprog{syntactic-vs-semantic-usage}, where the input variable \texttt{x} is a non-negative integer.
 The variable \texttt{x} is syntactically used by the program, as it is present in the return statement.
 However, the variable \texttt{x} is semantically unused if we consider machine integers wrapped up to $\texttt{max\_int}\in\N$.
 This difference can be clearly seen by studying the trace semantics of the program. In case of machine integers the trace semantics is:
 \begin{align*}
-  \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
-  =
-  \setdef{
-    \langle{x}\rangle\rightarrow\langle{x+r \mod \texttt{max\_int}}\rangle
+  &\tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
+  =\\
+  &\quad\setdef{
+    \tracetuple{\locinit}{\langle{x}}\rangle\tracearrow\tracetuple{\loc{3}}{\langle{x+r \mod \texttt{max\_int}}\rangle}
   }{x, r \in \N}
 \end{align*}
 where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
@@ -141,7 +146,7 @@ On the other hand, if we consider unbounded positive integers, the trace semanti
   \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =
   \setdef{
-    \langle{x}\rangle\rightarrow\langle{x+r}\rangle
+    \tracetuple{\locinit}{\langle{x}\rangle}\tracearrow\tracetuple{\loc{3x}}{\langle{x+r}\rangle}
   }{x, r \in \N}
 \end{align*}
 In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
@@ -269,17 +274,17 @@ For instance, if the outcome is 42, an initial value of 41 is feasible as it exi
 % \end{figure}
 \end{example}
 
-\nrefdef{unused-predicate} is significant as it determines whether a given input variable is used or not, even in the presence of non-deterministic programs%
-\sidenote[][*-8]{%
+\nrefdef{unused-predicate} determines whether a given input variable is used or not, even in the presence of non-deterministic programs%
+\sidenote[][*-7]{%
   In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.
   %
   This can be easily seen by considering the two traces:
-  \begin{eqnarray*}
-    \lefteqn{\tuple\true\true\rightarrow\tuple\true\true} \\
-       &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}} \\
-    \lefteqn{\tuple\true\true\rightarrow\tuple\true\false} \\
-       &\in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-  \end{eqnarray*}
+  \begin{gather*}
+    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc{10}}{\tuple\true\true} \\
+       \in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}} \\
+    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc{10}}{\tuple\true\false} \\
+       \in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+  \end{gather*}
   where both start from the same initial state $\tuple\true\true$ and have different outcomes.}.
 Furthermore, the next example shows that the unused predicate is termination aware.
 Indeed, termination is a possible outcome of a program, and thus a variable should be unused if it does not affect the termination as well as the result of the program.
@@ -293,27 +298,26 @@ Indeed, termination is a possible outcome of a program, and thus a variable shou
 non_termination(x):
   while x > 0:
     x = x + 1;
-\end{lstlisting}
+ \end{lstlisting}
   \end{marginlisting}
-  Consider the \refprog{non-termination} defined on the side. The program does not terminate for positive values of \texttt{x}. Instead, it terminates without modifying \texttt{x} on the value of $0$ or negative. The trace semantics is the following:
+  Consider the \refprog{non-termination} defined on the side. The program does not terminate for positive values of \texttt{x}. Instead, it terminates without modifying \texttt{x} if \texttt{x} is negative or equal to $0$. The trace semantics is the following:
   \begin{align*}
     \tracesemanticsnoparam\semanticsof{\texttt{non\_termination}}
     =
-    \{
-      \langle{<}\rangle\rightarrow\langle{<}\rangle,
-      \langle{0}\rangle\rightarrow\langle{0}\rangle,
-      \langle{>}\rangle\rightarrow\dots
-    \}
+    \left\{
+    \begin{array}{l}
+        \tracetuple{\locinit}{\langle{<}\rangle}\tracearrow\tracetuple{\loc{4}}{\langle{<}\rangle}, \\
+        \tracetuple{\locinit}{\langle{0}\rangle}\tracearrow\tracetuple{\loc{4}}{\langle{0}\rangle}, \\
+        \tracetuple{\locinit}{\langle{>}\rangle}\nonterminatingtracearrow\
+    \end{array}
+    \right\}
   \end{align*}
-  \marginnote{
-    The notation $\langle{>}\rangle\rightarrow\dots$ denotes an infinite trace starting from a positive value of \texttt{x}.
-  }
   where the symbol $<$ denotes a negative value and $>$ a positive one. When the program is provided a positive value for \texttt{x}, it does not terminate and the respective traces are all of infinite length.
 
   In this example we conclude that the variable \texttt{x} is used since the non-termination is feasible only from positive values of \texttt{x}.
 \end{example}
 
-Note that, the $\unusediowrapper$ predicate (\refdef{unused-predicate}) states that the set of variables $\definputvariables$ is unused in the given program.
+Note that, the $\unusedwrapper$ predicate (\refdef{unused-predicate}) states that the set of variables $\definputvariables$ is unused in the given program.
 Equivalently, the same could be achieved by checking whether each variable separately is unused in the program, we prefer the formalization using sets of variables as originally proposed in \sidetextcite{Urban2018,Urban2020}.
 
 \begin{lemma}\lablemma{single-vs-set-of-variables}
@@ -364,10 +368,11 @@ Equivalently, the same could be achieved by checking whether each variable separ
 \labsec{abstract-input-data-usage}
 
 Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, we introduce a generalized version of the unused predicate.
-That is, a weaker version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
+That is, a version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
 Later, we will define the quantitative measure of input data usage, and use the abstraction of output states to determine numerical values from output states.
 
 \marginnote[*-2]{
+  \denis{The difference in style is due to the fact that this is a definition (unique in the document), while the other one two pages below is the reference to this definition.}
 \begin{definition}[Abstract Non-Interference]\labdef{ani-predicate}
   The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
   \begin{gather*}
@@ -380,7 +385,7 @@ where $\aniselect$ and $\aniobserver$ are upper closure operators on program sta
 % We assume that the objective of the input abstraction $\aniselect$ is to monitor the interference of the input variable $\definputvariables$.
 }
 
-In the following, we define the abstraction of output states, called output observer, as a map from states to an abstract domain.
+We define the abstraction of output states, called output observer, as an upper closure operator over states.
 
 
 \begin{definition}[Output Observer]\labdef{output-observer}
@@ -392,7 +397,7 @@ We employ the output observer to define an abstract version of the unused predic
 
 
 \begin{definition}[Abstract Unused]\labdef{abstract-unused}
-  Given a program $\defprogram$, an output observer $\aniobserver\in \state \to \state$, and the input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are (abstractly) \emph{unused} if the following predicate holds:
+  Given a program $\defprogram$, an output observer $\aniobserver\in \stateandbottom \to \stateandbottom$, and the input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are (abstractly) \emph{unused} if and only if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusediowrapper(\tracesemantics) \DefifF} \\
     & &\forall
@@ -410,12 +415,12 @@ We employ the output observer to define an abstract version of the unused predic
   \end{eqnarray*}
 \end{definition}
 
-This abstract unused predicate allows for further abstractions of the output states, which permits a more general definition of the unused property.
+This abstract unused predicate allows for further abstractions of the output states, which is weaker than the original definition of the unused property.
 For instance, the output observer could identify which variable is to consider as the outcome of the program and abstract away the other variables. Another use case could be to abstract the output states into the parity of their variables, or even into the sign. In such case, a variable could be used with respect to \nrefdef{unused-predicate} but unused with respect to \nrefdef{abstract-unused}.
 
 \begin{example}
   \begin{marginlisting}
-    \caption{The variable \texttt{x} is used but not abstractly.}
+    \caption{The variable \texttt{x} is used but not abstractly used.}
     \labprog{parity}
     \vspace{2\lineheight}
   \begin{lstlisting}
@@ -423,7 +428,7 @@ parity(x):
   return 2 * x;
 \end{lstlisting}
   \end{marginlisting}
-  The \refprog{parity} doubles the values of the input variable \texttt{x}. If we consider \nrefdef{unused-predicate}, the variable \texttt{x} is used as for any output value we consider, \eg{} the output 4 from an input value of $\texttt{x}=2$, it does not exist a trace that starts with $x\neq 2$ and terminates with output 4. Instead, by considering the parity of the output value, the \refprog{parity} does not use the variable \texttt{x} as the only possible outcome is ``even''.
+  The \refprog{parity} doubles the values of the input variable \texttt{x}. If we consider \nrefdef{unused-predicate}, the variable \texttt{x} is used as for any output value we consider, \eg, the output 4 from an input value of $\texttt{x}=2$, it does not exist a trace that starts with $x\neq 2$ and terminates with output 4. Instead, by considering the parity of the output value, the \refprog{parity} does not use the variable \texttt{x} as the only possible outcome is ``even''.
 \end{example}
 
 \nrefdef{abstract-unused} can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
@@ -431,7 +436,7 @@ As a drawback, we lose the input abstraction: the tread-off allows non-determini
 The reason is that to take into account non-determinism, for any value of the input variables $\definputvariables$, we need to consider all possible traces that start from a different initial value.
 Such low-level detail cannot be captured by the input abstraction employed in the definition of abstract non-interference.
 
-The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function\sidenote{The identity function returns its parameter without any modification, \ie{} $\identity(x) = x$.}.
+The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function\sidenote{The identity function returns its parameter without any modification, \ie, $\identity(x) = x$.}.
 \begin{proposition}[Unused Equivalence]\labprop{unused-predicate-equivalence}
   \marginnote{
     Note that, $\unusedwrapper$ is the unused predicate, \cf{} \nrefdef{unused-predicate}, and $\unusediowrapper$ is the abstract unused predicate, \cf{} \nrefdef{abstract-unused}.
@@ -446,11 +451,11 @@ The next result shows that the abstract unused predicate is equivalent to the or
   Indeed, the output observer $\aniobserver = \identity$ does not abstract the output states, and thus the two predicates are equivalent.
 \end{proof}
 
-Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction allows only the values of the variables in $\definputvariables$, returning $\top$ otherwise.
+Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction forgets the values of the variables in $\definputvariables$, returning $\top$ otherwise.
 
 \begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
   \siderefbox{def}{ani-predicate}
-  If $\defprogram$ deterministic and the input abstraction is defined as:
+  If $\defprogram$ is deterministic and the input abstraction is defined as:
   \begin{align*}
     \aniselecti(\defstate) \spacearound= \lambda \texttt{j}. \spacer
     \begin{cases}
@@ -460,30 +465,54 @@ Next we show that abstract non-interference matches the abstract unused predicat
   \end{align*}
   then, it holds that:
   \begin{align*}
-    \aniwrapperi(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
+    \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{align*}
 \end{proposition}
 \begin{proof}
-  % By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
-  To show ($\implies$), we assume $\aniwrapperi$.
+  % By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie, $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  To show ($\implies$), we assume $\aniwrapper$.
   Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariables$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$.
-  To prove $\unusediowrapper$, we assume that for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$ it holds that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$. We need to show that it exists a trace $\deftrace'\in\tracesemantics$ such that: (i) $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, (ii) $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and (iii) $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
-  The set $\valuesofvariables$ contains the values of any variable.
-  Hence, it has to exist a trace $\deftrace^\star\in\tracesemantics$ such that $\retrieveinput{\deftrace^\star}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, proving (i) and (ii).
-  Then, we have that the output abstraction match (iii) from $\aniwrapperi$ applied to (ii). Thus, concluding ($\implies$).
-  Note that, to show ($\implies$) we do not need the assumption that $\defprogram$ is deterministic.
+  To prove $\unusediowrapper$,
+  let $\deftrace\in\tracesemantics$ be any trace and $\defvalue\in\valuesofvariables$ be any value.
+  We assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, otherwise the implication is vacuously true.
+  We need to show that there exists a trace $\deftrace'\in\tracesemantics$ such that: $(i)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(ii)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $(iii)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  The proof proceeds by absurd: we assume that for all traces $\deftrace'$ it holds that $\neg(i) \lor \neg(ii) \lor \neg(iii)$.
+  By definition of the logical implication\sidenote{$\neg A \lor B \equiv A \implies B$.}, we have that $\neg(\neg(i) \lor \neg(ii)) \implies \neg(iii)$, thus $(i) \land (ii) \implies \neg(iii)$.
+  Hence, for all traces $\deftrace'\in\tracesemantics$ we assume $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, respectively $(i)$ and $(ii)$.
+  As a consequence, to conclude ($\implies$) we need to show an absurd based on the hypothesis that the output abstraction does not match, \ie, $\aniobserver(\retrieveoutput\deftrace) \neq \aniobserver(\retrieveoutput{\deftrace'})$.
+  Clearly, from $\aniwrapper$ applied to $(ii)$ we have that the outputs match, contradicting the hypothesis. Thus, $\unusediowrapper$ holds\sidenote{
+  Note that, to show ($\implies$) we do not need the assumption that $\defprogram$ is deterministic.}.
 
   To show ($\Leftarrow$), we assume $\unusediowrapper$.
-  Thus, for any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, it holds that whenever $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
-  To prove $\aniwrapperi$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$. We need to show that the output abstraction of the two traces match, \ie{} $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
-  In such case, we also take into consideration that $\defprogram$ is deterministic.
-  Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
-  Let us fix the trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, either we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$ \ref{ani-predicate-equivalence-0} or $\retrieveinput{\deftrace}(\definputvariables) = \defvalue$ \ref{ani-predicate-equivalence-1} holds.
-  \begin{enumerate}[label=(\roman*)]
-    \item \label{ani-predicate-equivalence-0} In case we assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then by $\unusediowrapper$ it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold. By assumption of $\aniwrapperi$, for all two traces $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ holds, hence we need to show that any trace $\deftrace'\in\tracesemantics$ share the same output abstraction as $\deftrace$. It is easy to see that if $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ by $\unusediowrapper$ then they also share the same output abstraction.
-    \item \label{ani-predicate-equivalence-1} On the other hand, we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, hence $\unusediowrapper$ cannot prove our conclusion when applied to $\deftrace$ and $\defvalue$. However, either it exists a value $\defvalue'\in\valuesofvariables$ such that $\defvalue \neq \defvalue'$ or $\valuesofvariables=\{\defvalue\}$. In the latter, $\aniwrapperi$ holds from the fact that any variable only input value is $\defvalue$ and the program $\defprogram$ is deterministic, thus $\tracesemantics$ contains only a single trace. Otherwise, we apply $\unusediowrapper$ to $\deftrace$ and the value $\defvalue'$.
-    From here, it follows the same conclusion of the previous point \ref{ani-predicate-equivalence-0}
+  For any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, it holds that whenever $(a)$ $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $(b)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(c)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $(d)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
+  To prove $\aniwrapper$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, otherwise $\aniwrapper$ vacuously holds. We need to show that the output abstraction of the two traces match, \ie, $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  Let $\defvalue\in\valuesofvariables$ be any value.
+  \begin{enumerate}
+    \item If $\retrieveinput{\deftrace}(\definputvariables) = \retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, then by determinism of $\defprogram$ it follows that $(d)$, \cf{} $\retrieveoutput\deftrace = \retrieveoutput{\deftrace'}$, must hold.
+    \item If $\retrieveinput{\deftrace}(\definputvariables) \neq \retrieveinput{\deftrace'}(\definputvariables)$, we let $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$ and $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ without loss of generality, respectively proving $(a)$ and $(c)$. $(b)$ holds by hypothesis. Hence, from $\unusediowrapper$ it follows that $(d)$ must hold:
+    \begin{align*}
+      &\forall \deftrace\in\tracesemantics, \defvalue\in\valuesofvariables.\spacer \\
+      &\quad (a) \implies \exists \deftrace'\in\tracesemantics.\spacer (b) \land (c) \land (d) && \iff \\
+      &\quad \neg(a) \lor (\exists \deftrace'\in\tracesemantics.\spacer (b) \land (c) \land (d)) && \iff \\
+      &\quad (\exists \deftrace'\in\tracesemantics.\spacer (b) \land (c) \land (d)) \lor \neg(a) && \iff \\
+      &\quad  \neg(\exists \deftrace'\in\tracesemantics.\spacer (b) \land (c) \land (d)) \implies \neg(a) && \iff \\
+      &\quad  (\forall \deftrace'\in\tracesemantics.\spacer \neg(b) \lor \neg(c) \lor \neg(d)) \implies \neg(a) && \iff \\
+      &\quad  (\forall \deftrace'\in\tracesemantics.\spacer \neg(\neg(b) \lor \neg(c)) \implies \neg(d)) \implies \neg(a) && \iff \\
+      &\quad  (\forall \deftrace'\in\tracesemantics.\spacer (b) \land (c) \implies \neg(d)) \implies \neg(a)
+    \end{align*}
+    Thus, everything resolves around whether $(d)$ holds or not.
+    If $(d)$ does not hold, then $\neg(a)$ holds, but this contradicts the hypothesis that $(a)$ holds, hence $(d)$ must hold and so $\aniwrapper$.
+    Otherwise, if $(d)$ holds, then $\aniwrapper$ holds.
+    Concluding ($\Leftarrow$).
   \end{enumerate}
+  % In such case, we also take into consideration that $\defprogram$ is deterministic.
+  % Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie, $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
+  % Let us fix the trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, either we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$ \ref{ani-predicate-equivalence-0} or $\retrieveinput{\deftrace}(\definputvariables) = \defvalue$ \ref{ani-predicate-equivalence-1} holds.
+  % \begin{enumerate}[label=(\roman*)]
+  %   \item \label{ani-predicate-equivalence-0} In case we assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then by $\unusediowrapper$ it exists a trace $\deftrace'\in\tracesemantics$ such that $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold. By assumption of $\aniwrapper$, for all two traces $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$ holds, hence we need to show that any trace $\deftrace'\in\tracesemantics$ share the same output abstraction as $\deftrace$. It is easy to see that if $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ by $\unusediowrapper$ then they also share the same output abstraction.
+  %   \item \label{ani-predicate-equivalence-1} On the other hand, we assume that $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, hence $\unusediowrapper$ cannot prove our conclusion when applied to $\deftrace$ and $\defvalue$. However, either it exists a value $\defvalue'\in\valuesofvariables$ such that $\defvalue \neq \defvalue'$ or $\valuesofvariables=\{\defvalue\}$. In the latter, $\aniwrapper$ holds from the fact that any variable only input value is $\defvalue$ and the program $\defprogram$ is deterministic, thus $\tracesemantics$ contains only a single trace. Otherwise, we apply $\unusediowrapper$ to $\deftrace$ and the value $\defvalue'$.
+  %   From here, it follows the same conclusion of the previous point \ref{ani-predicate-equivalence-0}
+  % \end{enumerate}
 \end{proof}
 
 \begin{example}
@@ -496,10 +525,10 @@ In fact, assuming:
     = } \\
     & \left\{
       \begin{array}{l}
-        \tuple\true\anyvalue\rightarrow\tuple\true\true, \\
-        \tuple\true\anyvalue\rightarrow\tuple\true\false, \\
-        \tuple\false\anyvalue\rightarrow\tuple\false\true, \\
-        \tuple\false\anyvalue\rightarrow\tuple\false\false
+        \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
+        \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
+        \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
+        \tuple\false\anyvalue\tracearrow\tuple\false\false
       \end{array}
     \right\}
   \end{eqnarray*}
@@ -515,16 +544,16 @@ In fact, assuming:
 the predicate of  abstract non-interference does not hold for the variable \texttt{science}.
 This can be shown by the two traces
 \begin{align*}
-  \tuple\true\true&\rightarrow\tuple\false\true
+  \tuple\true\true&\tracearrow\tuple\false\true
   \\
-  \tuple\true\true&\rightarrow\tuple\false\false
+  \tuple\true\true&\tracearrow\tuple\false\false
 \end{align*}
 where the output states are different, but the input states are the same.
 Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
 \end{example}
 
 We show that whenever some variables are not used, they are also abstractly unused.
-In other words, the abstract unused predicate weakens the unused predicate.
+In other words, the unused predicate is stronger than its abstract counterpart.
 \begin{lemma}[Unused Implies Abstract Unused]\lablemma{unused-implies-abstract-unused}
   \marginnote{
     Note that, $\unusedwrapper$ is the unused predicate, \cf{} \nrefdef{unused-predicate}, and $\unusediowrapper$ is the abstract unused predicate, \cf{} \nrefdef{abstract-unused}.
@@ -532,7 +561,7 @@ In other words, the abstract unused predicate weakens the unused predicate.
   \[\unusedwrapper(\tracesemantics) \ImplieS \unusediowrapper(\tracesemantics)\]
 \end{lemma}
 \begin{proof}
-  The proof easily follows from the fact that $\aniobserver$ is an upper closure operator, \refdef*{upper-closure-operator}[*-2]. Hence, it is relaxed the existential condition of the trace $\deftrace'$ on the output states, \ie{} more traces are now able to satisfy $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  The proof easily follows from the fact that $\aniobserver$ is an upper closure operator, \refdef*{upper-closure-operator}[*-2]. Hence, it relaxes the existential condition of the trace $\deftrace'$ on the output states, \ie, more traces are now able to satisfy $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
 \end{proof}
 
 % The next result instead shows that whenever a set of variables is unused, it means that it exists a trace $\deftrace'$ starting
@@ -570,27 +599,33 @@ Whenever a program does not use the input variables $\definputvariables$, the tr
   \end{align*}
 \end{definition}
 
-Specifically, the unused property $\unused$ includes all the programs (or rather, their semantics) that do not use any of the variables in $\definputvariables$.
+Specifically, the unused property $\unused$ is the set of all the programs (or rather, their semantics) that do not use any of the variables in $\definputvariables$.
 %
-The next result shows that the unused property is a sound and complete verification for a program to not use the set of variables $\definputvariables$.
+%
+Thus a program $\defprogram$ satisfies the unused property if and only if $\defprogram$ does not use the set of input variables $\definputvariables$, formally:
+\begin{align*}
+  \defprogram \satisfies \unused \IfF \tracesemantics \subseteq \unused
+\end{align*}
 
-\begin{theorem}\labthm{unused-validation}
-  \begin{math}
-    \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
-  \end{math}
-\end{theorem}
-\begin{proof}
-  The proof follows trivially from \refdef*{validation}[*-2] and the definition of the unused property $\unused$, \refdef{unused}.
-\end{proof}
+% The next result shows that the unused property is a sound and complete for a program to not use the set of variables $\definputvariables$.
 
-Note that, the unused property is extensional, \ie{} it does not depend on the intermediate states of the traces.
+% \begin{theorem}\labthm{unused-validation}
+%   \begin{math}
+%     \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
+%   \end{math}
+% \end{theorem}
+% \begin{proof}
+%   The proof follows trivially from \refdef*{validation}[*-2] and the definition of the unused property $\unused$, \refdef{unused}.
+% \end{proof}
+
+Note that, the unused property is extensional, \ie, it does not depend on the intermediate states of the traces.
 Indeed, given a set of traces generated by the trace semantics of a program $\defprogram$, the abstract unused predicate $\unusediowrapper$ only considers the input and output states of the given set of traces.
 
 \section{Dependency Semantics}
 \labsec{dependency-semantics}
 
-From the fact that the unused property $\unused$ is an extensional property, we abstract away the intermediate states of traces without losing the information about the input-output dependencies.
-Specifically, we abstract the collecting semantics $\collectingsemanticsnoparam\in\collectingtype$ (\refdef*{collecting-semantics}[*-2]) into a set of dependencies between output states of finite traces and between initial and $\statebottom$ for infinite traces.
+Since the unused property $\unused$ is an extensional property, we can abstract away the intermediate states of traces without losing the information about the input-output dependencies.
+Specifically, we abstract the collecting semantics $\collectingsemanticsnoparam\in\collectingtype$ (\refdef*{collecting-semantics}[*-2]) into a set of dependencies between initial and output states of finite traces and between initial and $\statebottom$ for infinite traces.
 Formally, the pair of right-left adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ is defined as follows:
 \marginnote[*2]{
   The notion $\retrieveinput{\deftrace}\in\state$ refers to the initial state of a trace $\deftrace$ and $\retrieveoutput{\deftrace}\in\stateandbottom$, where $\stateandbottom \defeq \state \setjoin \{\statebottom\}$ to the final one if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
@@ -616,14 +651,20 @@ The concretization $\dependencyconcretization$ yields all the semantics that sha
 
 
 \begin{theorem}\labthm{collecting-dependency-galois-connection}
-The two adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ form a \emph{Galois injection}:
+The two adjoints $\tuple{\dependencyabstraction}{\dependencyconcretization}$ form a \emph{Galois insertion}:
 \begin{align*}
   \galoisinjbetweensemantics{collecting}{dependency}
 \end{align*}
 \end{theorem}
 \begin{proof}
-  Given a set of semantics $\defsetofsetoftraces\in\setofsetof\finiteinfinitesequences$ and a set of sets of input-output observations $\defsetofsetofdependencies\in\setofsetof\pairofstates$ implied by the abstraction of $\defsetofsetoftraces$, $\dependencyabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies$, we obtain that $\defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$ since the concretization $\dependencyconcretization$ builds all the possible semantics with the same set of input-output observations of at least one of the starting semantics.
-  Moreover, it is easy to note that $\dependencyabstraction(\dependencyconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$ since the concretization maintains the same input-output observations and the abstraction removes only intermediate states.
+  % Given a set of semantics $\defsetofsetoftraces\in\setofsetof\finiteinfinitesequences$ and a set of sets of input-output observations $\defsetofsetofdependencies\in\setofsetof\pairofstates$ implied by the abstraction of $\defsetofsetoftraces$, $\dependencyabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies$, we obtain that $\defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$ since the concretization $\dependencyconcretization$ builds all the possible semantics with the same set of input-output observations of at least one of the starting semantics.
+  % Moreover, it is easy to note that $\dependencyabstraction(\dependencyconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$ since the concretization maintains the same input-output observations and the abstraction removes only intermediate states.
+  We need to show that $\dependencyabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies \iff \defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$.
+  First, we show the direction $(\implies)$.
+  Assuming $\dependencyabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies$, we have that $\dependencyconcretization(\defsetofsetofdependencies)$ contains all the possible semantics that share the same set of input-output observations of at least one of the semantics in $\defsetofsetofdependencies$. Thus, $\dependencyconcretization(\defsetofsetofdependencies)$ also contains all the semantics in $\defsetofsetoftraces$, \ie, $\defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$.
+  To show $(\Leftarrow)$, we assume $\defsetofsetoftraces\subseteq\dependencyconcretization(\defsetofsetofdependencies)$.
+  It is easy to note that $\dependencyabstraction(\dependencyconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$ since the concretization maintains the same input-output observations and the abstraction removes only intermediate states.
+  Hence, by monotonicity of $\dependencyabstraction$, we obtain $\dependencyabstraction(\defsetofsetoftraces)\subseteq \dependencyabstraction(\dependencyconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$.
 \end{proof}
 
 We now derive the \emph{dependency semantics} $\dependencysemantics$ as an abstraction of the collecting semantics.
@@ -638,7 +679,7 @@ We now derive the \emph{dependency semantics} $\dependencysemantics$ as an abstr
   \end{align*}
 \end{definition}
 
-The next result shows that the dependency semantics $\dependencysemantics$ allows a sound and complete verification that an input variable $\definputvariables$ is unused by the program $\defprogram$, \refdef*{unused}.
+The next result shows that the dependency semantics $\dependencysemantics$ allows a sound and complete verification that a set of input variables $\definputvariables$ is unused by the program $\defprogram$, \refdef*{unused}.
 
 \begin{theorem}\labthm{dependency-validation}
   \begin{math}
@@ -727,10 +768,10 @@ Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputcon
 \end{align*}
 \end{definition}
 The function $\outputabstraction$ abstracts the output states of the dependencies and $\outputconcretization$ concretizes the set of dependencies that share the same set of output observations.
-Note that, the abstraction function $\outputabstraction$ is well-defined as it preserves set joins, \ie{} $\forall \defsetofdependencies, \defsetofdependencies' \in\outputtype.\spacer \outputabstraction(\defsetofdependencies \setjoin \defsetofdependencies') = \outputabstraction(\defsetofdependencies) \setjoin \outputabstraction(\defsetofdependencies')$ as $\outputabstraction$ preserves the set structure of its parameters.
+Note that, the abstraction function $\outputabstraction$ is well-defined as it preserves set joins, \ie, $\forall \defsetofdependencies, \defsetofdependencies' \in\outputtype.\spacer \outputabstraction(\defsetofdependencies \setjoin \defsetofdependencies') = \outputabstraction(\defsetofdependencies) \setjoin \outputabstraction(\defsetofdependencies')$ as $\outputabstraction$ preserves the set structure of its parameters.
 
 \begin{theorem}\labthm{dependency-output-galois-connection}
-  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois injection}:
+  The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois insertion}:
 \begin{align*}
   \galoisinjbetweensemantics{dependency}{output}
 \end{align*}
@@ -799,7 +840,7 @@ It is interesting to note that removing intermediate states and abstracting outp
   The symbol $\valuesofvariables$ is the vector of values for $\cardinalitynospaces{\definputvariables}$ variables.
 }
 \marginnote{
-  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie{} $\forall \defvariable\in\inputvariableswithoutw.\spacer \defstate(\defvariable) = \defstate'(\defvariable)$.
+  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie, $\forall \defvariable\in\inputvariableswithoutw.\spacer \defstate(\defvariable) = \defstate'(\defvariable)$.
 }
 \begin{remark} The abstraction $\outputabstraction\circ\dependencyabstraction$ of the unused property $\unused$ is defined as:
     \begin{gather*}

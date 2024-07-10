@@ -36,7 +36,7 @@ We recall that the variables of the program are represented by the set $\variabl
 
 
 In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
-Consequently, we extend the program states to include the value of the global loop counter, \ie $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
+Consequently, we extend the program states to include the value of the global loop counter, \ie, $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
 The maximal trace semantics is extended to include the global loop counter as follows:
 
 \begin{align*}
@@ -229,7 +229,7 @@ The elements of the abstract domain are conjunctions of linear constraints of th
 \end{equation*}
 %
 where $\defvariable_j\in\variablesandcounter$ are variables and $c_j \in \values$ are constant values.
-For a better readability, we avoid writing the constant-variable multiplication term $c_i\cdot\defvariable_i$ when $c_i=0$; and we abuse the notation, \eg{} for the constraint $\defvariable_1 = \defvariable_2$, to denote the conjunction of the two linear constraints $\defvariable_1 - \defvariable_2 \ge 0$ and $\defvariable_2 - \defvariable_1 \ge 0$.
+For a better readability, we avoid writing the constant-variable multiplication term $c_i\cdot\defvariable_i$ when $c_i=0$; and we abuse the notation, \eg, for the constraint $\defvariable_1 = \defvariable_2$, to denote the conjunction of the two linear constraints $\defvariable_1 - \defvariable_2 \ge 0$ and $\defvariable_2 - \defvariable_1 \ge 0$.
 The abstract domain is a lattice $\langle\abstractdomain, \abstractdomainsubseteq, \abstractdomainjoin, \abstractdomainmeet, \abstractdomaintop, \abstractdomainbottom\rangle$ equipped with a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof\state$, defined as:
 %
 \begin{align*}

@@ -190,7 +190,7 @@ Namely, we introduce the \changesname{} and \qlibraname{} impact notions, which 
 
 The \changesname{} impact notion is designed to overcome the limitations of the impact notions defined in the previous chapter when applied in the context of neural networks.
 Indeed, in the presence of neural networks, the input space is generally irregular, and all the possible input variations lead to all the possible outcomes.
-Therefore, the impact notions defined in the previous chapter would not be useful as they measure the impact of input variables based on the number (\eg{} \outcomesname{}) or the magnitude (\eg{} \rangename{}) of the output values; even \qusedname{} would be meaningless in this setting as all the classification targets are often reachable by all the input values.
+Therefore, the impact notions defined in the previous chapter would not be useful as they measure the impact of input variables based on the number (\eg, \outcomesname{}) or the magnitude (\eg, \rangename{}) of the output values; even \qusedname{} would be meaningless in this setting as all the classification targets are often reachable by all the input values.
 Therefore, these metrics would not provide any meaningful information about how the input variables influence the network's outcome.
 
 \begin{example}
@@ -602,7 +602,7 @@ Formally, the \qlibraname{} impact notion is defined as follows:
   \end{align*}
 \end{definition}
 
-In other words, the \qlibraname{} quantifies the volume of the biggest set of traces $\defsetoftraces' \subseteq \defsetoftraces$ that does not contain bias, \ie{} where the predicate $\unusediowrapper$ holds.
+In other words, the \qlibraname{} quantifies the volume of the biggest set of traces $\defsetoftraces' \subseteq \defsetoftraces$ that does not contain bias, \ie, where the predicate $\unusediowrapper$ holds.
 Indeed, the \qlibraname{} impact notion could be rewritten as:
 \begin{align*}
   &\qlibra(\defsetoftraces) \spacearound= \\
@@ -766,7 +766,7 @@ Importantly, this domain is exact for the property of interest, as it allows us 
 
 The function $\abstractchanges$ takes as input the variables of interest $\definputvariables$, $\numberofbuckets$ output buckets $\buckets\in\vectorbuckets$, and $\numberofbuckets$ disjunctions of polyhedra $\prefrombucket\in\disjunctivepolyabstractdomaintype^\numberofbuckets$ obtained from the backward analysis.
 For clarity, we access each polyhedron and disjunctions of polyhedra via indexing as in a matrix-based structure, that is, $\prefrombucket=\{\{P_{1,1}\vee \dots\vee P_{1,p}\},\dots,\{P_{n,1}\vee \dots\vee P_{n,q}\}\}$ where $p = \cardinalitynospaces{\prefrombucket[1]}$ and $q = \cardinalitynospaces{\prefrombucket[n]}$. For instance, $\prefrombucket[j]$ refers to the disjunction of polyhedra $\{P_{j,1}\vee \dots\vee P_{j,k}\vee \dots\}$, for $j\le n$, and $\prefrombucket[{j, k}]$ refers to the polyhedron $P_{j,k}\in\polyabstractdomain$.
-The projection of disjunctions of polyhedra applies, in turn, the polyhedron projection to each polyhedron in the disjunction, then collects the projected polyhedra in a disjunction of polyhedra, \ie{} $\abstractdomainproject(\prefrombucket \in \disjunctivepolyabstractdomaintype) \defeq \bigvee_{k \le \cardinalitynospaces{\prefrombucket}} \abstractdomainproject(\prefrombucket[j, k])$.
+The projection of disjunctions of polyhedra applies, in turn, the polyhedron projection to each polyhedron in the disjunction, then collects the projected polyhedra in a disjunction of polyhedra, \ie, $\abstractdomainproject(\prefrombucket \in \disjunctivepolyabstractdomaintype) \defeq \bigvee_{k \le \cardinalitynospaces{\prefrombucket}} \abstractdomainproject(\prefrombucket[j, k])$.
 
 Computationally speaking, the function $\abstractchanges$ projects away the input variables $\definputvariables$ from each polyhedron $\prefrombucket[{j, k}]$.
 The projected polyhedra represent regions where $\definputvariables$ ranges on all possible values, considering all potential variations of this variable.
@@ -848,7 +848,7 @@ In the next section, we introduce the \qlibraname{} impact notion, which--in a s
 
 % \begin{example}
 %   In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainvolume(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
-%   On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainvolume(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
+%   On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomainvolume(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
 %   The function $\abstractdomainvolume$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 % \end{example}
 
@@ -1077,8 +1077,8 @@ Then, we perform the quantification of the biased space.
 
 More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
 We represent each path by an activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model.}.
-The analysis receives a \emph{budget} providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie{} the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
-The forward analysis starts with the trivial partition of the whole input space, \ie{} $\definputpartitions = \{\reducedstate\}$.
+The analysis receives a \emph{budget} providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie, the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
+The forward analysis starts with the trivial partition of the whole input space, \ie, $\definputpartitions = \{\reducedstate\}$.
 Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$, starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome, then the partition is already fair without further analysis.
 Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$.
 On the other hand, if abstract activation pattern $\defabstractactivationpattern$ fixes the activation status of enough \relu{} nodes, then we declare the partition $\definputpartition$ \emph{feasible} and ready for the backward analysis.

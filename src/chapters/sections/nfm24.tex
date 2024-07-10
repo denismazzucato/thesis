@@ -446,7 +446,7 @@ Otherwise, similarly to $\outcomesname$, the input variable may have an impact o
 The quantity $\qused\in\tracetype\to\Nplus$ counts the number of input values for the variables in $\definputvariables\in\setof\inputvariables$ of $\definputvariables$ that are not used to produce the outcomes.
 Distinctly, this notion natively handles non-deterministic programs, meaning that in $\qusedname$ the impact of the input variable is zero if the input variable is not used to produce the outcomes, even in the presence of non-deterministic statements.
 
-Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$ we collect the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie{} $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. We then collect the set of input values of the variables in $\definputvariables$ that belong to these traces.
+Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$ we collect the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. We then collect the set of input values of the variables in $\definputvariables$ that belong to these traces.
 We obtain the number of missing input values by subtracting the set of all input values from the set of input values that can produce the outcome $\retrieveoutput\defstate$.
 Finally, $\qused$ yields the maximum number of input values that are not used to produce the outcomes.
 
@@ -562,7 +562,7 @@ custom(x):
 
 We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-empty sets of traces.
 In fact, $\qused(\emptyset) = \sup \emptyset = 0$.
-On the other hand, the set of traces with at least one trace yields the highest value of $\qusedname$, \ie{} $\cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}} - 1$.
+On the other hand, the set of traces with at least one trace yields the highest value of $\qusedname$, \ie, $\cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}} - 1$.
 Hence, the value of $\qusedname$ always decreases by enlarging the set of traces. Until the set of traces contains all possible traces\sidenote{The set of traces containing all the possible traces can be obtained by the random program, \cf{} \refprog{random}.} and the value of $\qusedname$ is $0$.
 
 \begin{lemma}[\qusedname{} is Anti-Monotonic]
@@ -574,7 +574,7 @@ Hence, the value of $\qusedname$ always decreases by enlarging the set of traces
 \end{lemma}
 \begin{proof}
   Given two sets of traces $\defsetoftraces, \defsetoftraces' \in \tracetype$, we assume the cardinality of input values is $n$ and that $\qused(\defsetoftraces) = \defbound$.
-  Let us say that $\defoutput$ is the output value that maximizes $\qused(\defsetoftraces)$, \ie{} $\cardinalitynospaces{\setdef{
+  Let us say that $\defoutput$ is the output value that maximizes $\qused(\defsetoftraces)$, \ie, $\cardinalitynospaces{\setdef{
     \retrieveinput{\defseq'}(\definputvariables)
     }{
       \deftrace' \in \defsetoftraces \land
@@ -729,7 +729,7 @@ $\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a se
 
 
 The concretization function $\multiconcretization$ maps the multi-bucket semantics $\multisemanticsnoparam$ from a given set of output buckets $\buckets$ to a set of sets of dependencies in $\outputtype$.
-Specifically, for each output bucket $\bucket\in\buckets$, $\multiconcretization$ concretizes the output from $\abstractdomainconcretization(\bucket)$ and the input states from the application of the backward semantics to $\bucket$, \ie{} $\abstractdomainconcretization((\multisemantics\buckets)_j)$.
+Specifically, for each output bucket $\bucket\in\buckets$, $\multiconcretization$ concretizes the output from $\abstractdomainconcretization(\bucket)$ and the input states from the application of the backward semantics to $\bucket$, \ie, $\abstractdomainconcretization((\multisemantics\buckets)_j)$.
 Hence, all the possible input-output dependencies are collected for all buckets.
 Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the non-empty power set operator $\wp_{+}$.
 \marginnote{
@@ -829,7 +829,7 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
   % \end{align*}
 \end{definition}
 
-\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg{} a set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
+\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg, a set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
 
 We define the concretization of the bound computed by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
 
@@ -933,7 +933,7 @@ to project away the input variables $\definputvariables$, that is, the reduction
 \begin{example}
 In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainprojecti(\langle\definputvariable \mapsto [1, 3], j \mapsto [2, 4]\rangle) = \langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$
   removes the constraints related to the variables in $\{\definputvariable\}$.
-  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently $[-\infty, +\infty]$, we hide it from the abstract element, \eg{} instead of $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$ we often write $\langle j \mapsto [2, 4] \rangle$.
+  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently $[-\infty, +\infty]$, we hide it from the abstract element, \eg, instead of $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$ we often write $\langle j \mapsto [2, 4] \rangle$.
 \end{example}
 %
 % We define the soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
@@ -1144,7 +1144,7 @@ In such case, we assume $\abstractdomain$ is equipped with an additional abstrac
 
 \begin{example}
   In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainsize(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
-  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg{} $\abstractdomainsize(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
+  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomainsize(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
   The function $\abstractdomainsize$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 \end{example}
 
@@ -1172,7 +1172,7 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
   & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
   \end{eqnarray*}
   Next, $\abstractrangename_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
-  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie{} $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
+  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie, $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
   Therefore, $\abstractrangename_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{eqnarray*}
@@ -1279,13 +1279,13 @@ We define $\abstractqused$ as the difference between the total number of input c
 Specifically, $\abstractqused$ first projects away the input variables apart from $\definputvariables$ from all the given abstract values.
 Then, it counts how many input configurations lead to the same output for each abstract value, via the abstract operator $\abstractdomaincount$.
 Finally, it computes the difference between the total number of input configurations and the maximum number of input configurations leading to the same output.
-The result is a measure of the influence of the input variables on the output of the program, \ie{} the number of input configurations that may lead to different outcomes.
+The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that may lead to different outcomes.
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
     \abstractqused(\presfrombuckets, \buckets) \DefeQ& l -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\prefrombucket))}{j \le n}
   \end{align*}
-  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input configurations for the variables $\definputvariables$, \ie{} $l = \cardinalitynospaces{\setdef{\definput(\definputvariables)}{\definput\in\reducedstate}}$.
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input configurations for the variables $\definputvariables$, \ie, $l = \cardinalitynospaces{\setdef{\definput(\definputvariables)}{\definput\in\reducedstate}}$.
 \end{definition}
 
 \begin{example}\labexample{abstract-qused}
