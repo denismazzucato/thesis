@@ -567,22 +567,18 @@ In other words, the unused predicate is stronger than its abstract counterpart.
 % The next result instead shows that whenever a set of variables is unused, it means that it exists a trace $\deftrace'$ starting
 % Otherwise, that abstract output is not reachable by the program $\defprogram$.
 
-% \begin{proposition}\labprop{abstract-unused-property}
-%   If $\unusediowrapper(\tracesemantics)$ holds, then for any output state $\retrieveoutput{\defseq}\in\stateandbottom$ it holds that:
-%   \begin{gather*}
-%       \not\exists
-%         \defseq'\in\tracesemantics.\spacer
-%         \aniobserver(\retrieveoutput\defseq) = \aniobserver(\retrieveoutput{\defseq'}) \\
+% \begin{proposition}\labprop{abstract-unused-property} If
+%   $\unusediowrapper(\tracesemantics)$ holds, then for any output state
+%   $\retrieveoutput{\defseq}\in\stateandbottom$ it holds that: \begin{gather*}
+%   \not\exists \defseq'\in\tracesemantics.\spacer
+%   \aniobserver(\retrieveoutput\defseq) =
+%   \aniobserver(\retrieveoutput{\defseq'}) \\
 %       \lor \\
 %       \foralldef{\defvalue\in\valuesofvariables}{\existsdef{\defseq'\in\tracesemantics}{
-%         \retrieveinput{\defseq'}(\definputvariables) = \defvalue
-%         \LanD
-%         \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})}}
-%   \end{gather*}
-% \end{proposition}
-% \begin{proof}
-%   \denis{todo}
-% \end{proof}
+%         \retrieveinput{\defseq'}(\definputvariables) = \defvalue \LanD
+%         \aniobserver(\retrieveoutput{\defseq}) =
+%         \aniobserver(\retrieveoutput{\defseq'})}} \end{gather*}
+%         \end{proposition} \begin{proof} \denis{todo} \end{proof}
 
 
 \section{The Unused Property}
@@ -602,10 +598,13 @@ Whenever a program does not use the input variables $\definputvariables$, the tr
 Specifically, the unused property $\unused$ is the set of all the programs (or rather, their semantics) that do not use any of the variables in $\definputvariables$.
 %
 %
-Thus a program $\defprogram$ satisfies the unused property if and only if $\defprogram$ does not use the set of input variables $\definputvariables$, formally:
-\begin{align*}
-  \defprogram \satisfies \unused \IfF \tracesemantics \subseteq \unused
-\end{align*}
+\begin{remark}
+  A program $\defprogram$ satisfies the unused property $\unused$ if and only if $\defprogram$ does not use the set of input variables $\definputvariables$, formally:
+  \begin{align*}
+    \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
+  \end{align*}
+\end{remark}
+
 
 % The next result shows that the unused property is a sound and complete for a program to not use the set of variables $\definputvariables$.
 
@@ -714,7 +713,7 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
     \right\}
   \end{eqnarray*}
 }
-  We show how the dependency semantics abstracts the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ of \refprog{school-year}.
+  We show how the dependency semantics abstracts the collecting semantics $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$, where $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ is the trace semantics of \refprog{school-year}.
   First, as required by \refthm{unused-validation}, the trace semantics should be abstracted first by the collecting semantics, obtaining $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$.
   The dependency semantics is then:
   \begin{align*}
@@ -729,7 +728,7 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
       \end{array}
     \right\}\right\}
   \end{align*}
-  The dependency semantics abstracts the trace semantics, preserving the input-output dependencies.
+  The dependency semantics abstracts the collecting semantics, preserving the input-output dependencies.
 \end{example}
 
 \section{Output Abstraction Semantics}
@@ -768,7 +767,7 @@ Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputcon
 \end{align*}
 \end{definition}
 The function $\outputabstraction$ abstracts the output states of the dependencies and $\outputconcretization$ concretizes the set of dependencies that share the same set of output observations.
-Note that, the abstraction function $\outputabstraction$ is well-defined as it preserves set joins, \ie, $\forall \defsetofdependencies, \defsetofdependencies' \in\outputtype.\spacer \outputabstraction(\defsetofdependencies \setjoin \defsetofdependencies') = \outputabstraction(\defsetofdependencies) \setjoin \outputabstraction(\defsetofdependencies')$ as $\outputabstraction$ preserves the set structure of its parameters.
+Note that, the abstraction function $\outputabstraction$ is well-defined as it preserves arbitrary set joins, \ie, $\forall \defsetofdependencies, \defsetofdependencies' \in\outputtype.\spacer \outputabstraction(\defsetofdependencies \setjoin \defsetofdependencies') = \outputabstraction(\defsetofdependencies) \setjoin \outputabstraction(\defsetofdependencies')$ as $\outputabstraction$ preserves the set structure of its parameters.
 
 \begin{theorem}\labthm{dependency-output-galois-connection}
   The two adjoints $\tuple{\outputabstraction}{\outputconcretization}$ form a \emph{Galois insertion}:
@@ -777,10 +776,18 @@ Note that, the abstraction function $\outputabstraction$ is well-defined as it p
 \end{align*}
 \end{theorem}
 \begin{proof}
-  Given two sets of sets of input-output observations $\defsetofsetofdependencies, \defsetofsetofdependencies\in\dependencytype$ such that $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$, we obtain that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$ since the concretization $\outputconcretization$ builds all the possible sets of sets of dependencies enhanced with the any amount of output states that result in an output abstraction of $\defsetofsetofdependencies'$.
-  On the other hand, we assume that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$.
-  By the monotonicity of $\outputabstraction$, \cf{} consequence of \refthm{dependency-output-galois-connection}, we obtain that $\outputabstraction(\defsetofsetofdependencies)\subseteq\outputabstraction(\outputconcretization(\defsetofsetofdependencies'))$.
-  We note that the concretization $\outputconcretization(\defsetofsetofdependencies')$ builds all the possible sets of dependencies that may have generated the same output observations of each set of dependencies in $\defsetofsetofdependencies'$. By applying the abstraction $\outputabstraction$, for each of the sets of dependencies concretized by $\outputconcretization$, the abstraction returns the original set in $\defsetofsetofdependencies'$. Thus, we have that $\outputabstraction(\outputconcretization(\defsetofsetofdependencies')) = \defsetofsetofdependencies'$, so we conclude with $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$.
+  % Given two sets of sets of input-output observations $\defsetofsetofdependencies, \defsetofsetofdependencies\in\dependencytype$ such that $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$, we obtain that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$ since the concretization $\outputconcretization$ builds all the possible sets of sets of dependencies enhanced with the any amount of output states that result in an output abstraction of $\defsetofsetofdependencies'$.
+  % On the other hand, we assume that $\defsetofsetofdependencies\subseteq\outputconcretization(\defsetofsetofdependencies')$.
+  % By the monotonicity of $\outputabstraction$, \cf{} consequence of \refthm{dependency-output-galois-connection}, we obtain that $\outputabstraction(\defsetofsetofdependencies)\subseteq\outputabstraction(\outputconcretization(\defsetofsetofdependencies'))$.
+  % We note that the concretization $\outputconcretization(\defsetofsetofdependencies')$ builds all the possible sets of dependencies that may have generated the same output observations of each set of dependencies in $\defsetofsetofdependencies'$. By applying the abstraction $\outputabstraction$, for each of the sets of dependencies concretized by $\outputconcretization$, the abstraction returns the original set in $\defsetofsetofdependencies'$. Thus, we have that $\outputabstraction(\outputconcretization(\defsetofsetofdependencies')) = \defsetofsetofdependencies'$, so we conclude with $\outputabstraction(\defsetofsetofdependencies)\subseteq\defsetofsetofdependencies'$.
+
+  We need to show that $\outputabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies \iff \defsetofsetoftraces\subseteq\outputconcretization(\defsetofsetofdependencies)$.
+  First, we show the direction $(\implies)$.
+  Assuming $\outputabstraction(\defsetofsetoftraces)\subseteq \defsetofsetofdependencies$, we have that $\outputconcretization(\defsetofsetofdependencies)$ builds all the possible sets of sets of dependencies enhanced with the any amount of output states that result in an output abstraction of $\defsetofsetofdependencies'$. Thus, $\outputconcretization(\defsetofsetofdependencies)$ also contains all the semantics in $\defsetofsetoftraces$, \ie, $\defsetofsetoftraces\subseteq\outputconcretization(\defsetofsetofdependencies)$.
+  To show $(\Leftarrow)$, we assume $\defsetofsetoftraces\subseteq\outputconcretization(\defsetofsetofdependencies)$.
+  We note that the concretization $\outputconcretization(\defsetofsetofdependencies)$ builds all the possible sets of dependencies that may have generated the same output observations of each set of dependencies in $\defsetofsetofdependencies$. By applying the abstraction $\outputabstraction$, for each of the sets of dependencies concretized by $\outputconcretization$, the abstraction returns the original set in $\defsetofsetofdependencies$.
+  Formally, it holds that $\outputabstraction(\outputconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$.
+  Hence, by monotonicity of $\outputabstraction$, we obtain $\outputabstraction(\defsetofsetoftraces)\subseteq \outputabstraction(\outputconcretization(\defsetofsetofdependencies)) = \defsetofsetofdependencies$.
 \end{proof}
 
 We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an abstraction of the dependency semantics.
@@ -788,9 +795,9 @@ We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an a
 \begin{definition}[Output Abstraction Semantics]\labdef{output-abstraction-semantics}
   The \emph{output-abstraction semantics} $\outputsemanticsnoparam\in\outputtype$ is defined as:
   \begin{align*}
-    \outputsemanticsnoparam\DefeQ&\outputabstraction(\dependencysemanticsnoparam) \\
+    \outputsemanticsnoparam\DefeQ\outputabstraction(\dependencysemanticsnoparam)
     % \spacearound{=}&\outputabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
-    \spacearound{=}&
+    \spacearound{=}
     \{\spacearound{
       \setdef{
         \tuple{\retrieveinput{\deftrace}}{\outputobs(\retrieveoutput{\deftrace})}
@@ -801,24 +808,6 @@ We now derive the \emph{output-abstraction semantics} $\outputsemantics$ as an a
   \end{align*}
 \end{definition}
 
-Additionally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ to the dependencies with abstraction of a final state in $X$ is defined as follows.
-\begin{definition}[Output Reduction]\labdef{output-reduction}
-  Let $X\in\setof\stateandbottom$ be a set of output states.
-  The \emph{output reduction} $\reduce[\outputsemanticsnoparam]{X}\in\outputtype$ of the output-abstraction semantics $\outputsemanticsnoparam$ is defined as:
-\begin{align*}
-\reduce[\outputsemanticsnoparam]{X} \DefeQ \setdef{
-  \setdef{
-    \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
-  }{
-    \retrieveoutput{\defstate} \in X
-  }
-}{
-  \defsetofdependencies\in \outputsemanticsnoparam
-}
-\end{align*}
-\end{definition}
-Such reduction is useful to analyze the dependencies that lead to a specific set of output states.
-Note that, in case no dependency in $\outputsemanticsnoparam$ ends in an output state in $X$, the reduction is $\{\emptyset\}$.
 The next result shows that the output-abstraction semantics $\outputsemantics$ allows a sound and complete verification for proving that an input variable $\definputvariables$ is unused in the program $\defprogram$, \refdef*{unused}.
 
 \begin{theorem}\labthm{output-validation}
@@ -866,6 +855,28 @@ Instead, it is a property of output-and-dependency semantics, which is a set of 
 %
 Nevertheless, such characterization is useful as, whenever $\outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\unused))$ holds, the program $\defprogram$ does not use the input variables in $\definputvariables$ \refthm{output-validation}.
 
+
+
+Additionally, we define the reduction of a set of sets of dependencies $\defsetofsetofdependencies$ to those with abstraction of a final state in $X$.
+
+\begin{definition}[Output Reduction]\labdef{output-reduction}
+  Let $X\in\setof\stateandbottom$ be a set of output states.
+  The \emph{output reduction} $\reduce[\defsetofsetofdependencies]{X}\in\outputtype$ of $\defsetofsetofdependencies\in\outputtype$ is defined as:
+\begin{align*}
+\reduce[\defsetofsetofdependencies]{X} \DefeQ \setdef{
+  \setdef{
+    \tuple{\retrieveinput\defstate}{\outputobs(\retrieveoutput{\defstate})}\in\defsetofdependencies
+  }{
+    \retrieveoutput{\defstate} \in X
+  }
+}{
+  \defsetofdependencies\in \defsetofsetofdependencies
+}
+\end{align*}
+\end{definition}
+Such reduction is useful to analyze the dependencies that lead to a specific set of output states.
+Note that, in case no dependency in $\defsetofsetofdependencies$ ends in an output state in $X$, the reduction is $\{\emptyset\}$.
+
 \section{Syntactic Dependency Analysis}
 \labsec{syntactic-dependency-analysis}
 
@@ -874,6 +885,6 @@ Nevertheless, such characterization is useful as, whenever $\outputsemantics \su
 \section{Summary}
 \labsec{input-data-usage-summary}
 
-In this chapter, we introduced the notion of input data usage and define a generalized version based on the definition of abstract non-interference.
-We presented the hierarchy of semantics that allows reasoning about the usage of input variables.
-In the next chapter, we will define a quantitative counterpart of the input data usage, able to measure the impact of variations in the input data on the outcome of a program. We will exploit the output abstraction to obtain numerical values from the output states.
+In this chapter, we introduced the notion of input data usage and defined a generalized version inspired by the definition of abstract non-interference.
+We presented the hierarchy of semantics that allows reasoning about the usage of input variables of a program.
+In the next chapter, we will define a quantitative counterpart of input data usage, able to measure the impact of variations in the input data on the outcome of a program. Notably, we will exploit the output abstraction to obtain numerical values from the output states.

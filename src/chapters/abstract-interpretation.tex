@@ -2,6 +2,31 @@
 \chapter{Abstract Interpretation}
 \labch{abstract-interpretation}
 
+
+\begin{definition}[Validation]
+  \labdef{validation}
+  \begin{align}
+    \labeq{validation}
+    \defprogram \satisfies \defproperty \iff \collectingsemantics \subseteq \defproperty
+  \end{align}
+\end{definition}
+
+\begin{definition}[Collecting Semantics]
+  \labdef{collecting-semantics}
+  \begin{align}
+    \labeq{collecting-semantics}
+    \collectingsemanticsnoparam \defeq \{ \dependencysemanticsnoparam \}
+  \end{align}
+\end{definition}
+
+\begin{definition}[Dependency Semantics]
+  \labdef{dependency-semantics}
+  \begin{align*}
+    \dependencysemanticsnoparam \DefeQ \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}
+  \end{align*}
+\end{definition}
+
+
 \section{Order Theory}
 \labsec{order-theory}
 

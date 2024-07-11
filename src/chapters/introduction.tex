@@ -103,7 +103,20 @@ on a small idealized programming language at the end of the same chapter.
 
 \section{Input Data Usage}
 
-This thesis steams from
+In software systems, programming errors do not always result in crashes or runtime errors.
+It may be the case that the faulty program produces a plausible yet erroneous outcome or unsafe behavior.
+Such bugs are hard to spot since they provide no clear indication that something went wrong.
+A potential source of such errors is the misuse of input data, \ie, when an input variable has an unexpected impact on the program computation compared to the developers' expectations.
+
+A notable example is the Reinhart and Rogoff article ``Growth in a Time of Debt'' \sidecite{Reinhart2010}, which claimed that economic growth is negatively correlated with public debt.
+This article was heavily cited to justify austerity measures around the world in the following years.
+However, in 2013, \sidetextcite{Herndon2013} discovered that the authors had made a mistake in their Excel spreadsheet, which led to the erroneous conclusion.
+Notably, one of the several programming and methodological errors discovered is the incorrect usage of the input value relative to Norway's economic growth in 1964, with an excessive weight in the computation of the average growth rate.
+
+Particularly in the context of data science applications, where software involves long pipeline of layers that filter, merge, and manipulate data, the likelihood of programming errors that cause some input variables to be more, or less, in fluent than what was expected is high.
+Hence, it is important to employ techniques that enhance the confidence in the usage of input variables for data-driven applications.
+
+\refch{input-data-usage} introduces the input data usage property, which is a formal property that captures the \emph{qualitative} usage of input data in a program.
 
 \section{Quantitative Properties}
 
@@ -120,31 +133,91 @@ To address this limitation, one approach is to consider quantitative properties.
 The key idea is to accept that a program may violate a property, and compare such violation against a threshold.
 Programs are classified as \emph{safe} or \emph{unsafe} based on the degree of violation, thus inducing a classification among programs based on how much safety they provide.
 
+
+In the Reinhart and Rogoff case, the value of Norway's economic growth was indeed used in the average computation, but its impact was much higher than it should have been.
+The error was not whether the value was used or not, but rather how much it was used.
+In this case, a quantitative analysis would have revealed that the impact of Norway's economic growth was too high, and the authors could have corrected the wrong conclusion.
+
 \refch{quantitative-input-data-usage} introduces the formal framework, based on abstract interpretation, to reason about quantitative properties of programs of input data usage.
 
 
 \section{Contributions and Outline}
 
+In this thesis, we study techniques based on formal reasoning to detect misuse of input data.
+We propose semantics-based static analysis techniques to soundly quantify the impact of input variables on the program computation.
+\refch{abstract-interpretation} provides the mathematical background used in the rest of the thesis and introduces the formal framework of abstract interpretation.
+The rest of this section outlines the organization of the thesis.
 
-\begin{definition}[Validation]
-  \labdef{validation}
-  \begin{align}
-    \labeq{validation}
-    \defprogram \satisfies \defproperty \iff \collectingsemantics \subseteq \defproperty
-  \end{align}
-\end{definition}
+\subsection{Input Data Usage}
 
-\begin{definition}[Collecting Semantics]
-  \labdef{collecting-semantics}
-  \begin{align}
-    \labeq{collecting-semantics}
-    \collectingsemanticsnoparam \defeq \{ \dependencysemanticsnoparam \}
-  \end{align}
-\end{definition}
+In \refch{input-data-usage}, we focus on the definition of the input data usage property. Specifically, we introduce its definition as proposed by \sidetextcite{Urban2018}.
+Then, we extend the property to capture abstractions of output values as done in the generalization of non-interference property \sidecite{Giacobazzi2018}.
+We provide the hierarchy of semantics that precisely captures the input data usage property abstracting unnecessary details.
+Finally, from \textcite{Urban2018} we report an abstract semantics that captures syntactic dependencies between variables, which is used to soundly approximate the input data usage property.
 
-\begin{definition}[Dependency Semantics]
-  \labdef{dependency-semantics}
-  \begin{align*}
-    \dependencysemanticsnoparam \DefeQ \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}
-  \end{align*}
-\end{definition}
+\subsection{Quantitative Input Data Usage}
+
+In \refch{quantitative-input-data-usage}, we present a novel quantitative input usage framework to discriminate between input variables with different impact on the outcome of a program.
+This framework can be used to identify variables that have a disproportionate impact.
+Such knowledge could either certify intended behavior or reveal potential flaws, by matching the developers' intuition on the expected impact of their input with the actual result of the quantitative study.
+We characterize the impact of an input variable with a notion of dependency between variables and the outcome of a program.
+In general, determining how an input variable influences a program outcome depends on several factors, such as the structure of the program, the environment, the expertise of the developer, and the intuition of the researcher.
+Consequently, there is no single impact definition that fits all requirements. For this reason, our framework is parametric in the impact definition of choice.
+
+Building on this framework, we introduce a backward static analysis based on abstract interpretation parametric in the definition of impact, which automatically infers a sound over-approximation of the impact of input variables when analyzing programs. We design our static analysis to soundly approximates our property, by returning an upper bound on the impact quantity.
+The inputs of our static analysis consist of a set of cumulative ranges representing program outputs, called output buckets.
+Then, the analysis backward computes the input states leading to these buckets and applies a computable implementation of the impact on the result of the backward reachability analysis.
+This approach allows end-users to choose the impact that best fits their needs, ensuring a more targeted and customizable analysis.
+
+This chapter is based on work published at NASA Formal Methods Symposium
+(NFM) 2024 \sidecite{Mazzucato2024nfm}.
+
+
+\subsection{Quantitative Verification for Neural Networks}
+
+In \refch{quantitative-fairness}, we extend the quantitative input data usage property to the domain of neural networks.
+We propose two impact notions for neural networks. The first one addressing the ragged input space of neural networks, and the second one measuring the amount of fairness of input features.
+First, we show how a na\"ive approach measures the impact of input features in neural networks, and then we refine the backward analysis to exploit parallel computations and achieve better performance.
+
+Our approach employs a combination of forward and backward analyses.
+The forward pass aims to reduce the combinatorial explosion the backward analysis faces when analyzing neural-network models.
+The static analysis revolves around the concept of \emph{independent input partitions}, partitioning the input space into subregions that are easier to analyze for the backward analysis and do not interfere with each other, allowing parallel computations.
+Moreover, the forward analysis can be configured in terms of scalability and precision to adapt to the user's needs. By the choice of abstract domain and budget of resources, the analysis trades off precision for execution time.
+The resource budget can be auto-tuned to find the best analysis configuration according to a given search heuristic.
+
+This chapter is based on work published at the 28th Static Analysis Symposium (SAS) 2021 \sidecite{Mazzucato2021}.
+
+\subsection{Quantitative Static Timing Analysis}
+
+In \refch{quantitative-static-timing-analysis}, we consider the amount of program iterations during the execution of a program as the program outcome.
+Thus, we capture the impact of input variables on the \emph{global} number of iterations of a program.
+Such variation is interesting as programming errors related to the misuse of input data affecting the number of iterations may degrade performance or introduce security vulnerabilities without even showing any functional error.
+For instance, in the context of security, an unexpected impact of input variables on the program's runtime could reveal sensitive information \sidecite{Wong2005}, leading to potential security threats.
+Even in cryptography, where programs are mathematically robust, vulnerabilities to timing attacks persist, depending on the implementation choices and design.
+\sidetextcite{Kocher1996} demonstrated that widely used public key cryptographic algorithms, like RSA, are vulnerable to timing attacks, and may leak information about the secret key.
+The value of such attacks lies in their simplicity;
+attackers do not need to possess detailed knowledge of the program implementation or engage in computationally expensive operations.
+Merely the information of which primitives are used in the program is enough.
+For example, knowledge that the exponentiation operation, commonly found on cryptographic programs, is performed using the square-and-multiply algorithm can enable an attacker to exploit the program's runtime to infer the secret key \sidecite{Wong2005}.
+Indeed, \sidetextcite{Dhem2000} mounted such attack against CASCADE smart cards, observing timing differences during the square operations of the square-and-multiply algorithm.
+Furthermore, knowing the timing behavior of a program could certify intended behavior or reveal latent flaws by matching developers' expectations with the actual program behavior.
+For performance optimization, identifying input variables that most significantly affect loop iterations can help developers focus on critical code segments \sidecite{Omar2017}.
+As a consequence, achieving a comprehensive understanding of the impact of input variables on the program runtime is paramount.
+In this study we focus on quantifying the impact of input variables on the number of loop iterations in a program, as an indicator of the program's runtime behavior.
+
+
+In this chapter, we leverage an underlying global loop bound analysis to derive an over-approximation of the global loop bound and encode the quantification of each input variable's impact as a linear programming problem.
+Our approach blends syntactic and semantic information:
+to improve accuracy, the global loop bound analysis generates invariants as a set of linear constraints;
+to improve scalability, we combine the global loop bound analysis with a syntactic dependency analysis \sidecite{Urban2018}, reducing the number of variables to analyze.
+
+This chapter is based on work published at the 31st Static Analysis Symposium (SAS) 2024 \sidecite{Mazzucato2024sas}.
+
+\subsection{Contributions}
+
+The main contributions of this thesis are as follows:
+\begin{itemize}
+  \item In \refch{input-data-usage} we extend the original definition of the input data usage property to capture abstractions of output values.
+  Such extension blends generalized non-interference with input data usage, providing a definition that works also for non-deterministic programs.
+  \item In \refch{quantitative-input-data-usage}
+\end{itemize}

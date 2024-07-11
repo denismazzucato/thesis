@@ -6,11 +6,11 @@
 
 In this chapter, we present a quantitative notion of input data usage, extending the definition introduced in the previous chapter.
 We define three different quantitative measures for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property of a program.
-At the end, we present abstract versions of the quantitative measures and show how they can be used to verify our quantitative property.
-This chapter is based on the work published at Nasa Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024nfm}.
-In the next chapters, we will apply this quantitative framework to the context of neural network and timing side-channel attacks.
+At the end, we present abstract versions of the quantitative measures and show how they can be used to verify the corresponding quantitative property.
+This chapter is based on work published at NASA Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024nfm}.
+In the next chapters, we will apply this quantitative framework in the context of neural network and timing side-channel attacks.
 
-\emph{Dans ce chapitre, nous présentons une notion quantitative de l'utilisation des données d'entrée, en étendant la définition introduite dans le chapitre précédent. Nous définissons trois mesures quantitatives différentes pour l'impact des variables d'entrée sur le résultat du programme, et nous formalisons un cadre théorique pour vérifier la propriété d'impact quantitatif résultante d'un programme. À la fin, nous présentons des versions abstraites des mesures quantitatives et montrons comment elles peuvent être utilisées pour vérifier notre propriété quantitative. Ce chapitre est basé sur le travail publié au Symposium sur les méthodes formelles de la NASA (NFM) 2024 \sidecite{Mazzucato2024nfm}. Dans les prochains chapitres, nous appliquerons ce cadre quantitatif au contexte des réseaux de neurones et des attaques par canaux auxiliaires temporels.
+\emph{Dans ce chapitre, nous présentons une notion quantitative de l'utilisation des données d'entrée, en prolongeant la définition introduite dans le chapitre précédent. Nous définissons trois mesures quantitatives différentes pour l'impact des variables d'entrée sur le résultat du programme et nous formalisons une analyse statique pour vérifier la propriété d'impact quantitatif résultante d'un programme. À la fin, nous présentons des versions abstraites des mesures quantitatives et montrons comment elles peuvent être utilisées pour vérifier la propriété quantitative correspondante. Ce chapitre est basé sur des travaux publiés au NASA Formal Methods Symposium (NFM) 2024 \sidecite{Mazzucato2024nfm}. Dans les prochains chapitres, nous appliquerons ce cadre quantitatif dans le contexte des réseaux de neurones et des attaques par canaux auxiliaires temporels.
 }
 
 % \onlysectioncommands{\x,\y,\z,\lc,\exampleinput,\highlight,\inputa,\inputax,\inputay,\outputa,\inputb,\inputbx,\inputby,\outputb,\inputc,\inputcx,\inputcy,\outputc,\inputd,\inputdx,\inputdy,\outputd,\inpute,\inputex,\inputey,\outpute,\inputf,\inputfx,\inputfy,\outputf,\tracea,\traceax,\traceay,\traceb,\tracebx,\traceby,\tracec,\tracecx,\tracecy,\traced,\tracedx,\tracedy,\tracee,\traceex,\traceey,\tracef,\tracefx,\tracefy,\labelrotationangle, \outputvaluea,\outputvalueb,\outputvaluec,\outputvalued,\outputvaluee,\outputvaluef}
@@ -26,10 +26,13 @@ In the next chapters, we will apply this quantitative framework to the context o
 \section{The \texorpdfstring{$\defbound$}{k}-Bounded Impact Property}
 \labsec{k-bounded-impact-property}
 
-Quantitative input data usage should be understood as how much input data influences the program outcomes.
-To this end, we develop the \emph{$\defbound$-bounded impact property} $\genbounded$ as the set of program semantics such that the input variables $\definputvariables\in\setof\inputvariables$ have an impact on the program outcome bounded by $\defbound\in\valuesposplus$.
+Quantitative input data usage should be understood as quantifying how much the input data influences the program outcomes.
+To this end, we define the \emph{$\defbound$-bounded impact property} $\genbounded$ as the set of program semantics such that the input variables $\definputvariables\in\setof\inputvariables$ have an impact on the program outcome bounded by $\defbound\in\valuesposplus$.
 \marginnote{
-The set $\valuesposplus$ contains non-negative numerical values enhanced with $+\infty$.
+  The set $\setof\inputvariables$ contains the input variables of a program.
+}
+\marginnote{
+The set $\valuesposplus$ contains non-negative numerical values as well as with $+\infty$.
 }
 Depending on the comparison operator $\comparison\in\{\le,\ge\}$, the impact quantity is bounded by $\defbound$ either from above or below.
 We employ the \emph{impact notion}:
@@ -44,7 +47,7 @@ to quantify the impact of the input variables $\definputvariables$ on the outcom
 }
 \begin{definition}[$\defbound$-Bounded Impact Property]
   \labdef{bounded}
-  Let $\definputvariables\in\variables$ be the set of input variables of interest, $\impactwrapper\in\tracetype\to\valuesposplus$ an impact notion, and $\defbound\in\valuesposplus$ the threshold.
+  Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\impactwrapper\in\tracetype\to\valuesposplus$ an impact notion, and $\defbound\in\valuesposplus$ the threshold.
   The \emph{$\defbound$-bounded impact property} $\genbounded$ is defined as follows:
   \begin{align*}
     \GENBOUNDED \DefeQ \setdef
@@ -64,7 +67,7 @@ With such a definition, we allow further abstractions of computable semantics to
   \end{align*}
 \end{remark}
 
-Next, we instantiate $\impactwrappername$ with the impact notions of \outcomesname{}, \rangename{}, and \qusedname{}. Each of these notions differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are not used to produce the outcomes.
+Next, we instantiate $\impactwrappername$ with the impact notions of \outcomesname{}, \rangename{}, and \qusedname{}. Each of these notions differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are \emph{not} used to produce the outcomes.
 To this end, these notions employ the concept of output abstraction, \cf{} \refdef*{output-observer}[*-4].
 % We expect the output observer $\outputobs$ (\refdef*{output-observer}[*-2]) to return a quantifiable element, \ie{}, a value in $\valuesinf$.
 % An output observer $\outputobs$ that returns a quantifiable element is called an \emph{output observer}.
@@ -78,8 +81,8 @@ To this end, these notions employ the concept of output abstraction, \cf{} \refd
 % We leverage this output observer to provide the end user of the framework the flexibility to choose the meaning of program outputs, without establishing it beforehand.
 
 \begin{example}\labexample{output-observer-landing}
-  Consider the \refprog*{landing-alarm-system} for the landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\text{angle}$, $b$ of $\texttt{speed}$, $c$ of $\texttt{landing\_coeff}$, and $d$ of $\texttt{risk}$.
-  Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
+  Consider the \refprog*{landing-alarm-system} for a landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\text{angle}$, $b$ of $\texttt{speed}$, $c$ of $\texttt{landing\_coeff}$, and $d$ of $\texttt{risk}$.
+  % Here, we abuse the notation and use $\state$ as set of tuples instead of a map between variables and values, the two views are equivalent.
   The output observer is instantiated with
   \[
   \outputobs(\defstate) \DefeQ \begin{cases}
@@ -112,26 +115,26 @@ Next, we define the impact notions of \outcomesname{}, \rangename{}, and \qusedn
 \labsec{outcomes}
 
 Formally $\outcomes\in\tracetype\to\Nplus$ counts the number of different output values reachable by varying the input variables $\definputvariables\in\setof\inputvariables$.
-First, we define step-by-step the quantity $\outcomes$,
-followed by the formal definition.
-We instantiate of this quantity in the context of \refprog*{landing-alarm-system}[*-5] at the end, alongside with some properties of $\outcomesname$.
+% First, we define step-by-step the quantity $\outcomes$,
+% followed by the formal definition.
+% We instantiate of this quantity in the context of \refprog*{landing-alarm-system}[*-5] at the end, alongside with some properties of $\outcomesname$.
 
 
-Intuitively,
-for any possible input configuration $\definput\in\reducedstate$, we collect all the traces that are starting from an input configuration that is a variation of $\definput$ on the input variable $\definputvariables$, \ie, $\setdef{
+Intuitively, $\outcomes$ collects,
+for any possible input configuration $\definput\in\reducedstate$, all the traces that are starting from an input configuration that is a variation of $\definput$ on the input variable $\definputvariables$, \ie, $\setdef{
   \defseq\in \defsetoftraces
 }{
   \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
 }$, where $\defsetoftraces\in\setof\finiteinfinitesequences$.
-Then, we collect the output values of this set of traces by means of the output observer $\outputobs$, \ie, $\setdef{
+Then, it gathers the output values of this set of traces by means of the output observer $\outputobs$, \ie, $\setdef{
   \outputobs(\retrieveoutput\defseq)
 }{
   \defseq \in \defsetoftraces \land
     \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
 }$. Specifically, this set contains all the output abstractions performed by $\outputobs$.
 %
-Afterwards, we extract the number of elements via the cardinality operator $\cardinality{\cdot}$.
-Finally, we iterate through each input configuration $\definput$ and return the maximum value to ensure that the greatest impact is preserved, through the supremum operator: $\sup$.
+Afterwards, it yields the number of these output values via the cardinality operator $\cardinality{\cdot}$.
+Finally, through the supremum operator: $\sup$, it returns the maximum value to ensure that the greatest impact is preserved.
 \marginnote[*-3]{
   The supremum operator $\sup$ yields the least upper bound of the given set, that is, the smallest $q$ such that $q$ is greater than or equal to all elements of the set.
 }
@@ -263,8 +266,9 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 \end{proof}
 
 \marginnote{\denis{fix Theorem label name when not there (in side refs).}}
-As done in the previous chapter for the unused property, \cf{} \refthm*{output-validation}, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\outcomesname$ impact notion.
-We call such property $\boundedoutcomes$.
+
+Let $\boundedoutcomes$ be the $\defbound$-bounded impact property when instantiated with the $\outcomesname$ impact notion.
+The output semantics $\outputsemantics$ is sound and complete for validating $\boundedoutcomes$.
 
 \siderefbox{def}{output-abstraction-semantics}
 \begin{lemma}[$\boundedoutcomes$ Validation]\lablemma{outcomes-validation}
@@ -272,7 +276,7 @@ We call such property $\boundedoutcomes$.
     \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
   \end{align*}
 \end{lemma}
-\begin{proof}
+\begin{proof}[Proof (Sketch)]
   Let us consider the $\outputabstraction \circ \dependencyabstraction$ abstraction of the $\defbound$-bounded impact property $\boundedoutcomes$:
   \begin{eqnarray*}
     \lefteqn{\outputabstraction(\dependencyabstraction(\boundedoutcomes)) =} \\
@@ -292,16 +296,22 @@ We call such property $\boundedoutcomes$.
   Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\outcomesname$ impact notion already abstracts the output values before counting them.
 \end{proof}
 
-\reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. Moreover, whenever the given program semantics is deterministic, an impact quantity of zero implies that the input variables of interest have no impact on the program outcomes, in other words, the set of input variables is unused.
-On the other hand, non-deterministic statements in the program may mislead $\outcomesname$ to account differences in the program output as a result of variations in the input variables.
+\reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. Moreover, whenever the given program semantics is deterministic, an impact quantity of zero implies that the input variables of interest have no impact on the program outcomes, \ie, the set of input variables is unused.
+On the other hand, non-deterministic statements in the program may mislead $\outcomesname$ to account for differences in the program output as a result of variations in the input variables.
+
+\begin{example}\labexample{outcomes-nondeterminism}
+Consider the \refprog*{syntactic-vs-semantic-usage} used in \refsec{input-data-usage} to illustrate the differences between syntactic and semantic input data usage. Notably: it contains a non-deterministic statement.
+Assuming input values are $\N$, the $\outcomesname_{\texttt{x}}$ impact notion (for the variable $\texttt{x}$) is $+\infty$ as for any possible input value, the program can output any value in $\N$.
+Due to the non-deterministic statement, the variable \texttt{x} has an infinite impact on the output values, even though the program does not use the input variable \texttt{x}.
+\end{example}
 
 \subsection{The \rangename{} Impact Notion}[\rangename]
 \labsec{range}
 
 The quantity $\range\in\tracetype\to\Rposplus$ determines the
 size of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
-Additionally, we define $\defoutputvariable$ as the output variable where the impact is measured.
-Differently from the previous notion, in this case, we are interested in the difference between the extreme values of the variable $\defoutputvariable$.
+Let $\defoutputvariable$ be the output variable on which the impact is measured.
+We are interested in the difference between the extreme values of the variable $\defoutputvariable$.
 
 \begin{margintable}
   \caption{Overview of the $\rangename$ impact notion for the variable $\texttt{angle}$ of \nrefprog{landing-alarm-system}.}
@@ -352,7 +362,7 @@ Differently from the previous notion, in this case, we are interested in the dif
 
 \begin{example}
   \labexample{range}
-  We revisit again the example of the landing alarm system, called $\landingprogram$.
+  We revisit again the example of the landing alarm system, program $\landingprogram$.
   Assuming $\definputvariables=\{\texttt{angle}\}$, $\tuple{-4}{1}$ is the first input configuration to be explored, we collect all traces that are
   starting from an input configuration that is a variation of $\tuple{-4}{1}$.
   As before, we obtain $\setdef{
@@ -362,7 +372,7 @@ Differently from the previous notion, in this case, we are interested in the dif
       \retrieveinput{\defseq}(\texttt{speed}) = 1
   }=\{0,3\}$ as the set of output values for the output variable \texttt{risk}.
 %
-  Here, instead of counting the distinct outcomes, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the size function: $\size(\{0,3\})=3$.
+  Here, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the size function: $\size(\{0,3\})=3$.
   By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=3$.
   Respectively, \reftab{overview-range-angle} illustrates the steps for $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-range-speed} for $\rangename_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
@@ -409,15 +419,15 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 \end{proof}
 
 
-Similarly to $\outcomesname$, \cf{} \reflemma{outcomes-validation}, we show the validation of the $\defbound$-bounded impact property when applied to the $\rangename$ impact notion.
-We call such property $\boundedrange$.
+Let $\boundedrange$ be the $\defbound$-bounded impact property when instantiated with the $\rangename$ impact notion.
+The output semantics $\outputsemantics$ is sound and complete for validating $\boundedrange$.
 
 \begin{lemma}[$\boundedrange$ Validation]\lablemma{range-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDRANGE))
   \end{align*}
 \end{lemma}
-\begin{proof}
+\begin{proof}[Proof (Sketch)]
   Let us consider the (double) abstraction of the $\defbound$-bounded impact property $\boundedrange$:
   \begin{align*}
     & \outputabstraction(\dependencyabstraction(\boundedrange)) = \\
@@ -437,17 +447,17 @@ We call such property $\boundedrange$.
   Hence, neither the abstraction to dependencies nor the abstraction to output values affect the validation of the property.
 \end{proof}
 
-Similarly to the $\outcomesname$ impact notion, \reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} are of significant importance as they show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
-Otherwise, similarly to $\outcomesname$, the input variable may have an impact on the program computation even if not used.
+\reflemma{outcomes-monotonic} and \reflemma{outcomes-validation} show that the $\outcomesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
+Otherwise, similarly to $\outcomesname$, the input variable may have an impact on the program computation even if not used\sidenote{See \refexample{outcomes-nondeterminism} for a similar discussion of the \outcomesname{} impact notion when applied to programs containing nondeterministic statements.}.
 
 \subsection{The \qusedname{} Impact Notion}[\qusedname]
 \labsec{qused}
 
-The quantity $\qused\in\tracetype\to\Nplus$ counts the number of input values for the variables in $\definputvariables\in\setof\inputvariables$ of $\definputvariables$ that are not used to produce the outcomes.
-Distinctly, this notion natively handles non-deterministic programs, meaning that in $\qusedname$ the impact of the input variable is zero if the input variable is not used to produce the outcomes, even in the presence of non-deterministic statements.
+The quantity $\qused\in\tracetype\to\Nplus$ counts the number of input values for the variables in $\definputvariables\in\setof\inputvariables$ of $\definputvariables$ that are \emph{not} used to produce the outcomes.
+Unlike \outcomesname{} and \rangename{} the impact of an input variable is zero \wrt{} \qusedname{} if and only if the input variable is not used to produce any outcome, even in the presence of non-deterministic statements.
 
-Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$ we collect the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. We then collect the set of input values of the variables in $\definputvariables$ that belong to these traces.
-We obtain the number of missing input values by subtracting the set of all input values from the set of input values that can produce the outcome $\retrieveoutput\defstate$.
+Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$, \qusedname{} collects the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. Then, it gathers the set of input values of the variables in $\definputvariables$ that correspond to these traces.
+The number of missing input values is obtained by subtracting the set of input values that can produce the outcome $\retrieveoutput\defstate$ from the set of all input values for the variables in $\definputvariables$.
 Finally, $\qused$ yields the maximum number of input values that are not used to produce the outcomes.
 
 
@@ -458,21 +468,31 @@ Formally, the $\qusedname$ impact notion is defined as follows:
   the impact notion $\qused\in\tracetype\to\Nplus$ is defined as
   %
   \marginnote[*2]{Note that, $\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}$ is the set of all input values for the variables in $\definputvariables$.}
-  \begin{eqnarray*}
-    \qused(\defsetoftraces) \DefeQ
-    \sup_{\deftrace \in \defsetoftraces}
-      \spacer\left|
-        \begin{array}{l}
-          \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
-          \quad \setdef{
-            \retrieveinput{\defseq'}(\definputvariables)
-            }{
-              \deftrace' \in \defsetoftraces \LanD
-                  \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
-            }
-        \end{array}
-      \right|
-  \end{eqnarray*}
+  % \begin{eqnarray*}
+  %   \qused(\defsetoftraces) \DefeQ
+  %   \sup_{\deftrace \in \defsetoftraces}
+  %     \spacer\left|
+  %       \begin{array}{l}
+  %         \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
+  %         \quad \setdef{
+  %           \retrieveinput{\defseq'}(\definputvariables)
+  %           }{
+  %             \deftrace' \in \defsetoftraces \LanD
+  %                 \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
+  %           }
+  %       \end{array}
+  %     \right|
+  % \end{eqnarray*}
+  \begin{align*}
+    \qused(\defsetoftraces) \DefeQ \sup_{\deftrace \in \defsetoftraces}
+    \cardinality{
+      \{ \} \notin \setdef{
+        \retrieveinput{\defseq'}
+      }{
+        \defseq' \in \defsetoftraces \land
+        \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\defseq'})
+      }}
+  \end{align*}
 \end{definition}
 
 
@@ -1210,7 +1230,7 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
 
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
-  Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
@@ -1331,14 +1351,14 @@ To prove that $\abstractqused$ is a sound implementation of $\qused$, we require
 Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is the cardinality operator $\cardinalitynospaces{\cdot}$.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
+  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, it holds that:
   \[\abstractdomaincount(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}.
 
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
-  Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
