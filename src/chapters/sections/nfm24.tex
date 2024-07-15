@@ -310,8 +310,9 @@ Due to the non-deterministic statement, the variable \texttt{x} has an infinite 
 
 The quantity $\range\in\tracetype\to\Rposplus$ determines the
 size of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
-Let $\defoutputvariable$ be the output variable on which the impact is measured.
+Let $\defoutputvariables$ be the set of output variables on which the impact is measured.
 We are interested in the difference between the extreme values of the variable $\defoutputvariable$.
+The difference of extreme values is computed by a distance measure $\distance$ computing the maximum distance between the set of given values. For instance, $\distance$ could be the Euclidean distance.
 
 \begin{margintable}
   \caption{Overview of the $\rangename$ impact notion for the variable $\texttt{angle}$ of \nrefprog{landing-alarm-system}.}
@@ -372,7 +373,7 @@ We are interested in the difference between the extreme values of the variable $
       \retrieveinput{\defseq}(\texttt{speed}) = 1
   }=\{0,3\}$ as the set of output values for the output variable \texttt{risk}.
 %
-  Here, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the size function: $\size(\{0,3\})=3$.
+  Here, we are interested in the difference between the extreme values of the outcomes. Hence, we apply the size function: $\distance(\{0,3\})=3$.
   By doing so for all possible input configurations $\reducedstate$, we obtain $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=3$.
   Respectively, \reftab{overview-range-angle} illustrates the steps for $\rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-range-speed} for $\rangename_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
@@ -380,20 +381,20 @@ We are interested in the difference between the extreme values of the variable $
   Formally, the $\rangename$ impact notion is defined as follows:
 
 \begin{definition}[\rangename]\labdef{range}
-  Given the set of input variables of interest $\definputvariables\in\setof\inputvariables$ and the output variable $\defoutputvariable$,
+  Given the set of input variables of interest $\definputvariables\in\setof\inputvariables$ and the output variables $\defoutputvariables$,
   the impact notion $\range\in\tracetype\to\Rposplus$ is defined as
   %
   \begin{align*}
     \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
-      \size(\setdef{
-        \outputobs(\retrieveoutput{\defseq})(\defoutputvariable)
+      \distance(\setdef{
+        \outputobs(\retrieveoutput{\defseq})(\defoutputvariables)
       }{
         \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
       })
   \end{align*}
 \end{definition}
 
-The above notion employs the auxiliary function $\size(X) \defeq \sup X - \inf X$ if $X$ is non-empty, otherwise $\size(X) \defeq 0$.
+The above notion employs the auxiliary function $\distance$. For instance, such distance could be instantiated as the Euclidean distance: $\distance(X) \defeq \max_{x, x' \in X} \sqrt{\sum_k (x - x')^2}$ if $X$ is non-empty, otherwise $\distance(X) \defeq 0$. From here, we consider the Euclidean distance as the default distance measure.
 
 We note that also $\rangename$ is monotonic in the amount of traces in $\defsetoftraces$.
 
@@ -433,10 +434,10 @@ The output semantics $\outputsemantics$ is sound and complete for validating $\b
     & \outputabstraction(\dependencyabstraction(\boundedrange)) = \\
     &\quad
     \setdef{
-      \defsetofdependencies \in \outputtype
+      \defsetofdependencies \in \setof\pairofstates
     }{ \\ & \qquad
       \sup_{\definput\in\state}
-      \size({\setdef{
+      \distance({\setdef{
         \retrieveoutput{\defstate}(\defoutputvariable)
       }{
         \inputoutputtuple{\defstate} \in \defsetofdependencies \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
@@ -467,7 +468,6 @@ Formally, the $\qusedname$ impact notion is defined as follows:
   Given an input variable $\definputvariables\in\setof\inputvariables$,
   the impact notion $\qused\in\tracetype\to\Nplus$ is defined as
   %
-  \marginnote[*2]{Note that, $\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}$ is the set of all input values for the variables in $\definputvariables$.}
   % \begin{eqnarray*}
   %   \qused(\defsetoftraces) \DefeQ
   %   \sup_{\deftrace \in \defsetoftraces}
@@ -484,140 +484,159 @@ Formally, the $\qusedname$ impact notion is defined as follows:
   %     \right|
   % \end{eqnarray*}
   \begin{align*}
-    \qused(\defsetoftraces) \DefeQ \sup_{\deftrace \in \defsetoftraces}
+    \qused(\defsetoftraces) &\DefeQ \sup_{\deftrace \in \defsetoftraces}
     \cardinality{
-      \{ \} \notin \setdef{
+        Q_\definputvariables(I_\deftrace(\defsetoftraces)) \setminus I_\deftrace(\defsetoftraces)
+      } \\
+      I_{\deftrace}(\defsetoftraces) &\spacearound= \setdef{
         \retrieveinput{\defseq'}
       }{
         \defseq' \in \defsetoftraces \land
         \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\defseq'})
-      }}
+      } \\
+      Q_\definputvariables(\defsetofstates) &\spacearound= \setdef{
+        \defstate' \in \state
+      }{
+        \defstate \in \defsetofstates \land
+          \defstate' \stateeq{\inputvariableswithoutw} \defstate
+      }
   \end{align*}
+  where $I_{\deftrace}(\defsetoftraces)$ is the set of input states of traces in $\defsetoftraces$ that share the same output abstraction as $\deftrace$ and $Q_\definputvariables(\defsetofstates)$ is the set of states that are variations from states in $\defsetofstates$ only in the variables $\definputvariables$.
 \end{definition}
 
 
 \begin{example}
-  To explain the $\qusedname$ impact notion, we employ three simple programs.
+  To demonstrate the $\qusedname$ impact notion, we employ four simple programs.
   The first program we consider, \refprog{id}, returns the value of the only input variable $\texttt{x}$ without any modification.
   The second program, \refprog{random}, returns a random value.
-  The last one, \refprog{mix}, returns a random value if the input variable $\texttt{x}$ is greater than $0$, otherwise it returns $0$.
-  For simplicity, the input space is $\state=\setdef{\langle x \rangle}{x\in\{0, 1, 2\}}$ and the input variable is $\texttt{x}$, thus the set of input values is $\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} = \{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ of cardinality $3$.
+  The last two, \refprog{mix1} and \refprog{mix2}, combine together non-deterministic and deterministic statements.
+  For simplicity, variables are assumed to range in $\{0, 1, 2\}$.
+
+  \begin{marginlisting}
+    \caption{The identity program.}
+    \labprog{id}
+    \vspace{\lineheight}
+  \begin{lstlisting}
+  id(x):
+    return x;
+   \end{lstlisting}
+  \end{marginlisting}
   The trace semantics of \refprog{id} is:
   \begin{align*}
     \tracesemanticsnoparam\semanticsof{\texttt{id}}
     =
     \left\{
-        \langle 0\rangle\rightarrow\langle 0\rangle,
-        \langle 1\rangle\rightarrow\langle 1\rangle,
-        \langle 2\rangle\rightarrow\langle 2\rangle
+      \begin{array}{l}
+        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 0\rangle},\\
+        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 1\rangle},\\
+        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 2\rangle}
+      \end{array}
     \right\}
   \end{align*}
-  As explained above, for any $\deftrace\in \tracesemanticsnoparam\semanticsof{\texttt{id}}$ we collect the set of input values that belong to traces $\deftrace'\in\tracesemanticsnoparam\semanticsof{\texttt{id}}$ that share the same output abstraction as $\deftrace$.
-  In this case, the set of input values that can produce the outcome $0$ is $\{\langle 0\rangle\}$, for the outcome $1$ is $\{\langle 1\rangle\}$, and for the outcome $2$ is $\{\langle 2\rangle\}$, all singletons.
-  Hence, by subtracting the set of all input values, of cardinality $3$, from the set of input values that can produce the outcomes, we obtain the value $2$ for the three set of traces. Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{id}})=2$, meaning that the input variable $\texttt{x}$ is used.
-%
+  As explained above, for any $\deftrace\in \tracesemanticsnoparam\semanticsof{\texttt{id}}$ we collect the set of input values that belong to traces $\deftrace'\in\tracesemanticsnoparam\semanticsof{\texttt{id}}$ that share the same output abstraction as $\deftrace$, \cf{} $I_{\deftrace}(\tracesemanticsnoparam\semanticsof{\texttt{id}})$.
+  In this case, the set of input states that can produce the outcome $0$ is $\{\tracetuple{\locinit}{\langle 0\rangle}\}$, for the outcome $1$ is $\{\tracetuple{\locinit}{\langle 1\rangle}\}$, and for the outcome $2$ is $\{\tracetuple{\locinit}{\langle 2\rangle}\}$, all singletons.
+  Hence, the set of states that are variations, \cf{} $Q_{\{\texttt{x}\}}(I_{\deftrace}(\tracesemanticsnoparam\semanticsof{\texttt{id}}))$, is the complement of each singleton.
+  Hence, for the three set of input states, we obtain the values $2, 2, 2$, respectively.
+  Thus, $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{id}})=2$, meaning that the input variable $\texttt{x}$ is used.
+
+  \begin{marginlisting}
+    \caption{The random program.}
+    \labprog{random}
+    \vspace{\lineheight}
+  \begin{lstlisting}
+  random(x):
+    return rand();
+   \end{lstlisting}
+  \end{marginlisting}
   The trace semantics of \refprog{random} is:
   \begin{align*}
     \tracesemanticsnoparam\semanticsof{\texttt{random}}
     =
     \left\{
-        \langle 0\rangle\rightarrow\langle \anyvalue\rangle,
-        \langle 1\rangle\rightarrow\langle \anyvalue\rangle,
-        \langle 2\rangle\rightarrow\langle \anyvalue\rangle
+      \begin{array}{l}
+        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}
+      \end{array}
     \right\}
   \end{align*}
-  In this case, any outcome can be produced by any input value, thus the set of input values is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$ for all outcomes.
-  By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0$.
-  Thus, $\qused(\tracesemanticsnoparam\semanticsof{\texttt{random}})=0$, meaning that the input variable $\texttt{x}$ is not used.
-  %
-  The trace semantics of \refprog{mix} is:
+  In this case, any outcome can be produced by any input value, thus the set of input states is $\{\tracetuple{\locinit}{\langle 0\rangle}, \tracetuple{\locinit}{\langle 1\rangle}, \tracetuple{\locinit}{\langle 2\rangle}\}$ for all outcomes.
+  Since all possible permutations of the variable \texttt{x} are already in each set of input states from outcomes, we obtain the value $0$.
+  Thus, $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{random}})=0$, meaning that the input variable $\texttt{x}$ is not used.
+
+  \begin{marginlisting}
+    \caption{First example combining random and constant value.}
+    \labprog{mix1}
+    \vspace{2\lineheight}
+  \begin{lstlisting}
+  mix1(x):
+    if x > 0:
+      return rand();
+    else:
+      return 0;
+   \end{lstlisting}
+  \denis{fix lineheight between programs and captions}
+  \end{marginlisting}
+  The trace semantics of \refprog{mix1} is:
   \begin{align*}
-    \tracesemanticsnoparam\semanticsof{\texttt{mix}}
+    \tracesemanticsnoparam\semanticsof{\texttt{mix1}}
     =
     \left\{
-        \langle 0\rangle\rightarrow\langle 0\rangle,
-        \langle 1\rangle\rightarrow\langle \anyvalue\rangle,
-        \langle 2\rangle\rightarrow\langle \anyvalue\rangle
-    \right\}
+      \begin{array}{l}
+        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{6}}{\langle 0\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}
+      \end{array}
+      \right\}
   \end{align*}
-  In this case, the set of input values that can produce the outcome $0$ is $\{\langle 0\rangle, \langle 1\rangle, \langle 2\rangle\}$, for the outcome $1$ is $\{\langle 1\rangle, \langle 2\rangle\}$, and for the outcome $2$ is $\{\langle 1\rangle, \langle 2\rangle\}$.
-  By subtracting the set of all input values from the set of input values that can produce the outcomes, we obtain the value $0, 1, 1$, respectively.
-  Thus, we yield the highest value, obtaining $\qused(\tracesemanticsnoparam\semanticsof{\texttt{custom}})=1$.
+  In this case, the set of input values that can produce the outcome $0$ is $\{\tracetuple{\locinit}{\langle 0\rangle}, \tracetuple{\locinit}{\langle 1\rangle}, \tracetuple{\locinit}{\langle 2\rangle}\}$, for the outcome $1$ is $\{\tracetuple{\locinit}{\langle 1\rangle}, \tracetuple{\locinit}{\langle 2\rangle}\}$, and for the outcome $2$ is $\{\tracetuple{\locinit}{\langle 1\rangle}, \tracetuple{\locinit}{\langle 2\rangle}\}$.
+  Respectively, the input state $\tracetuple{\locinit}{\langle 0 \rangle}$ is missing from both sets of input states that can produce the outcomes $1$ and $2$.
+  Thus, we yield the highest value of missing states, obtaining $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{mix1}})=1$.
+
+
+  \begin{marginlisting}
+    \caption{Second example combining random and constant value.}
+    \labprog{mix2}
+    \vspace{2\lineheight}
+  \begin{lstlisting}
+mix2(x, y):
+  if x and y:
+    return True
+  elif not x and y:
+    return rand()
+  else:
+    return False
+ \end{lstlisting}
+  \end{marginlisting}
+  For this last program we introduce another variable \texttt{y}, we simplify even further the variable to boolean values $\{\true, \false\}$.
+  The trace semantics of \refprog{mix2} is:
+  \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{mix2}}
+    =
+    \left\{
+      \begin{array}{l}
+        \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}
+      \end{array}
+      \right\}
+  \end{align*}
+  In this case, the set of input values that can produce the outcome $\true$ is $\{\tracetuple{\locinit}{\langle \true, \true\rangle}, \tracetuple{\locinit}{\langle \false, \true\rangle}\}$, for the outcome $\false$ is $\{\tracetuple{\locinit}{\langle \true, \false\rangle}, \tracetuple{\locinit}{\langle \false, \true\rangle}, \tracetuple{\locinit}{\langle \false, \false\rangle}\}$.
+  In case $\definputvariables=\{\texttt{x}\}$, the state $\tracetuple{\locinit}{\langle \true, \true\rangle}$ is missing from the set of input states that can produce the outcome $\false$, obtained by permuting the variable \texttt{x} on the input state $\tracetuple{\locinit}{\langle \false, \true\rangle}$.
+  Instead, the set of states $\{\tracetuple{\locinit}{\langle \true, \true\rangle}, \tracetuple{\locinit}{\langle \false, \true\rangle}\}$ already contains all the possible permutations of the variable \texttt{x}.
+  Thus, we yield the highest value of missing states, obtaining $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{mix2}})=1$.
+  On the other hand, if $\definputvariables=\{\texttt{y}\}$, the states $\tracetuple{\locinit}{\langle \false, \false\rangle}$ and $\tracetuple{\locinit}{\langle \true, \false\rangle}$ are missing from the set of input states that can produce the outcome $\true$. No state is missing from the set of input states that can produce the outcome $\false$.
+  Thus, we yield the highest value of missing states, obtaining $\qusedname_{\{\texttt{y}\}}(\tracesemanticsnoparam\semanticsof{\texttt{mix2}})=2$.
 
   From these examples we notice that the $\qusedname$ impact notion is able to capture that a variable is not used in a program, even in the presence of non-deterministic statements, \cf{} \refprog{random}.
-  Moreover, $\qusedname$ also discriminates between different amount of impact from \refprog{id} and \refprog{mix}.
-  Indeed, \refprog{id} is, intuitively, the program with the highest impact possible as the output is exactly the input value, while \refprog{mix} sometimes returns a random value and sometimes $0$.
+  Moreover, $\qusedname$ also discriminates between different amount of impact from \refprog{id}, \refprog{mix1}, and \refprog{mix2}.
+  Indeed, \refprog{id} is, intuitively, the program where the input variable has the highest impact possible as the output is exactly its value, while \refprog{random} the lowest as the output is random.
 \end{example}
-\begin{marginlisting}[*-38]
-  \caption{The identity program.}
-  \labprog{id}
-  \vspace{\lineheight}
-\begin{lstlisting}
-id(x):
-  return x;
-\end{lstlisting}
-\end{marginlisting}
-\begin{marginlisting}[*-28]
-  \caption{The random program.}
-  \labprog{random}
-  \vspace{\lineheight}
-\begin{lstlisting}
-random(x):
-  return rand();
-\end{lstlisting}
-\end{marginlisting}
-\begin{marginlisting}[*-20]
-  \caption{Combining random and constant value.}
-  \labprog{mix}
-  \vspace{2\lineheight}
-\begin{lstlisting}
-custom(x):
-  if x > 0:
-    return rand();
-  else:
-    return 0;
-\end{lstlisting}
-\denis{fix lineheight between programs and captions}
-\end{marginlisting}
-
-We show that $\qusedname$ is (anti-)monotonic in the amount of traces for non-empty sets of traces.
-In fact, $\qused(\emptyset) = \sup \emptyset = 0$.
-On the other hand, the set of traces with at least one trace yields the highest value of $\qusedname$, \ie, $\cardinalitynospaces{\setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state}} - 1$.
-Hence, the value of $\qusedname$ always decreases by enlarging the set of traces. Until the set of traces contains all possible traces\sidenote{The set of traces containing all the possible traces can be obtained by the random program, \cf{} \refprog{random}.} and the value of $\qusedname$ is $0$.
-
-\begin{lemma}[\qusedname{} is Anti-Monotonic]
-  \lablemma{qused-antimonotonic}
-  For any non-empty set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
-  \begin{align*}
-    \defsetoftraces \neq \emptyset \LanD \defsetoftraces \subseteq \defsetoftraces' \ImplieS \qused(\defsetoftraces) \GE \qused(\defsetoftraces')
-  \end{align*}
-\end{lemma}
-\begin{proof}
-  Given two sets of traces $\defsetoftraces, \defsetoftraces' \in \tracetype$, we assume the cardinality of input values is $n$ and that $\qused(\defsetoftraces) = \defbound$.
-  Let us say that $\defoutput$ is the output value that maximizes $\qused(\defsetoftraces)$, \ie, $\cardinalitynospaces{\setdef{
-    \retrieveinput{\defseq'}(\definputvariables)
-    }{
-      \deftrace' \in \defsetoftraces \land
-      \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\defoutput) \land
-      \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}
-    }} = n - \defbound$.
-  By hypothesis that $\defsetoftraces$ is not empty, we have that $\defbound > 0$ since it exists at least one trace satisfying the above set.
-  Otherwise, the $\sup$ operator of an empty set would return $0$ and by adding traces this value would only increase, which goes against the conclusion of the lemma.
-  The other set of traces $\defsetoftraces'$ contains all the traces of $\defsetoftraces$ and possibly more.
-  Thus, $\setdef{
-    \retrieveinput{\defseq'}(\definputvariables)
-    }{
-      \deftrace' \in \defsetoftraces' \land
-      \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\defoutput) \land
-      \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}
-    }$ contains, at least, all the input values of the one obtained for $\defsetoftraces$.
-    As a consequence, the cardinality can only be higher or equal to $n - \defbound$.
-    The anti-monotonicity follows from the fact that this cardinality is subtracted from the set of all input values, thus it is reversed.
-\end{proof}
-
 
 Next, we show the validation of the $\defbound$-bounded impact property when instantiated with the $\qusedname$ impact notion.
-Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} and \rangename{} impact notions, the $\defbound$-bounded impact property employed the $\le$ comparison operator.} in our property $\boundedqused$, this choice is forced by the fact that the $\qusedname$ is anti-monotonic.
+Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} and \rangename{} impact notions, the $\defbound$-bounded impact property employed the $\le$ comparison operator.} in our property $\boundedqused$. This design choice is due to the fact that the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces in $\defsetoftraces$. Thus, the same way the syntactic dependency analysis consider an under-approximation of dependencies among variables to return a sound result, the static analysis for $\qusedname$ considers an under-approximation of the ``missing'' input values. In detail, it considers an under-approximation of the set of input values $Q_\definputvariables(I_\deftrace(\defsetoftraces)) \setminus I_\deftrace(\defsetoftraces)$ for the given set of traces $\defsetoftraces$. This under-approximation may lead to a lower value of $\qusedname$ than the actual value, hence the use of the $\ge$ operator as the concrete bound is always higher.
 
 \begin{lemma}[$\boundedqused$ Validation]\lablemma{qused-validation}
   \begin{align*}
@@ -630,7 +649,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
     \lefteqn{\outputabstraction(\dependencyabstraction(\boundedqused)) =} \\
     &
     \setdef{
-      \defsetofdependencies \in \outputtype
+      \defsetofdependencies \in \setof\pairofstates
     }{
       \sup\limits_{\retrieveoutput\defstate \in \stateandbottom}
       \spacer\left|
@@ -651,8 +670,115 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
   Hence, neither the abstraction to dependencies nor the abstraction to output values affect the validation of the property.
 \end{proof}
 
+The next example shows that $\qusedname$ is neither monotonic nor anti-monotonic in the amount of traces, meaning that, by adding or removing traces from a given set $\defsetoftraces\in\tracetype$ the quantity $\qused(\defsetoftraces)$ may increase or decrease.
+Notably, the major consequence is that $\boundedqused$ is not subset-closed. Thus, not all the subsets of a potential over-approximation of the trace semantics satisfy the $\boundedqused$ property. Indeed, there is no guarantee that even the trace semantics itself satisfies the property.
+To address this issue, from the result of the abstract analysis we compute an under-approximation of the input values that are definitely missing from the set of input values that can produce the outcomes. This under-approximation provides a lower bound on the $\qusedname$ impact notion, hence the use of the $\ge$ operator in the $\defbound$-bounded impact property.
 
-Differently from the previous impact notions, it holds that, whenever $\qused(\tracesemantics) = 0$, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
+\begin{example}
+In this example, with the identity function on the second component, \cf{}, \refprog{id2}, we show that the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces.
+Specifically, we consider two input variables with boolean values $\{\true, \false\}$, the \refprog{id2} returns the second component of the input without any modification.
+\begin{marginlisting}
+  \caption{Identity function on the second component.}
+  \labprog{id2}
+  \vspace{\lineheight}
+\begin{lstlisting}
+id2(x, y):
+  return y
+ \end{lstlisting}
+\end{marginlisting}
+The trace semantics of \refprog{id2} is:
+\begin{align*}
+  \tracesemanticsnoparam\semanticsof{\texttt{id2}}
+  =
+  \left\{
+    \begin{array}{l}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+    \end{array}
+    \right\}
+\end{align*}
+For the set of traces $\tracesemanticsnoparam\semanticsof{\texttt{id2}}$, we have that $\qusedname_{\{\texttt{x} \}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})=0$ as no input value is missing from both the sets of input values that can produce the outcomes $\true$ and $\false$. In fact, the variable \texttt{x} is \emph{not used} in the program.
+Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemanticsnoparam\semanticsof{\texttt{id2}}$:
+\begin{align*}
+  \defsetoftraces
+  =
+  \left\{
+    \begin{array}{l}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+    \end{array}
+    \right\}
+\end{align*}
+This set of traces could be obtained by the \refprog{mix2}.
+In this case, $\qusedname_{\{\texttt{x} \}}(\defsetoftraces)=1$ as the input value $\tracetuple{\locinit}{\langle \true, \true\rangle}$ is missing from the set of input values that can produce the outcome $\false$, \cf, the set $\{ \tracetuple{\locinit}{\langle \true, \false\rangle}, \tracetuple{\locinit}{\langle \false, \true\rangle}, \tracetuple{\locinit}{\langle \false, \false\rangle} \}$.
+Note that, in this case, the variable \texttt{x} is \emph{used} in the program.
+Lastly, let us increase again the set of traces to $\defsetoftraces' \supseteq \defsetoftraces$:
+\begin{align*}
+  \defsetoftraces'
+  =
+  \left\{
+    \begin{array}{l}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+    \end{array}
+    \right\}
+\end{align*}
+In this case, $\qusedname_{\{\texttt{x} \}}(\defsetoftraces')=0$ as the input $\tracetuple{\locinit}{\langle \true, \true\rangle}$ is not missing anymore in the set of input values that can produce the outcomes $\false$.
+For instance, a program that may generate such a set of traces is the \refprog{zero-or-rand}.
+\begin{marginlisting}
+  \caption{Zero or random program.}
+  \labprog{zero-or-rand}
+  \vspace{\lineheight}
+\begin{lstlisting}
+zero_or_rand(x, y):
+  if not y:
+    return False
+  else:
+    return rand()
+ \end{lstlisting}
+\end{marginlisting}
+This example shows that \[\qusedname_{\{\texttt{x} \}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}}) \LE \qusedname_{\{\texttt{x} \}}(\defsetoftraces) \GE \qusedname_{\{\texttt{x} \}}(\defsetoftraces')\] where $\tracesemanticsnoparam\semanticsof{\texttt{id2}} \subseteq \defsetoftraces \subseteq \defsetoftraces'$.
+Thus, the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces, as the quantity $\qusedname$ may increase or decrease by adding or removing traces from a given set.
+\end{example}
+\begin{marginfigure}
+  \begin{tikzpicture}
+    % Define the positions of the nodes
+    \node (TT) at (0,1) {${\true\true}$};
+    \node (TF) at (1,1) {${\true\false}$};
+    \node (FT) at (2,1) {${\false\true}$};
+    \node (FF) at (3,1) {${\false\false}$};
+
+    \node (T) at (.5,0) {${\true}$};
+    \node (F) at (2.5,0) {${\false}$};
+
+    % Draw the edges
+    \draw (TT) -- (T);
+    \draw (TT) -- (F);
+    \draw (TF) -- (T);
+    \draw (TF) -- (F);
+    \draw (FT) -- (T);
+    \draw (FT) -- (F);
+    \draw (FF) -- (T);
+    \draw (FF) -- (F);
+
+    \draw[decorate,decoration={brace,amplitude=10pt,mirror,raise=5pt},yshift=0pt] (-0.5,1.5) -- (-0.5,-0.5) node [black,midway,xshift=-0.6cm] {$A$};
+\end{tikzpicture}
+\end{marginfigure}
+
+
+
+
+
+Unlike for the previous impact notions, it holds that, whenever the quantity $\qused(\tracesemantics)$ is 0, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
 Thus, we can establish the following equivalence:
 
 \siderefbox{def}{abstract-unused}[*-5]
@@ -662,7 +788,7 @@ Thus, we can establish the following equivalence:
     \unusediowrapper(\tracesemantics) \IfF \qused(\tracesemantics) = 0
   \end{gather*}
 \end{lemma}
-\begin{proof}
+\begin{proof}[Proof (Sketch)]
   To show ($\Rightarrow$) we assume that $\unusediowrapper(\tracesemantics)$.
   As a consequence, we have that any outcome either is not reachable or is reachable from every input value of the variables $\definputvariables$.
   Thus, the set of input values that can produce the outcome $\retrieveoutput\defstate$ is the set of all input values.
@@ -709,12 +835,12 @@ For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our a
 %
 Our static analysis is parametrized by an underlying backward abstract family\sidenote[][*-2]{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
-For instance, we could use the backward semantics \refdef{?}\sidenote{This definition will be defined in \refch{abstract-interpretation}, and referenced on the side here} to compute $\backwardsemanticsnoparam(\bucket)$.
+For instance, we could use the backward semantics \refdef{?}\sidenote{\denis{This definition will be defined in \refch{abstract-interpretation}, and referenced on the side here.}} to compute $\backwardsemanticsnoparam(\bucket)$.
 The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain, \cf{}
 $\abstractdomainconcretization$, to restore all possible dependencies from input states to output values, formally:
 \[
   \backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ
-  \nonemptysetof{\setdef{
+  \setof{\setdef{
     \inputoutputtuple{\defstate}
   }{
     \retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam(\bucket))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)
@@ -722,12 +848,10 @@ $\abstractdomainconcretization$, to restore all possible dependencies from input
   }
   \]
 In words, $\backwardconcretization$ collects all the input-output dependencies from the application of the backward semantics to each output bucket $\bucket$.
-Since the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the non-empty power set operator $\wp_{+}$.
+Since the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all combination of dependencies.
 In such a way, we ensure that the (restriction of the) output-abstraction semantics is a subset of the abstract one.
 %
 We can thus define the soundness condition for the backward semantics with respect to the reduction of the output-abstraction semantics.
-
-\marginnote[*-4]{The operator $\nonemptysetof{\cdot}$ returns the set of non-empty subsets of the given argument.}
 
 \siderefbox{def}{output-reduction}
 
@@ -751,15 +875,12 @@ $\multisemanticsnoparam\in\multitype$ as the backward semantics repeated on a se
 The concretization function $\multiconcretization$ maps the multi-bucket semantics $\multisemanticsnoparam$ from a given set of output buckets $\buckets$ to a set of sets of dependencies in $\outputtype$.
 Specifically, for each output bucket $\bucket\in\buckets$, $\multiconcretization$ concretizes the output from $\abstractdomainconcretization(\bucket)$ and the input states from the application of the backward semantics to $\bucket$, \ie, $\abstractdomainconcretization((\multisemantics\buckets)_j)$.
 Hence, all the possible input-output dependencies are collected for all buckets.
-Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all the non-empty combination of dependencies, \cf{} the non-empty power set operator $\wp_{+}$.
-\marginnote{
-  \begin{math}\nonemptysetof{X} \DefeQ \setof{X} \setminus \emptyset\end{math}
-}
+Lastly, to account for the fact that the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all combinations of dependencies.
 \begin{definition}[Multi-Bucket Concretization \texorpdfstring{$\multiconcretization$}{}]\labdef{multi-concretization}
   We define the concretization function $\multiconcretization\in(\multitype)\to\vectorbuckets\to\outputtype$ as:
 \begin{gather*}
   \multiconcretization(\multisemantics)\buckets \DefeQ
-  \nonemptysetof*{\bigsetjoin_{j\le n} \bigsetdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j) \land{} \\ \retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}}
+  \setof*{\bigsetjoin_{j\le n} \bigsetdef{\inputoutputtuple{\defstate}}{\retrieveinput{\defstate}\in\abstractdomainconcretization((\multisemantics\buckets)_j) \land{} \\ \retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)}}
 \end{gather*}
 \end{definition}
 
@@ -827,59 +948,58 @@ Whenever the output buckets \textit{cover} the subset of outcomes abstracted by 
 
 So far, we presented the semantics $\multisemanticsnoparam$ as an abstraction of the output-abstraction semantics $\outputsemanticsnoparam$ via \reflemma{sound-approximation-covering}.
 Next, this section shows the concept of sound implementation of the impact notions.
-We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or always lower depending on the ordering operator of $\genbounded$) than the concrete counterpart $\impactwrapper$.
+We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or always lower depending on the ordering operator $\comparison$ of $\genbounded$) than the concrete counterpart $\impactwrapper$.
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
   For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrapper$, whenever it holds that:
   \begin{eqnarray*}
-    \lefteqn{\forall{
-      \defsetoftraces\in \dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemantics)\buckets)
-    }.} \\ & {
-        \impactwrapper(
-          \defsetoftraces
-          ) \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
-          }
+  \impactwrapper(
+    \tracesemantics
+    ) \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
   \end{eqnarray*}
-  % The concretization of the abstract implementation $\impactinstance$ is $\boundconcretization\in\valuesposplus\to\outputtype$, defined as:
-  % \begin{align*}
-  %   \boundconcretization(\defbound) \DefeQ
-  %   \setdef{\defsetofdependencies \in \setof{\pair{\state}{\valuesposplus}}}{
-  %     \impactwrapper(\defsetofdependencies) \le \defbound
-  %   }
-  % \end{align*}
 \end{definition}
 
-\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity bound. As a reminder, we consider semantics that are collecting semantics, in the sense that semantics collect set of sets of elements, \eg, a set of sets of input-output tuples for the dependency semantics $\dependencysemanticsnoparam$.
-
-We define the concretization of the bound computed by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
+\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity $\defbound$.
+We define the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
 
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
   The concretization of a measured quantity $\defbound$ is $\boundconcretization\in\valuesinf\to\collectingtype$, defined as:
   \begin{eqnarray*}
     \lefteqn{\boundconcretization(\impactinstance(\multisemantics\buckets, \buckets)) \DefeQ} \\
-    & \setdef{\defsetoftraces \in \tracetype}{
-      \impactwrapper(\defsetoftraces) \comparison \impactinstance(\multisemantics\buckets, \buckets)
+    & \setdef*{\defsetofdependencies \in \multiconcretization(\multisemantics)\buckets}{
+      \impactwrapper(\defsetoftraces) \\
+      \quad \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
     }
   \end{eqnarray*}
+  where $\defsetoftraces\in\tracetype$ is the set of traces from the dependencies $\defsetofdependencies$, \ie, $\defsetoftraces = \singletonelimination(\dependencyconcretization \circ \outputconcretization(\{\defsetofdependencies\}))$.
 \end{definition}
+\marginnote{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 
 % Note that, it holds an equivalence with the $\defbound$-bounded impact property:
 % \[
 %   \boundconcretization(\defbound) = \genbounded
 % \]
 
-Additionally, we note that the concretization $\boundconcretization$ is monotonically increasing, respectively decreasing, depending on comparison operator $\comparison$.
+% Additionally, we note that the concretization $\boundconcretization$ is monotonically increasing, respectively decreasing, depending on comparison operator $\comparison$.
 
-\begin{lemma}[Monotonicity of $\boundconcretization$]\lablemma{monotonicity-bound-concretization}
-  Depending on the comparison operator $\comparison$, for all quantities $\defbound',\defbound\in\valuesposplus$ measured by the abstract impact $\impactinstance$ it holds that:
-  \begin{enumerate}[label=(\roman*)]
-    \item $\defbound' \le \defbound \ImplieS \leconcretization(\defbound') \subseteq \leconcretization(\defbound)$
-    \item $\defbound' \ge \defbound \ImplieS \geconcretization(\defbound') \supseteq \geconcretization(\defbound)$
-  \end{enumerate}
-\end{lemma}
-\begin{proof}
-  The proof follows directly from the definition of the concretization $\boundconcretization$. By increasing the bound $\defbound'$, the set of traces in $\leconcretization(\defbound')$ can only increase as we weaken the condition. On the other hand, $\geconcretization(\defbound')$ can only decrease as we strengthen the condition.
-\end{proof}
+% \begin{lemma}[Monotonicity of $\boundconcretization$]\lablemma{monotonicity-bound-concretization}
+%   Depending on the comparison operator $\comparison$, for all quantities $\defbound',\defbound\in\valuesposplus$ measured by the abstract impact $\impactinstance$ it holds that:
+%   \begin{enumerate}[label=(\roman*)]
+%     \item $\defbound' \le \defbound \ImplieS \leconcretization(\defbound') \subseteq \leconcretization(\defbound)$
+%     \item $\defbound' \ge \defbound \ImplieS \geconcretization(\defbound') \supseteq \geconcretization(\defbound)$
+%   \end{enumerate}
+% \end{lemma}
+% \begin{proof}
+%   The proof follows directly from the definition of the concretization $\boundconcretization$. By increasing the bound $\defbound'$, the set of traces in $\leconcretization(\defbound')$ can only increase as we weaken the condition. On the other hand, $\geconcretization(\defbound')$ can only decrease as we strengthen the condition.
+% \end{proof}
+
+The concretization $\boundconcretization$ maintains the set of dependencies concretized in turns by $\multiconcretization$ that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the bound computed in the abstract, \cf, $\impactinstance(\multisemantics\buckets, \buckets)$.
+Note that, based on the impact notion $\impactwrappername$, the $\defbound$-bounded impact property $\genbounded$ can be subset-closed, meaning that whenever a set of dependencies satisfies the property, all its subsets also satisfy the property.
+In this case, it holds that
+\begin{align*}
+  \multiconcretization(\multisemantics\buckets)
+  \SubseteQ \boundconcretization(\impactinstance(\multisemantics\buckets, \buckets))
+\end{align*}
 
 The next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
 That is, if %the computation of
@@ -1224,7 +1344,7 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Size}]\labdef{soundness-size}
   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the output variable of interest $\defoutputvariable$, it holds that:
-  \[\size(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomainsize(\defstate^\natural)\]
+  \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomainsize(\defstate^\natural)\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
@@ -1244,7 +1364,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   We need to prove, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$, that
   \begin{gather*}
     \range(\defsetoftraces) = \sup_{\definput\in\reducedstate}
-    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \LE \\
     \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomainsize(K)}{K \in I}
   \end{gather*}
@@ -1252,9 +1372,9 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
   \begin{gather*}
     \sup_{\definput\in\reducedstate}
-    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \spacearound{=} \\
-    \size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}})
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}})
   \end{gather*}
   Let $\overline{K} \in I$ be such that:
   \begin{gather*}
@@ -1263,8 +1383,8 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     \abstractdomainsize(\overline{K})
   \end{gather*}
   where $\overline{K} = \abstractdomainjoin\seTDef{\bucket}{j\in J}$ and $J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$.
-  We need to show that $\size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomainsize(\overline{K})$.
-  By contradiction, we assume that $\size(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomainsize(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
+  We need to show that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomainsize(\overline{K})$.
+  By contradiction, we assume that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomainsize(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{au1} there exist output abstractions that are not matched by any output bucket,
     \item \label{au2} some output abstractions are matched by the same output bucket,
@@ -1303,9 +1423,12 @@ The result is a measure of the influence of the input variables on the output of
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractqused(\presfrombuckets, \buckets) \DefeQ& l -\min~  \seTDef{\abstractdomaincount(\abstractdomainprojectothers(\prefrombucket))}{j \le n}
+    \abstractqused(\presfrombuckets, \buckets) \DefeQ& \max_{j \le \numberofbuckets}\spacer
+      \abstractdomaincount(\abstractdomainprojectothers(\inputspace) \setminus \abstractdomainprojectothers(\prefrombucket))
+      \cdot
+      \prod_{k \in \inputvariableswithoutw} \abstractdomaincount(\abstractdomainproject[\inputvariables \setminus \{k\}](\inputspace \setminus \abstractdomainbigjoin_{p \neq j}( \prefrombucket[p])))
   \end{align*}
-  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input configurations for the variables $\definputvariables$, \ie, $l = \cardinalitynospaces{\setdef{\definput(\definputvariables)}{\definput\in\reducedstate}}$.
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input values a variable takes.
 \end{definition}
 
 \begin{example}\labexample{abstract-qused}

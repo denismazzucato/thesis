@@ -3,7 +3,7 @@
 \newcommand*{\impactsubseteq}{\le}
 
 \newcommand{\impactinstance}{\resize{\textup{\texttt{Impact}}}{\definputvariables}[\natural]}
-\newcommand{\boundconcretization}{\concretization^{\comparison}_\definputvariables}
+\newcommand{\boundconcretization}{\resize{\concretization}{\impactwrapper}[\comparison]}
 \newcommand{\leconcretization}{\concretization^\le_\definputvariables}
 \newcommand{\geconcretization}{\concretization^\ge_\definputvariables}
 
@@ -12,6 +12,7 @@
 \newcommand*{\rangename}{\textup{\textsc{Range}}}
 \newcommand*{\range}{\rangename_\definputvariables}
 \newcommand*{\size}{\textup{\textsc{Size}}}
+\newcommand*{\distance}{\textup{\textsc{Distance}}}
 
 \newcommand*{\outcomesname}{\textup{\textsc{Outcomes}}}
 \newcommand*{\outcomes}{\outcomesname_\definputvariables}
@@ -52,11 +53,11 @@
 
 \newcommand*{\numberofbuckets}{n}
 \newcommand*{\bucketname}{B}
-\newcommand*{\buckets}{\bucketname^\natural}
-\newcommand*{\bucket}[1][j]{\resize{\bucketname}{#1}[\natural][f^2]}
+\newcommand*{\buckets}{\bucketname}
+\newcommand*{\bucket}[1][j]{{\bucketname}_{#1}}
 \newcommand*{\vectorbuckets}[1][\numberofbuckets]{\resize{\abstractdomain}{}[#1]}
-\newcommand*{\presfrombuckets}{X^\natural}
-\newcommand{\prefrombucket}[1][j]{\resize{X}{#1}[\natural][f^2]}
+\newcommand*{\presfrombuckets}{X}
+\newcommand{\prefrombucket}[1][j]{{X}_{#1}}
 
 \newcommand*{\abstractrangename}{\resize{\textup{\texttt{Range}}}{}[\natural]}
 \newcommand*{\abstractrange}{\resize{\textup{\texttt{Range}}}{\definputvariables}[\natural]}

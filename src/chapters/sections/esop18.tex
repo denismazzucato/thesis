@@ -516,6 +516,10 @@ Next we show that abstract non-interference matches the abstract unused predicat
 \end{proof}
 
 \begin{example}
+  \denis{Add example showing that with seed the two are also equivalent.}
+\end{example}
+
+\begin{example}
 Let us consider the simplified trace semantics of the program \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
 As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{science} interferes with the output states.
 In fact, assuming:
@@ -880,7 +884,115 @@ Note that, in case no dependency in $\defsetofsetofdependencies$ ends in an outp
 \section{Syntactic Dependency Analysis}
 \labsec{syntactic-dependency-analysis}
 
-\denis{todo}
+From \sidetextcite[][Section 10]{Urban2018}, we report a data usage analysis based on \emph{syntactic} dependencies between program variables.
+The analysis captures both implicit and explicit flows of information between variables.
+To do so, it tracks when a variable is used or modified in a statement also based on the nesting level. The idea is that a variable also depend on variables that are not explicitly assigned to it.
+For instance, if a variable is modified within a loop body, it depends on the variables of the loop condition.
+More formally, each variable in the program maps a value in the \usage{} complete lattice, \reffig{usage-lattice}.
+The lattice contains the following elements: $\usedtag$ (\emph{\underline{u}sed}) and $\unusedtag$ (\emph{\underline{u}nused}) denoting respectively that a variable may be used or is definitely not used at the current nesting level.
+The elements $\belowtag$ (\emph{\underline{b}elow}) and $\overwrittentag$ (\emph{over\underline{w}ritten}) denote that a variable may be used at a lower nesting level or is modified at the current nesting level, respectively.
+
+A variable is (explicitly) used if it is assigned to another variable that is used in the current ($\usedtag$) or lower nesting level ($\belowtag$). Another reason for a variable to be (implicitly) used is if it appears in the boolean condition of a statement that uses another variable ($\usedtag$) or modifies another used variable ($\overwrittentag$).
+We define the operator $\usageassign\semanticsof{\assignstmt}$ to handle the assignment of variables on a map $\usagemap\in\variables\to\usage$:
+
+
+\begin{align*}
+  & \usageassign\semanticsof{\assignstmt}(\usagemap) \DefeQ \\
+  &\qquad \lambda \defvariable'.
+  \begin{cases}
+    \overwrittentag & \defvariable' = \defvariable \land \defvariable' \notin \variablesof{\defaexp} \land \usagemap(\defvariable) \in\{ \usedtag, \belowtag\} \\
+    \usedtag & \defvariable' \in \variablesof{\defaexp} \land \usagemap(\defvariable) \in \{ \usedtag, \belowtag\} \\
+    \usagemap(\defvariable') & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+The assigned variable is overwritten ($\overwrittentag$ unless it is used in the expression $\defaexp$.
+
+\begin{align*}
+  & \usagefilter\semanticsof{\defbexp}(\usagemap) \DefeQ \\
+  &\qquad \lambda \defvariable'.
+  \begin{cases}
+    \usedtag & \defvariable' \in \variablesof{\defaexp} \land \exists \defvariable \in \variables.\spacer \usagemap(\defvariable) \in\{ \usedtag, \overwrittentag\} \\
+    \usagemap(\defvariable') & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+During the dependency analysis, we propagate a \emph{stack} that grows and shrinks based on the nesting level of the statements.
+The stack is a tuple $\stacktuple{\usagemap_0}$ of mutable length $\stacklength$, where each element $\usagemap_j\in\variables \to\usage$ maps variables to their usage status, for $j\le \stacklength$. We denote the set of all stacks by $\stack$, we define the assignment and filter operators on stacks as well:
+
+\begin{align*}
+  \usageassign\semanticsof{\assignstmt}(\stacktuple{\usagemap_0}) \DefeQ
+    \stacktuple{\usageassign\semanticsof{\assignstmt}(\usagemap_0)}
+  \\
+  \usagefilter\semanticsof{\defbexp}(\stacktuple{\usagemap_0}) \DefeQ
+  \stacktuple{\usagefilter\semanticsof{\assignstmt}(\usagemap_0)}
+\end{align*}
+
+We define additional operators to handle statements with nested body (\eg, loops).
+The $\usagepush$ operator duplicates the map on top of the stack and modifies the duplicate accordingly with the increased nesting level: used variables ($\usedtag$) were used at the previous (lower) nesting level, overwritten variables ($\overwrittentag$) are now unused, the rest is propagated without further modifications. Formally:
+
+\begin{align*}
+  \usagepush(\stacktupleinit) &\DefeQ \stacktuple{\usageincr(\usagemap_0), \usagemap_0} \\
+  \usageincr(\usagemap) &\DefeQ \lambda \defvariable.\spacer \begin{cases}
+    \belowtag & \usagemap(\defvariable) = \usedtag \\
+    \unusedtag & \usagemap(\defvariable) = \overwrittentag \\
+    \usagemap(\defvariable) & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+The dual operator is the $\usagepop$ operator that restores the information about the previous nested level and combines it with the new information computed inside the higher nested level:
+
+\begin{align*}
+  \usagepop(\stacktupleinit) &\DefeQ \stacktuple[]{\usagedecr(\usagemap_0, \usagemap_1)} \\
+  \usagedecr(\usagemap_0, \usagemap_1) &\DefeQ \lambda \defvariable.\spacer \begin{cases}
+    \usagemap_1(\defvariable) & \usagemap_0(\defvariable) \in \{ \belowtag, \unusedtag \} \\
+    \usagemap_0(\defvariable) & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+The syntactic dependency analysis $\synsemanticsnoparam$ is a backward analysis on the lattice of stacks $\langle\stack, \stacksubseteq,\stackjoin\rangle$. The partial order $\stacksubseteq$ and least upper bound $\stackjoin$ are point-wise lifted from the $\usage$ lattice. For each statement $\defstmt$ in the small imperative language of \refsec{a-small-imperative-language}, the syntactic dependency analysis $\synsemanticsnoparam$ is defined in \reffig{syntactic-dependency-analysis}.
+The initial stack contains a single map $\usagemap_0$ that maps all the output variables to $\usedtag$ (entry invariant of the analysis) and all the others to $\unusedtag$.
+We exemplify the analysis below.
+
+\begin{example}
+  Consider again \refprog*{school-year}. The syntactic dependency analysis $\synsemanticsnoparam\semanticsof{\texttt{school-year}}$ starts from the stack $\langle \usagemap_0 \rangle$ where $\usagemap_0$ maps the output variable $\texttt{passing}$ to $\usedtag$ and the rest to $\unusedtag$.
+  The analysis first approaches the last conditional statement (the analysis proceed backwardly) at \refline{third-cond}.
+  A modified copy of the map on top of the stack, \cf, $\usagemap_0$, is pushed back to the stack:
+  \denis{\dots}
+\end{example}
+
+The concretization maps syntactic dependencies to set of (state) dependencies in $\dependencytype$ that satisfy the unused predicate $\unusedwrapper$, \cf{} \refdef{unused-predicate}.
+
+\begin{definition}\labdef{concretization-syntactic-dependency-analysis}
+  The concretization $\synconcretization\in\stack \to \dependencytype$ of the syntactic dependency analysis is defined as:
+  \begin{align*}
+    &\synconcretization(\stacktupleinit) \DefeQ \\
+    &\quad\setdef{
+      \defsetofdependencies\in\setof\pairofstates
+    }{
+      \forall \defvariable\in\variables.\spacer \usagemap_0(\defvariable) = \usedtag \ImplieS \unusedwrappername_{\{\defvariable\}}(\defsetofdependencies)
+    }
+  \end{align*}
+\end{definition}
+\marginnote{
+  We abuse the notation of $\unusedwrappername_{\{\defvariable\}}$ to denote the unused predicate of sets of dependencies instead of sets of traces, \ie, its dependency abstraction.
+}
+
+Finally, we show that the syntactic dependency analysis $\synsemantics$ is sound for proving that a program does not use a subset of its input variables.
+
+\begin{theorem}
+  A program $\defprogram$ does not use the set of input variables $\definputvariables$ only if the concretization of the syntactic dependency analysis $\synsemanticsnoparam$ is included in the unused property $\unused$.
+  \begin{align*}
+    \dependencyconcretization \circ \synconcretization(\synsemantics) \subseteq \unused \ImplieS \defprogram \satisfies \unused
+  \end{align*}
+  \begin{proof}
+    \denis{\dots}
+  \end{proof}
+\end{theorem}
+
+Note that, the syntactic dependency analysis does not consider non-termination. For instance, if a variable solely determine the termination of a loop but is not used in the output computation, the analysis will not capture such dependency.
+In order to take termination into account, a na\"ive approach could be to map each variable appearing in the guard of a loop to $\usedtag$. A more sophisticated one could be to run a termination analysis alongside the data usage analysis.
+Only variables that are used in the guard of non-terminating loops would be marked as $\usedtag$, thus refining the set of used variables compared to the previous approach.
 
 \section{Summary}
 \labsec{input-data-usage-summary}
