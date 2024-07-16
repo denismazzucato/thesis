@@ -219,22 +219,22 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
 \end{proof}
 
 Similarly, we define $\abstractrange$ as the maximum length of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
-In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainsize\in\abstractdomain\to\valuesposplus$, which returns the length of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
+In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomaindistance\in\abstractdomain\to\valuesposplus$, which returns the length of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
-    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
+    \abstractrange(X^\natural, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(K)}{K \in I} \\
     \text{where}~
     I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(X^\natural_j))_{j\le\numberofbuckets})}
   \end{align*}
 \end{definition}
 
-To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomainsize$ to ensure that the abstract length is always greater than the concrete one.
+To prove that $\abstractrange$ is a sound implementation of $\range$, we require the following soundness condition on the abstract operator $\abstractdomaindistance$ to ensure that the abstract length is always greater than the concrete one.
 
-\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Length}]\labdef{soundness-length}
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomaindistance$}{Length}]\labdef{soundness-length}
   Given an abstract value $\defstate^\natural\in\abstractdomain$, it holds that:
-  \[\abstractdomainsize(\defstate^\natural) \ge \length(\setdef{\reader(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
+  \[\abstractdomaindistance(\defstate^\natural) \ge \length(\setdef{\reader(\defstate)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)})\]
 \end{definition}
 
 As previously done, the next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.

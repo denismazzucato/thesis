@@ -643,27 +643,36 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
     \collectingsemantics \subseteq \BOUNDEDQUSED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDQUSED))
   \end{align*}
 \end{lemma}
-\begin{proof}
+\begin{proof}[Proof (Sketch)]
   Let us consider the $\outputabstraction \circ \dependencyabstraction$ abstraction of the $\defbound$-bounded impact property $\boundedqused$:
+  \marginnote{
+    \begin{align*}
+      &I_{\retrieveoutput{\defstate}}(\defsetofdependencies) \spacearound= \\
+      &\quad \seTDef{
+        \retrieveinput{\defstate'}
+      }{
+        \inputoutputtuple{\defstate'} \in \defsetofdependencies \land
+        \outputobs(\retrieveoutput{\defstate}) = \outputobs(\retrieveoutput{\defstate'})
+      } \\
+      &Q_\definputvariables(\defsetofstates) \spacearound= \\
+      &\quad\setdef{
+        \defstate' \in \state
+      }{
+        \defstate \in \defsetofstates \land
+          \defstate' \stateeq{\inputvariableswithoutw} \defstate
+      }
+    \end{align*}
+  }
   \begin{eqnarray*}
     \lefteqn{\outputabstraction(\dependencyabstraction(\boundedqused)) =} \\
     &
     \setdef{
       \defsetofdependencies \in \setof\pairofstates
     }{
-      \sup\limits_{\retrieveoutput\defstate \in \stateandbottom}
-      \spacer\left|
-        \begin{array}{l}
-          \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
-          \quad \bigsetdef{
-            \retrieveinput{\defseq'}(\definputvariables)
-            }{
-              \deftrace' \in \defsetoftraces \LanD \\
-              \outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate) \LanD \\
-              \retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}
-            }
-        \end{array}
-      \right| \le \defbound
+      \sup_{\inputoutputtuple{\defstate} \in \defsetofdependencies}
+    \cardinality*{
+        Q_\definputvariables(I_{\retrieveoutput{\defstate}}(\defsetofdependencies)) \setminus I_{\retrieveoutput{\defstate}}(\defsetofdependencies)
+      } \le \defbound
     }
   \end{eqnarray*}
   As noticed before, the $\qusedname$ impact notion does not consider the intermediate states and abstracts the output states before any computation.
@@ -674,7 +683,7 @@ The next example shows that $\qusedname$ is neither monotonic nor anti-monotonic
 Notably, the major consequence is that $\boundedqused$ is not subset-closed. Thus, not all the subsets of a potential over-approximation of the trace semantics satisfy the $\boundedqused$ property. Indeed, there is no guarantee that even the trace semantics itself satisfies the property.
 To address this issue, from the result of the abstract analysis we compute an under-approximation of the input values that are definitely missing from the set of input values that can produce the outcomes. This under-approximation provides a lower bound on the $\qusedname$ impact notion, hence the use of the $\ge$ operator in the $\defbound$-bounded impact property.
 
-\begin{example}
+\begin{example}\labexample{qused-not-monotonic}
 In this example, with the identity function on the second component, \cf{}, \refprog{id2}, we show that the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces.
 Specifically, we consider two input variables with boolean values $\{\true, \false\}$, the \refprog{id2} returns the second component of the input without any modification.
 \begin{marginlisting}
@@ -788,7 +797,7 @@ Thus, we can establish the following equivalence:
     \unusediowrapper(\tracesemantics) \IfF \qused(\tracesemantics) = 0
   \end{gather*}
 \end{lemma}
-\begin{proof}[Proof (Sketch)]
+\begin{proof}
   To show ($\Rightarrow$) we assume that $\unusediowrapper(\tracesemantics)$.
   As a consequence, we have that any outcome either is not reachable or is reachable from every input value of the variables $\definputvariables$.
   Thus, the set of input values that can produce the outcome $\retrieveoutput\defstate$ is the set of all input values.
@@ -971,9 +980,9 @@ We define the concretization of the bound measured by the abstract impact $\impa
       \quad \ComparisoN \impactinstance(\multisemantics\buckets, \buckets)
     }
   \end{eqnarray*}
-  where $\defsetoftraces\in\tracetype$ is the set of traces from the dependencies $\defsetofdependencies$, \ie, $\defsetoftraces = \singletonelimination(\dependencyconcretization \circ \outputconcretization(\{\defsetofdependencies\}))$.
+  where $\defsetoftraces\in\tracetype$ is the set of traces concretized from the dependencies $\defsetofdependencies$, \ie, $\defsetoftraces = \singletonelimination(\dependencyconcretization \circ \outputconcretization(\{\defsetofdependencies\}))$.
+  \marginnote{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 \end{definition}
-\marginnote{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 
 % Note that, it holds an equivalence with the $\defbound$-bounded impact property:
 % \[
@@ -997,9 +1006,42 @@ The concretization $\boundconcretization$ maintains the set of dependencies conc
 Note that, based on the impact notion $\impactwrappername$, the $\defbound$-bounded impact property $\genbounded$ can be subset-closed, meaning that whenever a set of dependencies satisfies the property, all its subsets also satisfy the property.
 In this case, it holds that
 \begin{align*}
-  \multiconcretization(\multisemantics\buckets)
+  \multiconcretization(\multisemantics)\buckets
   \SubseteQ \boundconcretization(\impactinstance(\multisemantics\buckets, \buckets))
 \end{align*}
+However, this is not always the case.
+Indeed, some subset of dependencies may not satisfy the property $\genbounded$.
+
+\begin{example}
+  We are interested in the validation of the property $\boundedqused$, where the impact notion is $\qusedname$ and the comparison operator for quantity bounds is $\ge$.
+  Consider an abstract semantics $\multisemanticsnoparam$ that concretize to the following sets of dependencies:
+  \begin{align*}
+    \multiconcretization(\multisemanticsnoparam) =
+    \setof*{\left\{
+    \begin{array}{l}
+      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \anyvalue\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}
+    \end{array}
+    \right\}}
+  \end{align*}
+  As noted in \refexample{qused-not-monotonic}, the $\qusedname_{\{\texttt{x}\}}$ applied to the biggest set of the concretized dependencies above is 1.
+  We assume the abstract impact returns the bound 1.
+  In this case, we filter from $\multiconcretization(\multisemantics)$ the set of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqused$ employs the $\ge$ operator.
+  For instance, the following set of dependencies is removed:
+  \begin{align*}
+    \left\{
+    \begin{array}{l}
+      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}
+    \end{array}
+    \right\}
+  \end{align*}
+  as $\qusedname_{\{\texttt{x}\}}$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
+\end{example}
 
 The next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
 That is, if %the computation of
@@ -1280,12 +1322,12 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
 \labsec{abstract-range}
 
 We define $\abstractrange$ as the maximum distance of the range of the extreme values of the buckets represented by intersecting abstract values after projections.
-In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomainsize\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
+In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomaindistance\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
 
 \begin{example}
-  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainsize(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
-  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomainsize(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
-  The function $\abstractdomainsize$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
+  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomaindistance(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
+  On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomaindistance(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
+  The function $\abstractdomaindistance$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 \end{example}
 
 The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values.
@@ -1296,7 +1338,7 @@ All the possible combination of intersections are joined together to find the ma
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
 We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
 \begin{align*}
-\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomainsize(K)}{K \in I} \\
+\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(K)}{K \in I} \\
 \text{where}~
 I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
 \end{align*}
@@ -1312,7 +1354,7 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
   & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
   \end{eqnarray*}
   Next, $\abstractrangename_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
-  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie, $\abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
+  The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie, $\abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
   Therefore, $\abstractrangename_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
   On the other hand, projecting away the variable \texttt{speed} from the abstract intervals results in:
   \begin{eqnarray*}
@@ -1328,23 +1370,23 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
   \end{eqnarray*}
   In this case, we obtain the following sizes for the combination of buckets:
   \begin{align*}
-    \abstractdomainsize(\bucket[\textup{low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 0 \rangle) \spacearound{=} 0 \\
-    \abstractdomainsize(\bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 1 \rangle) \spacearound{=} 0 \\
-    \abstractdomainsize(\bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 2 \rangle) \spacearound{=} 0 \\
-    \abstractdomainsize(\bucket[\textup{high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto 3 \rangle) \spacearound{=} 0 \\
-    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 1] \rangle) \spacearound{=} 1 \\
-    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
-    \abstractdomainsize(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
-    \abstractdomainsize(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomainsize(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
+    \abstractdomaindistance(\bucket[\textup{low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 0 \rangle) \spacearound{=} 0 \\
+    \abstractdomaindistance(\bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 1 \rangle) \spacearound{=} 0 \\
+    \abstractdomaindistance(\bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 2 \rangle) \spacearound{=} 0 \\
+    \abstractdomaindistance(\bucket[\textup{high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 3 \rangle) \spacearound{=} 0 \\
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 1] \rangle) \spacearound{=} 1 \\
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
+    \abstractdomaindistance(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
   \end{align*}
   Therefore, $\abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
 
-To prove that $\abstractrange$ is a sound implementation of $\range$, we require the classic soundness condition on the abstract operator $\abstractdomainsize$, ensuring that the abstract size is always greater than the concrete one.
+To prove that $\abstractrange$ is a sound implementation of $\range$, we require the classic soundness condition on the abstract operator $\abstractdomaindistance$, ensuring that the abstract size is always greater than the concrete one.
 
-\begin{definition}[Soundness of \texorpdfstring{$\abstractdomainsize$}{Size}]\labdef{soundness-size}
-  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the output variable of interest $\defoutputvariable$, it holds that:
-  \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariable)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomainsize(\defstate^\natural)\]
+\begin{definition}[Soundness of \texorpdfstring{$\abstractdomaindistance$}{Size}]\labdef{soundness-size}
+  Given an abstract value $\defstate^\natural\in\abstractdomain$ and the output variables of interest $\defoutputvariables$, it holds that:
+  \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomaindistance(\defstate^\natural)\]
 \end{definition}
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
@@ -1356,7 +1398,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
     \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
     \item \label{proof:ad} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
-    \item \label{proof:ae} $\abstractdomainsize$ is sound, \cf{} \refdef*{soundness-size}[*12];
+    \item \label{proof:ae} $\abstractdomaindistance$ is sound, \cf{} \refdef*{soundness-size}[*12];
   \end{enumerate}
   then, $\abstractrange$ is a sound implementation of $\range$.
 \end{lemma}
@@ -1366,7 +1408,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     \range(\defsetoftraces) = \sup_{\definput\in\reducedstate}
     \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \LE \\
-    \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomainsize(K)}{K \in I}
+    \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomaindistance(K)}{K \in I}
   \end{gather*}
   where $I = \setdef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}$.
   Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
@@ -1378,13 +1420,13 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   \end{gather*}
   Let $\overline{K} \in I$ be such that:
   \begin{gather*}
-    \max~\setdef{\abstractdomainsize(K)}{K \in I}
+    \max~\setdef{\abstractdomaindistance(K)}{K \in I}
     \spacearound{=}
-    \abstractdomainsize(\overline{K})
+    \abstractdomaindistance(\overline{K})
   \end{gather*}
   where $\overline{K} = \abstractdomainjoin\seTDef{\bucket}{j\in J}$ and $J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$.
-  We need to show that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomainsize(\overline{K})$.
-  By contradiction, we assume that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomainsize(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
+  We need to show that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomaindistance(\overline{K})$.
+  By contradiction, we assume that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomaindistance(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{au1} there exist output abstractions that are not matched by any output bucket,
     \item \label{au2} some output abstractions are matched by the same output bucket,
