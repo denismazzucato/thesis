@@ -3,16 +3,34 @@
 
 Recent advances and evolution in software development have made software more and more complex.
 The reliability of software systems is based on their correctness.
-Any failure or vulnerability in software poses a significant risk, potentially threatening human safety and causing financial losses.
-Nowadays, with more complex systems, the likelihood of software containing bugs increases.
-The effort and cost to fix bugs grow with late detection, \reftab{effort-to-fix} illustrates the relative costs of fixing bugs at different development stages.
+Any failure or vulnerability in software poses a significant risk, potentially threatening human safety or causing financial losses.
+As software systems become more complex, also the likelihood of bugs increases.
+The effort and cost to fix these bugs escalate with late detection, \reftab{effort-to-fix} illustrates the relative costs of fixing bugs at different development stages.
 Nowadays, software rules safety-critical systems such as nuclear power plants, car engines, airplane control systems, and medical devices.
 For system where safety is critical, addressing bugs before deployment is mandatory.
 
+\begin{margintable}[*1]
+  \caption{Cost to fix bugs at different development stages.}
+  \labtab{effort-to-fix}
+  \centering
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{r r}
+    \toprule
+    \textsc{Bug Found at Stage} & \textsc{Cost to Fix} \\
+    \midrule
+    Requirements & 1x (definition) \\
+    Architecture & 3x \\
+    Design & 5-10x \\
+    System Test & 10x \\
+    Production & 10-100x \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{margintable}
 
 Nowadays, machine learning software has an ever-increasing societal impact by assisting or even automating decision-making in fields such as social welfare, criminal justice, and even health care.
-At the same time, a number of recent cases have shown that such software may reproduce, or even reinforce, bias directly or indirectly present in the training data \cite{BuolamwiniGebru2018,KayMatuszek2015,COMPAS,ObermeyerPowers2019}.
-In April 2021, the European Commission proposed a first legal framework on machine learning software -- the Artificial Intelligence Act~\cite{ArtIntAct}
+At the same time, a number of recent cases have shown that such software may reproduce, or even reinforce, bias directly or indirectly present in the training data \sidecite[*4]{BuolamwiniGebru2018,KayMatuszek2015,COMPAS,ObermeyerPowers2019}.
+In April 2021, the European Commission proposed a first legal framework on machine learning software -- the Artificial Intelligence Act~\sidecite[*12]{ArtIntAct}
 --- which imposes strict requirements to minimize the risk of discriminatory outcomes.
 
 Moreover, recent advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications. Agents like OpenAI's ChatGPT and Google's Gemini are gaining widespread use. Specifically designed for coding, GitHub Copilot assists programmers within IDEs and has over a million subscribers. Despite their benefits, AI-generated code can introduce as many bugs as human-written code, making it crucial to use techniques that detect software errors or certify intended behaviors.
@@ -25,7 +43,7 @@ The correct behavior of software is tested empirically for finite number of inpu
 However, testing has inherent limitations.
 Testing can only verify a program against the functional requirements, which may be poorly defined and ambiguous, leading to inadequate testing.
 Exhaustive testing of systems is impractical, and constraints on time and budget can further impact the process.
-But mostly, testing is not sufficient to guarantee the absence of bugs in software\sidenote{``program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- Edsger W. Dijkstra \cite{Dijkstra1976}}.
+But mostly, testing is not sufficient to guarantee the absence of bugs in software\sidenote{``program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- Edsger W. Dijkstra} \sidecite{Dijkstra1976}.
 While in some cases it is acceptable to deploy software with bugs (and rely on patches to fix them, \reftab{effort-to-fix}), in the case of safety-critical systems, it is necessary to ensure that the software is free of bugs before deployment to avoid catastrophic consequences.
 
 In contrast, \emph{formal methods} provide rigorous mathematical guarantees about the correctness of software.

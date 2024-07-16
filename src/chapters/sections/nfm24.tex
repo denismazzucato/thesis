@@ -960,7 +960,13 @@ Next, this section shows the concept of sound implementation of the impact notio
 We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ to return a bound on the impact which is always higher (or always lower depending on the ordering operator $\comparison$ of $\genbounded$) than the concrete counterpart $\impactwrapper$.
 
 \begin{definition}[Sound Implementation]\labdef{sound-implementation}
-  For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$, $\impactinstance$ is a \textup{sound implementation} of $\impactwrapper$, whenever it holds that:
+  For all output buckets $\buckets$ and family of semantics $\backwardsemanticsnoparam$,
+  whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-8],
+  \end{enumerate}
+  we say that $\impactinstance$ is a \textup{sound implementation} of $\impactwrapper$ if and only if:
   \begin{eqnarray*}
   \impactwrapper(
     \tracesemantics
@@ -1010,7 +1016,7 @@ In this case, it holds that
   \SubseteQ \boundconcretization(\impactinstance(\multisemantics\buckets, \buckets))
 \end{align*}
 However, this is not always the case.
-Indeed, some subset of dependencies may not satisfy the property $\genbounded$.
+Indeed, some subsets of dependencies may not satisfy the property $\genbounded$.
 
 \begin{example}
   We are interested in the validation of the property $\boundedqused$, where the impact notion is $\qusedname$ and the comparison operator for quantity bounds is $\ge$.
@@ -1043,7 +1049,31 @@ Indeed, some subset of dependencies may not satisfy the property $\genbounded$.
   as $\qusedname_{\{\texttt{x}\}}$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
 \end{example}
 
-The next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
+The concretization $\boundconcretization$ is used to prove that the abstract semantics $\multisemanticsnoparam$ is sound for proving the property $\genbounded$.
+
+\begin{lemma}\lablemma{soundness-boundconcretization}
+  A program $\defprogram$ has an impact of at most $\defbound$ (respectively at least $\defbound$ depending on the comparison operator $\comparison$) only if the set of dependencies concretized from the quantity $\impactwrapper(\tracesemantics)$
+  are a subset of the semantics in $\genbounded$.
+  \begin{align*}
+    &\dependencyconcretization \circ \outputconcretization \circ \boundconcretization(
+      \impactwrapper(\tracesemantics)
+    ) \SubseteQ \GENBOUNDED \\
+    &\qquad\ImplieS \defprogram \satisfies \GENBOUNDED
+  \end{align*}
+\end{lemma}
+\begin{proof}
+  By hypothesis, we assume that $\dependencyconcretization \circ \outputconcretization \circ \boundconcretization(
+    \defbound'
+  ) \subseteq \genbounded$ where $\defbound' = \impactwrapper(\tracesemantics)$.
+  We have that $\outputsemantics \subseteq \boundconcretization(\defbound')$ by definition of $\boundconcretization$, \cf{} \refdef{concretization-quantitative}.
+  Then, by monotonicity of $\outputconcretization$ and $\dependencyconcretization$, \cf{} \refdef{right-left-adjoints-for-the-output-abstraction-semantics} and \refdef{right-left-adjoints-for-the-dependency-semantics} respectively, we have that $\dependencyconcretization(\outputconcretization(\outputsemantics)) \subseteq \dependencyconcretization(\boundconcretization(\defbound'))$.
+  Thus, since $\dependencyconcretization \circ \outputconcretization \circ \boundconcretization(
+    \defbound'
+  ) \subseteq \genbounded$, we have that $\dependencyconcretization(\outputconcretization(\outputsemantics)) \subseteq \genbounded$.
+  Depending on the instantiation of the impact notion, we conclude the proof by \reflemma{outcomes-validation} for the $\outcomesname$ impact notion, \reflemma{range-validation} for the $\rangename$ impact notion, and \reflemma{qused-validation} for the $\qusedname$ impact notion.
+\end{proof}
+
+Finally, the next result shows that our static analysis is sound when employed to verify the property of interest $\genbounded$ for the program $\defprogram$.
 That is, if %the computation of
 $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\defbound$, then the program $\defprogram$ satisfies the property $\genbounded$, \cf{} $\defprogram \satisfies \genbounded$.
 
@@ -1051,60 +1081,27 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
   Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
   \begin{enumerate}[label=(\roman*)]
-    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12],
+    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12], and
     \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-8], and
     \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*-2],
-  \end{enumerate}
+\end{enumerate}
   the following implication holds:
   \begin{align*}
     \impactinstance(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \comparison \defbound \ImplieS \defprogram \satisfies \GENBOUNDED
   \end{align*}
 \end{theorem}
 \begin{proof}
-  Assuming $\comparison$ is $\le$, the proof follows:
+  From \ref{p:first}, \ref{p:second}, and \ref{p:third}, we have that:
   \begin{align*}
-    &\impactinstance(\multisemantics\buckets, \buckets) = \defbound'
-      && \text{by \ref{p:third}} \\
-    & \implies
-    \forall{
-      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\multiconcretization(\multisemantics)\buckets))
-    }. \\ & \phantom{\implies} \qquad
-        \impactwrapper(
-          \multiconcretization(\multisemantics)\buckets
-        ) \LE \defbound'
-      && \text{by \ref{p:first}} \\
-    & \implies
-    \forall{
-      \defsetoftraces\in \dependencyconcretization(\outputconcretization(\outputsemantics))
-    }. \\ & \phantom{\implies} \qquad
-        \impactwrapper(
-          \multiconcretization(\multisemantics)\buckets
-        ) \LE \defbound'
-      && \text{by \refdef{concretization-quantitative}} \\
-    & \implies
-    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \leconcretization(\defbound')
-      && \text{by \reflemma{monotonicity-bound-concretization} and } \defbound' \le \defbound \\
-    & \implies
-    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \leconcretization(\defbound)
-      && \text{by } \bounded = \leconcretization(\defbound) \\
-    & \implies
-    \dependencyconcretization(\outputconcretization(\outputsemantics)) \SubseteQ \bounded
-      && \text{by \refthm{collecting-dependency-galois-connection}} \\
-    & \implies
-    \outputconcretization(\outputsemantics) \SubseteQ \dependencyabstraction(\bounded)
-      && \text{by \refthm{dependency-output-galois-connection}} \\
-    & \implies
-    \outputsemantics \SubseteQ \outputabstraction(\dependencyabstraction(\bounded))
+    \impactwrapper(\tracesemantics) \ComparisoN \impactinstance(\multisemantics\buckets, \buckets) \ComparisoN \defbound'
   \end{align*}
-  In case $\impactwrappername$ is instantiated with $\outcomesname$, we obtain the result by \reflemma*{outcomes-validation}[*-2]. Otherwise, if $\impactwrappername$ is instantiated with $\rangename$, we obtain the result by \reflemma*{range-validation}[*2]. On the other hand, if $\comparison$ is $\ge$ the proof follows by the same reasoning inverting $\subseteq$ with $\supseteq$ when \reflemma{monotonicity-bound-concretization} is applied.
-  In such case, $\impactwrappername$ is instantiated with $\qusedname$ and we conclude the proof following \reflemma*{qused-validation}[*4].
-  \siderefbox{lemma}{monotonicity-bound-concretization}[*-21]
-  \siderefbox{thm}{collecting-dependency-galois-connection}[*-16]
-  \siderefbox{thm}{dependency-output-galois-connection}[*-11]
+  From the hypothesis $\defbound' \comparison \defbound$, we obtain $\impactwrapper(\tracesemantics)\comparison \defbound$.
+  By definition of the concretization functions, \cf{} \refdef{right-left-adjoints-for-the-dependency-semantics}, \refdef{right-left-adjoints-for-the-output-abstraction-semantics}, and \refdef{concretization-quantitative} respectively, we have that $\dependencyconcretization \circ \outputconcretization \circ \boundconcretization(\impactwrapper(\tracesemantics)) \subseteq \genbounded$.
+  We conclude by \reflemma{soundness-boundconcretization}.
 \end{proof}
 
 
-Finally,
+Next,
 we define $\abstractrangename$, $\abstractoutcomesname$, and $\abstractqusedname$
 as possible implementations for $\rangename$, $\outcomesname$, and $\qusedname$, respectively.
 
@@ -1250,20 +1247,20 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{lemma}
 \begin{proof}
-  We need to prove, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$, that
+  We need to prove that
   \begin{gather*}
-    \outcomes(\defsetoftraces) = \sup_{\definput\in\reducedstate}
-    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}} \\
+    \outcomes(\tracesemanticsnoparam) = \sup_{\definput\in\reducedstate}
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}} \\
     \LE \\
     \abstractoutcomes(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \\
     \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}
   \end{gather*}
-  Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
+  Let $\overline{\definput}\in\reducedstate$ be such that:
   \begin{gather*}
     \sup_{\definput\in\reducedstate}
-    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}}
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput}}
     \spacearound{=} \\
-    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}}
+    \cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}}
   \end{gather*}
   Let $\overline{J} \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$ be such that:
   \begin{gather*}
@@ -1271,12 +1268,12 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
     \spacearound{=}
     \cardinalitynospaces{\overline{J}}
   \end{gather*}
-  We need to show that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} \le \cardinalitynospaces{\overline{J}}$.
-  By contradiction, we assume that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} > \cardinalitynospaces{\overline{J}}$, meaning that the number of distinct output abstraction from states in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ is higher than the number of indices in the abstract. Hence, either:
+  We need to show that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} \le \cardinalitynospaces{\overline{J}}$.
+  By contradiction, we assume that $\cardinality{\setdef{\outputobs(\retrieveoutput{\deftrace})}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}} > \cardinalitynospaces{\overline{J}}$, meaning that the number of distinct output abstraction from states in $\tracesemanticsnoparam$ from perturbation of the input $\retrieveinput\defstate$ is higher than the number of indices in the abstract. Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{dsa1} there exist output abstractions that are not matched by any output bucket,
     \item \label{dsa2} some output abstractions are matched by the same output bucket, or
-    \item \label{dsa3} there are output abstractions in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract.
+    \item \label{dsa3} there are output abstractions in $\tracesemanticsnoparam$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract.
   \end{enumerate}
   By \ref{proof:b1}, the first case \ref{dsa1} is not possible as covering, \cf{} \refdef{covering}, ensures that all the output abstractions are matched by the output buckets.
   By \ref{proof:b2}, the second case \ref{dsa2} is not possible as compatibility, \cf{} \refdef{compatibility}, ensures that any two output abstractions that produce different outputs belong to different output buckets.
@@ -1349,10 +1346,10 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
   Similarly to \refexample{abstract-outcomes}, we show the computation of $\abstractrange$ for the program \refprog*{landing-alarm-system}.
   The computation of $\abstractrange$ works as for $\abstractoutcomes$ until the computation of the intersections.
   Hence, we obtain the same projections for the variable \texttt{angle}:
-  \begin{eqnarray*}
-    \lefteqn{\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]))) ={}} \\
-  & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
-  \end{eqnarray*}
+  \begin{align*}
+    &\intersectallfunction((\texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{low}]), \dots, \texttt{Proj}^\natural_{\{\texttt{angle}\}}(\prefrombucket[\textup{high}]))) ={} \\
+  &\quad \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
+  \end{align*}
   Next, $\abstractrangename_{\{\texttt{angle}\}}$ computes the size of the output buckets joined together for any combination of bucket indices.
   The maximum is achieved whenever both the low and high buckets, respectively buckets $\bucket[\textup{low}]$ and $\bucket[\textup{high}]$, are joined together, as they yield the minimum and maximum value for the variable \texttt{risk}. The size of bucket $\bucket[\textup{low}]$ joined with $\bucket[\textup{high}]$ is $3$, \ie, $\abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{high}]) = \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 3] \rangle) = 3$.
   Therefore, $\abstractrangename_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
@@ -1374,10 +1371,12 @@ where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantic
     \abstractdomaindistance(\bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 1 \rangle) \spacearound{=} 0 \\
     \abstractdomaindistance(\bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 2 \rangle) \spacearound{=} 0 \\
     \abstractdomaindistance(\bucket[\textup{high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto 3 \rangle) \spacearound{=} 0 \\
-    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 1] \rangle) \spacearound{=} 1 \\
-    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
-    \abstractdomaindistance(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [1, 2] \rangle) \spacearound{=} 1 \\
-    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \spacearound{=} 2 \\
+    %
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 1] \rangle) \\ \spacearound{&=} 1 \\
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \\ \spacearound{&=} 2 \\
+    \abstractdomaindistance(\bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [1, 2] \rangle) \\ \spacearound{&=} 1 \\
+    \abstractdomaindistance(\bucket[\textup{low}] \abstractdomainjoin \bucket[\textup{mid\-/low}] \abstractdomainjoin \bucket[\textup{mid\-/high}]) \\
+     \spacearound{&=} \abstractdomaindistance(\langle \texttt{risk} \mapsto [0, 2] \rangle) \\ \spacearound{&=} 2
   \end{align*}
   Therefore, $\abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
@@ -1403,20 +1402,20 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   then, $\abstractrange$ is a sound implementation of $\range$.
 \end{lemma}
 \begin{proof}
-  We need to prove, for any $\defsetoftraces\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$, that
+  We need to prove that
   \begin{gather*}
-    \range(\defsetoftraces) = \sup_{\definput\in\reducedstate}
-    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \range(\tracesemanticsnoparam) = \sup_{\definput\in\reducedstate}
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \LE \\
     \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomaindistance(K)}{K \in I}
   \end{gather*}
   where $I = \setdef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}$.
-  Let $\overline{\defsetoftraces}\in\dependencyconcretization \circ \outputconcretization(\multiconcretization(\multisemanticsnoparam)\buckets)$ and $\overline{\definput}\in\reducedstate$ be such that:
+  Let $\overline{\definput}\in\reducedstate$ be such that:
   \begin{gather*}
     \sup_{\definput\in\reducedstate}
-    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\defsetoftraces\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariables)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \spacearound{=} \\
-    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}})
+    \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariables)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}})
   \end{gather*}
   Let $\overline{K} \in I$ be such that:
   \begin{gather*}
@@ -1425,12 +1424,12 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     \abstractdomaindistance(\overline{K})
   \end{gather*}
   where $\overline{K} = \abstractdomainjoin\seTDef{\bucket}{j\in J}$ and $J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})$.
-  We need to show that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomaindistance(\overline{K})$.
-  By contradiction, we assume that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\overline{\defsetoftraces}\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomaindistance(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariable$ from states in $\overline{\defsetoftraces}$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
+  We need to show that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariables)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) \le \abstractdomaindistance(\overline{K})$.
+  By contradiction, we assume that $\distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariables)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \overline{\definput}}) > \abstractdomaindistance(\overline{K})$, meaning that the size of output abstraction over the variable $\defoutputvariables$ from states in $\tracesemanticsnoparam$ is higher than the size of $\overline{K}$ in the abstract. Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{au1} there exist output abstractions that are not matched by any output bucket,
     \item \label{au2} some output abstractions are matched by the same output bucket,
-    \item \label{au3} there are output abstractions in $\overline{\defsetoftraces}$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract, or
+    \item \label{au3} there are output abstractions in $\tracesemanticsnoparam$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract, or
     \item \label{au4} the size of the abstract element is not greater than the size of the output abstraction.
   \end{enumerate}
   Similarly to the proof of \reflemma{abstractoutcomes-is-sound}, we can show that the first three cases are not possible by \ref{proof:ab}, \ref{proof:ac}, and \ref{proof:ad}.
