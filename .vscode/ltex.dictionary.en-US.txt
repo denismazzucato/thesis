@@ -3,3 +3,4 @@ provers
 statemsts
 Rogoff
 Rogoff
+determinize

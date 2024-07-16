@@ -4,10 +4,17 @@
 
 In this chapter, we introduce the notion of input data usage as proposed by \textcite{Urban2018}.
 In particular, we include output abstractions in the definition of an unused input variable, obtaining a more general definition.
+Through this chapter, we study relations among generalized non-interference and the unused predicate and their use in the context of non-deterministic programs.
 Then, we present a \emph{sound and complete} hierarchy of semantics that contains only, and exactly, the information needed to reason about the usage of input variables.
+Finally, we show a \emph{sound} abstraction of the unused property collecting syntactic dependencies among variables.
 Later in the next chapters, we will define a quantitative measure of usage of input variables, extending the qualitative notion presented in this chapter.
 
-\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée comme proposé par \sidetextcite{Urban2018}. En particulier, nous incluons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée, obtenant ainsi une définition plus générale. Ensuite, nous présentons une hiérarchie \emph{correcte et complète} de sémantiques qui contiennent uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée. Plus tard, dans les chapitres suivants, nous définirons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
+\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée telle que proposée par \sidetextcite{Urban2018}.
+En particulier, nous incluons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée, obtenant ainsi une définition plus générale.
+Dans ce chapitre, nous étudions les relations entre la non-interférence généralisée et le prédicat inutilisé, ainsi que leur utilisation dans le contexte des programmes non déterministes.
+Ensuite, nous présentons une hiérarchie de sémantique qui contient uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée.
+Enfin, nous montrons une abstraction \emph{sound} de la propriété inutilisée recueillant les dépendances syntaxiques entre les variables.
+Dans les prochains chapitres, nous définirons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
 
 \section{Input Data Usage}
 \labsec{input-data-usage}
@@ -451,7 +458,47 @@ The next result shows that the abstract unused predicate is equivalent to the or
   Indeed, the output observer $\aniobserver = \identity$ does not abstract the output states, and thus the two predicates are equivalent.
 \end{proof}
 
-Next we show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction forgets the values of the variables in $\definputvariables$, returning $\top$ otherwise.
+With the use of the next example, we show that non-determinism may affect the abstract non-interference property: non-interfering programs may be wrongly deemed as interfering when non-deterministic statements are present.
+
+
+\begin{example}
+  Let us consider the simplified trace semantics of the program \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
+  As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{science} interferes with the output states.
+  In fact, assuming:
+  \marginnote[*-4]{
+    \begin{eqnarray*}
+      \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+      = } \\
+      & \left\{
+        \begin{array}{l}
+          \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
+          \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
+          \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
+          \tuple\false\anyvalue\tracearrow\tuple\false\false
+        \end{array}
+      \right\}
+    \end{eqnarray*}
+  }
+  \begin{align*}
+    \eta_{\texttt{science}}(\defstate) \spacearound{&=} \lambda \texttt{j}. \spacer
+    \begin{cases}
+      \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \texttt{science} \\
+      \top & \text{otherwise}
+    \end{cases}\\
+    \aniobserver(\defstate) \spacearound{&=} \defstate
+  \end{align*}
+  the predicate of  abstract non-interference does not hold for the variable \texttt{science}.
+  This can be shown by the two traces
+  \begin{align*}
+    \tuple\true\true&\tracearrow\tuple\false\true
+    \\
+    \tuple\true\true&\tracearrow\tuple\false\false
+  \end{align*}
+  where the output states are different, but the input states are the same.
+  Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
+  \end{example}
+
+We formally show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction forgets the values of the variables in $\definputvariables$, returning $\top$ otherwise.
 
 \begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
   \siderefbox{def}{ani-predicate}
@@ -515,48 +562,84 @@ Next we show that abstract non-interference matches the abstract unused predicat
   % \end{enumerate}
 \end{proof}
 
-\begin{example}
-  \denis{Add example showing that with seed the two are also equivalent.}
-\end{example}
-
-\begin{example}
-Let us consider the simplified trace semantics of the program \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
-As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{science} interferes with the output states.
-In fact, assuming:
-\marginnote[*-4]{
+\begin{example}\labexample{determinization}
+  Interestingly, with the use of ``seeds'' one could also determinize a non-deterministic semantics by fixing the random observations as part of the program states.
+  Consider the set of traces of the previous example, but with the addition of a random variable that is used to determinize the outcome of the program.
+  A possible determinization could be the set of traces:
+  \marginnote[*-4]{
+    \begin{eqnarray*}
+      \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+      = } \\
+      & \left\{
+        \begin{array}{l}
+          \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
+          \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
+          \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
+          \tuple\false\anyvalue\tracearrow\tuple\false\false
+        \end{array}
+      \right\}
+    \end{eqnarray*}
+  }
   \begin{eqnarray*}
-    \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-    = } \\
-    & \left\{
+    \left\{
       \begin{array}{l}
-        \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
-        \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
-        \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
-        \tuple\false\anyvalue\tracearrow\tuple\false\false
+        \langle{\true,\true,\true}\rangle\tracearrow\tuple\true\true, \\
+        \langle{\true,\true,\false}\rangle\tracearrow\tuple\true\false, \\
+        \langle{\true,\false,\true}\rangle\tracearrow\tuple\true\true, \\
+        \langle{\true,\false,\false}\rangle\tracearrow\tuple\true\false, \\
+        \langle{\false,\true,\true}\rangle\tracearrow\tuple\false\true, \\
+        \langle{\false,\true,\false}\rangle\tracearrow\tuple\false\false \\
+        \langle{\false,\false,\false}\rangle\tracearrow\tuple\false\true, \\
+        \langle{\false,\false,\false}\rangle\tracearrow\tuple\false\false
       \end{array}
     \right\}
   \end{eqnarray*}
-}
-\begin{align*}
-  \eta_{\texttt{science}}(\defstate) \spacearound{&=} \lambda \texttt{j}. \spacer
-  \begin{cases}
-    \defstate(\texttt{j}) & \text{if } \texttt{j} \neq \texttt{science} \\
-    \top & \text{otherwise}
-  \end{cases}\\
-  \aniobserver(\defstate) \spacearound{&=} \defstate
-\end{align*}
-the predicate of  abstract non-interference does not hold for the variable \texttt{science}.
-This can be shown by the two traces
-\begin{align*}
-  \tuple\true\true&\tracearrow\tuple\false\true
-  \\
-  \tuple\true\true&\tracearrow\tuple\false\false
-\end{align*}
-where the output states are different, but the input states are the same.
-Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
+  where the last component of input states is the boolean seed used to determine the outcome of the program.
+  In such instance, the semantics is deterministic as it is not possible anymore to have two traces with the same input states and different output states.
+  Thus, the predicate $\aniwrapper$ and $\unusediowrapper$ are equivalent.
 \end{example}
 
-We show that whenever some variables are not used, they are also abstractly unused.
+Combining both non-interference and input data usage into the abstract notion of $\unusediowrapper$ permits non-interference generalizations to work in the context of non-deterministic programs.
+For instance, the \emph{non-exploitability} property \sidecite{Parolini2024} is a generalization of non-interference where the output states are abstracted to a flag that indicates whether the program reached an error state or not.
+Specifically, given a set of public input variables $\definputvariables\in\setof\inputvariables$, the non-exploitability property holds if, for any variation of these variables, the program does not reach an error state (or it does so consistently across all the traces). The idea is that an attacker is able to exploit an error state based on the values of public variables under their control.
+When such property is plugged into $\unusediowrapper$, it convenes a non-exploitability definition for non-deterministic programs.
+
+
+\marginnote[*-2]{
+\begin{definition}[Non-Exploitability]\labdef{ne-predicate}
+  Let $\definputvariables\in\setof\inputvariables$ be the set of public input variables.
+  The \emph{non-exploitability} predicate $\newrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
+  \begin{align*}
+      &\retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \retrieveinput{\defseq'}
+      \ImplieS \\
+      &\quad \retrieveoutput{\defseq}(\neerror) = \retrieveoutput{\defseq'}(\neerror)
+  \end{align*}
+\end{definition}
+}
+
+\begin{definition}[Non-Exploitability for Non-Deterministic Programs]\labdef{ne-unused}
+  Let $\definputvariables\in\setof\inputvariables$ be the set of public input variables.
+  The \emph{non-exploitability predicate for non-deterministic programs} is defined as follows:
+  \begin{eqnarray*}
+    \lefteqn{\newrapper(\tracesemantics) \DefifF} \\
+    & &\forall
+      \defseq\in\tracesemantics, \defvalue\in\valuesofvariables
+    .\spacer
+      \retrieveinput{\defseq}(\definputvariables) \neq \defvalue \ImplieS \\
+      & &\exists
+        \defseq'\in\tracesemantics
+      .\spacer
+        \retrieveinput{\defseq'} \stateeq{\inputvariableswithouti} \retrieveinput{\defseq}
+        \LanD
+        \retrieveinput{\defseq'}(\definputvariables) = \defvalue
+        \LanD
+        \retrieveoutput{\defseq}(\neerror) = \retrieveoutput{\defseq'}(\neerror)
+  \end{eqnarray*}
+\end{definition}
+
+This property works as a generalization of non-exploitability for non-deterministic programs without the need of ad-hoc semantics for non-determinism, \cf{} \refexample{determinization}.
+
+Next, we show that whenever some variables are not used, they are also abstractly unused.
 In other words, the unused predicate is stronger than its abstract counterpart.
 \begin{lemma}[Unused Implies Abstract Unused]\lablemma{unused-implies-abstract-unused}
   \marginnote{
@@ -957,8 +1040,18 @@ We exemplify the analysis below.
 \begin{example}
   Consider again \refprog*{school-year}. The syntactic dependency analysis $\synsemanticsnoparam\semanticsof{\texttt{school-year}}$ starts from the stack $\langle \usagemap_0 \rangle$ where $\usagemap_0$ maps the output variable $\texttt{passing}$ to $\usedtag$ and the rest to $\unusedtag$.
   The analysis first approaches the last conditional statement (the analysis proceed backwardly) at \refline{third-cond}.
-  A modified copy of the map on top of the stack, \cf, $\usagemap_0$, is pushed back to the stack:
-  \denis{\dots}
+  A modified copy $\usagemap_1$ of the map on top of the stack $\usagemap_0$ is pushed back to the stack:
+  as \texttt{passing} is used in $\usagemap_0$, in $\usagemap_1$ it is marked as $\belowtag$, meaning that \texttt{passing} is used in a lower nesting level; all the other variables are propagated as unused.
+  Then, the assignment on \refline{third-assignment}, \texttt{passing} is overwritten (\cf{} $\overwrittentag$) and \texttt{bonus} is used (\cf{} $\usedtag$).
+  The analysis continues with the head of the conditional statement.
+  Since the body of the conditional statement modified a used variable, the variables belonging to the condition are marked as used as well, \ie, \texttt{math} maps to $\usedtag$.
+  Finally, exiting the conditional statement of \refline{third-cond}, the map on top of the stack is popped and the variables that were used in the previous nesting level are marked as used in the current nesting level.
+  Therefore, after analyzing the last conditional statement, the stack contains a single map where \texttt{math}, \texttt{bonus}, and \texttt{passing} are marked as used.
+
+  The stack remains the same for the next conditional statement, \refline{second-cond}, as identical operations are performed.
+  The first conditional statement, \cf{} \refline{first-cond}, does not modify any used variable, thus the stack does not change.
+  Finally, at \refline{initial}, the variable \texttt{passing} is modified and maps to $\overwrittentag$, while \texttt{math} and \texttt{bonus} are still used.
+  The analysis is precise enough to capture that the variable \texttt{eng} and \texttt{science} are \emph{definitely} unused in the computation of the variable \texttt{passing}.
 \end{example}
 
 The concretization maps syntactic dependencies to set of (state) dependencies in $\dependencytype$ that satisfy the unused predicate $\unusedwrapper$, \cf{} \refdef{unused-predicate}.
@@ -986,7 +1079,9 @@ Finally, we show that the syntactic dependency analysis $\synsemantics$ is sound
     \dependencyconcretization \circ \synconcretization(\synsemantics) \subseteq \unused \ImplieS \defprogram \satisfies \unused
   \end{align*}
   \begin{proof}
-    \denis{\dots}
+    Assuming that $\dependencyconcretization \circ \synconcretization(\synsemantics) \subseteq \unused$, we have that $\dependencysemantics \subseteq \synconcretization(\synsemantics)$ by \refdef{concretization-syntactic-dependency-analysis} of the concretization $\synconcretization$.
+    By monotonicity of $\dependencyconcretization$ (\cf{} \refdef{right-left-adjoints-for-the-dependency-semantics}), it holds that $\dependencyconcretization(\dependencysemantics) \subseteq \dependencyconcretization(\synconcretization(\synsemantics)) \subseteq \unused$.
+    Thus, we conclude that $\defprogram \satisfies \unused$ from \refthm{dependency-validation}.
   \end{proof}
 \end{theorem}
 
@@ -999,4 +1094,6 @@ Only variables that are used in the guard of non-terminating loops would be mark
 
 In this chapter, we introduced the notion of input data usage and defined a generalized version inspired by the definition of abstract non-interference.
 We presented the hierarchy of semantics that allows reasoning about the usage of input variables of a program.
-In the next chapter, we will define a quantitative counterpart of input data usage, able to measure the impact of variations in the input data on the outcome of a program. Notably, we will exploit the output abstraction to obtain numerical values from the output states.
+We showed an abstraction collecting syntactic dependencies among variables.
+In the next chapter, we will define a quantitative counterpart of input data usage, able to measure the impact of variations in the input data on the outcome of a program.
+Notably, we will exploit the output abstraction to obtain numerical values from the output states.

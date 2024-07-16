@@ -26,27 +26,27 @@ fi
 # Comment out \drafttrue for final compilation
 # sed -i.bak 's/\\drafttrue/%\\drafttrue/g' "$PACKAGES"
 
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished first compilation"
 # Compile nomenclature
-makeindex "$OUTPUT/$PDF_NAME.nlo" -s nomencl.ist -o "$OUTPUT/$PDF_NAME.nls"
+makeindex pdf/thesis.nlo -s nomencl.ist -o pdf/thesis.nls
 echo "Finished nomenclature"
 # Compile index
-makeindex "$OUTPUT/$PDF_NAME"
+makeindex pdf/thesis
 echo "Finished index"
 # Compile bibliography
-biber "$OUTPUT/$PDF_NAME"
+biber pdf/thesis
 echo "Finished bibliography"
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished second compilation"
 # Compile glossary
-cd "$OUTPUT"
-makeglossaries "$PDF_NAME"
+cd pdf
+makeglossaries thesis
 echo "Finished glossary"
 cd ..
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished third compilation"
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory="$OUTPUT" -file-line-error "$PDF_NAME"
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished fourth compilation"
 
 # Uncomment \drafttrue for draft compilation
@@ -55,9 +55,9 @@ echo "Finished fourth compilation"
 ## do psl/thesis.tex
 
 # cd "$PSL_TEMPLATE"
-# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
-# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
-# pdflatex -interaction=nonstopmode --output-directory="$OUTPUT" "$PDF_NAME"
+# pdflatex -interaction=nonstopmode --output-directory=pdf thesis
+# pdflatex -interaction=nonstopmode --output-directory=pdf thesis
+# pdflatex -interaction=nonstopmode --output-directory=pdf thesis
 # cd ..
 
 # merge the two
