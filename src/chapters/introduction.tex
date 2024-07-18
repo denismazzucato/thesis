@@ -199,7 +199,7 @@ We propose two impact notions for neural networks. The first one addressing the 
 First, we show how a na\"ive approach measures the impact of input features in neural networks, and then we refine the backward analysis to exploit parallel computations and achieve better performance.
 
 Our approach employs a combination of forward and backward analyses.
-The forward pass aims to reduce the combinatorial explosion the backward analysis faces when analyzing neural-network models.
+The forward pass aims to reduce the combinatorial explosion the backward analysis faces when analyzing neural network models.
 The static analysis revolves around the concept of \emph{independent input partitions}, partitioning the input space into subregions that are easier to analyze for the backward analysis and do not interfere with each other, allowing parallel computations.
 Moreover, the forward analysis can be configured in terms of scalability and precision to adapt to the user's needs. By the choice of abstract domain and budget of resources, the analysis trades off precision for execution time.
 The resource budget can be auto-tuned to find the best analysis configuration according to a given search heuristic.

@@ -32,6 +32,7 @@
 \newcommand*{\dependencytype}{\setofsetof\pairofstates}
 \newsemantics{dependency}
 \renewcommand*{\dependencysubseteq}{\subseteq}
+\newcommandx{\reduceinit}[2][1=\outputsemantics]{\doublerestr{#1}{#2}}
 \newcommandx{\reduce}[2][1=\outputsemantics]{\restr{#1}{#2}}
 \newcommandx{\reducenoparam}[2][1=\outputsemanticsnoparam]{\restr{#1}{#2}}
 \newcommand*{\reduceddependencysemantics}{\reduce[\dependencysemantics]{\abstractdomainconcretization(\bucket)}}
@@ -104,8 +105,8 @@
 
 \newcommand*{\abstractdomainassume}{\textup{\texttt{Assume}}}
 \newcommand*{\abstractdomainnew}{\textup{\texttt{New}}}
-\newcommand*{\abstractdomainforwardrelu}{\overrightarrow{\textup{\texttt{ReLU}}}^\natural_p}
-\newcommand*{\abstractdomainbackwardrelu}{\overleftarrow{\textup{\texttt{ReLU}}}^\natural_p}
+\newcommand*{\abstractdomainforwardrelu}{\overrightarrow{\textup{\texttt{ReLU}}}^\natural_{\defabstractactivationpattern}}
+\newcommand*{\abstractdomainbackwardrelu}{\overleftarrow{\textup{\texttt{ReLU}}}^\natural_{\defabstractactivationpattern}}
 \newcommand*{\abstractdomainforwardaffine}{\overrightarrow{\textup{\texttt{Affine}}}^\natural}
 \newcommand*{\abstractdomainbackwardaffine}{\overleftarrow{\textup{\texttt{Affine}}}^\natural}
 

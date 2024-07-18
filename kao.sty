@@ -509,8 +509,8 @@
 
 \setlength\columnseprule{.4pt} % Set the width of vertical rules in tables
 
-\newlength{\kaomarginskipabove} % Specify the space above a marginfigure, margintable or marginlisting
-\newlength{\kaomarginskipbelow} % Specify the space below a marginfigure, margintable or marginlisting
+\newlength{\kaomarginskipabove} % Specify the space above a marginfigure, margintable, marginalgorithm, or marginlisting
+\newlength{\kaomarginskipbelow} % Specify the space below a marginfigure, margintable, marginalgorithm, or marginlisting
 \setlength{\kaomarginskipabove}{3mm plus 2pt minus 2pt}
 \setlength{\kaomarginskipbelow}{3mm plus 2pt minus 2pt}
 
@@ -540,6 +540,21 @@
     \end{minipage}%
   \end{lrbox}%
   \marginnote[#1]{\usebox{\@sidenotes@margintablebox}}%
+  \marginskip{\kaomarginskipbelow}%
+}
+
+% Environment to hold a margin algorithm
+\newsavebox{\@sidenotes@marginalgorithmbox}%
+\NewDocumentEnvironment{marginalgorithm}{o}{% The optional parameter is the vertical offset
+  \FloatBarrier%
+  \marginskip{\kaomarginskipabove}%
+  \begin{lrbox}{\@sidenotes@marginalgorithmbox}%
+	\begin{minipage}{\marginparwidth}%
+	  \captionsetup{type=algorithm}%
+}{%
+	\end{minipage}%
+  \end{lrbox}%
+  \marginnote[#1]{\usebox{\@sidenotes@marginalgorithmbox}}%
   \marginskip{\kaomarginskipbelow}%
 }
 

@@ -49,6 +49,11 @@
   #1 % the function
   \right|_{#2} % this is the delimiter
 }}
+\newcommand*{\doublerestr}[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \right\rVert_{#2} % this is the delimiter
+}}
 \newcommand*{\spacer}{~}
 \newcommandx{\spacearound}[2][2=\spacer]{#2#1#2}
 

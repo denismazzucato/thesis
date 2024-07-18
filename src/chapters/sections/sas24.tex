@@ -335,7 +335,7 @@ Formally, for all programs $\defprogram$, it should hold that:
   \counterdependencysemantics\subseteq\backwardconcretization(\counterbackwardsemantics\abstractdomaintop)
 \end{equation}
 %
-The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, is of significant importance as it allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\bounded$.
+The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\bounded$.
 Note that, originally in \refdef*{sound-over-approximation} we required the concretization to be a sound over-approximation of the output-abstraction semantics.
 However, in the context of the global loop bound analysis, the output-abstraction semantics is not needed, as the output observer is the identity function.
 Thus, we state the sound over-approximation condition on the dependency semantics directly.

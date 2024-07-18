@@ -964,6 +964,24 @@ Additionally, we define the reduction of a set of sets of dependencies $\defseto
 Such reduction is useful to analyze the dependencies that lead to a specific set of output states.
 Note that, in case no dependency in $\defsetofsetofdependencies$ ends in an output state in $X$, the reduction is $\{\emptyset\}$.
 
+Similarly, we define the reduction of a set of sets of dependencies $\defsetofsetofdependencies$ to those that start from an \emph{initial} state in $X$.
+
+\begin{definition}[Input Reduction]\labdef{input-reduction}
+  Let $X\in\setof\state$ be a set of input states.
+  The \emph{input reduction} $\reduceinit[\defsetofsetofdependencies]{X}\in\outputtype$ of $\defsetofsetofdependencies\in\outputtype$ is defined as:
+\begin{align*}
+\reduceinit[\defsetofsetofdependencies]{X} \DefeQ \setdef{
+  \setdef{
+    \inputoutputtuple{\defstate}\in\defsetofdependencies
+  }{
+    \retrieveinput{\defstate} \in X
+  }
+}{
+  \defsetofdependencies\in \defsetofsetofdependencies
+}
+\end{align*}
+\end{definition}
+
 \section{Syntactic Dependency Analysis}
 \labsec{syntactic-dependency-analysis}
 
@@ -1078,12 +1096,12 @@ Finally, we show that the syntactic dependency analysis $\synsemantics$ is sound
   \begin{align*}
     \dependencyconcretization \circ \synconcretization(\synsemantics) \subseteq \unused \ImplieS \defprogram \satisfies \unused
   \end{align*}
+\end{theorem}
   \begin{proof}
     Assuming that $\dependencyconcretization \circ \synconcretization(\synsemantics) \subseteq \unused$, we have that $\dependencysemantics \subseteq \synconcretization(\synsemantics)$ by \refdef{concretization-syntactic-dependency-analysis} of the concretization $\synconcretization$.
     By monotonicity of $\dependencyconcretization$ (\cf{} \refdef{right-left-adjoints-for-the-dependency-semantics}), it holds that $\dependencyconcretization(\dependencysemantics) \subseteq \dependencyconcretization(\synconcretization(\synsemantics)) \subseteq \unused$.
     Thus, we conclude that $\defprogram \satisfies \unused$ from \refthm{dependency-validation}.
   \end{proof}
-\end{theorem}
 
 Note that, the syntactic dependency analysis does not consider non-termination. For instance, if a variable solely determine the termination of a loop but is not used in the output computation, the analysis will not capture such dependency.
 In order to take termination into account, a na\"ive approach could be to map each variable appearing in the guard of a loop to $\usedtag$. A more sophisticated one could be to run a termination analysis alongside the data usage analysis.

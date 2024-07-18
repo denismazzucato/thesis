@@ -2,6 +2,12 @@
 \newcommand*{\labprog}[1]{\label{lst:#1}}
 \newcommand*{\labline}[1]{\label{line:#1}}
 
+\newcommand*{\labalg}[1]{\label{alg:#1}}
+\newcommand*{\refalg}[1]{\hyperref[alg:#1]{\algname\xspace\ref{alg:#1}}}
+\newcommand*{\vrefalg}[1]{\hyperref[alg:#1]{\algname\xspace\ref{alg:#1} \vpageref{alg:#1}}}
+\newcommand*{\nrefalg}[1]{\hyperref[alg:#1]{\algname\xspace\ref{alg:#1} (\nameref{alg:#1})}}
+
+
 \newcommand*{\refprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1}}}
 \newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
 \newcommand*{\nrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} (\nameref{lst:#1})}}
