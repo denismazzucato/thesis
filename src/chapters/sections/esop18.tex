@@ -60,6 +60,24 @@ holds whenever all the input variables in $\definputvariables$ are not used by t
 Intuitively, an input variable $\definputvariable\in \definputvariables$ is unused if all feasible outcomes $\retrieveoutput{\defseq}$ are feasible from all possible initial values of $\definputvariable$.
 That is, for all possible initial values $\defvalue$ that differ from the initial value of $\definputvariable$ in the trace $\defseq$, there exists another trace $\defseq'$ with initial value $\defvalue$ for $\definputvariable$ that leads to the same output $\retrieveoutput\defseq$.
 
+\begin{marginlisting}[*-3]
+  \caption{Program to check if a student passed the school year.}
+  \labprog{school-year}
+  \vspace{2\lineheight}
+\begin{lstlisting}[language=Python,escapechar=|]
+is_passed(eng, math, science,
+    bonus):
+  passing = True;|\labline{initial}|
+  if not eng:
+    eng = False;|\labline{err1}|
+  if not math:
+    passing = bonus;
+  if not math:|\labline{err2}|
+    passing = bonus;
+|\labline{last}|
+\end{lstlisting}
+\end{marginlisting}
+
 \begin{example}\labexample{school-year}
 Let us consider the example program presented in \textcite{Urban2018}, \cf{} \refprog{school-year}.
 Based on the boolean-valued input variables \texttt{eng}, \texttt{math}, \texttt{science}, and \texttt{bonus}.
@@ -68,7 +86,7 @@ However, there are two mistakes in the program: the statement inside the first c
 These two mistakes cause the variables \texttt{eng} and \texttt{science} to be unused by \refprog{school-year}.
 Let us consider the input variable \texttt{science}.
 The trace semantics of the program simplified to consider only the variables \texttt{science} and \texttt{passing} and omitting intermediate state computations is:
-\marginnote[*3]{
+\marginnote[*-3.5]{
   The notation \[
   \tracetuple{\locinit}{\tuple{\defvalue_1}{\defvalue_2}}\tracearrow\tracetuple{\locend}{\tuple{\defvalue'_1}{\defvalue'_2}}
   \]
@@ -87,7 +105,40 @@ The trace semantics of the program simplified to consider only the variables \te
   \right\}
 \end{align*}
 where the symbol $\anyvalue$ denotes any boolean value, the location $\locinit$ is the initial location (\refline{initial}), and $\loc{10}$ is the last location (\refline{last}).
+\reffig{school-year-traces} shows a graphical representation of the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$.
 The input variable \texttt{science} is unused, since each result value for \texttt{passing} is feasible from all possible initial values of \texttt{science}.
+
+\begin{marginfigure}[*-9]
+  \begin{tikzpicture}[scale=0.8]
+    \node (linit) at (-0.9,2) {$\locinit:$};
+    \node (lend) at (-0.9,0) {$\loc{10}:$};
+
+    % Define the positions of the nodes
+    \node (TT) at (0,2) {${\tuple\true\true}$};
+    \node (TF) at (1,2) {${\tuple\true\false}$};
+    \node (FT) at (2,2) {${\tuple\false\true}$};
+    \node (FF) at (3,2) {${\tuple\false\false}$};
+
+    \node (outTT) at (0,0) {${\tuple\true\true}$};
+    \node (outTF) at (1,0) {${\tuple\true\false}$};
+    \node (outFT) at (2,0) {${\tuple\false\true}$};
+    \node (outFF) at (3,0) {${\tuple\false\false}$};
+
+    % Draw the edges
+    \draw[->] (TT) -> (outTT);
+    \draw[->] (TF) -> (outTT);
+    \draw[->] (TT) -> (outTF);
+    \draw[->] (TF) -> (outTF);
+    \draw[->] (FT) -> (outFT);
+    \draw[->] (FF) -> (outFT);
+    \draw[->] (FT) -> (outFF);
+    \draw[->] (FF) -> (outFF);
+
+    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+\end{tikzpicture}
+\caption{Graphical representation of the trace semantics of the program \refprog{school-year} considering only the variables \texttt{science} and \texttt{passing}.}
+\labfig{school-year-math-traces}
+\end{marginfigure}
 
 Instead, if we consider the variable \texttt{math}, the simplified trace semantics considering only the variables \texttt{math} and \texttt{passing} is:
 \begin{align*}
@@ -101,29 +152,44 @@ Instead, if we consider the variable \texttt{math}, the simplified trace semanti
   \end{array}
   \right\}
 \end{align*}
+\reffig{school-year-math-traces} shows a graphical representation of the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$.
 The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
 Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
 \end{example}
-\begin{marginlisting}[*-35]
-  \caption{Program to check if a student passed the school year.}
-  \labprog{school-year}
-  \vspace{2\lineheight}
-\begin{lstlisting}[language=Python,escapechar=|]
-is_passed(eng, math, science,
-    bonus):
-  passing = True;|\labline{initial}|
-  if not eng:
-    eng = False;|\labline{err1}|
-  if not math:
-    passing = bonus;
-  if not math:|\labline{err2}|
-    passing = bonus;
-|\labline{last}|
-\end{lstlisting}
-\end{marginlisting}
+
+
+\begin{marginfigure}[*-9]
+  \begin{tikzpicture}[scale=0.8]
+    \node (linit) at (-0.9,2) {$\locinit:$};
+    \node (lend) at (-0.9,0) {$\loc{10}:$};
+
+    % Define the positions of the nodes
+    \node (TT) at (0,2) {${\tuple\true\true}$};
+    \node (TF) at (1,2) {${\tuple\true\false}$};
+    \node (FT) at (2,2) {${\tuple\false\true}$};
+    \node (FF) at (3,2) {${\tuple\false\false}$};
+
+    \node (outTT) at (0,0) {${\tuple\true\true}$};
+    \node (outTF) at (1,0) {${\tuple\true\false}$};
+    \node (outFT) at (2,0) {${\tuple\false\true}$};
+    \node (outFF) at (3,0) {${\tuple\false\false}$};
+
+    % Draw the edges
+    \draw[->] (TT) -> (outTT);
+    \draw[->] (TF) -> (outTT);
+    \draw[->] (FT) -> (outFT);
+    \draw[->] (FF) -> (outFT);
+    \draw[->] (FT) -> (outFF);
+    \draw[->] (FF) -> (outFF);
+
+    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$};
+\end{tikzpicture}
+\caption{Graphical representation of the trace semantics of the program \refprog{school-year} considering only the variables \texttt{math} and \texttt{passing}.}
+\labfig{school-year-traces}
+\end{marginfigure}
 
 \begin{example}
-  \begin{marginlisting}
+  \begin{marginlisting}[*1]
     \caption{Syntactic versus semantic usage of the input variable \texttt{x}.}
     \labprog{syntactic-vs-semantic-usage}
     \vspace{2\lineheight}

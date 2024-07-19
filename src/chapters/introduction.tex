@@ -209,7 +209,7 @@ The forward pass reduces the backward analysis's combinatorial explosion, partit
 
 
 \paragraph{Experimental Evaluation of Extensional Properties}
-\refch{experimental-extensional} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto, against six use cases, and presents our approach's evaluation on neural networks.
+\refch{extensional-eval} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto, against six use cases, and presents our approach's evaluation on neural networks.
 
 \subsection{Quantitative Verification of Intensional Properties}[Intensional Properties]
 
@@ -233,7 +233,7 @@ In this study, we focus on quantifying input variables' impact on loop iteration
 We leverage global loop bound analysis to derive an over-approximation of the global loop bound, encoding the quantification of input variables' impact as a linear programming problem.
 Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite{Urban2018} for scalability.
 
-In \refch{showcase-of-outcomes-and-ranges}, we present \timesec, a tool implementing our quantitative timing analysis.
+In \refch{intensional-eval}, we present \timesec, a tool implementing our quantitative timing analysis.
 We demonstrate its effectiveness in a real-world cryptographic library, certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
 Additionally, we evaluate \timesec{} against programs from \svcomp.
 

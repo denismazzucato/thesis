@@ -1,0 +1,143 @@
+
+\chapter{Experimental Evaluation}
+\labch{intensional-eval}
+
+\section{Timing Side-Channels}
+\labsec{timing-side-channels}
+
+
+In this section, we showcase the potential of \impatto{} on the \bignum{} library\sidenote{\url{https://github.com/awslabs/s2n-bignum}}.
+% In \Appendix{sv-comp}, we show an evaluation on the \svcomp{} benchmarks, focusing on the effect of changes in the input space, the analysis time, and the categorization of input variables.
+
+% \subsection{\texorpdfstring{\bignum{} Library}{S2N Bignum Library}}
+% \label{sec:s2n-bignum-library}
+
+The \bignum{} library~\sidecite{bignum} is a collection of arithmetic routines designed for cryptographic applications.
+All the routines are written in pure machine code, designed to be callable from C and other high-level languages.
+Each function is written in a constant-time style, to avoid leaking information through timing side-channels.
+Constant-time means that the execution time of an \bignum{} operation is independent of the actual numbers involved,
+depending only on their nominal sizes.
+% Indeed, each \bignum{} operation manipulates numbers on the basis of the nominal sizes only, independently of the actual values, even if those are zero.
+If a result does not fit in the provided size, it is systematically truncated modulo that size.
+Allocation of memory is always the caller's responsibility, the \bignum{} interface only uses pointers to pre-existing arrays.
+The developers avoid the use of certain machine instructions known to be problematic for constant-time execution, such as the division instruction.
+Furthermore, on ARM platforms, the library sets the DIT (Data Independent Timing) bit to have hardware guaranteed constant-time execution.
+
+The library is fully verified for functional correctness in \hollight~\sidecite{Harrison2009}, but the verification of the constant-time property is still ongoing.
+At present, the constant-time property is enforced by the strict compliance to the constant-time design discipline and the use of empirical testing.
+Their empirical
+result\sidenote{(Last accessed: 14th May 2024) \url{https://github.com/awslabs/s2n-bignum?tab=readme-ov-file\#benchmarking-and-constant-time}}
+shows that the variation in runtime with respect to the data being manipulated is within a few percent in all the cases.
+Unfortunately, the empirical study is not sufficient to guarantee the constant-time property, as it is not exhaustive and does not cover all the possible inputs.
+On the other hand, the quantitative analysis of \impatto{} provides a formal verification of the constant-time property.
+In particular, whenever an input variable has no impact on the global number of loop iterations, it is formally guaranteed that the number of iterations is independent of the values of that input variable.
+Formally, a program $\defprogram$ is free of timing side-channels with respect to an input variable $\definputvariable\in\inputvariables$, if and only if $\defprogram \satisfies \mathscr{B}^{\le 0}_{\definputvariable}$.
+% \denis{Add a theorem such like: if is side channel freedom on numerical variables that the library is safe.}
+By \refthm{soundness}, we know that this is implied from $\abstractrange(\backwardsemantics) \le 0$.
+Therefore, the verification of \textit{timing side-channel freedom} is sound with respect to our quantitative analysis of input variables.
+We partition the input variables of the \bignum{} library into two subsets.
+The nominal size variables and additional parameters that may safely influence the runtime into $\nominalvariables$.
+The variables that represent the actual numerical values and additional parameters that, instead, should not influence the execution time into $\numericalvariables$.
+The \bignum{} library is free of timing side-channels, whenever for any program $\defprogram$ in \bignum{} and any numerical input variable $\definputvariable\in\numericalvariables$, it holds that $\abstractrange(\backwardsemantics) = 0$.
+
+For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\url{https://ghidra-sre.org/}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
+Mostly, the rewriting steps soundly resolve the few jumps that arise from the disassembling process.
+Our benchmark contains a total of 72 disassembled arithmetic routines, excluding only a single operation (program \texttt{bignum\_modexp}) that has function calls, which our tool does not yet support.
+On average, each program has about 83 lines of code, for a total of 5984 lines of code.
+% For each input variable we consider an unbounded non-negative input space, \ie, for any input variable $\definputvariable\in\inputvariables$, we have $\definputvariable \ge 0$.
+
+% \input{tables/bignum-inputs}
+%
+The library contains a total of 1172 variables, 272 of which are input variables.
+\reftab{bignum-inputs} reports the analysis findings for the input variables of the \bignum{} library: column \textsc{Maybe Dangerous} reports variables which could be prone to timing side-channel attacks (namely $\abstractrange(\backwardsemantics) > 0$),
+column \textsc{Zero Impact} reports the variables with an impact quantity of zero (namely $\abstractrange(\backwardsemantics) = 0$).
+The property $\mathscr{B}\scalerel*{\vphantom{}^{{\scaleto{\le}{5pt}0}}_{\definputvariable}}{\padding}$ holds for input variables $\definputvariable$ that have an impact quantity of zero (column \textsc{Zero Impact}).
+% Interesting, the syntactic dependency analysis is already able to prove that 182 (66\%) of the input variables do not influence the global number of iterations.
+% The quantification of the impact further reduce the number of input variables that influence the global number of iterations to 85 (31\%).
+Overall, we soundly verified that 187 (69\%) of the input variables do not influence the global number of iterations, while 85 (31\%) are maybe dangerous and maybe susceptible to timing side-channel attacks.
+%
+Column \textsc{Safe} $\nominalvariables$ reports the nominal size variables (called \green{$s_i$}), column \textsc{Numerical} $\numericalvariables$ reports the numerical variables (called \red{$n_i$}, where $i$ is the index of the variable as they appear in the function signature).
+\reftab{bignum-inputs} shows that no numerical variable is identified as potentially dangerous, indeed $\textsc{Maybe Dangerous} \setmeet \numericalvariables = \emptyset$ in all rows.
+We conclude that the \bignum{} library is \emph{free of timing side-channels}.
+
+
+%
+
+
+% \input{tables/bignum-ablation}
+
+Additionally, we perform an ablation study to evaluate the impact of the dependency analysis and the other optimizations on our tool.
+The first row \nodepnoopt{} of \reftab{bignum-abl} reports the analysis findings without the various analysis stages of \refsec{implementation}, while the second row \depopt{} shows the finding of the full \impatto{} analysis.
+Without the dependency analysis we do not apply program slicing anymore, we handle bitwise operations and array accesses with a conservative over-approximation that may lead to false positives.
+Generally, we notice that the invariant inferred from the global loop bound analysis alone is not tight enough to produce a precise quantification of the impact.
+Therefore, we are not able to infer useful insights from our analysis as 266 input variables are maybe dangerous.
+In particular, the 6 input variables with zero impact belong to acyclic programs.
+% Without the forward pre-analysis and other optimizations, only 95 variables are maybe dangerous, but unfortunately the quantification of the impact is not tight enough to exclude more unused variables.
+Regarding the analysis time, column \depslabel{} refers to the time of the dependency analysis, column \invlabel{} for the global loop bound analysis, and column \lplabel{} for the quantification of impact.
+The time is reported in seconds for the evaluation of the 72 programs.
+The last column \textsc{Tot} reports the total analysis time, with the standard deviation after the symbol $\pm$.
+\reftab{bignum-abl} does not show the time for parsing, logging and other overheads of the tool.
+We notice that without the optimizations, the analysis time is about 4 times faster than the full analysis, with most time spent on the linear programming problem as more variables need to be quantified.
+In this case, the standard deviation of the total analysis time (after $\pm$ in the column \textsc{Tot}) is the lowest, meaning that the analysis time is more consistent among programs.
+With only the dependency analysis on, the analysis usually takes around 50 seconds and, without optimizations, the global loop bound analysis is quite fast.
+The full analysis is about 100 seconds in total, with an average of 1.22 seconds per program.
+Most of the analysis time is spent on the syntactic dependency and the global loop bound analysis. Notably, the linear programming problem to quantify the impact of input variables takes less than half a second in total for the whole library.
+However, the analysis time is not consistent for all the programs, in fact, the analysis time for each program ranges from 0.03 to 33.88 seconds (standard deviation of about 4 seconds).
+Nevertheless, the full analysis is also the most precise, as it is able to exclude the most number of maybe dangerous variables.
+%
+
+In conclusion, the \bignum{} library is a good candidate for our analysis, as it is a real-world cryptographic library potentially vulnerable against timing side-channel attacks for numerical input variables.
+Up to the decompilation phase and the chosen abstraction of the runtime, \cf{} the global number of iterations, our analysis soundly verifies that no input variable containing numerical data is susceptible to timing side-channel attacks.
+
+
+\section{SV-Comp Benchmarks}
+\labsec{sv-comp}
+
+
+The \svcomp{} benchmarks\sidenote{\url{https://sv-comp.sosy-lab.org/2024}} are a collection of programs used for verification competition.
+The benchmarks are divided into different categories, such as termination, memory safety, reachability.
+As of 2024, the \svcomp{} repository hosts thousands of programs, which are written in C and annotated with assertions.
+In this evaluation, we conduct a comprehensive study focusing on: the effect of changes in the input space, the analysis time, and the categorization of input variables.
+We focus on the categories of \textsc{Termination Crafted}, and \textsc{Termination Crafted Lit}.
+These categories describe programs that are crafted to be challenging for termination analysis.
+In total, we selected 208 programs (68 from \textsc{Termination Crafted}, and 140 from \textsc{termination Crafted Lit}), with 5705 total lines of code. An average of 27 lines of code per program.
+
+To evaluate \timesec{} against the \svcomp{} benchmarks, we consider the input variables as unbounded non-negative integers.
+We repeat the analysis 5 times, each time with a different bound on the input variables, ranging from $[0, 10]$ to $[-\infty, +\infty]$.
+\reftab{svcomp} reports, for each bound range, the average quantity of impact (column \textsc{Average}), the standard deviation (column \textsc{Std}), and the analysis time for the dependency analysis (column \depslabel), the global loop bound analysis (column \invlabel), and the quantification of the impact (column \lplabel).
+We exclude to take into account quantities that are infinite, as they would disrupt the average calculation.
+Note that, even in presence of a bounded input space, the impact of a variable could be infinite if the global loop bound analysis is not able to infer a bound on the possible number of iterations.
+
+
+
+From \reftab{svcomp}, we observe that the average quantity of impact increases with the bound range (column \textsc{Average}).
+This is expected, as the larger the input space, the more the variance in the values of input variables, and the more the impact on the global number of iterations.
+However, as soon as the input space is unbounded, the measured quantities that are not infinite are very low.
+In this setting, a variable often has either an impact of $0$ or $+\infty$.
+Regarding the analysis time, as expected we notice that the syntactic dependency analysis (column \depslabel) is not influenced by the bound range.
+The reason is that the syntactic dependency analysis is not a semantics analysis and does not depend on the values of the input variables.
+On the contrary, the global loop bound analysis (column \invlabel) and the quantification of the impact (column \lplabel) are affected.
+From bounded to unbounded input space, we observe a reduction in the analysis time.
+In fact, in the context of a bigger input space, the analysis precision drops drastically and thus propagate less information faster.
+The global loop bound analysis is the most time-consuming part of the analysis.
+Overall, the analysis time is acceptable, with an average of 0.11 seconds per program, and a total of about 126 seconds for the whole benchmark suite, \cf~208 programs for 5 different bound ranges (1055 programs in total).
+
+
+% \input{tables/sv-bounds}
+% \input{tables/sv-info}
+
+\reftab{svcomp2} shows the composition of variables of the two categories of \svcomp{} benchmarks.
+In terms of the $\defbound$-bounded impact property (\cf~\refeq{bounded}), the column \textsc{May Impact} corresponds to $\bounded$ for $\defbound > 0$, while the columns \textsc{Zero Impact} corresponds to $\resize{\mathscr{B}}{\definputvariable}[\le 0]$.
+For each bound range, we report the number of input variables / total variables (\cf, local and input variables together) that fall into each category.
+As expected, by enlarging the input space, the number of maybe dangerous variables increases, while the number of zero used variables decreases.
+% The syntactic dependency analysis instead does not depend on the input space, thus the number of unused variables remains constant.
+Overall, our analysis is able to verify that most of the input variables in the \svcomp{} benchmarks influence the global number of loop iterations.
+This is expected, as the benchmarks are crafted to be challenging for termination analysis, thus it is not surprising that the input variables have a significant impact on the global number of iterations.
+Unfortunately, such programs have invariants that are, on purpose, hard to infer. Our analysis can do little to achieve a tight quantification in such case.
+In conclusion, we notice that by enlarging the input space, the number of variables that may impact the runtime increases as more variety in the input values leads to more impact on the global number of iterations.
+
+
+\section{Summary}
+
+This chapter concludes the main body of the thesis, presenting the evaluation of our static analysis for quantitative program properties.
+Next, we provide a discussion of the related work, followed by the conclusion and future work in the final chapter.
