@@ -20,6 +20,7 @@ fi
 
 # Clean the output directory
 # rm -rf "$OUTPUT"/*
+rm -rf pdf/*
 
 ## do thesis.tex
 

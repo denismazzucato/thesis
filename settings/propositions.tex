@@ -96,3 +96,11 @@
 % definitions and side definitions
 \newcommand*{\inputprop}[1]{\input{src/propositions/#1}}
 \newcommand*{\marginprop}[1]{\marginnote{\input{src/propositions/#1-short}}}
+
+%%%%%%%%%%%%%%%%%%%%%
+
+\newcommandx{\phantomcite}[2][1={}]{%
+  \marginnote[#1]{%
+    \formatmargincitation{#2}%
+  }%
+}
