@@ -170,7 +170,7 @@ The next result instead shows the soundness of the backward analysis of neural n
 
 Different abstract domains can be used for the forward analysis of neural networks.
 The choice of the abstract domain depends on the trade-off between precision and scalability.
-Here, we present four abstract domains: \boxes \cite{Cousot1976,Hickey2001}, \symbolic \cite{Li2019,Mine2006symbolic}, \deeppoly \cite{Singh19}, and \neurify \cite{Wang18}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
+Here, we present four abstract domains: \boxes \cite{Cousot1976,Hickey2001}, \symbolic \cite{Li2019,Min_e2006b}, \deeppoly \cite{Singh19}, and \neurify \cite{Wang18}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
 
 
 \paragraph{Boxes}
@@ -208,7 +208,7 @@ The \boxes{} domain simply uses interval arithmetic \sidecite{Cousot1976, Hickey
   \labfig{naive}
 \end{marginfigure}
 
-The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constant propagation \sidecite{Mine2006symbolic}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constant propagation \sidecite{Min_e2006b}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
 
 \begin{marginfigure}
   \begin{tikzpicture}[scale=0.85]

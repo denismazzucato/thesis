@@ -1,5 +1,5 @@
 bibtex-tidy -o formatted.bib --remove-braces=title --numeric --align=16 --blank-lines --sort=key --duplicates=key,doi,citation --merge=combine --sort-fields --encode-urls --remove-empty-fields --generate-keys="[auth:required][year:required]" formatted.bib
 
-reffix formatted.bib -o formatted.bib --replace-arxiv
+reffix formatted.bib -o formatted.dblp.bib --replace-arxiv
 
 bibtex-tidy -o formatted.bib --remove-braces=title --numeric --align=16 --blank-lines --sort=key --duplicates=key,doi,citation --merge=combine --sort-fields --encode-urls --remove-empty-fields --generate-keys="[auth:required][year:required]" formatted.bib

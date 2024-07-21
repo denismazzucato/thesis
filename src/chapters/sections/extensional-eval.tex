@@ -1053,9 +1053,9 @@ Adult dataset\sidenote{\url{https://archive.ics.uci.edu/ml/datasets/adult}} from
 The dataset assigns to individuals a yearly income greater or smaller than \$50k based on personal attributes such as education and occupation but also gender, marital status, or race.
 We set \libra to use gender as sensitive input feature.
 
-We show below the experimental results on the smaller neural networks used by Urban et al. \cite{Urban20}, which better demonstrate the benefits of our implementation compared to its preliminary version.
+We show below the experimental results on the smaller neural networks used by Urban et al. \cite{Urban2020}, which better demonstrate the benefits of our implementation compared to its preliminary version.
 %
-In practice, Urban et al. \cite{Urban20} have already shown that the approach can scale to much larger networks with sizes on par with the literature on fairness certification, e.g., \cite{ManishaG20,YurochkinBS20}.
+In practice, Urban et al. \cite{Urban2020} have already shown that the approach can scale to much larger networks with sizes on par with the literature on fairness certification, e.g., \cite{ManishaG20,YurochkinBS20}.
 %
 The neural networks were trained with Keras for 50 iterations, using the RMSprop optimizer with the default learning rate, and categorical cross-entropy as the loss function.
 %
@@ -1074,7 +1074,7 @@ The precision and scalability of \libra's analysis depend on the analyzed neural
 Column $|\textsc{m}|$ refers to the analyzed neural network by the number of its ReLU activations. From top to bottom, the neural networks have the following number of hidden layers and nodes per layer: $2$ and $5$, $4$ and $3$, $4$ and $5$, $4$ and $10$, and $9$ and $5$.
 % \todo{larger networks are not actually needed for tabular datasets.
 % These network sizes are on par with the fairness verification literature, e.g., see \cite{ManishaG20,YurochkinBS20}.
-% However, \cite{Urban20} demonstrates the approach for networks with over than $1000$ nodes.}
+% However, \cite{Urban2020} demonstrates the approach for networks with over than $1000$ nodes.}
 % Indeed, these networks sizes are on par with the fairness verification literature, e.g., see \cite{ManishaG20,YurochkinBS20}.
 % \todo{let's be careful here; the nets in the literature are slightly larger, having hundreds of nodes; we should say it as in the rebuttal}
 We configured the pre-analysis with lower bound $\lowerbound = 0.5$ and upper bound $\upperbound = 5$. Each column shows the chosen abstract domain. We show here the results for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (i.e., \textsc{product} in the reftab~\ref{tbl:models}), which is the most precise of all possible reduced products.
@@ -1087,7 +1087,7 @@ percentage of the input space that \libra was able to analyze with the chosen pr
 % Column $|\textsc{c}|$ shows the total number of analyzed input space partitions, while column $|\textsc{f}|$ shows the number of activation patterns (left) and feasible input partitions (right) passed to the backward analysis.
 The \textsc{time} rows show the average running time.
 
-For all neural networks, \textsc{product} achieves the highest input-space coverage, an improvement of up to $12.49\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra \cite{Urban20} (i.e., with respect to the \deeppoly domain for $|\textsc{m}| = 40$). Interestingly, such an improvement comes at the cost of a very modest increase in running time (i.e., just over $1$ minute).
+For all neural networks, \textsc{product} achieves the highest input-space coverage, an improvement of up to $12.49\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra \cite{Urban2020} (i.e., with respect to the \deeppoly domain for $|\textsc{m}| = 40$). Interestingly, such an improvement comes at the cost of a very modest increase in running time (i.e., just over $1$ minute).
 % More often, the running time even decreases.
 Indeed, using a more precise abstract domain for the pre-analysis generally results in fewer input space partitions being passed to the backward analysis and, in turn, this reduces the overall running time.
 

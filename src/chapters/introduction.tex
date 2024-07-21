@@ -69,7 +69,7 @@ To answer this question, consider the following examples where testing failed:
 
 \begin{itemize}
 \item The Ariane 5 rocket failure in 1996, caused by an integer overflow bug, resulted in a loss of \$370 million\sidenote{\url{https://esamultimedia.esa.int/docs/esa-x-1819eng.pdf}}.
-\item The crash of Air France Flight 447 in June 2009, killing hundreds of passengers, was due to a probe sensor failure that was not detected during testing, as test engineers assumed such a failure was impossible.
+\item The crash of Air France Flight 447 in June 2009, killing hundreds of passengers, was due to a probe sensor failure that was not detected during testing, as test engineers assumed such a failure was impossible \sidecite{Charette2009}.
 \item The Therac-25 radiation therapy machine malfunctioned due to software bugs, resulting in patient deaths and serious injuries \sidecite{Leveson1993}.
 \item The Toyota unintended acceleration case, where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion\sidenote{\url{https://www.embeddedrelated.com/showarticle/1574.php}}.
 \item A round-off error in the Patriot missile system caused the death of 28 people during the Gulf War\sidenote{\url{https://www.ima.umn.edu/~arnold/disasters/patriot.html}}.
@@ -77,11 +77,11 @@ To answer this question, consider the following examples where testing failed:
 
 These cases could have been avoided with formal methods.
 
-Unlike testing, formal methods enable exhaustive investigation and detection of bugs that testing may miss.
+Unlike testing, formal methods enable exhaustive search and detection of bugs that testing may miss.
 System requirements are translated into formal specifications, which are mathematically verified to ensure the system's behavior aligns with real-world scenarios.
 However, Rice's undecidability theorem \sidecite{Rice1953} states that all non-trivial properties\sidenote{A property is non-trivial if it is not true for all programs or false for all programs.} are undecidable, meaning there is no terminating algorithm that can decide whether a program satisfies a non-trivial property.
 Consequently, formal methods either sacrifice \emph{completeness}, \emph{soundness}, or \emph{automation}.
-Current formal methods can be classified into three categories\sidecite{Cousot2010}: \emph{theorem provers}, \emph{model checking}, and \emph{static analysis} (\reffig{formal-methods-trade-offs}).
+Current formal methods can be classified into three categories \sidecite{Cousot2010} (\reffig{formal-methods-trade-offs}): \emph{theorem provers}, \emph{model checking}, and \emph{static analysis}.
 
 \begin{marginfigure}
   \begin{tikzpicture}[scale=0.8]
@@ -102,9 +102,8 @@ Current formal methods can be classified into three categories\sidecite{Cousot20
   \labfig{formal-methods-trade-offs}
 \end{marginfigure}
 
-Theorem provers produce proofs of correctness using interactive tools, also called proof assistants, such as Coq, Isabelle, and HOL Light, or automatic ones.
-User interaction is required to guide the proof search.
-Even in automatic theorem provers, user interaction is needed to verify any general property.
+Theorem provers \sidecite{Nawaz2019} produce proofs of correctness using interactive tools, also called proof assistants, such as Coq \sidecite{Bertot2004} and HOL Light \sidecite{Harrison2009}, or automatic ones \sidecite{Sutcliffe2001}.
+User interaction is ultimately required to guide the proof search in both the interactive and automatic cases.
 Theorem provers are complete and sound but not fully automated.
 
 Formal methods based on model checking automatically explore the state space of a program's model to verify whether undesirable states are reachable.
@@ -145,7 +144,7 @@ Hence, it is essential to employ techniques that enhance confidence in the usage
 \section{Quantitative Properties}
 
 Typically, program properties are qualitative; a program either satisfies a property or not.
-This constraint is not always sufficient to capture the complexity of real-world requirements.
+This constraint is not always sufficient to capture the complexity of real-world requirements \sidecite{Smith2007}.
 For instance, one fundamental security issue is protecting sensitive information confidentiality.
 Secure information flow analysis questions whether a program could leak information about its secrets.
 Noninterference, certifying that a program reveals no information about its secrets, is a classic approach.
@@ -154,7 +153,7 @@ For example, in a digital election protocol, individual votes should be anonymou
 A password checker should not reveal the password but should indicate whether the password is correct.
 These cases represent deliberate violations of noninterference necessary for the program to fulfill its purpose.
 
-To address this limitation, quantitative properties are considered.
+To address this limitation, quantitative properties are considered \sidecite{Smith2009}.
 The key idea is to accept that a program may violate a property and compare such violation against a threshold.
 Programs are classified as \emph{safe} or \emph{unsafe} based on the degree of violation, inducing a classification among programs based on how much safety they provide.
 
@@ -194,9 +193,9 @@ Our framework is parametric in the impact definition of choice.
 We introduce a backward static analysis based on abstract interpretation, parametric in the impact definition, which infers a sound over-approximation of the impact of input variables.
 The analysis computes the input states leading to output buckets, applying a computable implementation of the impact on the backward reachability analysis result.
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
-\marginnote{\refch{quantitative-input-data-usage} is based on work published at NASA Formal Methods
+\marginnote[*-13]{\refch{quantitative-input-data-usage} is based on work published at NASA Formal Methods
 Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
-\marginnote{\formatmargincitation{Mazzucato2024b}}
+\marginnote[*-10.5]{\formatmargincitation{Mazzucato2024b}}
 
 
 \paragraph{Quantitative Verification for Neural Networks}
@@ -204,8 +203,8 @@ In \refch{quantitative-fairness}, we extend the quantitative input data usage pr
 We propose two impact notions for neural networks, addressing the ragged input space and measuring input features' fairness.
 We refine the backward analysis to exploit parallel computations for better performance, employing a combination of forward and backward analyses.
 The forward pass reduces the backward analysis's combinatorial explosion, partitioning the input space into subregions for easier parallel analysis.
-\marginnote{\refch{quantitative-fairness} is based on work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
-\marginnote{\formatmargincitation{Mazzucato2021}}
+\marginnote[*-7]{\refch{quantitative-fairness} is based on work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
+\marginnote[*-4.5]{\formatmargincitation{Mazzucato2021}}
 
 
 \paragraph{Experimental Evaluation of Extensional Properties}
@@ -241,18 +240,18 @@ Additionally, we evaluate \timesec{} against programs from \svcomp.
 
 The main contributions of this thesis are as follows:
 \begin{itemize}
-  \item In \refch{input-data-usage} we extend the original definition of the input data usage property to capture abstractions of output values.
+  \item In \refch{input-data-usage}, we extend the original definition of the input data usage property to capture abstractions of output values.
   Such extension blends generalized non-interference with input data usage, providing a definition that works also for non-deterministic programs.
   \item In \arefpart{extensional}:
     \begin{itemize}
-      \item we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three instances of impact.
-      \item we present our static analysis and a possible abstract implementation of the impact instances.
-      \item we present two impact notions for neural networks.
-      \item we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
+      \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact notions.
+      \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances; to showcase our approach we implement a tool called \impatto\sidenote{\impattourl}.
+      \item In \refch{quantitative-fairness}, we present two impact notions for neural networks.
+      \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains; this extension is part of the \libra\sidenote{\libraurl} tool.
     \end{itemize}
   \item In \arefpart{intensional}:
     \begin{itemize}
-      \item we propose a static analysis based on abstract interpretation, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify input variable impact on loop iterations.
-      \item we present \timesec, a tool implementing our quantitative timing analysis, and evaluate it against cryptographic programs and programs from \svcomp.
+      \item we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
+      \item we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp \sidenote{\svcompurl}.
     \end{itemize}
 \end{itemize}
