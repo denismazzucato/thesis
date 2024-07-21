@@ -544,6 +544,29 @@ With the use of the next example, we show that non-determinism may affect the ab
         \end{array}
       \right\}
     \end{eqnarray*}
+    \begin{tikzpicture}[scale=0.8]
+      \node (linit) at (-0.9,2) {$\locinit:$};
+      \node (lend) at (-0.9,0) {$\loc{10}:$};
+      % Define the positions of the nodes
+      \node (TT) at (0,2) {${\tuple\true\true}$};
+      \node (TF) at (1,2) {${\tuple\true\false}$};
+      \node (FT) at (2,2) {${\tuple\false\true}$};
+      \node (FF) at (3,2) {${\tuple\false\false}$};
+      \node (outTT) at (0,0) {${\tuple\true\true}$};
+      \node (outTF) at (1,0) {${\tuple\true\false}$};
+      \node (outFT) at (2,0) {${\tuple\false\true}$};
+      \node (outFF) at (3,0) {${\tuple\false\false}$};
+      % Draw the edges
+      \draw[->] (TT) -> (outTT);
+      \draw[->] (TF) -> (outTT);
+      \draw[->] (TT) -> (outTF);
+      \draw[->] (TF) -> (outTF);
+      \draw[->] (FT) -> (outFT);
+      \draw[->] (FF) -> (outFT);
+      \draw[->] (FT) -> (outFF);
+      \draw[->] (FF) -> (outFF);
+      \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm] {$=$};
+  \end{tikzpicture}
   }
   \begin{align*}
     \eta_{\texttt{science}}(\defstate) \spacearound{&=} \lambda \texttt{j}. \spacer

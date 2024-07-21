@@ -1119,8 +1119,20 @@ In the next section, we introduce the \qlibraname{} impact notion, which--in a s
 In this section, we present $\abstractqlibra$ as a sound implementation of $\qlibra$, computing an over-approximation of the volume of input space that may contain bias. Conversely, $\abstractqlibra$ computes an under-approximation of the fair input space.
 As introduced at the beginning of this chapter, this analysis is too na\"ive to be practical, it is still useful for building upon later in the next section.
 
-\marginnote{\denis{No. Give the definition of $\abstractqlibra$ as done in the previous sections.}}
-Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code algorithm: \reffig{abstract-qlibra}.
+\begin{marginalgorithm}
+  \caption{Abstract Implementation $\abstractqlibra$}
+  \labalg{abstract-qlibra}
+\begin{lstlisting}[
+  language=algorithm,
+  style=algorithm,
+  escapechar=\%,
+  ]
+QAUnused%${}^\natural_{\defmodel, \abstractdomain_1, \abstractdomain_2}$%(%$\definputvariables, \analysisinputspace$%):
+  %$\dots$%
+\end{lstlisting}
+\end{marginalgorithm}
+
+Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code: \refalg{abstract-qlibra}.
 The algorithm takes as input the neural network model $\defmodel$, a set of input variables of interest $\definputvariables$ (the sensitive features), the $\numberofbuckets$ output buckets $\buckets$, and an abstract domain $\abstractdomain$.
 The output buckets $\buckets$ represent all the possible classification targets of the neural network.
 In this way, both covering (\refdef{covering}) and compatibility (\refdef{compatibility}) conditions are satisfied as all the target classes are covered and for any two different target classes, there exist two different output buckets representing them.
