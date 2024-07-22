@@ -170,7 +170,7 @@ The next result instead shows the soundness of the backward analysis of neural n
 
 Different abstract domains can be used for the forward analysis of neural networks.
 The choice of the abstract domain depends on the trade-off between precision and scalability.
-Here, we present four abstract domains: \boxes \cite{Cousot1976,Hickey2001}, \symbolic \cite{Li2019,Min_e2006b}, \deeppoly \cite{Singh19}, and \neurify \cite{Wang18}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
+Here, we present four abstract domains: \boxes{} \cite{Cousot1976,Hickey2001}, \symbolic{} \cite{Li2019,Min_e2006b}, \deeppoly{} \cite{Singh2019}, and \neurify{} \cite{Wang2018}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
 
 
 \paragraph{Boxes}
@@ -276,7 +276,7 @@ The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constan
 
 \paragraph{DeepPoly}
 
-The \deeppoly{} domain \sidecite{Singh19} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
+The \deeppoly{} domain \sidecite{Singh2019} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
 %
 The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
 
@@ -313,7 +313,7 @@ The concrete bounds are computed by back-substitution of the symbolic bounds up 
 
 \paragraph{Neurify}
 
-The \neurify{} domain \sidecite{Wang18} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
+The \neurify{} domain \sidecite{Wang2018} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
 %
 The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
 %

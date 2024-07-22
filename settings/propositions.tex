@@ -10,7 +10,8 @@
 
 \newcommand*{\refprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1}}}
 \newcommand*{\vrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} \vpageref{lst:#1}}}
-\newcommand*{\nrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} (\nameref{lst:#1})}}
+\newcommand*{\nrefprog}[1]{\hyperref[lst:#1]{\progname\xspace\ref{lst:#1} {\normalfont (\nameref{lst:#1})}}}
+\newcommand*{\nrefprogshort}[1]{\hyperref[lst:#1]{\prognameshort\xspace\ref{lst:#1} {\normalfont (\nameref{lst:#1})}}}
 
 \newcommand*{\refline}[1]{\hyperref[line:#1]{\linename\xspace\ref{line:#1}}}
 
@@ -18,7 +19,7 @@
 
 \newcommand*{\refdefshorter}[1]{\hyperref[def:#1]{\ref{def:#1}}}
 \newcommand*{\nrefdef}[1]{\hyperref[def:#1]{\defname\xspace\ref{def:#1} (\nameref{def:#1})}}
-\newcommand*{\nrefdefshort}[1]{\hyperref[def:#1]{\defnameshort\xspace\ref{def:#1} (\nameref{def:#1})}}
+\newcommandx*{\nrefdefshort}[1]{\hyperref[def:#1]{\defnameshort\xspace\ref{def:#1} {\normalfont (\nameref{def:#1})}}}
 
 \newcommandx{\siderefbox}[3][3={}]{%
   \expandafter\marginnote[#3]{%
@@ -26,15 +27,15 @@
     \ifcsname nref#1short\endcsname%
       {\csname nref#1short\endcsname{#2}}%
     \else%
-      {\ifcsname nref#1\endcsname%
-        {\csname nref#1\endcsname{#2}}%
-      \else%
-        {\ifcsname ref#1short\endcsname%
-          {\csname ref#1short\endcsname{#2}}%
-        \else%
-          {\csname ref#1\endcsname{#2}}%
-        \fi}%
-      \fi}%
+    {\ifcsname nref#1\endcsname%
+      {\csname nref#1\endcsname{#2}}%
+    \else%
+    {\ifcsname ref#1short\endcsname%
+      {\csname ref#1short\endcsname{#2}}%
+    \else%
+      {\csname ref#1\endcsname{#2}}%
+    \fi}%
+    \fi}%
     \fi%
   ]%
     \input{src/propositions/#2-short}%
@@ -82,7 +83,7 @@
 
 \newcommandx{\siderefprog}[2][2={}]{%
   \marginnote[#2]{%
-  \begin{namedprog}[{\nrefprog{#1}}]~ %%% very important the space here
+  \begin{namedprog}[{\nrefprogshort{#1}}]~ %%% very important the space here
     \input{src/propositions/#1-short}%
   \end{namedprog}%
   }%

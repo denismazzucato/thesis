@@ -132,11 +132,13 @@
     	%Refname={Theorem,Theorems},
     ]{kaoexercise}
 		\declaretheoremstyle[
-			style=kaoplain,
+			% style=kaoplain,
 			% spaceabove=\topsep,
 			% spacebelow=\topsep,
 			headfont=\normalfont\bfseries,
-			notefont=\bfseries, notebraces={}{},
+			% headfont=\normalfont,
+			notefont=\bfseries,
+			notebraces={}{},
 			bodyfont=\normalfont\itshape,
 			postheadspace=0.5em,
 			name={\ignorespaces},
@@ -251,6 +253,18 @@
     		%frametitlebackgroundcolor=\@theorembackground,
     	},
     ]{definition}
+		\declaretheorem[
+    	name=Def.,
+    	%refname={definition,definitions},
+    	refname={Definition,Definitions},
+    	Refname={Definition,Definitions},
+    	numberwithin=section,
+    	mdframed={
+    		style=mdfkao,
+            backgroundcolor=\kaotheorems@definitionbackground,
+    		%frametitlebackgroundcolor=\@theorembackground,
+    	},
+    ]{definitionshort}
 
     \theoremstyle{kaoassumption}
     \declaretheorem[

@@ -1,0 +1,17 @@
+\begin{align*}
+  &\unusedwrapper(\tracesemantics) \DefifF \\
+  &\quad\forall
+    \defseq\in\tracesemantics, \defvalue\in\valuesofvariables
+  .\spacer
+    \retrieveinput{\defseq}(\definputvariables) \neq \defvalue \ImplieS \\
+    &\quad\exists
+      \defseq'\in\tracesemantics
+    .\spacer
+      \retrieveinput{\defseq'} \stateeq{\inputvariableswithoutw} \retrieveinput{\defseq}
+      \LanD \\
+    &\quad\quad
+      \retrieveinput{\defseq'}(\definputvariables) = \defvalue
+      \LanD \\
+    &\quad\quad
+      \retrieveoutput{\defseq} = \retrieveoutput{\defseq'}
+\end{align*}

@@ -20,9 +20,10 @@ Dans les prochains chapitres, nous définirons une mesure quantitative de l'util
 \labsec{input-data-usage}
 
 \marginnote{
-  The set $\inputvariables$ contains all the input variables of the program $\defprogram$, \cf{} \refsec{syntax}.
+  The set $\inputvariables$ contains the input variables of the program $\defprogram$, \cf{} \refsec{syntax}.
 }
-\marginnote[*2]{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
+\marginnote{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
+\marginnote{Note that, program states $\state$ are tuples of locations $\location$ and values of variables, \cf{} \refsec{syntax}.}
 Originally introduced by \textcite{Urban2018}, the notion of input data usage consists in the predicate $\unusedwrapper$ to determine whether the input variables $\definputvariables\in\setof\inputvariables$ are used in the computation of the program's output. The predicate
 \[
   \unusedwrapper \in \tracetype \to \B
@@ -30,13 +31,14 @@ Originally introduced by \textcite{Urban2018}, the notion of input data usage co
 holds whenever all the input variables in $\definputvariables$ are not used by the program under evaluation.
 
 \marginnote{
-  Let $\deftrace\in\finiteinfinitesequences$ be a trace, $\retrieveinput{\deftrace}\in\state$ refers to the initial state and $\retrieveoutput{\deftrace}\in\stateandbottom$ to the final one if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
+  Let $\deftrace\in\finiteinfinitesequences$ be a trace, $\retrieveinput{\deftrace}$ refers to the variable's values of the initial state and $\retrieveoutput{\deftrace}\in\stateandbottom$ to the final ones if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
 }
 \marginnote{
   Given a set of variables $\definputvariables\in\setof\inputvariables$, the notation $\retrieveinput{\deftrace}(\definputvariables)\in\valuesofvariables$ refers to the initial values of the variables in $\definputvariables$ in the trace $\deftrace$, where $\valuesofvariables$ is the vector of values for $\cardinalitynospaces{\definputvariables}$ variables.
 }
 \marginnote{
-  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie, $\forall \defvariable\in\inputvariableswithoutw.\spacer \defstate(\defvariable) = \defstate'(\defvariable)$.
+  From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie, $\forall \defvariable\in\inputvariableswithoutw$ it holds that $\defstate(\defvariable) = \defstate'(\defvariable)$.
+  Locations are not considered in the equality between states.
 }
 \begin{definition}[Unused]\labdef{unused-predicate}
   Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if and only if the following predicate holds:
@@ -136,7 +138,7 @@ The input variable \texttt{science} is unused, since each result value for \text
 
     \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
 \end{tikzpicture}
-\caption{Graphical representation of the trace semantics of the program \refprog{school-year} considering only the variables \texttt{science} and \texttt{passing}.}
+\caption{Graphical representation of the trace semantics of the \refprog{school-year} considering only the variables \texttt{science} and \texttt{passing}.}
 \labfig{school-year-math-traces}
 \end{marginfigure}
 
@@ -154,11 +156,11 @@ Instead, if we consider the variable \texttt{math}, the simplified trace semanti
 \end{align*}
 \reffig{school-year-math-traces} shows a graphical representation of the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$.
 The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
-Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tuple\false\false$).
+Indeed, only the initial value $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tracetuple{\loc{10}}{\tuple\false\false}$).
 \end{example}
 
 
-\begin{marginfigure}[*-9]
+\begin{marginfigure}[*-11]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
     \node (lend) at (-0.9,0) {$\loc{10}:$};
@@ -184,12 +186,12 @@ Indeed, only the initial state $\tuple\false\anyvalue$ yields the result value $
 
     \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$};
 \end{tikzpicture}
-\caption{Graphical representation of the trace semantics of the program \refprog{school-year} considering only the variables \texttt{math} and \texttt{passing}.}
+\caption{Graphical representation of the trace semantics of the \refprog{school-year} considering only the variables \texttt{math} and \texttt{passing}.}
 \labfig{school-year-traces}
 \end{marginfigure}
 
 \begin{example}
-  \begin{marginlisting}[*1]
+  \begin{marginlisting}
     \caption{Syntactic versus semantic usage of the input variable \texttt{x}.}
     \labprog{syntactic-vs-semantic-usage}
     \vspace{2\lineheight}
@@ -202,7 +204,7 @@ With this second example we highlight the difference between the syntactic and s
 Consider \refprog{syntactic-vs-semantic-usage}, where the input variable \texttt{x} is a non-negative integer.
 The variable \texttt{x} is syntactically used by the program, as it is present in the return statement.
 However, the variable \texttt{x} is semantically unused if we consider machine integers wrapped up to $\texttt{max\_int}\in\N$.
-This difference can be clearly seen by studying the trace semantics of the program. In case of machine integers the trace semantics is:
+This difference can be clearly seen by studying the trace semantics of the program. In case of machine integers the trace semantics is, reported also in \reffig{traces-x-plus-rand-max-int}:
 \begin{align*}
   &\tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
   =\\
@@ -213,7 +215,80 @@ This difference can be clearly seen by studying the trace semantics of the progr
 where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
 In this case, any outcome value $x+r \mod \texttt{max\_int}$ is feasible from any initial value of \texttt{x}.
 Even if $x$ is bigger than a given outcome $z$, the result is still feasible as we can take a positive $r = \texttt{max\_int} - x + z$ to make the wrapped sum $x + r \mod \texttt{max\_int} = z$.
+\begin{marginfigure}[*-10]
+  \begin{tikzpicture}[scale=0.8]
+    % \node (linit) at (-0.9,2) {$\locinit:$};
+    % \node (lend) at (-0.9,0) {$\loc{3}:$};
 
+    % Define the positions of the nodes
+    \node (0) at (0,2) {${\langle 0 \rangle}$};
+    \node (1) at (2.5,2) {${\langle 1 \rangle}$};
+    \node (rest) at (5,2) {\vphantom{${\langle 0 \rangle}$}${\dots}$};
+
+    \node (out0) at (0,0) {${\langle 0 \rangle}$};
+    \node (out1) at (1,0) {${\langle 1 \rangle}$};
+    \node (outmid) at (2,0) {\vphantom{${\langle 0 \rangle}$}${\dots}$};
+    \node (maxint) at (3.5,0) {${\langle \texttt{max\_int} \rangle}$};
+    \node (outrest) at (5,0) {\vphantom{${\langle 0 \rangle}$}${\dots}$};
+
+    % Draw the edges
+    \draw[->] (0) -> (out0);
+    \draw[->] (0) -> (out1);
+    % \draw[->] (0) -> (outmid);
+    \draw[->] (0) -> (maxint);
+
+    \draw[->] (1) -> (out0);
+    \draw[->] (1) -> (out1);
+    % \draw[->] (1) -> (outmid);
+    \draw[->] (1) -> (maxint);
+
+    \draw[->] (rest) -> (out0);
+    \draw[->] (rest) -> (out1);
+    % \draw[->] (rest) -> (outmid);
+    \draw[->] (rest) -> (maxint);
+
+
+
+    % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+\end{tikzpicture}
+\caption{Trace semantics of the \refprog{syntactic-vs-semantic-usage} bounded to machine integers.}
+\labfig{traces-x-plus-rand-max-int}
+\end{marginfigure}
+
+\begin{marginfigure}
+  \begin{tikzpicture}[scale=0.8]
+    % \node (linit) at (-0.9,2) {$\locinit:$};
+    % \node (lend) at (-0.9,0) {$\loc{3}:$};
+
+    % Define the positions of the nodes
+    \node (0) at (0,2) {${\langle 0 \rangle}$};
+    \node (1) at (2.5,2) {${\langle 1 \rangle}$};
+    \node (rest) at (5,2) {\vphantom{${\langle 0 \rangle}$}${\dots}$};
+
+    \node (out0) at (0,0) {${\langle 0 \rangle}$};
+    \node (out1) at (2.5,0) {${\langle 1 \rangle}$};
+    \node (outrest) at (5,0) {\vphantom{${\langle 0 \rangle}$}${\dots}$};
+
+    % Draw the edges
+    \draw[->] (0) -> (out0);
+    \draw[->] (0) -> (out1);
+    \draw[->] (0) -> (outrest);
+
+    % \draw[->] (1) -> (out0);
+    \draw[->] (1) -> (out1);
+    \draw[->] (1) -> (outrest);
+
+    % \draw[->] (rest) -> (out0);
+    % \draw[->] (rest) -> (out1);
+    \draw[->] (rest) -> (outrest);
+
+
+
+    % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+\end{tikzpicture}
+\caption{Trace semantics of the \refprog{syntactic-vs-semantic-usage}.}
+\labfig{traces-x-plus-rand}
+\end{marginfigure}
 On the other hand, if we consider unbounded positive integers, the trace semantics is:
 \begin{align*}
   \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}}
@@ -222,6 +297,7 @@ On the other hand, if we consider unbounded positive integers, the trace semanti
     \tracetuple{\locinit}{\langle{x}\rangle}\tracearrow\tracetuple{\loc{3x}}{\langle{x+r}\rangle}
   }{x, r \in \N}
 \end{align*}
+\reffig{traces-x-plus-rand} shows a graphical representation of the trace semantics of the program \refprog{syntactic-vs-semantic-usage} considering unbounded positive integers.
 In such instance, for any outcome value $x+r$, only initial values of \texttt{x} that are equal or smaller than $x+r$ may generate such outcome.
 For instance, if the outcome is 42, an initial value of 41 is feasible as it exists a random value $r = 1$ that makes the sum $41 + 1 = 42$. Instead, an initial value of 43 is not feasible as there is no positive random value $r$ that makes the sum $43 + r = 42$.
 % \pgfplotstableread[]{
@@ -345,10 +421,11 @@ For instance, if the outcome is 42, an initial value of 41 is feasible as it exi
 % \end{axis}
 % \end{tikzpicture}
 % \end{figure}
+
 \end{example}
 
 \nrefdef{unused-predicate} determines whether a given input variable is used or not, even in the presence of non-deterministic programs%
-\sidenote[][*-7]{%
+\sidenote[][*-5]{%
   In \refexample{school-year} the trace semantics where we consider subsets of input variables, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ and $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{math}}$, are two non-deterministic sets of traces.
   %
   This can be easily seen by considering the two traces:
@@ -363,7 +440,7 @@ Furthermore, the next example shows that the unused predicate is termination awa
 Indeed, termination is a possible outcome of a program, and thus a variable should be unused if it does not affect the termination as well as the result of the program.
 
 \begin{example}\labexample{non-termination}
-  \begin{marginlisting}
+  \begin{marginlisting}[*1]
     \caption{Program that does not terminate for positive values of \texttt{x}.}
     \labprog{non-termination}
     \vspace{2\lineheight}
@@ -373,6 +450,39 @@ non_termination(x):
     x = x + 1;
  \end{lstlisting}
   \end{marginlisting}
+  \begin{marginfigure}[*6]
+    \begin{tikzpicture}[scale=0.8]
+      \node (linit) at (-0.9,2) {$\locinit:$};
+      \node (lend) at (-0.9,0) {$\loc{4}:$};
+
+      % Define the positions of the nodes
+      \node (-2) at (0,2) {${\langle < \rangle}$};
+      \node (-1) at (1,2) {${\langle -1 \rangle}$};
+      \node (0) at (2,2) {${\langle 0 \rangle}$};
+      \node (1) at (3,2) {${\langle 1 \rangle}$};
+      \node (2) at (4,2) {${\langle > \rangle}$};
+
+      \node (out-2) at (0,0) {${\langle < \rangle}$};
+      \node (out-1) at (1,0) {${\langle -1 \rangle}$};
+      \node (out0) at (2,0) {${\langle 0 \rangle}$};
+      \node (bot) at (3.5,-0.5) {${\statebottom}$};
+
+      % Draw the edges
+      \draw[->] (-2) -> (out-2);
+      \draw[->] (-2) -> (out-1);
+
+      \draw[->] (-1) -> (out-2);
+      \draw[->] (-1) -> (out-1);
+
+      \draw[->] (0) -> (out0);
+
+      \draw[->] (1) -> (bot);
+      \draw[->] (2) -> (bot);
+      % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+  \end{tikzpicture}
+  \caption{Trace semantics of the \refprog{non-termination}. The symbol $\statebottom$ denotes non-terminating traces.}
+  \labfig{traces-non-termination}
+  \end{marginfigure}
   Consider the \refprog{non-termination} defined on the side. The program does not terminate for positive values of \texttt{x}. Instead, it terminates without modifying \texttt{x} if \texttt{x} is negative or equal to $0$. The trace semantics is the following:
   \begin{align*}
     \tracesemanticsnoparam\semanticsof{\texttt{non\_termination}}
@@ -440,13 +550,13 @@ Equivalently, the same could be achieved by checking whether each variable separ
 \section{Abstract Input Data Usage}
 \labsec{abstract-input-data-usage}
 
-Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, we introduce a generalized version of the unused predicate.
+Inspired by the definition of abstract non-interference (ANI) \sidecite{Giacobazzi2018,Mastroeni2023}, reported in \refdef{ani-predicate},
+we introduce a generalized version of the unused predicate.
 That is, a version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
 Later, we will define the quantitative measure of input data usage, and use the abstraction of output states to determine numerical values from output states.
 
 \marginnote[*-2]{
-  \denis{The difference in style is due to the fact that this is a definition (unique in the document), while the other one two pages below is the reference to this definition.}
-\begin{definition}[Abstract Non-Interference]\labdef{ani-predicate}
+\begin{definitionshort}[Abstract Non-Interference]\labdef{ani-predicate}
   The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
   \begin{gather*}
       \aniselect(\retrieveinput{\defseq}) = \aniselect(\retrieveinput{\defseq'})
@@ -454,7 +564,7 @@ Later, we will define the quantitative measure of input data usage, and use the 
        \aniobserver(\retrieveoutput{\defseq}) = \aniobserver(\retrieveoutput{\defseq'})
   \end{gather*}
 where $\aniselect$ and $\aniobserver$ are upper closure operators on program states to abstract input and output states respectively.
-\end{definition}
+\end{definitionshort}
 % We assume that the objective of the input abstraction $\aniselect$ is to monitor the interference of the input variable $\definputvariables$.
 }
 
@@ -491,18 +601,73 @@ We employ the output observer to define an abstract version of the unused predic
 This abstract unused predicate allows for further abstractions of the output states, which is weaker than the original definition of the unused property.
 For instance, the output observer could identify which variable is to consider as the outcome of the program and abstract away the other variables. Another use case could be to abstract the output states into the parity of their variables, or even into the sign. In such case, a variable could be used with respect to \nrefdef{unused-predicate} but unused with respect to \nrefdef{abstract-unused}.
 
-\begin{example}
-  \begin{marginlisting}
+  \begin{marginlisting}[*-2]
     \caption{The variable \texttt{x} is used but not abstractly used.}
     \labprog{parity}
-    \vspace{2\lineheight}
+    \vspace{15pt}
   \begin{lstlisting}
 parity(x):
   return 2 * x;
 \end{lstlisting}
   \end{marginlisting}
+  \begin{example}
   The \refprog{parity} doubles the values of the input variable \texttt{x}. If we consider \nrefdef{unused-predicate}, the variable \texttt{x} is used as for any output value we consider, \eg, the output 4 from an input value of $\texttt{x}=2$, it does not exist a trace that starts with $x\neq 2$ and terminates with output 4. Instead, by considering the parity of the output value, the \refprog{parity} does not use the variable \texttt{x} as the only possible outcome is ``even''.
 \end{example}
+  \begin{marginfigure}[*-6]
+    \begin{tikzpicture}[scale=0.8]
+
+      % Define the positions of the nodes
+      \node (0) at (0,2) {${\langle 0 \rangle}$};
+      \node (1) at (2,2) {${\langle 1 \rangle}$};
+      \node (2) at (4,2) {${\langle 2 \rangle}$};
+
+      \node (-) at (5,1) {$\dots$};
+
+      \node (out0) at (0,0) {${\langle 0 \rangle}$};
+      \node (out1) at (1,0) {${\langle 1 \rangle}$};
+      \node (out2) at (2,0) {${\langle 2 \rangle}$};
+      \node (out3) at (3,0) {${\langle 3 \rangle}$};
+      \node (out4) at (4,0) {${\langle 4 \rangle}$};
+
+      % Draw the edges
+      \draw[->] (0) -> (out0);
+      \draw[->] (0) -> (out2);
+      \draw[->] (0) -> (out4);
+
+      \draw[->] (1) -> (out2);
+      \draw[->] (1) -> (out4);
+
+      \draw[->] (2) -> (out4);
+      % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+  \end{tikzpicture}
+  \caption{Trace semantics of \refprog{parity} without abstraction.}
+  \labfig{parity-without-abstraction}
+  \end{marginfigure}
+  \begin{marginfigure}[*2]
+    \begin{tikzpicture}[scale=0.8]
+
+      % Define the positions of the nodes
+      \node (0) at (0,2) {${\langle 0 \rangle}$};
+      \node (1) at (2,2) {${\langle 1 \rangle}$};
+      \node (2) at (4,2) {${\langle 2 \rangle}$};
+
+      \node (-) at (5,1) {$\dots$};
+
+      \node (even) at (1,0) {${\langle \textsc{even} \rangle}$};
+      \node (odd) at (3,0) {${\langle \textsc{odd} \rangle}$};
+
+      % Draw the edges
+      \draw[->] (0) -> (even);
+      \draw[->] (0) -> (even);
+      \draw[->] (0) -> (even);
+      \draw[->] (1) -> (even);
+      \draw[->] (1) -> (even);
+      \draw[->] (2) -> (even);
+      % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$};
+  \end{tikzpicture}
+  \caption{Trace semantics of \refprog{parity} without parity abstraction applied to the output states.}
+  \labfig{parity}
+  \end{marginfigure}
 
 \nrefdef{abstract-unused} can also be seen as a potential abstract non-interference definition working with non-deterministic programs.
 As a drawback, we lose the input abstraction: the tread-off allows non-determinism but does not permit input state abstractions in the sense of abstract non-interference.
@@ -520,7 +685,7 @@ The next result shows that the abstract unused predicate is equivalent to the or
   \end{gather*}
 \end{proposition}
 \begin{proof}
-  The proof is straightforward by the definition of the abstract unused predicate, \nrefdef{abstract-unused}, and the unused predicate, \nrefdef{unused-predicate}.
+  The proof is straightforward by the definition of the abstract unused predicate, \refdef*{abstract-unused}[*-3.5], and the unused predicate, \refdef*{unused-predicate}[*4.5].
   Indeed, the output observer $\aniobserver = \identity$ does not abstract the output states, and thus the two predicates are equivalent.
 \end{proof}
 
@@ -528,22 +693,22 @@ With the use of the next example, we show that non-determinism may affect the ab
 
 
 \begin{example}
-  Let us consider the simplified trace semantics of the program \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
+  Let us consider the simplified trace semantics of the \refprog{school-year}, considering only the variables \texttt{science} and \texttt{passing}.
   As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{science} interferes with the output states.
   In fact, assuming:
-  \marginnote[*-4]{
-    \begin{eqnarray*}
-      \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-      = } \\
-      & \left\{
+  \marginnote{
+    \begin{align*}
+      &{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+      =}\\
+      &\quad\left\{
         \begin{array}{l}
-          \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
-          \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
-          \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
-          \tuple\false\anyvalue\tracearrow\tuple\false\false
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\false}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\false}}
         \end{array}
       \right\}
-    \end{eqnarray*}
+    \end{align*}
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
       \node (lend) at (-0.9,0) {$\loc{10}:$};
@@ -579,9 +744,9 @@ With the use of the next example, we show that non-determinism may affect the ab
   the predicate of  abstract non-interference does not hold for the variable \texttt{science}.
   This can be shown by the two traces
   \begin{align*}
-    \tuple\true\true&\tracearrow\tuple\false\true
+    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc{10}}{\tuple\false\true}
     \\
-    \tuple\true\true&\tracearrow\tuple\false\false
+    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc{10}}{\tuple\false\false}
   \end{align*}
   where the output states are different, but the input states are the same.
   Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{science} as an interfering variable.
@@ -653,37 +818,68 @@ We formally show that abstract non-interference matches the abstract unused pred
 
 \begin{example}\labexample{determinization}
   Interestingly, with the use of ``seeds'' one could also determinize a non-deterministic semantics by fixing the random observations as part of the program states.
-  Consider the set of traces of the previous example, but with the addition of a random variable that is used to determinize the outcome of the program.
+  Consider the set of traces of the previous example, \cf{} $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$, but with the addition of a random variable that is used to determinize the outcome of the program.
   A possible determinization could be the set of traces:
-  \marginnote[*-4]{
-    \begin{eqnarray*}
-      \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-      = } \\
-      & \left\{
+  \marginnote[*-1]{
+    \begin{align*}
+      &{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
+      =}\\
+      &\quad\left\{
         \begin{array}{l}
-          \tuple\true\anyvalue\tracearrow\tuple\true\true, \\
-          \tuple\true\anyvalue\tracearrow\tuple\true\false, \\
-          \tuple\false\anyvalue\tracearrow\tuple\false\true, \\
-          \tuple\false\anyvalue\tracearrow\tuple\false\false
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\true}{\false}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{10}}{\tuple{\false}{\false}}
         \end{array}
       \right\}
-    \end{eqnarray*}
+    \end{align*}
   }
+  \begin{marginfigure}[*5]
+    \begin{tikzpicture}[scale=0.6]
+      \def\step{0.9}
+      % Define the positions of the nodes
+      \node (TTT) at (0,2) {\footnotesize${\langle\true\true\true\rangle}$};
+      \node (TTF) at (1*\step,2) {\footnotesize${\langle\true\true\false\rangle}$};
+      \node (TFT) at (2*\step,2) {\footnotesize${\langle\true\false\true\rangle}$};
+      \node (TFF) at (3*\step,2) {\footnotesize${\langle\true\false\false\rangle}$};
+      \node (FTT) at (4*\step,2) {\footnotesize${\langle\false\true\true\rangle}$};
+      \node (FTF) at (5*\step,2) {\footnotesize${\langle\false\true\false\rangle}$};
+      \node (FFT) at (6*\step,2) {\footnotesize${\langle\false\false\true\rangle}$};
+      \node (FFF) at (7*\step,2) {\footnotesize${\langle\false\false\false\rangle}$};
+      \node (TT) at (0,0) {$\tuple\true\true$};
+      \node (TF) at (2.1,0) {$\tuple\true\false$};
+      \node (FT) at (4.2,0) {$\tuple\false\true$};
+      \node (FF) at (7*\step,0) {$\tuple\false\false$};
+      % Draw the edges
+      \draw[->] (TTT) -> (TT);
+      \draw[->] (TTF) -> (TF);
+      \draw[->] (TFT) -> (TT);
+      \draw[->] (TFF) -> (TF);
+      \draw[->] (FTT) -> (FT);
+      \draw[->] (FTF) -> (FF);
+      \draw[->] (FFT) -> (FT);
+      \draw[->] (FFF) -> (FF);
+      % \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm] {$=$};
+  \end{tikzpicture}
+  \caption{Trace semantics of \refprog{school-year} with determinization (third component of initial states).}
+  \labfig{determinized}
+\end{marginfigure}
   \begin{eqnarray*}
     \left\{
       \begin{array}{l}
-        \langle{\true,\true,\true}\rangle\tracearrow\tuple\true\true, \\
-        \langle{\true,\true,\false}\rangle\tracearrow\tuple\true\false, \\
-        \langle{\true,\false,\true}\rangle\tracearrow\tuple\true\true, \\
-        \langle{\true,\false,\false}\rangle\tracearrow\tuple\true\false, \\
-        \langle{\false,\true,\true}\rangle\tracearrow\tuple\false\true, \\
-        \langle{\false,\true,\false}\rangle\tracearrow\tuple\false\false \\
-        \langle{\false,\false,\false}\rangle\tracearrow\tuple\false\true, \\
-        \langle{\false,\false,\false}\rangle\tracearrow\tuple\false\false
+        \tracetuple{\locinit}{\langle{\true,\true,\true}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\true\true}, \\
+        \tracetuple{\locinit}{\langle{\true,\true,\false}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\true\false}, \\
+        \tracetuple{\locinit}{\langle{\true,\false,\true}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\true\true}, \\
+        \tracetuple{\locinit}{\langle{\true,\false,\false}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\true\false}, \\
+        \tracetuple{\locinit}{\langle{\false,\true,\true}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\false\true}, \\
+        \tracetuple{\locinit}{\langle{\false,\true,\false}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\false\false} \\
+        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\false\true}, \\
+        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc{10}}{\tuple\false\false}
       \end{array}
     \right\}
   \end{eqnarray*}
   where the last component of input states is the boolean seed used to determine the outcome of the program.
+  \reffig{determinized} shows the traces in a graphical representation.
   In such instance, the semantics is deterministic as it is not possible anymore to have two traces with the same input states and different output states.
   Thus, the predicate $\aniwrapper$ and $\unusediowrapper$ are equivalent.
 \end{example}
@@ -695,7 +891,7 @@ When such property is plugged into $\unusediowrapper$, it convenes a non-exploit
 
 
 \marginnote[*-2]{
-\begin{definition}[Non-Exploitability]\labdef{ne-predicate}
+\begin{definitionshort}[Non-Exploitability]\labdef{ne-predicate}
   Let $\definputvariables\in\setof\inputvariables$ be the set of public input variables.
   The \emph{non-exploitability} predicate $\newrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
   \begin{align*}
@@ -703,7 +899,7 @@ When such property is plugged into $\unusediowrapper$, it convenes a non-exploit
       \ImplieS \\
       &\quad \retrieveoutput{\defseq}(\neerror) = \retrieveoutput{\defseq'}(\neerror)
   \end{align*}
-\end{definition}
+\end{definitionshort}
 }
 
 \begin{definition}[Non-Exploitability for Non-Deterministic Programs]\labdef{ne-unused}
@@ -762,7 +958,8 @@ In other words, the unused predicate is stronger than its abstract counterpart.
 
 In this section, we state the \emph{unused property} as a property of programs.
 Whenever a program does not use the input variables $\definputvariables$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
-
+\marginnote{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
+\siderefbox{def}{abstract-unused}
 \begin{definition}[Unused Property]\labdef{unused}
   Given a program $\defprogram$, and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
   \begin{align*}
@@ -770,6 +967,7 @@ Whenever a program does not use the input variables $\definputvariables$, the tr
     \setdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
   \end{align*}
 \end{definition}
+
 
 Specifically, the unused property $\unused$ is the set of all the programs (or rather, their semantics) that do not use any of the variables in $\definputvariables$.
 %
@@ -875,32 +1073,18 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
 \end{proof}
 
 \begin{example}
-  \marginnote{
-  \begin{eqnarray*}
-    \lefteqn{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
-    = } \\
-    & \left\{
-      \begin{array}{l}
-        \tuple\true\anyvalue\dots\tuple\true\true, \\
-        \tuple\true\anyvalue\dots\tuple\true\false, \\
-        \tuple\false\anyvalue\dots\tuple\false\true, \\
-        \tuple\false\anyvalue\dots\tuple\false\false
-      \end{array}
-    \right\}
-  \end{eqnarray*}
-}
-  We show how the dependency semantics abstracts the collecting semantics $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$, where $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}$ is the trace semantics of \refprog{school-year}.
-  First, as required by \refthm{unused-validation}, the trace semantics should be abstracted first by the collecting semantics, obtaining $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$.
+  We show how the dependency semantics abstracts the collecting semantics $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$.
+  First, the trace semantics should be abstracted first by the collecting semantics, obtaining $\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}$.
   The dependency semantics is then:
   \begin{align*}
      \dependencysemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}
     \spacearound{&=} \dependencyabstraction(\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{science}}\}) \\
     \spacearound{&=} \left\{\left\{
       \begin{array}{l}
-        \tuple{\tuple\true\anyvalue}{\tuple\true\true}, \\
-        \tuple{\tuple\true\anyvalue}{\tuple\true\false}, \\
-        \tuple{\tuple\false\anyvalue}{\tuple\false\true}, \\
-        \tuple{\tuple\false\anyvalue}{\tuple\false\false}
+        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc{10}}{\tuple\true\true}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc{10}}{\tuple\true\false}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc{10}}{\tuple\false\true}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc{10}}{\tuple\false\false}}
       \end{array}
     \right\}\right\}
   \end{align*}
@@ -1082,6 +1266,19 @@ More formally, each variable in the program maps a value in the \usage{} complet
 The lattice contains the following elements: $\usedtag$ (\emph{\underline{u}sed}) and $\unusedtag$ (\emph{\underline{u}nused}) denoting respectively that a variable may be used or is definitely not used at the current nesting level.
 The elements $\belowtag$ (\emph{\underline{b}elow}) and $\overwrittentag$ (\emph{over\underline{w}ritten}) denote that a variable may be used at a lower nesting level or is modified at the current nesting level, respectively.
 
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}
+    \node (used) at (0,0) {$\usedtag$};
+    \node (below) at (-1,-1) {$\belowtag$};
+    \node (unused) at (1,-1) {$\unusedtag$};
+    \node (overwritten) at (0,-2) {$\overwrittentag$};
+    \draw (used) -- (below) -- (overwritten) -- (unused) -- (used);
+  \end{tikzpicture}
+  \caption{The \usage{} lattice.}
+  \labfig{usage-lattice}
+\end{marginfigure}
+
 A variable is (explicitly) used if it is assigned to another variable that is used in the current ($\usedtag$) or lower nesting level ($\belowtag$). Another reason for a variable to be (implicitly) used is if it appears in the boolean condition of a statement that uses another variable ($\usedtag$) or modifies another used variable ($\overwrittentag$).
 We define the operator $\usageassign\semanticsof{\assignstmt}$ to handle the assignment of variables on a map $\usagemap\in\variables\to\usage$:
 
@@ -1140,12 +1337,43 @@ The dual operator is the $\usagepop$ operator that restores the information abou
   \end{cases}
 \end{align*}
 
-The syntactic dependency analysis $\synsemanticsnoparam$ is a backward analysis on the lattice of stacks $\langle\stack, \stacksubseteq,\stackjoin\rangle$. The partial order $\stacksubseteq$ and least upper bound $\stackjoin$ are point-wise lifted from the $\usage$ lattice. For each statement $\defstmt$ in the small imperative language of \refsec{a-small-imperative-language}, the syntactic dependency analysis $\synsemanticsnoparam$ is defined in \reffig{syntactic-dependency-analysis}.
+\begin{marginfigure}[*-5]
+  \resizebox{1\textwidth}{!}{%
+  \begin{minipage}{\textwidth}
+  \begin{align*}
+  &\synsemanticsnoparam \semanticsof{\skipstmt}(\defstack) \DefeQ
+  \defstack
+  \\
+  &\synsemanticsnoparam \semanticsof{\assignstmt}(\defstack) \DefeQ
+  \usageassign\semanticsof{\assignstmt}(\defstack)
+  \\
+  &\synsemanticsnoparam \semanticsof{\assertstmt}(\defstack) \DefeQ
+  \usagefilter\semanticsof{\defbexp}(\defstack)
+  \\
+  &\synsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}(\defstack) \DefeQ
+  \\
+  &\quad
+  \usagepop \circ \usagefilter\semanticsof{\defbexp} \circ \synsemanticsnoparam \semanticsof{\defstmt} \circ \usagepush(\defstack) \\
+  &\quad \stackjoin \usagepop \circ \usagefilter\semanticsof{\defbexp} \circ \synsemanticsnoparam \semanticsof{\defstmt'} \circ \usagepush(\defstack)
+  \\
+  &\synsemanticsnoparam \semanticsof{\whilestmt}(\defstack) \DefeQ \\
+  &\quad \lfp{} \synsemanticsnoparam \semanticsof{\ifstmt}(\defstack)
+  \\
+  &\synsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}(\defstack) \DefeQ
+  \synsemanticsnoparam \semanticsof{\defstmt}( \synsemanticsnoparam \semanticsof{\defstmt'}(\defstack))
+\end{align*}
+\end{minipage}
+}
+\caption{The syntactic dependency analysis.}
+\labfig{syntactic-dependency-analysis}
+\end{marginfigure}
+
+The syntactic dependency analysis $\synsemanticsnoparam$ is a backward analysis on the lattice of stacks $\langle\stack, \stacksubseteq,\stackjoin\rangle$. The partial order $\stacksubseteq$ and least upper bound $\stackjoin$ are point-wise lifted from the $\usage$ lattice. For each statement in the small imperative language of \refsec{a-small-imperative-language}, the syntactic dependency analysis $\synsemanticsnoparam$ is defined in \reffig{syntactic-dependency-analysis}.
 The initial stack contains a single map $\usagemap_0$ that maps all the output variables to $\usedtag$ (entry invariant of the analysis) and all the others to $\unusedtag$.
 We exemplify the analysis below.
 
 \begin{example}
-  Consider again \refprog*{school-year}. The syntactic dependency analysis $\synsemanticsnoparam\semanticsof{\texttt{school-year}}$ starts from the stack $\langle \usagemap_0 \rangle$ where $\usagemap_0$ maps the output variable $\texttt{passing}$ to $\usedtag$ and the rest to $\unusedtag$.
+  Consider again \refprog*{school-year}[*-2]. The syntactic dependency analysis $\synsemanticsnoparam\semanticsof{\texttt{school-year}}$ starts from the stack $\langle \usagemap_0 \rangle$ where $\usagemap_0$ maps the output variable $\texttt{passing}$ to $\usedtag$ and the rest to $\unusedtag$.
   The analysis first approaches the last conditional statement (the analysis proceed backwardly) at \refline{third-cond}.
   A modified copy $\usagemap_1$ of the map on top of the stack $\usagemap_0$ is pushed back to the stack:
   as \texttt{passing} is used in $\usagemap_0$, in $\usagemap_1$ it is marked as $\belowtag$, meaning that \texttt{passing} is used in a lower nesting level; all the other variables are propagated as unused.
@@ -1163,6 +1391,9 @@ We exemplify the analysis below.
 
 The concretization maps syntactic dependencies to set of (state) dependencies in $\dependencytype$ that satisfy the unused predicate $\unusedwrapper$, \cf{} \refdef{unused-predicate}.
 
+\marginnote{
+  The set $\variables$ contains the program variables, while $\inputvariables\subseteq\variables$ is the subset of input variables.
+}
 \begin{definition}\labdef{concretization-syntactic-dependency-analysis}
   The concretization $\synconcretization\in\stack \to \dependencytype$ of the syntactic dependency analysis is defined as:
   \begin{align*}
