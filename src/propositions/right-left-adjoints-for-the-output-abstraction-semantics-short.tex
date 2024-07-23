@@ -1,0 +1,12 @@
+\begin{align*}
+  &\outputabstraction(\defsetofsetofdependencies) \DefeQ \\
+  &\quad \setdef@{
+    \setdef{
+      \tuple{\retrieveinput{\defstate}}{\outputobs(\retrieveoutput{\defstate})}
+    }{
+      \inputoutputtuple{\defstate}\in\defsetofdependencies
+    }
+  }{
+    \defsetofdependencies \in \defsetofsetofdependencies
+  }
+\end{align*}
