@@ -891,7 +891,7 @@ Notably, the major consequence is that $\boundedqused$ is not subset-closed. Thu
 To address this issue, from the result of the abstract analysis we compute an under-approximation of the input values that are definitely missing from the set of input values that can produce the outcomes. This under-approximation provides a lower bound on the $\qusedname$ impact notion, hence the use of the $\ge$ operator in the $\defbound$-bounded impact property.
 
 \begin{example}\labexample{qused-not-monotonic}
-In this example, with the identity function on the second component, \cf{}, \refprog{id2}, we show that the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces.
+In this example, with the identity function on the second component, \cf{} \refprog{id2}, we show that the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in the amount of traces.
 Specifically, we consider two input variables with boolean values $\{\true, \false\}$, the \refprog{id2} returns the second component of the input without any modification.
 \begin{marginlisting}
   \caption{Identity function on the second component.}
@@ -1051,7 +1051,8 @@ Thus, the $\qusedname$ impact notion is neither monotonic nor anti-monotonic in 
 Unlike for the previous impact notions, it holds that, whenever the quantity $\qused(\tracesemantics)$ is 0, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
 Thus, we can establish the following equivalence:
 
-\siderefbox{def}{abstract-unused}[*-5]
+\siderefbox{def}{abstract-unused}
+\siderefbox{def}{qused}
 \begin{lemma}[Unused Equivalence]\lablemma{qualitative-quantitative-equivalence}
   For all program $\defprogram$, it holds that:
   \begin{gather*}
@@ -1061,8 +1062,8 @@ Thus, we can establish the following equivalence:
 \begin{proof}
   To show ($\Rightarrow$) we assume that $\unusediowrapper(\tracesemantics)$.
   As a consequence, we have that any outcome either is not reachable or is reachable from every input value of the variables $\definputvariables$.
-  Thus, the set of input values that can produce the outcome $\retrieveoutput\defstate$ is the set of all input values.
-  By subtracting this set from the set of input values that can produce the outcome $\retrieveoutput\defstate$, we obtain the value $0$, concluding that $\qused(\tracesemanticsnoparam) = 0$.
+  Thus, for any $\deftrace\in\defsetoftraces$, the set of input values that can produce that outcome is the set of all input values, \ie{}, $I_{\deftrace}(\defsetoftraces) = \values$.
+  Since we remove from $Q_{\definputvariables}(I_{\deftrace}(\defsetoftraces))$ the set of input values, we obtain a value of 0 for all traces, hence $\qused(\tracesemantics) = 0$.
 
   To show ($\Leftarrow$) we assume that $\qused(\tracesemanticsnoparam) = 0$.
   By definition, for all $\retrieveoutput\defstate$, the set of input values that can produce the outcome $\retrieveoutput\defstate$ is the set of all input values, otherwise $\qused(\tracesemanticsnoparam)$ would not be 0.
@@ -1105,9 +1106,8 @@ For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our a
 %
 Our static analysis is parametrized by an underlying backward abstract family\sidenote[][*-2]{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
-For instance, we could use the backward semantics of \refdef{?}\sidenote{\denis{This definition will be defined in \refch{abstract-interpretation}, and referenced on the side here.}} to compute $\backwardsemanticsnoparam(\bucket)$.
-The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain, \cf{}
-$\abstractdomainconcretization$, to restore all possible dependencies from input states to output values, formally:
+For instance, we could use the backward semantics of \refdef*{backward-semantics} to compute $\backwardsemanticsnoparam(\bucket)$.
+The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain, \cf{} $\abstractdomainconcretization$, to restore all possible dependencies from input states to output values, formally:
 \[
   \backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ
   \setof{\setdef{
@@ -1237,7 +1237,7 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
 
 \refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity $\defbound$.
 We define the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
-
+\marginnote[*7]{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
   The concretization of a measured quantity $\defbound$ is $\boundconcretization\in\valuesinf\to\collectingtype$, defined as:
   \begin{eqnarray*}
@@ -1248,7 +1248,6 @@ We define the concretization of the bound measured by the abstract impact $\impa
   \end{eqnarray*}
   where $\defsetoftraces\in\tracetype$ is the set of traces concretized from the dependencies $\defsetofdependencies$:
   \[\defsetoftraces = \singletonelimination(\dependencyconcretization \circ \outputconcretization(\{\defsetofdependencies\}))\]
-  \marginnote{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 \end{definition}
 
 % Note that, it holds an equivalence with the $\defbound$-bounded impact property:
@@ -1312,6 +1311,9 @@ Indeed, some subsets of dependencies may not satisfy the property $\genbounded$.
 
 The concretization $\boundconcretization$ is used to prove that the abstract semantics $\multisemanticsnoparam$ is sound for proving the property $\genbounded$.
 
+
+\siderefbox{def}{concretization-quantitative}
+\siderefbox{def}{bounded}
 \begin{lemma}\lablemma{soundness-boundconcretization}
   A program $\defprogram$ has an impact of at most $\defbound$ (respectively, at least $\defbound$ depending on the comparison operator $\comparison$) only if the set of dependencies concretized from the quantity $\impactwrapper(\tracesemantics)$
   are a subset of the semantics in $\genbounded$.
@@ -1342,9 +1344,9 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
   Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
   \begin{enumerate}[label=(\roman*)]
-    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12], and
-    \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-8], and
-    \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*-2],
+    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5], and
+    \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*3],
 \end{enumerate}
   the following implication holds:
   \begin{align*}
@@ -1425,7 +1427,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
 %
 
 \begin{example}\labexample{abstract-outcomes}
-  Consider \refprog*{landing-alarm-system} with program states defined as $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\Nle{3}}$. The output buckets represent the four levels of landing risk: low, medium-low, medium-high, and high. Using the interval domain: $\buckets \in \vectorbuckets[4]$ such that $\bucket[\textup{low}] = \langle \texttt{risk} \mapsto 0 \rangle$, $\bucket[\textup{mid\-/low}] = \langle \texttt{risk} \mapsto 1 \rangle$, $\bucket[\textup{mid\-/high}] = \langle \texttt{risk} \mapsto 2 \rangle$, and $\bucket[\textup{high}] = \langle \texttt{risk} \mapsto 3 \rangle$.
+  Consider \refprog*{landing-alarm-system}[*-3] with program states defined as $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\Nle{3}}$. The output buckets represent the four levels of landing risk: low, medium-low, medium-high, and high. Using the interval domain: $\buckets \in \vectorbuckets[4]$ such that $\bucket[\textup{low}] = \langle \texttt{risk} \mapsto 0 \rangle$, $\bucket[\textup{mid\-/low}] = \langle \texttt{risk} \mapsto 1 \rangle$, $\bucket[\textup{mid\-/high}] = \langle \texttt{risk} \mapsto 2 \rangle$, and $\bucket[\textup{high}] = \langle \texttt{risk} \mapsto 3 \rangle$.
   \nrefdef{covering} is satisfied as the output buckets cover all the possible outcomes of the program for the variable \texttt{risk}.
   We assume the backward analysis to return the following intervals:
   \begin{align*}
@@ -1494,15 +1496,15 @@ Note that, $\outcomes$ is bounded by the number of buckets when the conditions o
 
 The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$.
 
-\refdef@{outcomes}[*-2]
+\refdef@{outcomes}[*-4]
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     % \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation},
-    \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1],
-    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*5], and
-    \item \label{proof:d} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*10];
+    \item \label{proof:b2} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-3.5],
+    \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*1], and
+    \item \label{proof:d} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*5];
   \end{enumerate}
   then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
 \end{lemma}
@@ -1584,7 +1586,7 @@ In such case, we assume $\abstractdomain$ is equipped with an additional abstrac
 \begin{example}
   In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomaindistance(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
   On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomaindistance(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
-  The function $\abstractdomaindistance$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
+  % The function $\abstractdomaindistance$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 \end{example}
 
 The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values.
@@ -1593,9 +1595,10 @@ These intersections represent concrete input configurations where variations on 
 All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
+  Let $\defoutputvariables$ be the output variables of interest.
 We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
 \begin{align*}
-\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(K)}{K \in I} \\
+\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(\abstractdomainproject[\defoutputvariables](K))}{K \in I} \\
 \text{where}~
 I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
 \end{align*}
@@ -1648,16 +1651,16 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
   \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomaindistance(\defstate^\natural)\]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{}\refdef*{range}.
+The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{} \refdef*{range}[*-16.2].
 
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
-    \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{proof:ad} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
-    \item \label{proof:ae} $\abstractdomaindistance$ is sound, \cf{} \refdef*{soundness-size}[*12];
+    \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-16.7],
+    \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*-12.3],
+    \item \label{proof:ad} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*-8.5], and
+    \item \label{proof:ae} $\abstractdomaindistance$ is sound, \cf{} \refdef*{soundness-size}[*-4];
   \end{enumerate}
   then, $\abstractrange$ is a sound implementation of $\range$.
 \end{lemma}
@@ -1701,11 +1704,11 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   Let \texttt{risk} be the output variable of interest.
   The quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$.
   \begin{align*}
-    & \rangename_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
+    & \rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
     &\qquad\LE \abstractrangename_{\{\texttt{angle}\}}(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = 3
   \end{align*}
   \begin{align*}
-    & \rangename_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
+    & \rangename_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 2 \\
     &\qquad\LE \abstractrangename_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
   as expected by \refthm*{soundness}[*-4].
@@ -1800,16 +1803,16 @@ Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is th
   \[\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}} \GE \abstractdomaincount(\defstate^\natural) \]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}.
+The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}[*-5].
 
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
-    \item \label{pp2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{pp3} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
-    \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef*{soundness-count}[*12];
+    \item \label{pp1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2.5],
+    \item \label{pp2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*2],
+    \item \label{pp3} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*6], and
+    \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef*{soundness-count}[*10.8];
   \end{enumerate}
   then, $\abstractqused$ is a sound implementation of $\qused$.
 \end{lemma}
@@ -1821,7 +1824,7 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
     \cardinality{
         Q_\definputvariables(I_\deftrace(\defsetoftraces)) \setminus I_\deftrace(\defsetoftraces)
       } \\
-    \LE \\
+    \GE \\
     \abstractqused(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max_{j \le \numberofbuckets}\spacer
     \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket)) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{gather*}
@@ -1843,18 +1846,28 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
     \spacearound{=}
     \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{gather*}
-  \denis{To finish.}
+  By contradiction, we assume that $\cardinality{
+    Q_\definputvariables(I_{\overline{\deftrace}}(\defsetoftraces)) \setminus I_{\overline{\deftrace}}(\defsetoftraces)
+  } < \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}$, meaning that the number of missing input configurations is lower than the number of missing input values for the variable $\definputvariables$ coming from the same output bucket.
+  Hence, either:
+  \begin{enumerate}[label=(\alph*)]
+    \item \label{qq1} there exist output abstractions that are not matched by any output bucket,
+    \item \label{qq2} some output abstractions are matched by the same output bucket,
+    \item \label{qq3} there are output abstractions in $\tracesemanticsnoparam$ from perturbation of the input $\retrieveinput\defstate$ that are not considered in the abstract, or
+    \item \label{qq4} counting the number of input configurations in the abstract is not greater than the number of input configurations in the concrete.
+  \end{enumerate}
+  Again, we can show that the first three cases are not possible by hypothesis \ref{pp1}, \ref{pp2}, and \ref{pp3}. By hypothesis \ref{pp4}, the soundness of the count operator ensures that the number of input configurations in the abstract is always greater than the number of input configurations in the concrete. Therefore, the assumption is false, and we conclude that $\abstractqused$ is a sound implementation of $\qused$.
 \end{proof}
 
 
 \begin{example}
   The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
   \begin{align*}
-    & \qusedname_{\{\texttt{angle}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
+    & \qusedname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
     &\qquad\GE \abstractqusedname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3
   \end{align*}
   \begin{align*}
-    & \qusedname_{\{\texttt{speed}\}}(\dependencysemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
+    & \qusedname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 2 \\
     &\qquad\GE \abstractqusedname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2
   \end{align*}
   as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
@@ -1867,3 +1880,4 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
 In this chapter, we introduced the quantitative measures $\outcomes$, $\range$, and $\qused$ to quantify the impact of input variables on the output of a program.
 We developed a theoretical framework to verify the $\defbound$-bounded impact property of a program and showed the abstract version of the quantitative measures.
 In the next chapter, we show how we handle the quantification of input usage and bias in the context of neural network models.
+Afterwards, \refch{extensional-eval} presents the evaluation of the quantitative measures on a set of use cases.

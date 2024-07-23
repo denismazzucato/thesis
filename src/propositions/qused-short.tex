@@ -1,15 +1,21 @@
-\begin{gather*}
-  \qused(\defsetoftraces) \DefeQ \\
-  \sup_{\deftrace \in \defsetoftraces}
-    \spacer\left|
-      \begin{array}{l}
-        \setdef{\retrieveinput\defstate(\definputvariables)}{\retrieveinput\defstate \in \state} \setminus \\
-        \quad \setdef*{
-          \retrieveinput{\defseq'}(\definputvariables)
-          }{
-            \deftrace' \in \defsetoftraces \LanD \\
-                \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\deftrace'})
-          }
-      \end{array}
-    \right|
-\end{gather*}
+\begin{align*}
+  & \qused(\defsetoftraces) \defeq \\
+  &\quad\sup_{\deftrace \in \defsetoftraces}
+  \cardinality{
+      Q_\definputvariables(I_\deftrace(\defsetoftraces)) \setminus I_\deftrace(\defsetoftraces)
+    } \\
+    & I_{\deftrace}(\defsetoftraces) \spacearound= \\
+    &\quad \setdef{
+      \retrieveinput{\defseq'}
+    }{
+      \defseq' \in \defsetoftraces \land
+      \outputobs(\retrieveoutput{\deftrace}) = \outputobs(\retrieveoutput{\defseq'})
+    } \\
+    & Q_\definputvariables(\defsetofstates) \spacearound= \\
+    &\quad \setdef{
+      \defstate' \in \state
+    }{
+      \defstate \in \defsetofstates \land
+        \defstate' \stateeq{\inputvariableswithoutw} \defstate
+    }
+\end{align*}

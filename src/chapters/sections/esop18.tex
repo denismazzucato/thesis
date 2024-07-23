@@ -1341,26 +1341,26 @@ The dual operator is the $\usagepop$ operator that restores the information abou
   \resizebox{1\textwidth}{!}{%
   \begin{minipage}{\textwidth}
   \begin{align*}
-  &\synsemanticsnoparam \semanticsof{\skipstmt}(\defstack) \DefeQ
+  &\synsemanticsnoparam \semanticsof{\skipstmt}\defstack \DefeQ
   \defstack
   \\
-  &\synsemanticsnoparam \semanticsof{\assignstmt}(\defstack) \DefeQ
-  \usageassign\semanticsof{\assignstmt}(\defstack)
+  &\synsemanticsnoparam \semanticsof{\assignstmt}\defstack \DefeQ
+  \usageassign\semanticsof{\assignstmt}\defstack
   \\
-  &\synsemanticsnoparam \semanticsof{\assertstmt}(\defstack) \DefeQ
-  \usagefilter\semanticsof{\defbexp}(\defstack)
+  &\synsemanticsnoparam \semanticsof{\assertstmt}\defstack \DefeQ
+  \usagefilter\semanticsof{\defbexp}\defstack
   \\
-  &\synsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}(\defstack) \DefeQ
+  &\synsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defstack \DefeQ
   \\
   &\quad
   \usagepop \circ \usagefilter\semanticsof{\defbexp} \circ \synsemanticsnoparam \semanticsof{\defstmt} \circ \usagepush(\defstack) \\
   &\quad \stackjoin \usagepop \circ \usagefilter\semanticsof{\defbexp} \circ \synsemanticsnoparam \semanticsof{\defstmt'} \circ \usagepush(\defstack)
   \\
-  &\synsemanticsnoparam \semanticsof{\whilestmt}(\defstack) \DefeQ \\
-  &\quad \lfp{} \synsemanticsnoparam \semanticsof{\ifstmt}(\defstack)
+  &\synsemanticsnoparam \semanticsof{\whilestmt}\defstack \DefeQ \\
+  &\quad \lfp{} \synsemanticsnoparam \semanticsof{\ifstmt}\defstack
   \\
-  &\synsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}(\defstack) \DefeQ
-  \synsemanticsnoparam \semanticsof{\defstmt}( \synsemanticsnoparam \semanticsof{\defstmt'}(\defstack))
+  &\synsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defstack \DefeQ
+  \synsemanticsnoparam \semanticsof{\defstmt}( \synsemanticsnoparam \semanticsof{\defstmt'}\defstack)
 \end{align*}
 \end{minipage}
 }

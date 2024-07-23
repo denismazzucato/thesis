@@ -1,0 +1,29 @@
+\normalfont
+\resizebox{1\textwidth}{!}{%
+\begin{minipage}{\textwidth}
+\begin{align*}
+&\backwardsemanticsnoparam \semanticsof{\skipstmt}\defabstractvalue \DefeQ
+\defabstractvalue
+\\
+&\backwardsemanticsnoparam \semanticsof{\assignstmt}\defabstractvalue \DefeQ
+\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue
+\\
+&\backwardsemanticsnoparam \semanticsof{\assertstmt}\defabstractvalue \DefeQ
+\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue
+\\
+&\backwardsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
+\\
+&\quad \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue) \\
+&\quad \abstractdomainjoin \abstractdomainfilter\semanticsof{\neg\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
+\\
+&\backwardsemanticsnoparam \semanticsof{\whilestmt}\defabstractvalue \DefeQ \lim_n \abstractdomainfixpoint_n \\
+&\quad \abstractdomainfixpoint_0 \DefeQ \defabstractvalue \\
+&\quad \abstractdomainfixpoint_{n+1} \DefeQ \abstractdomainfixpoint_n \spacearound{\abstractdomainwidening} \abstractdomainfixpoint(\abstractdomainfixpoint_n) \\
+&\quad \abstractdomainfixpoint(\defotherabstractvalue) \DefeQ \abstractdomainfilter\semanticsof{\neg\defbexp}\defabstractvalue \\
+&\qquad \spacearound{\abstractdomainjoin} \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defotherabstractvalue)
+\\
+&\backwardsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
+\backwardsemanticsnoparam \semanticsof{\defstmt}( \backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
+\end{align*}
+\end{minipage}
+}

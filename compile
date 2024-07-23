@@ -21,6 +21,11 @@ fi
 # Clean the output directory
 # rm -rf "$OUTPUT"/*
 rm -rf pdf/*
+echo "Cleaned output directory"
+
+cp ./src/main.tex ./src/main.tex.bak
+cp ./src/full_main.tex ./src/main.tex
+echo "Copied main.tex"
 
 ## do thesis.tex
 
@@ -66,5 +71,9 @@ pdftk pdf/thesis.pdf cat 2-end output pdf/thesis-tail.pdf
 pdftk psl-first.pdf pdf/thesis-tail.pdf cat output pdf/thesis-but-last.pdf
 pdftk pdf/thesis-but-last.pdf psl-last.pdf cat output pdf/thesis.pdf
 echo "Finished merging"
+
+cp ./src/main.tex.bak ./src/main.tex
+rm ./src/main.tex.bak
+echo "Restored main.tex"
 
 echo "Done"
