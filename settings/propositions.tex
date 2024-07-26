@@ -22,8 +22,10 @@
 \newcommandx*{\nrefdefshort}[1]{\hyperref[def:#1]{\defnameshort\xspace\ref{def:#1} {\normalfont (\nameref{def:#1})}}}
 
 \newcommandx{\siderefbox}[3][3={}]{%
-  \expandafter\marginnote[#3]{%
+  \ifstrempty{#3}{%
+    \marginnote{%
   \begin{named}[%
+    \expandafter
     \ifcsname nref#1short\endcsname%
       {\csname nref#1short\endcsname{#2}}%
     \else%
@@ -40,7 +42,29 @@
   ]%
     \input{src/propositions/#2-short}%
   \end{named}%
-}%
+  }%
+  }{%
+    \marginnote[#3]{%
+    \begin{named}[%
+      \expandafter
+      \ifcsname nref#1short\endcsname%
+        {\csname nref#1short\endcsname{#2}}%
+      \else%
+      {\ifcsname nref#1\endcsname%
+        {\csname nref#1\endcsname{#2}}%
+      \else%
+      {\ifcsname ref#1short\endcsname%
+        {\csname ref#1short\endcsname{#2}}%
+      \else%
+        {\csname ref#1\endcsname{#2}}%
+      \fi}%
+      \fi}%
+      \fi%
+    ]%
+      \input{src/propositions/#2-short}%
+    \end{named}%
+    }%
+  }%
 }
 
 \newcommandx{\siderefboxandlabel}[3][3={}]{%

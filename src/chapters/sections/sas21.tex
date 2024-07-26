@@ -80,12 +80,12 @@ An \emph{abstract activation pattern} is a partial activation pattern that assig
   escapechar=\%,
   ]
 Forward%${}_{\defmodel,\abstractdomain}$%(%$\defabstractvalue$%):
-  p = %$\emptyset$%
-  for %$i$% = 1 up to %$\lastlayerindex$%:
-    for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$%:
+  %$\defabstractactivationpattern$% = %$\emptyset$%
+  for %$i$% = 1 up to %$\lastlayerindex$% do
+    for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$% do
       %$\defabstractvalue$% = %$\abstractdomainforwardaffine\semanticsof{\node}\defabstractvalue$%
-      %$\defabstractvalue, p$% = %$\abstractdomainforwardrelu\semanticsof{\node}\defabstractvalue$%
-  return %$\defabstractvalue, p$%
+      %$\defabstractvalue$%, %$\defabstractactivationpattern$% = %$\abstractdomainforwardrelu\semanticsof{\node}\defabstractvalue$%
+  return %$\defabstractvalue$%, %$\defabstractactivationpattern$%
 \end{lstlisting}
 \end{marginalgorithm}
 
@@ -107,12 +107,16 @@ affine transformation performed on a given node, while $\abstractdomainforwardre
   escapechar=\%,
   ]
 Backward%${}_{\defmodel,\abstractdomain, \defabstractactivationpattern}$%(%$\defabstractvalue$%):
-  for %$i$% = %$\lastlayerindex$% down to 1:
-    for %$j$% = 1 up to %$\cardinalitynospaces{\hiddenlayer{i}}$%:
+  for %$i$% = %$\lastlayerindex$% down to 1 do
+    for %$j$% = %$\cardinalitynospaces{\hiddenlayer{i}}$% down to 1 do
       %$\defabstractvalue$% = %$\abstractdomainbackwardrelu\semanticsof{\node}\defabstractvalue$%
       %$\defabstractvalue$% = %$\abstractdomainbackwardaffine\semanticsof{\node}\defabstractvalue$%
   return %$\defabstractvalue$%
 \end{lstlisting}
+\marginnote{
+  Similarly to the notes of the forward analysis, in the algorithm above (\cf{} $\abstractdomainbackward_{\defmodel, \abstractdomain}$), $\lastlayerindex$ is the number of layers of the neural network $\defmodel$, $\cardinalitynospaces{\hiddenlayer{i}}$ is the number of nodes in layer $i$, and $\node$ is the $j$-th node in layer $i$.
+  Even though not explicitly written, the backward handler for affine and activation functions (respectively, $\abstractdomainbackwardaffine$ and $\abstractdomainbackwardrelu$) employs the abstract domain $\abstractdomain$.
+}
 \end{marginalgorithm}
 
 Conversely, a backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the target classes.
@@ -147,7 +151,7 @@ Similar to the backward concretization $\backwardconcretization$, it is defined 
 \marginnote{
   The symbol $\reduceinit[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(\defabstractvalue)}$ denotes the reduction of the semantics $\outputsemanticsnoparam\semanticsof{\defmodel}$ to the input states $\abstractdomainconcretization(\defabstractvalue)$, \cf{} \refdef{input-reduction}.
   }
-
+\siderefbox{def}{input-reduction}
 
 The next result instead shows the soundness of the backward analysis of neural networks.
 
@@ -157,12 +161,13 @@ The next result instead shows the soundness of the backward analysis of neural n
     \reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(\defabstractvalue)} \SubseteQ \backwardconcretization(\abstractdomainbackward_{\defmodel, \abstractdomain})\defabstractvalue
   \]
   \end{lemma}
-\begin{proof}
-  Trivially follows from the definition of the backward concretization and the soundness of the network operators.
-\end{proof}
 \marginnote{
   The symbol $\reduce[\outputsemanticsnoparam\semanticsof{\defmodel}]{\abstractdomainconcretization(\defabstractvalue)}$ denotes the reduction of the semantics $\outputsemanticsnoparam\semanticsof{\defmodel}$ to the output states $\abstractdomainconcretization(\defabstractvalue)$, \cf{} \refdef{output-reduction}.
   }
+\siderefbox{def}{output-reduction}
+\begin{proof}
+  Trivially follows from the definition of the backward concretization and the soundness of the network operators.
+\end{proof}
 
 
 \subsection{Abstract Domains for Neural Network Analysis}
@@ -170,7 +175,7 @@ The next result instead shows the soundness of the backward analysis of neural n
 
 Different abstract domains can be used for the forward analysis of neural networks.
 The choice of the abstract domain depends on the trade-off between precision and scalability.
-Here, we present four abstract domains: \boxes{} \cite{Cousot1976,Hickey2001}, \symbolic{} \cite{Li2019,Min_e2006b}, \deeppoly{} \cite{Singh2019}, and \neurify{} \cite{Wang2018}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
+Here, we present four abstract domains: \boxes{} \cite{Cousot1976,Hickey2001}, \symbolic{} \cite{Wang2018b,Min_e2006b}, \deeppoly{} \cite{Singh2019}, and \neurify{} \cite{Wang2018a}. Additionally, we propose a generic reduced product domain construction, called \reducedproduct, to combine any of these domains together.
 
 
 \paragraph{Boxes}
@@ -182,10 +187,11 @@ The \boxes{} domain simply uses interval arithmetic \sidecite{Cousot1976, Hickey
 \paragraph{Symbolic Constant Propagation}
 
 \begin{marginfigure}
-  \begin{tikzpicture}[scale=0.85]
+  \centering
+  \begin{tikzpicture}[scale=0.9]
     % x and y axes
-    \draw[->, thick] (0,0) -- (5,0) node[right]{$x$};
-    \draw[->, thick] (3,-0.5) -- (3,2) node[above]{\footnotesize $\relu(x)$};
+    \draw[->, thick] (0,0) -- (5,0) node[above]{$x$};
+    \draw[->, thick] (3,-0.5) -- (3,2) node[right]{\footnotesize $\relu(x)$};
 
     % lower and upper bound label on x axis
     \draw (0.5,0) -- (0.5,-0.2) node[below]{$l$};
@@ -202,19 +208,20 @@ The \boxes{} domain simply uses interval arithmetic \sidecite{Cousot1976, Hickey
     \node[above] at (1,1.5) {\footnotesize $\relu(x) \le u$};
 
     % label above the rectangle below: $0 \ge \relu(x)$
-    \node[below] at (2,0) {\footnotesize $0 \ge \relu(x)$};
+    \node[below] at (2,0) {\footnotesize $0 \le \relu(x)$};
   \end{tikzpicture}
   \caption{Na\"ive convex approximation of a \relu{} activation function.}
   \labfig{naive}
 \end{marginfigure}
 
-The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constant propagation \sidecite{Min_e2006b}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
+The \symbolic{} domain \sidecite{Wang2018b} combines \boxes{} with symbolic constant propagation \sidecite{Min_e2006b}: in addition to being bounded by concrete lower and upper bounds, the value of each neuron \texttt{x} is represented symbolically as a linear combination of the input neurons and the value of the non-fixed \relu{} nodes in previous layers. Specifically, given \texttt{x} bounded by $l < 0$ and $u > 0$, $\relu(x)$ is represented by a fresh symbolic variable bounded by $0$ and $u$ (\cf{} \reffig{naive}). By retaining variable dependencies, symbolic representations yield a tighter over-approximation of the value of each neuron in the network.
 
 \begin{marginfigure}
-  \begin{tikzpicture}[scale=0.85]
+  \centering
+  \begin{tikzpicture}[scale=0.9]
     % x and y axes
-    \draw[->, thick] (0,0) -- (5,0) node[right]{$x$};
-    \draw[->, thick] (3,-0.5) -- (3,2) node[above]{\footnotesize $\relu(x)$};
+    \draw[->, thick] (0,0) -- (5,0) node[above]{$x$};
+    \draw[->, thick] (3,-0.5) -- (3,2) node[right]{\footnotesize $\relu(x)$};
 
     % lower and upper bound label on x axis
     \draw (0.5,0) -- (0.5,-0.2) node[below]{$l$};
@@ -232,20 +239,16 @@ The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constan
     \draw[color=seabornGreen, ultra thick] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- cycle;
 
     % sloped label with an angle of 30 degrees above the rectangle: $\relu(x) \le u$
-    \node[left] at (2.5,0.75) {\footnotesize $\relu(x) \le u$};
-
-
-
-
-    \node[below] at (2,0) {\footnotesize $0 \ge \relu(x)$};
+    \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
+    \node[below] at (2,0) {\footnotesize $0 \le \relu(x)$};
   \end{tikzpicture}
-  \begin{tikzpicture}[scale=0.85]
+  \begin{tikzpicture}[scale=0.9]
     % x and y axes
-    \draw[->, thick] (0,0) -- (5,0) node[right]{$x$};
-    \draw[->, thick] (3,-3) -- (3,2) node[above]{\footnotesize $\relu(x)$};
+    \draw[->, thick] (0,0) -- (5,0) node[above]{$x$};
+    \draw[->, thick] (3,-3) -- (3,2) node[right]{\footnotesize $\relu(x)$};
 
-    % lower and upper bound label on x axis
-    \draw (0.5,0) -- (0.5,0.2) node[above]{$l$};
+    % lower and upper bound label  lefton x axi
+    \draw (0.5,0) -- (0.5,-0.2) node[below left]{$l$};
     \draw (4.5,0) -- (4.5,-0.2) node[below]{$u$};
 
     % upper bound on y axis
@@ -262,10 +265,11 @@ The \symbolic{} domain \sidecite{Li2019} combines \boxes{} with symbolic constan
     \draw[color=seabornGreen, ultra thick] (0.5,0) -- (0.5,-2.5) -- (4.5,1.5) -- cycle;
 
     % label above the rectangle on the left: $\relu(x) \le u$
-    \node[above] at (1,1.5) {\footnotesize $\relu(x) \le u$};
+    \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
+
 
     % label above the rectangle below: $0 \ge \relu(x)$
-    \node[below] at (2,0) {\footnotesize $0 \ge \relu(x)$};
+    \node[rotate=45] at (1.8,-1.6) {\footnotesize $x \le \relu(x)$};
   \end{tikzpicture}
   \caption{\deeppoly's convex approximation of a \relu{} activation function.}
   \labfig{deeppoly}
@@ -281,13 +285,14 @@ The \deeppoly{} domain \sidecite{Singh2019} associates to each neuron $x$ of a n
 The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
 
 \begin{marginfigure}
-  \begin{tikzpicture}[scale=0.85]
+  \centering
+  \begin{tikzpicture}[scale=0.9]
     % x and y axes
-    \draw[->, thick] (0,0) -- (5,0) node[right]{$x$};
-    \draw[->, thick] (3,-1) -- (3,2) node[above]{\footnotesize $\relu(x)$};
+    \draw[->, thick] (0,0) -- (5,0) node[above]{$x$};
+    \draw[->, thick] (3,0) -- (3,2) node[right]{\footnotesize $\relu(x)$};
 
     % lower and upper bound label on x axis
-    \draw (0.5,0) -- (0.5,0.2) node[above]{$l$};
+    \draw (0.5,0) -- (0.5,-0.2) node[below left]{$l$};
     \draw (4.5,0) -- (4.5,-0.2) node[below]{$u$};
 
     % upper bound on y axis
@@ -302,18 +307,19 @@ The concrete bounds are computed by back-substitution of the symbolic bounds up 
     \draw[color=seabornGreen, ultra thick] (0.5,0) -- (0.5,-0.95) -- (4.5,0.55) -- (4.5,1.5) -- cycle;
 
     % label above the rectangle on the left: $\relu(x) \le u$
-    \node[above] at (1,1.5) {\footnotesize $\relu(x) \le u$};
+    \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
+
 
     % label above the rectangle below: $0 \ge \relu(x)$
-    \node[below] at (2,0) {\footnotesize $0 \ge \relu(x)$};
+    \node[rotate=21] at (2.4,-0.7) {\footnotesize $\frac{ux}{x-l} \le \relu(x)$};
   \end{tikzpicture}
   \caption{\neurify's convex approximation of a \relu{} activation function.}
-  \labfig{deeppoly}
+  \labfig{neurify}
 \end{marginfigure}
 
 \paragraph{Neurify}
 
-The \neurify{} domain \sidecite{Wang2018} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
+The \neurify{} domain \sidecite{Wang2018a} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
 %
 The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
 %
@@ -321,7 +327,7 @@ The over-approximation of non-fixed \relu{} nodes is done \emph{independently} f
 
 \paragraph{Reduced Product}
 
-Finally, as part of the thesis contributions, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains \sidecite{Cousot1979}.
+Finally, as part of the thesis contributions, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains \sidecite{Cousot1979a}.
 The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the \relu{} nodes.
 New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.
 
@@ -345,6 +351,7 @@ Therefore, these metrics would not provide any meaningful information about how 
 
 \begin{example}
   \begin{marginfigure}
+    \centering
   \begin{tikzpicture}[scale=0.9]
     % Grid
     % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
@@ -382,7 +389,7 @@ Therefore, these metrics would not provide any meaningful information about how 
   \end{tikzpicture}
     \caption{Input space with two input variables ($x$ and $y$) and three possible outcomes (stripped green, plain yellow, dotted red).
     }
-    \label{fig:irregular}
+    \labfig{irregular}
   \end{marginfigure}
   Consider a simple neural network with two input variables $x$ and $y$, and three possible outcomes, denoted by the colors green, yellow, and red.
   A potential input space of such a model $\defmodel$ is represented in \reffig{irregular}, where each outcome is reachable by the portion of the input space that is colored with the corresponding color.
@@ -407,6 +414,7 @@ The design of this notion builds on this observation.
 Thus, counting the repetitions is a potential solution to define a meaningful impact definition for neural networks.
 
 \begin{marginfigure}
+  \centering
   \begin{tikzpicture}[scale=0.9]
     % Grid
     % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
@@ -449,7 +457,7 @@ Thus, counting the repetitions is a potential solution to define a meaningful im
   \end{tikzpicture}
     \caption{Example of stable ($A$) and unstable ($B$) regions for the variable $x$.
     }
-    \label{fig:stable}
+    \labfig{stable}
   \end{marginfigure}
 
 In practice, the \changesname{} impact definition considers variations in the value of input configurations that do not belong to the same \emph{stable region}.
@@ -464,7 +472,7 @@ The function $\segments$ is defined as follows:
 
 
 \begin{definition}[Segments of Continuous Regions]\labdef{segments}
-  Let $\definputvariables\in\inputvariables$ be the set of input variables of interest.
+  Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest.
   Given a set of traces $\defsetoftraces\in\tracetype$ and an output value $\defoutput\in\stateandbottom$, the function $\segments\in\pair\tracetype\stateandbottom\to\setof\tracetype$ is defined as:
   \begin{align*}
     \segments(\defsetoftraces, \defoutput) &\DefeQ
@@ -490,6 +498,7 @@ The function $\segments$ then returns the maximal subsets (3) that satisfy the f
 To better illustrate how the function $\segments$ works, consider the following example.
 
 \begin{marginfigure}
+  \centering
   \begin{tikzpicture}[scale=0.9]
     % Grid
     % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
@@ -591,7 +600,7 @@ To better illustrate how the function $\segments$ works, consider the following 
 
   \end{tikzpicture}
     \caption{Function \segments.}
-    \label{fig:segments}
+    \labfig{segments}
   \end{marginfigure}
 
 \begin{example}
@@ -625,6 +634,7 @@ Therefore, the \changesname{} impact notion would potentially be meaningless in 
 Nevertheless, since we consider neural networks for classification tasks in this chapter, the output value is deterministic for each input configuration, and thus the set of traces $\defsetoftraces$ is deterministic.
 
 \begin{marginfigure}
+  \centering
   \begin{tikzpicture}[scale=0.9]
 
     \draw[very thick, color=seabornRed] (0,1) node[left, color=black] {$y_0$} -- (0.65,1);
@@ -699,7 +709,7 @@ Nevertheless, since we consider neural networks for classification tasks in this
     \draw[thick, ->] (0.32, -0.9) to[out=45, in=120] (3.7, -0.9);
   \end{tikzpicture}
     \caption{Function \changesname.}
-    \label{fig:changes}
+    \labfig{changes}
   \end{marginfigure}
 
 \begin{example}
@@ -727,6 +737,7 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 We show the validation of the $\defbound$-bounded impact property when instantiated with the $\changesname$ impact notion,
 denoted $\boundedchanges$.
 
+\newpage
 \siderefbox{def}{output-abstraction-semantics}
 \begin{lemma}[$\boundedchanges$ Validation]\lablemma{changes-validation}
   \begin{align*}
@@ -746,7 +757,7 @@ denoted $\boundedchanges$.
 \subsection{The \qlibraname{} Impact Notion}[\qlibraname]
 \labsec{qlibra-impact-notion}
 
-The second notion introduced in this section is the \qlibraname{} impact notion.
+The second notion introduced in this section is the \qlibraname{} impact notion, which stands for \underline{q}uantitative \underline{a}bstract \underline{u}nused.
 Notably, this notion is designed to quantify the amount of neural network's input space that does not use a given set of input features.
 In the context of neural networks, the \qlibraname{} impact notion is particularly relevant as it induces a quantification of the fair space of a model.
 A network is fair whenever the classification determined by a model does not depend on the ``sensitive'' input variables.
@@ -813,7 +824,8 @@ In other words, the \qlibraname{} quantifies the volume of the biggest set of tr
 % In fact, the \qlibraname{} impact notion quantifies the bigger volume of input space where the $\unusediowrapper$ predicate holds.
 
 \begin{marginfigure}
-  \begin{tikzpicture}[scale=0.9]
+  \centering
+  \begin{tikzpicture}[scale=0.8]
     % Grid
     % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
     % x-axis ticks
@@ -858,13 +870,13 @@ In other words, the \qlibraname{} quantifies the volume of the biggest set of tr
     \draw[thick,decorate,decoration={brace,amplitude=3pt,raise=4pt}] (-0.5,0) -- (-0.5,1.5) node[midway, left, xshift=-5pt] {$\defbound_x$};
   \end{tikzpicture}
     \caption{Function \qlibraname.}
-    \label{fig:qlibra}
+    \labfig{qlibra}
   \end{marginfigure}
 
 \begin{example}
 Consider the network of example presented in \reffig{irregular}.
 The \qlibraname{} impact notion quantifies the volume of the input space where the input variable $x$ does not influence the network outcome.
-In \reffig{qlibra}, it is clear that the input variable $x$ does not influence the network outcome when $y$ is below a certain threshold. This volume is denoted by $\defbound_x$ in the figure.
+In \reffig{qlibra}, it is clear that the input variable $x$ does not influence the network outcome when $y$ is below a certain threshold. This volume of fair input space is denoted by $\defbound_x$ in \reffig{qlibra}.
 \end{example}
 
 As noticed for the previous impact notion $\changesname$, neural network models produce deterministic set of traces.
@@ -879,7 +891,7 @@ For all deterministic set of traces $\defsetoftraces, \defsetoftraces'\in\tracet
 \end{lemma}
 \begin{proof}
   The proof is based on the observation that more traces in $\defsetoftraces'$ can only increase the volume of bias space as, in the worst case scenario, the added traces are the ones able to change the network outcome.
-  In fact, \refprop{ani-predicate-equivalence} proves that the $\unusediowrapper$ predicate is equivalent to the $\aniwrapper$ predicate whenever the given set of traces is deterministic, which is anti-monotonic in the amount of traces.
+  In fact, \refprop*{ani-predicate-equivalence} proves that the $\unusediowrapper$ predicate is equivalent to the $\aniwrapper$ predicate whenever the given set of traces is deterministic, which is anti-monotonic in the amount of traces.
   Hence, the volume of the set of points leading to different output values can only increase with more traces, hence the volume of fair space decreases.
   We conclude that $\qlibra(\defsetoftraces) \ge \qlibra(\defsetoftraces')$.
 \end{proof}
@@ -895,7 +907,7 @@ denoted $\boundedqlibra$.
 \end{lemma}
 \begin{proof}
   The $\qlibraname$ impact notion employs the $\unusediowrapper$ predicate to determine the volume of the input space that does not contain bias.
-  Thus, this proof directly follows from \refthm{output-validation}.
+  Thus, this proof directly follows from \refthm*{output-validation}.
 \end{proof}
 
 \reflemma{qlibra-monotonic} and \reflemma{qlibra-validation} show that the $\qlibraname$ impact notion can be used to certify that a program has impact of \emph{at least} $\defbound$, meaning that the input variables $\definputvariables$ of a network are fair for at least $\defbound$ fraction of the input space.
@@ -958,7 +970,7 @@ We leverage the \textit{disjunctive polyhedra abstract domain} $\disjunctivepoly
 $
   \langle \disjunctivepolyabstractdomaintype, \disjunctivepolyabstractdomainsubseteq \rangle
 $, where $\polyabstractdomain$ represents the \textit{convex polyhedra abstract domain}~\sidecite{Cousot1978} and $\disjunctivepolyabstractdomaintype$ is the set of all finite subset of $\polyabstractdomain$.
-From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ computes the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973}.
+From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ computes the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973} to project away the input variables $\definputvariables$.
 Specifically, $\abstractdomainproject$ takes as input a set of variables $\definputvariables$ and a polyhedron in $d$-dimensions where $d \ge \cardinalitynospaces{\definputvariables}$, returning a polyhedron in $(d-\cardinalitynospaces{\definputvariables})$-dimensions, removing the variable $\definputvariables$.
 Importantly, this domain is exact for the property of interest, as it allows us to represent multiple distinct stable regions, when applied to feed-forward \relu-activated neural networks.
 
@@ -1017,7 +1029,7 @@ Note that, whenever the given program is deterministic, the traces concretized f
 With the exactness of the backward analysis, we show that $\abstractchanges$ is a sound implementation of $\changes$.
 
 \begin{lemma}[$\abstractchanges$ is a Sound Implementation of $\changes$]\lablemma{abstractchanges-is-sound}
-  Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     \item \label{tio1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
@@ -1027,8 +1039,47 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
   \end{enumerate}
   then, $\abstractchanges$ is a sound implementation of $\changes$.
 \end{lemma}
-\begin{proof}
-  \denis{todo}
+\begin{proof}[Proof (Sketch)]
+  We need to prove that
+  \begin{gather*}
+    \changes(\tracesemanticsnoparam) = \sup_{\definput\in\reducedstate}
+    \sup_{\defoutput\in\stateandbottom}
+      \cardinality{Q_{\definputvariables, \definput, \defoutput}}\\
+    \LE \\
+    \abstractchanges(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \\
+    \max
+    \setdef{
+      \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in J}{l \neq j}}
+    }{
+      J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})
+    }
+  \end{gather*}
+  where $Q_{\definputvariables, \definput, \defoutput} =
+  \setjoin_{\defoutput' \in \stateandbottom\setminus\{\defoutput\}}
+    \segments(
+      \setdef{\deftrace\in\defsetoftraces}{\retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \definput}, \defoutput'
+    )$.
+  Let $\overline{\definput}\in\reducedstate$ and $\overline{\defoutput}\in\stateandbottom$ be such that:
+  \begin{gather*}
+    \sup_{\definput\in\reducedstate}
+    \sup_{\defoutput\in\stateandbottom}
+      \cardinality{Q_{\definputvariables, \definput, \defoutput}}
+    \spacearound{=} \cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}}
+  \end{gather*}
+  Let $\overline{J} \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})$ be such that:
+  \begin{gather*}
+    \max
+    \setdef{
+      \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in J}{l \neq j}}
+    }{
+      J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})
+    }
+    \spacearound{=} \\
+    \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}
+  \end{gather*}
+  thus, we need to show that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} \le \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$.
+  By contradiction, we assume that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} > \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$, meaning that the number of stable regions leading to different output buckets is greater than the number of intersecting buckets in the abstract.
+  \denis{Finish.......}
 \end{proof}
 
 While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires to explore all the possible paths of the network.
@@ -1080,14 +1131,14 @@ In the next section, we introduce the \qlibraname{} impact notion, which--in a s
 % To prove that $\abstractqlibra$ is a sound implementation of $\qlibra$, we require the following soundness condition on the abstract operator $\abstractdomainvolume$ to ensure that the abstract volume is always greater than the concrete one.
 
 % \begin{definition}[Soundness of \texorpdfstring{$\abstractdomainvolume$}{Volume}]\labdef{soundness-volume}
-%   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\inputvariables$, it holds that:
+%   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, it holds that:
 %   \[\abstractdomainvolume(\defstate^\natural) \GE \cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}}\]
 % \end{definition}
 
 % The next result shows that the abstract impact $\abstractqlibra$ is a sound over-approximation of the concrete impact $\qlibra$, \cf{} \refdef{qlibra}.
 
 % \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
-%   Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+%   Let $\definputvariables\in\variables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
 %   Whenever the following conditions hold:
 %   \begin{enumerate}[label=(\roman*)]
 %     \item \label{rts1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
@@ -1119,32 +1170,42 @@ In the next section, we introduce the \qlibraname{} impact notion, which--in a s
 In this section, we present $\abstractqlibra$ as a sound implementation of $\qlibra$, computing an over-approximation of the volume of input space that may contain bias. Conversely, $\abstractqlibra$ computes an under-approximation of the fair input space.
 As introduced at the beginning of this chapter, this analysis is too na\"ive to be practical, it is still useful for building upon later in the next section.
 
-\begin{marginalgorithm}
-  \caption{Abstract Implementation $\abstractqlibra$}
-  \labalg{abstract-qlibra}
-\begin{lstlisting}[
-  language=algorithm,
-  style=algorithm,
-  escapechar=\%,
-  ]
-QAUnused%${}^\natural_{\defmodel, \abstractdomain_1, \abstractdomain_2}$%(%$\definputvariables, \analysisinputspace$%):
-  %$\dots$%
-\end{lstlisting}
-\end{marginalgorithm}
+% \begin{marginalgorithm}
+%   \caption{Abstract Implementation $\abstractqlibra$}
+%   \labalg{abstract-qlibra}
+% \begin{lstlisting}[
+%   language=algorithm,
+%   style=algorithm,
+%   escapechar=\%,
+%   ]
+% QAUnused%${}^\natural_{\defmodel, \abstractdomain_1, \abstractdomain_2}$%(%$\definputvariables, \analysisinputspace$%):
+%   %$\dots$%
+% \end{lstlisting}
+% \end{marginalgorithm}
 
-Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code: \refalg{abstract-qlibra}.
-The algorithm takes as input the neural network model $\defmodel$, a set of input variables of interest $\definputvariables$ (the sensitive features), the $\numberofbuckets$ output buckets $\buckets$, and an abstract domain $\abstractdomain$.
+\begin{definition}[\texorpdfstring{$\abstractqlibra$}{Abstract QAUnused}]\labdef{abstract-qlibra}
+  We define $\abstractqlibra\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
+  \begin{align*}
+    \abstractqlibra(\presfrombuckets, \buckets) \DefeQ& 1-
+    \abstractdomainvolume\left(
+    \abstractdomainbigjoin
+    \setdef@{\abstractdomainproject(\prefrombucket) \abstractdomainmeet \abstractdomainproject(\prefrombucket[k])}{j, k \le \numberofbuckets \land j \neq k}
+    \right)
+  \end{align*}
+\end{definition}
+
+% Instead of introducing an abstract implementation as a definition, we describe $\abstractqlibra$ in the form of a pseudo-code: \refalg{abstract-qlibra}.
+% The algorithm takes as input the neural network model $\defmodel$, a set of input variables of interest $\definputvariables$ (the sensitive features), the $\numberofbuckets$ output buckets $\buckets$, and an abstract domain $\abstractdomain$.
 The output buckets $\buckets$ represent all the possible classification targets of the neural network.
 In this way, both covering (\refdef{covering}) and compatibility (\refdef{compatibility}) conditions are satisfied as all the target classes are covered and for any two different target classes, there exist two different output buckets representing them.
 The analysis proceeds backwardly from each output bucket $\bucket$ via the backward semantics $\backwardsemanticsnoparam$ in order to determine an over-approximation of the initial states $\prefrombucket$.
-
-Finally, the algorithm projects the input variables $\definputvariables$ from the abstract states $\prefrombucket$ to account for any possible permutations of their input values.
+$\abstractqlibra$ projects away the input variables $\definputvariables$ from the abstract states $\prefrombucket$ to account for any possible permutations of their input values.
 Then, it computes the pairwise intersections among the projected abstract states to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
 The complement of such a volume is an over-approximation of the biased input space, hence an under-approximation of the fair input space.
-The quantity measured by $\abstractqlibra$, algorithm in \reffig{abstract-qlibra}, is always lower than the concrete $\qlibra$.
+The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is always lower than the concrete $\qlibra$.
 
 \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
-  Let $\definputvariables\in\variables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
     \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
@@ -1164,7 +1225,7 @@ Although sound, the abstract implementation $\abstractqlibra$ does not work well
 In fact, the abstract implementation $\abstractqlibra$ applied directly to the backward analysis represents the so called \emph{na\"ive casual-fairness analysis}~\sidecite{Urban2020}.
 Such analysis suffers from the choice of existing abstract domains, which are rather fast but too imprecise to handle non-linear constraints, such as those arising from the activation functions in neural networks.
 Indeed, even using the polyhedra domain for the backward analysis, handling the \relu{} activation function would over-approximate what effectively is a conditional branch, leading to a loss of precision that is reflected for each node of the neural network.
-On the other hand, one could use a disjunctive completion of the polyhedra domain~\sidecite{Cousot1979}, which would retain a separate polyhedron each condition.
+On the other hand, one could use a disjunctive completion of the polyhedra domain~\sidecite{Cousot1979a}, which would retain a separate polyhedron each condition.
 However, this analysis would be extremely slow.
 
 \section{Parallel Analysis for Efficient Validation of the \texorpdfstring{$\boundedqlibra$ Property}{k-Bounded Impact Property applied to qlibra}}[Parallel Analysis]
@@ -1190,16 +1251,102 @@ We call this input partition \emph{fair}.
   \end{math}
 \end{definition}
 
+\begin{marginfigure}
+  \centering
+\begin{tikzpicture}[scale=0.8]
+  % Grid
+  % \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (4.1,4.1);
+  % x-axis ticks
+  % \foreach \x in {-4,-3,-2,-1,0,1,2,3,4}
+  %     \draw (\x+5,0.1) -- (\x+5,-0.1) node[below] {\x};
+  % % y-axis ticks
+  % \foreach \y in {1,2,3}
+  %     \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+  % Polyhedra
+  \fill[color=seabornYellow, opacity=0.5] (1,1.75) -- (2,2.75) -- (2.5,1.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+  % \draw[color=seabornYellow, ultra thick] (1,1.75) -- (2,2.75) -- (3,2.75) -- (3,4) -- (2,4) -- cycle;
+  % Polyhedra
+  \fill[color=seabornGreen, opacity=0.5] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+  \draw[color=seabornGreen, pattern=north west lines, pattern color=seabornGreen, ultra thick] (0,2.25) -- (0.5,2.25) -- (1,1.75) -- (2,4) -- (0,4) -- cycle;
+  \fill[color=seabornGreen, opacity=0.5] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+  \draw[color=seabornGreen, pattern=north west lines, pattern color=seabornGreen, ultra thick] (3,2.75) -- (4,1.5) -- (4,4) -- (3,4) -- cycle;
+  % Polyhedra
+  \fill[color=seabornRed, opacity=0.5] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+  \draw[color=seabornRed, pattern=dots, pattern color=seabornRed, ultra thick] (0,0) -- (4,0) -- (4,1.5) -- (3,2.75) -- (2.5,1.75) -- (2,2.75) -- (1,1.75) -- (0.5,2.25) -- (0,2.25) -- cycle;
+  % Nodes
+  % \fill[color=seabornRed] (0+1,0+1) circle[radius=2pt];
+  % \node[above left] at (0+1,0+1) {$3$};
+  % x-axis
+  \draw[->,ultra thick] (0,0)--(4.3,0) node[below]{$x$};
+  \draw[ultra thick] (0,4)--(4,4);
+  % y-axis
+  \draw[->,ultra thick] (0,0)--(0,4.3) node[left]{$y$};
+  \draw[ultra thick] (4,0)--(4,4);
+
+  \draw[dashed] (0,1.2) node[left] {$y_0$} -- (4,1.2);
+  \draw[dashed] (1.75,0) node[below] {$x_0$} -- (1.75,4);
+  % little dot in the intersection x_0 y_0
+  \fill[color=black] (1.75,1.2) circle[radius=2pt];
+
+  \draw[thick] (0, 2) -- (4, 2);
+  \draw[dashed] (0, 2) -- (-0.5, 2);
+  \draw[thick] (0, 3) -- (4, 3);
+  \draw[dashed] (0, 3) -- (-0.5, 3);
+  \draw[dashed] (0, 4) -- (-0.5, 4);
+  \draw[dashed] (0, 0) -- (-0.5, 0);
+
+  \draw[thick,decorate,decoration={brace,amplitude=6pt,raise=0pt}] (-0.5,0) -- (-0.5,1.9) node[midway, left, xshift=-5pt] {$P_1$};
+  \draw[thick,decorate,decoration={brace,amplitude=6pt,raise=0pt}] (-0.5,2.1) -- (-0.5,2.9) node[midway, left, xshift=-5pt] {$P_2$};
+  \draw[thick,decorate,decoration={brace,amplitude=6pt,raise=0pt}] (-0.5,3.1) -- (-0.5,4) node[midway, left, xshift=-5pt] {$P_3$};
+\end{tikzpicture}
+  \caption{The partitions $P_1$, $P_2$, and $P_3$ are fair partitions for the variable $y$.}
+  \labfig{fair-partitions}
+\end{marginfigure}
+
+\begin{example}
+  \reffig{fair-partitions} show a potential partition of the input space into $P_1$ and $P_2$ and $P_3$, fair for the input variables $\{y\}$.
+  All possible permutations in the $y$-axis of any input value $(x_0, y_0)$ result in a point $(x_0, y')$ that still belongs to the same partition of $(x_0, y_0)$.
+\end{example}
+
 Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can verify whether a program $\defprogram$ has an impact of $\defbound$ for each element $\definputpartition\in\definputpartitions$, \emph{independently}, and aggregate the results.
 
+\siderefbox{def}{qlibra}
 \begin{lemma}
-  \begin{math}
-    \defprogram \satisfies \boundedqlibra \IfF
-    \sum_{\definputpartition\in\definputpartitions} \qlibra(\tracesemantics) \ge \defbound
-  \end{math}
+  Given a fair input partition $\definputpartitions$, it holds that:
+  \begin{align*}
+    \defprogram \satisfies \BOUNDEDQLIBRA \IfF
+    \sum_{\definputpartition\in\definputpartitions} \qlibra(
+      \defsetoftraces_{\definputpartition}
+    ) \ge \defbound
+  \end{align*}
+  where $\defsetoftraces_\definputpartition \defeq \setdef{\deftrace\in\tracesemantics}{\retrieveinput\deftrace\in\definputpartition}$.
 \end{lemma}
 \begin{proof}
-  \denis{todo}
+  Note that, by \refdef{qlibra}, $\qlibra(\defsetoftraces)$ computes the volume of input space that does not use the input variables $\definputvariables$. It does so by partitioning the set of given traces that are perturbations of the input variables $\definputvariables$, \cf{} the set $\defsetoftraces_{\retrieveinput{\deftrace}}$ on the side. By definition, these partitions are fair partitions by \refdef{fair-input-partition}.
+  Furthermore, we could call these partitions as \emph{minimal} in the sense that they are the smallest fair partitions that can be obtained from the input space.
+  As a consequence, the $\qlibra$ impact notion could be written as the sum of the impacts of the minimal fair partitions, \ie, $\qlibra(\tracesemantics) = \sum_{\deftrace\in\tracesemantics} \qlibra(\setdef{\deftrace'\in\tracesemantics}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}})$.
+  Since any combination of minimal fair partitions is a fair partition, it holds that:
+  \begin{align}\labeq{qlibra-sum-of}
+    \qlibra(\tracesemantics) = \sum_{\definputpartition\in\definputpartitions} \qlibra(\reduceinit[\tracesemantics]{\definputpartition})
+  \end{align} where $\reduceinit[\tracesemantics]{\definputpartition}$ is the set of traces restricted to the input partition $\definputpartition$.
+  We conclude:
+  \begin{align*}
+    &\defprogram \satisfies \boundedqlibra
+      &&\text{by \refdef{bounded}} \\
+    &\iff \qlibra(\tracesemantics) \ge \defbound
+      &&\text{Let } \defbound' \le \defbound \text{ such that} \\
+      & &&\quad \qlibra(\tracesemantics) = \defbound' \\
+    &\iff \qlibra(\tracesemantics) = \defbound'
+      &&\text{by \refeq{qlibra-sum-of}} \\
+    &\iff \sum_{\definputpartition\in\definputpartitions} \qlibra(
+      \defsetoftraces_{\definputpartition}
+    ) = \defbound'
+      &&\text{by }\defbound' \le \defbound \\
+    &\iff \sum_{\definputpartition\in\definputpartitions} \qlibra(
+      \defsetoftraces_{\definputpartition}
+    ) \ge \defbound
+  \end{align*}
+  In fact, we proved an even stronger result, the fact that given a fair input partition $\definputpartitions$, the volume of fair input space is exactly as the sum of the volumes of fair space in each fair partition.
 \end{proof}
 
 We exploit the above insight to further abstract the output-abstraction semantics $\outputabstraction$ to the \emph{parallel semantics} $\parallelsemantics$.
@@ -1212,37 +1359,55 @@ Formally, the right adjoint\sidenote{The left adjoint is uniquely defined by the
     \partition{\defsetofdependencies}{\definputpartition}
   }{
     \defsetofdependencies \in \defsetofsetofdependencies \LanD \definputpartition\in\definputpartitions
+  }\\
+  \parallelconcretization \IN& \paralleltype \to \outputtype \\
+  \parallelconcretization(\defsetofsetofdependencies) \DefeQ&
+  \setdef{
+    \bigsetjoin_{\defsetofdependencies\in G} \defsetofdependencies
+  }{
+    G \in \prod_{\definputpartition\in\definputpartitions} \setjoin_{\defsetofdependencies\in\defsetofsetofdependencies} \partition{\defsetofdependencies}{\definputpartition}
   }
 \end{align*}
+where $\partition{\defsetofdependencies}{\definputpartition}$ is the set of dependencies restricted to the input partition $\definputpartition$, \ie, $\partition{\defsetofdependencies}{\definputpartition} \defeq \setdef{\defstate}{\inputoutputtuple\defstate\in\defsetofdependencies \land \retrieveinput{\defstate}\in\definputpartition}$.
 \end{definition}
 
-The order of the parallel semantics $\parallelsubseteq$ is the pointwise ordering between sets of pairs of states restricted to the same input partition of $\definputpartitions$. Formally,
-\begin{align*}
-  \defsetofsetofdependencies \parallelsubseteq \defsetofsetofdependencies' \IfF
-  \forall \defsetofdependencies\in\defsetofsetofdependencies, \defsetofdependencies'\in\defsetofsetofdependencies'.\spacer
-  \defsetofdependencies \neq \emptyset \land \defsetofdependencies' \neq \emptyset \ImplieS
-  \bigwedge_{\definputpartition\in\definputpartitions}\partition{\defsetofdependencies}{\definputpartition} \subseteq \partition{\defsetofdependencies'}{\definputpartition}
-\end{align*}
+The parallel abstraction $\parallelabstraction$ is defined as the set of dependencies restricted to each fair input partition. Conversely, the parallel concretization $\parallelconcretization$ brings back all the original set of dependencies by joining all the dependencies in each fair input partition. Potentially, the concretization adds set of dependencies that are not in the original set of dependencies as spurious combinations of different fair input partitions.
 
-Ensuring that all the non-empty set of dependencies in $\defsetofsetofdependencies$ are included in $\defsetofsetofdependencies'$ for each input partition $\definputpartition$.
+% The order of the parallel semantics $\parallelsubseteq$ is the pointwise ordering between sets of pairs of states restricted to the same input partition of $\definputpartitions$. Formally,
+% \begin{align*}
+%   \defsetofsetofdependencies \parallelsubseteq \defsetofsetofdependencies' \IfF
+%   \forall \defsetofdependencies\in\defsetofsetofdependencies, \defsetofdependencies'\in\defsetofsetofdependencies'.\spacer
+%   \defsetofdependencies \neq \emptyset \land \defsetofdependencies' \neq \emptyset \ImplieS
+%   \bigwedge_{\definputpartition\in\definputpartitions}\partition{\defsetofdependencies}{\definputpartition} \subseteq \partition{\defsetofdependencies'}{\definputpartition}
+% \end{align*}
+
+% Ensuring that all the non-empty set of dependencies in $\defsetofsetofdependencies$ are included in $\defsetofsetofdependencies'$ for each fair partition $\definputpartition$.
 We have the following result:
 
 
 \begin{theorem}\labthm{output-parallel-galois-connection}
   The two adjoints $\tuple{\parallelabstraction}{\parallelconcretization}$ form a \emph{Galois connection}:
 \begin{align*}
-  \galoisbetweensemantics{output}{parallel}
+  \galoisinjbetweensemantics{output}{parallel}
 \end{align*}
 \end{theorem}
 \begin{proof}
-  \denis{todo}
+  We need to show that $\parallelabstraction(\defsetofsetofdependencies)\subseteq \defsetofsetofdependencies' \iff \defsetofsetofdependencies\subseteq\parallelconcretization(\defsetofsetofdependencies')$.
+  First, we show the direction $(\implies)$.
+  Assuming $\parallelabstraction(\defsetofsetofdependencies)\subseteq \defsetofsetofdependencies'$, we have that $\parallelconcretization(\defsetofsetofdependencies')$ contains all the possible semantics made of different combinations of input fair partitions of $\defsetofsetofdependencies'$.
+   Thus, $\parallelconcretization(\defsetofsetofdependencies')$ at least retrieves all the semantics in $\defsetofsetofdependencies$, \ie, $\defsetofsetofdependencies\subseteq\parallelconcretization(\defsetofsetofdependencies')$.
+  To show $(\Leftarrow)$, we assume $\defsetofsetofdependencies\subseteq\parallelconcretization(\defsetofsetofdependencies')$.
+  It is easy to note that $\parallelabstraction(\parallelconcretization(\defsetofsetofdependencies')) = \defsetofsetofdependencies'$ since the concretization joins together set of dependencies from different fair input partitions and the abstraction splits them subdivided into fair input partitions, obtaining the original set.
+  Hence, by monotonicity of $\parallelabstraction$, we obtain $\parallelabstraction(\defsetofsetofdependencies)\subseteq \parallelabstraction(\parallelconcretization(\defsetofsetofdependencies')) = \defsetofsetofdependencies'$.
 \end{proof}
 
 
 We can now derive the parallel semantics as an abstraction of the output-abstraction semantics.
-
 \begin{definition}[Parallel Abstraction Semantics]\labdef{parallel-abstraction-semantics}
-  The \emph{parallel-abstraction semantics} $\parallelsemanticsnoparam\in\paralleltype$ is defined as:
+  The \emph{parallel semantics} $\parallelsemanticsnoparam\in\paralleltype$ is defined as:
+  \marginnote{\begin{math}
+    \partition\tracesemanticsnoparam\definputpartition \DefeQ \setdef{\defstate}{\inputoutputtuple\defstate\in\tracesemanticsnoparam \land \retrieveinput{\defstate}\in\definputpartition}
+  \end{math}}
   \begin{align*}
     \parallelsemanticsnoparam\DefeQ&\parallelabstraction(\outputsemanticsnoparam) \\
     % \spacearound{=}&\parallelabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
@@ -1259,17 +1424,17 @@ We can now derive the parallel semantics as an abstraction of the output-abstrac
 
 It remains to show soundness and completeness for the parallel semantics when applied to the $\boundedqlibra$ property.
 \begin{theorem}
-  \begin{math}
-    \defprogram \satisfies \boundedqlibra \IfF
-    \sum_{j} \defbound_j \ge \defbound
-  \end{math}
-  such that:
+  Given a fair input partition $\definputpartitions$ of $\reducedstate$, it holds that:
   \begin{align*}
-    \parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\resize{\mathscr{B}}{\qlibra}[\ge\defbound_j])))
+    \defprogram \satisfies \boundedqlibra \IfF
+    \parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))
   \end{align*}
 \end{theorem}
 \begin{proof}
-  \denis{todo}
+Let $\defprogram \satisfies \boundedqlibra$.
+From \reflemma*{qlibra-validation}, we have that $\outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\boundedqlibra))$.
+Thus, from the Galois connections in \refthm*{output-parallel-galois-connection}, we have that $\parallelabstraction(\outputsemantics) \subseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
+From \refdef*{parallel-abstraction-semantics}, we can conclude that $\parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
 \end{proof}
 
 
@@ -1280,10 +1445,26 @@ In this section, we build upon the parallel semantics to design an abstract impl
 This static analysis automatically find a fair partition of the input space, then computes the volume of the fair input space.
 The abstract implementation $\parallelqlibra$ is defined as the sum of the volumes of the fair partitions.
 
-\marginnote{\denis{Add the algorithm as definition of $\parallelqlibra$ as margin figure.}}
-The algorithm is presented in \reffig{abstract-qlibra-parallel}, it combines a forward with a backward analysis.
+{ % start of the scope for the newcommands
+\newcommand\F{\textup{F}}
+\newcommand\E{\textup{E}}
+\newcommand\C{\textup{C}}
+\renewcommand\B{\textup{B}}
+\newcommand\I{\textup{I}}
+\renewcommand\a{\defabstractvalue}
+\newcommand\p{\defabstractactivationpattern}
+\renewcommand\O{\textup{O}}
+\renewcommand\o{\textup{o}}
+\renewcommand\j{\textit{j}}
+\newcommand\tune{\textup{tune}}
+
+
+
+\refalg{parallel-qlibra} shows the implementation of $\parallelqlibra$, combining a forward with a backward analysis.
 The forward analysis uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
 Then, we perform the quantification of the biased space.
+
+
 
 More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
 We represent each path by an activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model.}.
@@ -1299,11 +1480,73 @@ Partitioning may continue until the volume of the partition is below a certain t
 Finally, whenever the partition is smaller than $\lowerbound$, we exclude it from the set of partitions to be analyzed until more resources become available.
 Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
 
-The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic}. By default, whenever an input partition exceeds the current configuration, the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.).
+\begin{marginalgorithm}[*-18]
+  \caption{Parallel Implementation $\parallelqlibra$}
+  \labalg{parallel-qlibra}
+\begin{lstlisting}[
+  language=algorithm,
+  style=algorithm,
+  escapechar=\%,
+  ]
+QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$\analysisinputspace$%, %$\tune$%):
+  %$\upperbound$%, %$\lowerbound$%, %$\maxupperbound$%, %$\minlowerbound$%, %$\heuristic$% = %$\tune$%
+  %\F%, %\E%, %\C% = %$\emptyset$%, %$\emptyset$%, %$\emptyset$%
+  %$\definputpartitions$% = %$\{\analysisinputspace\}$%
+  do
+    while %$\definputpartitions \neq \emptyset$% do
+      %\I% = %$\definputpartitions$%.pop()
+      %$\a$%, %$\p$% = Forward%${}_{\defmodel, \abstractdomain}$%(%\I%)
+      if %$\a$% is unique then
+        %\C% = %$\C \cup \{\p \mapsto \I\}$%
+      else if %$\cardinalitynospaces\defmodel - \cardinalitynospaces\p \le \upperbound$% then
+        %\F% = %$\F \cup \{\I\}$%
+      else if %$\cardinalitynospaces\I \le \lowerbound$% then
+        %\E% = %$\E \cup \{\I\}$%
+      else
+        %$\definputpartitions$% = %$\definputpartitions$% %$\cup$% Partition%${}_{\inputvariableswithoutw}$%(%\I%)
+    %$\definputpartitions$% = %\E%
+    %$\upperbound$%, %$\lowerbound$% = %$\heuristic$%(%$\upperbound$%, %$\lowerbound$%)
+  while %$\upperbound \neq \maxupperbound$% and %$\lowerbound \neq \minlowerbound$%
+  %\E% = %$\definputpartitions$%
+  %\B% = %$\emptyset$%
+  for %$\p\mapsto \definputpartitions$% in %\F% do
+    %\O% = %$\emptyset$%
+    for %\j% = 0 up to %$\cardinalitynospaces{\hiddenlayer{\lastlayerindex}}$% do
+      %$\a$% = Backward%${}_{\defmodel, \disjunctivepolyabstractdomain, \p}$%(%$\node[\hiddenlayer{\lastlayerindex}]$%)
+      %\O% = %$\O \cup \{\node[\hiddenlayer{\lastlayerindex}] \mapsto \a\}$%
+    for %\I% in %$\definputpartitions$% do
+      %\O'% = %$\emptyset$%
+      for %$\o \mapsto \a$% in %\O% do
+        %\O'% = %$\O' \cup \{\o \mapsto \abstractdomainprojectothers(\a)\}$%
+      %\B% = %$\B \cup \textup{Check}(\O')$%
+  return %$\sum_{\a\in\B} \abstractdomainvolume(\a)$%
+\end{lstlisting}
+\end{marginalgorithm}
+
+The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic} $\heuristic$. By default, whenever an input partition exceeds the current configuration, the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.).
+
 
 Then, the analysis proceeds backwardly, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$.
 By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status.
 This is also why it is advantageous to merge subsumed abstract activation paths in the forward analysis.
+
+\begin{marginalgorithm}
+  \caption{Bias check.}
+  \labalg{check}
+\begin{lstlisting}[
+  language=algorithm,
+  style=algorithm,
+  escapechar=\%,
+  ]
+Check(%\O%):
+  %\B% = %$\emptyset$%
+  for %$\o_1$%, %$\a_1$% in %\O% do
+    for %$\o_2 \neq \o_1$%, %$\a_2$% in %\O% do
+      if %$\a_1 \abstractdomainmeet \a_2 \neq \abstractdomainbottom$% then
+        %\B% = %$\B \cup \{\a_1 \abstractdomainmeet \a_2\}$%
+  return %\B%
+\end{lstlisting}
+\end{marginalgorithm}
 
 Finally, the abstract implementation $\parallelqlibra$ computes the sum of the volumes of the fair portion of each partition together.
 The next result shows that the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
@@ -1318,6 +1561,8 @@ Therefore, it can be used to validate the $\boundedqlibra$ property.
 \begin{proof}
   \denis{todo}
 \end{proof}
+
+} % end of the scope of the newcommand
 
 \section{Summary}
 

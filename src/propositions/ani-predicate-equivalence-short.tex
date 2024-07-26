@@ -1,0 +1,12 @@
+If $\defprogram$ is deterministic and the input abstraction is defined as:
+  \begin{align*}
+    \aniselecti(\defstate) \spacearound= \lambda \texttt{j}. \spacer
+    \begin{cases}
+      \defstate(\texttt{j}) & \text{if } \texttt{j} \not\in \definputvariables \\
+      \top & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  then, it holds that:
+  \begin{align*}
+    \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
+  \end{align*}

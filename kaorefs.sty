@@ -180,10 +180,23 @@
 \newcommand{\refassum}[1]{\hyperref[assum:#1]\assumname\xspace\ref{assum:#1}}
 \newcommand{\vrefassum}[1]{\hyperref[assum:#1]\assumname\xspace\vref{assum:#1}}
 
+\newlength{\lengthforthmnameref}
 \newcommand{\refthm}[1]{\hyperref[thm:#1]\thmname\xspace\ref{thm:#1}}
 \newcommand{\refthmshort}[1]{\hyperref[thm:#1]\thmnameshort\xspace\ref{thm:#1}}
-\newcommand{\nrefthm}[1]{\hyperref[thm:#1]\thmname\xspace\ref{thm:#1} \ifstrempty{\nameref{thm:#1}}{}{(\nameref{thm:#1})}}
-\newcommand{\nrefthmshort}[1]{\hyperref[thm:#1]\thmnameshort\xspace\ref{thm:#1} \ifstrempty{\nameref{thm:#1}}{}{\normalfont (\nameref{thm:#1})}}
+\newcommand{\nrefthm}[1]{
+  \hyperref[thm:#1]\thmname\xspace\ref{thm:#1}
+  \settowidth{\lengthforthmnameref}{\widthof{\nameref{thm:#1}}}
+  \ifdimcomp{\lengthforthmnameref}{>}{0pt}
+    {\normalfont (\nameref{thm:#1})}
+    {}
+}
+\newcommand{\nrefthmshort}[1]{
+  \hyperref[thm:#1]\thmnameshort\xspace\ref{thm:#1}
+  \settowidth{\lengthforthmnameref}{\widthof{\nameref{thm:#1}}}
+  \ifdimcomp{\lengthforthmnameref}{>}{0pt}
+    {\normalfont (\nameref{thm:#1})}
+    {}
+}
 \newcommand{\vrefthm}[1]{\hyperref[thm:#1]\thmname\xspace\vref{thm:#1}}
 
 \newcommand{\refprop}[1]{\hyperref[prop:#1]\propname\xspace\ref{prop:#1}}

@@ -1055,7 +1055,7 @@ We set \libra to use gender as sensitive input feature.
 
 We show below the experimental results on the smaller neural networks used by Urban et al. \cite{Urban2020}, which better demonstrate the benefits of our implementation compared to its preliminary version.
 %
-In practice, Urban et al. \cite{Urban2020} have already shown that the approach can scale to much larger networks with sizes on par with the literature on fairness certification, e.g., \cite{ManishaG20,YurochkinBS20}.
+In practice, Urban et al. \cite{Urban2020} have already shown that the approach can scale to much larger networks with sizes on par with the literature on fairness certification, e.g., \cite{Manisha2020,Yurochkin2020}.
 %
 The neural networks were trained with Keras for 50 iterations, using the RMSprop optimizer with the default learning rate, and categorical cross-entropy as the loss function.
 %
@@ -1073,9 +1073,9 @@ For each experiment, we report the average results of five executions to account
 The precision and scalability of \libra's analysis depend on the analyzed neural network. reftab~\ref{tbl:models} shows the result of running \libra on different neural networks with different choices for the abstract domain used by the pre-analysis.
 Column $|\textsc{m}|$ refers to the analyzed neural network by the number of its ReLU activations. From top to bottom, the neural networks have the following number of hidden layers and nodes per layer: $2$ and $5$, $4$ and $3$, $4$ and $5$, $4$ and $10$, and $9$ and $5$.
 % \todo{larger networks are not actually needed for tabular datasets.
-% These network sizes are on par with the fairness verification literature, e.g., see \cite{ManishaG20,YurochkinBS20}.
+% These network sizes are on par with the fairness verification literature, e.g., see \cite{Manisha2020,Yurochkin2020}.
 % However, \cite{Urban2020} demonstrates the approach for networks with over than $1000$ nodes.}
-% Indeed, these networks sizes are on par with the fairness verification literature, e.g., see \cite{ManishaG20,YurochkinBS20}.
+% Indeed, these networks sizes are on par with the fairness verification literature, e.g., see \cite{Manisha2020,Yurochkin2020}.
 % \todo{let's be careful here; the nets in the literature are slightly larger, having hundreds of nodes; we should say it as in the rebuttal}
 We configured the pre-analysis with lower bound $\lowerbound = 0.5$ and upper bound $\upperbound = 5$. Each column shows the chosen abstract domain. We show here the results for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (i.e., \textsc{product} in the reftab~\ref{tbl:models}), which is the most precise of all possible reduced products.
 %
@@ -1113,8 +1113,8 @@ Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper boun
 
 As expected, decreasing the lower bound $\lowerbound$ or increasing the upper bound $\upperbound$ improves the input-space coverage (\textsc{input} rows) and increases the running time (\textsc{time} rows). We obtain an improvement of up to $12.44\%$ by increasing $\upperbound$ from $3$ to $5$ (with $\lowerbound = 0.25$ and $\boxes$), and up to $42.05\%$ by decreasing $\lowerbound$ from $0.5$ to $0.25$ (with $\upperbound = 5$ and $\boxes$). The smaller is $\lowerbound$ and the larger is $\upperbound$, the higher is the impact on the running time. Once again, for all lower and upper bound configurations, \textsc{deeppoly+neurify+symbolic} achieves the highest input-space coverage, improving up to $12.08\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra (i.e., with respect to \deeppoly with $\lowerbound = 0.5$ and $\upperbound = 5$). The improvement is more important for configurations with larger lower bounds.
 
-Notably, reftab \ref{tbl:configurations} shows that \emph{none among the \symbolic, \deeppoly, and \neurify abstract domains is always more precise than the others}. There are cases where even \symbolic (implemented by \cite{WangPei2018-SecurityAnalysis}) outperforms \neurify (implemented by \cite{Wang18} which is the successor of \cite{WangPei2018-SecurityAnalysis} and is believed to be strictly superior to its predecessor), e.g., configuration $\lowerbound=0.5$ and $\upperbound=5$. We thus argue
-for using reduced products of abstract domains also in other contexts beyond fairness certification, e.g., verifying local robustness~\cite[etc.]{Li19,Singh19} or verifying functional properties of neural networks~\cite{Katz17}. \\
+Notably, reftab \ref{tbl:configurations} shows that \emph{none among the \symbolic, \deeppoly, and \neurify abstract domains is always more precise than the others}. There are cases where even \symbolic (implemented by \cite{Wang2018b}) outperforms \neurify (implemented by \cite{Wang2018b} which is the successor of \cite{Wang2018b} and is believed to be strictly superior to its predecessor), e.g., configuration $\lowerbound=0.5$ and $\upperbound=5$. We thus argue
+for using reduced products of abstract domains also in other contexts beyond fairness certification, e.g., verifying local robustness~\cite[etc.]{Li2019,Singh2019} or verifying functional properties of neural networks~\cite{Katz2017}. \\
 
 
 

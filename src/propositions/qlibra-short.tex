@@ -1,0 +1,7 @@
+\begin{align*}
+  &\qlibra(\defsetoftraces) \spacearound= \\
+     &\quad \volume\left(\setdef@{\retrieveinput{\deftrace}(\inputvariableswithoutw)}{
+        \unusediowrapper(\defsetoftraces_{\retrieveinput{\deftrace}})
+     }\right)
+\end{align*}
+where $\defsetoftraces_{\retrieveinput{\deftrace}} = \setdef{\deftrace'\in\defsetoftraces}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}}$.
