@@ -612,7 +612,7 @@ Formally, the $\qusedname$ impact notion is defined as follows:
     \caption{The identity program.}
     \labprog{id}
     \vspace{15pt}
-  \begin{lstlisting}[language=customPython]
+  \begin{lstlisting}[style=mystyle,language=customPython]
 id(x):
   return x;
  \end{lstlisting}
@@ -663,7 +663,7 @@ id(x):
   \caption{The random program.}
   \labprog{random}
   \vspace{15pt}
-\begin{lstlisting}[language=customPython]
+\begin{lstlisting}[style=mystyle,language=customPython]
 random(x):
   return rand();
   \end{lstlisting}
@@ -719,7 +719,7 @@ random(x):
     \caption{First example combining random and constant value.}
     \labprog{mix1}
     \vspace{25pt}
-  \begin{lstlisting}[language=customPython]
+  \begin{lstlisting}[style=mystyle,language=customPython]
 mix1(x):
   if x > 0:
     return rand();
@@ -776,7 +776,7 @@ mix1(x):
     \caption{Second example combining random and constant value.}
     \labprog{mix2}
     \vspace{25pt}
-  \begin{lstlisting}[language=customPython]
+  \begin{lstlisting}[style=mystyle,language=customPython]
 mix2(x, y):
   if x and y:
     return True
@@ -897,7 +897,7 @@ Specifically, we consider two input variables with boolean values $\{\true, \fal
   \caption{Identity function on the second component.}
   \labprog{id2}
   \vspace{25pt}
-\begin{lstlisting}[language=customPython]
+\begin{lstlisting}[style=mystyle,language=customPython]
 id2(x, y):
   return y
  \end{lstlisting}
@@ -1032,7 +1032,7 @@ For instance, a program that may generate such a set of traces is the \refprog{f
   \caption{False or random program.}
   \labprog{false-or-rand}
   \vspace{15pt}
-\begin{lstlisting}[language=customPython]
+\begin{lstlisting}[style=mystyle,language=customPython]
 false_or_rand(x, y):
   if not y:
     return False
@@ -1873,6 +1873,7 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   as expected by \refthm*{soundness}, where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
   In this case, the bound computed in the abstract is the same as the concrete one, as the abstract domain is precise enough to capture the exact number of missing input configurations.
 \end{example}
+
 
 \section{Summary}
 \labsec{quantitative-input-data-usage-summary}
