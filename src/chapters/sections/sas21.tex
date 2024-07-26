@@ -4,10 +4,9 @@
 In this chapter, we introduce feed-forward deep neural networks classifiers.
 We define two new quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of unused input space. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact notion.
 This chapter is based on the work presented at the 28th Static Analysis Symposium (SAS) 2021~\cite{Mazzucato2021}.
+The next chapter will present the experimental evaluation for the quantitative verification of neural networks.
 
-\emph{Dans ce chapitre, nous définissons formellement le concept de réseaux neuronaux profonds à propagation avant à des fins de classification.
-Nous introduisons deux notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure le degré de biais d'un réseau neuronal. Nous présentons ensuite la mise en œuvre abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons la mise en œuvre parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux neuronaux selon la notion d'impact $\qlibraname$.
-Ce chapitre est basé sur les travaux présentés au 28ème Symposium d'Analyse Statique (SAS) 2021~\sidecite{Mazzucato2021}.}
+\emph{Dans ce chapitre, nous introduisons les classificateurs de réseaux neuronaux profonds feed-forward. Nous définissons deux nouvelles notions d'impact quantitatif : la notion d'impact \changesname{}, qui cible les répétitions de changements dans le résultat, et la notion d'impact \qlibraname{}, qui mesure la quantité d'espace d'entrée inutilisé. Nous présentons ensuite l'implémentation abstraite des deux notions d'impact, respectivement appelées $\abstractchangesname$ et $\abstractqlibraname$, et nous montrons comment valider la propriété d'impact bornée par $\defbound$ pour les deux notions. Enfin, nous présentons l'implémentation parallèle $\parallelqlibraname$ pour une vérification efficace des réseaux neuronaux de la notion d'impact \qlibraname{}. Ce chapitre est basé sur le travail présenté au 28e Symposium d'Analyse Statique (SAS) 2021~\sidecite{Mazzucato2021}. Le prochain chapitre présentera l'évaluation expérimentale pour la vérification quantitative des réseaux neuronaux.}
 
 % \input{src/chapters/extensional/sas21/overview}
 % \input{src/chapters/extensional/sas21/changes}
@@ -737,7 +736,6 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 We show the validation of the $\defbound$-bounded impact property when instantiated with the $\changesname$ impact notion,
 denoted $\boundedchanges$.
 
-\newpage
 \siderefbox{def}{output-abstraction-semantics}
 \begin{lemma}[$\boundedchanges$ Validation]\lablemma{changes-validation}
   \begin{align*}
@@ -1570,4 +1568,7 @@ Therefore, it can be used to validate the $\boundedqlibra$ property.
 In this chapter, we presented the \changesname{} and \qlibraname{} impact notions, and their abstract implementations, $\abstractchangesname$ and $\abstractqlibraname$, respectively.
 We validated the $\defbound$-bounded impact property for both notions.
 To address the scalability issues of the backward analysis, we introduced the parallel semantics and the abstract implementation $\parallelqlibraname$.
-In the settings of timing analyses, the next chapter presents a quantitative analysis of the impact of input variables on the number of iterations of a program.
+The next chapter will present the experimental results of the \changesname{} and \qlibraname{} impact notions applied to neural networks.
+Afterwards, the thesis will focus on intensional properties, specifically how to quantify the influence of input variables on the number of iterations of a program.
+
+\emph{Dans ce chapitre, nous avons présenté les notions d'impact \changesname{} et \qlibraname{}, ainsi que leurs implémentations abstraites, $\abstractchangesname$ et $\abstractqlibraname$, respectivement. Nous avons validé la propriété d'impact bornée par $\defbound$ pour les deux notions. Pour aborder les problèmes de scalabilité de l'analyse rétrospective, nous avons introduit les sémantiques parallèles et l'implémentation abstraite $\parallelqlibraname$. Le prochain chapitre présentera les résultats expérimentaux des notions d'impact \changesname{} et \qlibraname{} appliquées aux réseaux neuronaux. Par la suite, la thèse se concentrera sur les propriétés intentionnelles, en particulier sur la manière de quantifier l'influence des variables d'entrée sur le nombre d'itérations d'un programme.}

@@ -177,12 +177,12 @@ The rest of this section outlines the thesis's main body.
 In \arefpart{background}, \refch{input-data-usage} defines the input data usage property as proposed by \sidetextcite{Urban2018}.
 We extend the property to capture abstractions of output values, similarly to the generalization of non-interference \sidecite{Giacobazzi2018}, discussing relations between the two properties.
 We provide a hierarchy of semantics that precisely captures the input data usage property, abstracting unnecessary details.
-Finally, we report an abstract semantics that captures syntactic dependencies between variables from \textcite{Urban2018}, used to approximate the input data usage property soundly.
+Finally, we report an abstract semantics that captures syntactic dependencies between variables from \sidetextcite{Urban2018}, used to approximate the input data usage property soundly.
 
 \subsection{Quantitative Verification of Extensional Properties}[Extensional Properties]
 
 In \arefpart{extensional}, we focus on the quantitative verification of extensional properties, \ie, properties that depend on the input-output behavior of a program.
-This part is divided into three chapters: the first one presenting the novel quantitative framework, the second applying the framework to neural networks, and the third showing the experimental evaluation of this part.
+This part is divided into four chapters: the first one presenting the novel quantitative framework, the second showcases our approach on a set of scenarios, the third applies the framework to neural networks, and the fourth one shows the experimental evaluation on neural networks.
 
 \paragraph{Quantitative Input Data Usage}
 In \refch{quantitative-input-data-usage}, we present a novel quantitative input usage framework to discriminate between input variables with different impacts on a program's outcome.
@@ -193,9 +193,11 @@ Our framework is parametric in the impact definition of choice.
 We introduce a backward static analysis based on abstract interpretation, parametric in the impact definition, which infers a sound over-approximation of the impact of input variables.
 The analysis computes the input states leading to output buckets, applying a computable implementation of the impact on the backward reachability analysis result.
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
-\marginnote[*-13]{\refch{quantitative-input-data-usage} is based on work published at NASA Formal Methods
+\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\impattourl}, against six use cases.
+\marginnote[*-16]{\refch{quantitative-input-data-usage} and \refch{showcase} are based on the work published at NASA Formal Methods
 Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
-\marginnote[*-10.5]{\formatmargincitation{Mazzucato2024b}}
+\marginnote[*-13.5]{\formatmargincitation{Mazzucato2024b}}
+
 
 
 \paragraph{Quantitative Verification for Neural Networks}
@@ -203,20 +205,17 @@ In \refch{quantitative-fairness}, we extend the quantitative input data usage pr
 We propose two impact notions for neural networks, addressing the ragged input space and measuring input features' fairness.
 We refine the backward analysis to exploit parallel computations for better performance, employing a combination of forward and backward analyses.
 The forward pass reduces the backward analysis's combinatorial explosion, partitioning the input space into subregions for easier parallel analysis.
-\marginnote[*-7]{\refch{quantitative-fairness} is based on work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
-\marginnote[*-4.5]{\formatmargincitation{Mazzucato2021}}
-
-
-\paragraph{Experimental Evaluation of Extensional Properties}
-\refch{extensional-eval} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto, against six use cases, and presents our approach's evaluation on neural networks.
+\refch{evaluation-on-neural-networks} demonstrates the effectiveness of our approach on neural networks, showing that our method can identify input features with a disproportionate impact on the network's output, or quantify the fairness of neural networks.
+\marginnote[*-11]{\refch{quantitative-fairness} and \refch{evaluation-on-neural-networks} are based on the work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
+\marginnote[*-8.5]{\formatmargincitation{Mazzucato2021}}
 
 \subsection{Quantitative Verification of Intensional Properties}[Intensional Properties]
 
-\marginnote{\arefpart{intensional} is based on work published at the 31st Static Analysis Symposium (SAS) 2024 \cite{Mazzucato2024a}.}
-\marginnote{\formatmargincitation{Mazzucato2024a}}
+\marginnote{\arefpart{intensional} is based on the work published at the 31st Static Analysis Symposium (SAS) 2024 \cite{Mazzucato2024c}.}
+\marginnote{\formatmargincitation{Mazzucato2024c}}
 
 \arefpart{intensional} focuses on the quantitative verification of intensional properties, \ie, properties that depend on the program's internal behavior, \eg, the number of iterations of a loop.
-This part is divided into two chapters: the first one presenting the novel quantitative timing analysis, and the second showing the experimental evaluation.
+This part is divided into two chapters: the first one presenting the novel quantitative timing analysis, and the second one showing the experimental evaluation.
 
 In \refch{quantitative-static-timing-analysis}, we consider the number of program iterations as the program outcome, capturing the impact of input variables on the global number of iterations.
 This variation is crucial, as programming errors affecting iterations can degrade performance or introduce security vulnerabilities without functional errors.
@@ -232,7 +231,7 @@ In this study, we focus on quantifying input variables' impact on loop iteration
 We leverage global loop bound analysis to derive an over-approximation of the global loop bound, encoding the quantification of input variables' impact as a linear programming problem.
 Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite{Urban2018} for scalability.
 
-In \refch{intensional-eval}, we present \timesec, a tool implementing our quantitative timing analysis.
+In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis.
 We demonstrate its effectiveness in a real-world cryptographic library, certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
 Additionally, we evaluate \timesec{} against programs from \svcomp.
 
@@ -245,13 +244,15 @@ The main contributions of this thesis are as follows:
   \item In \arefpart{extensional}:
     \begin{itemize}
       \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact notions.
-      \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances; to showcase our approach we implement a tool called \impatto\sidenote{\impattourl}.
+      \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances.
+      \item In \refch{showcase} our tool called \impatto\sidenote{\impattourl} showcases our approach against a set of six scenarios.
       \item In \refch{quantitative-fairness}, we present two impact notions for neural networks.
-      \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains; this extension is part of the \libra\sidenote{\libraurl} tool.
+      \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
+      \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra{} tools to evaluate our quantitative analysis on neural networks.
     \end{itemize}
   \item In \arefpart{intensional}:
     \begin{itemize}
-      \item we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
-      \item we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp \sidenote{\svcompurl}.
+      \item In \refch{quantitative-static-timing-analysis}, we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
+      \item In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp \sidenote{\svcompurl}.
     \end{itemize}
 \end{itemize}
