@@ -6,7 +6,7 @@
 \labsec{timing-side-channels}
 
 
-In this section, we showcase the potential of \impatto{} on the \bignum{} library\sidenote{\url{https://github.com/awslabs/s2n-bignum}}.
+In this section, we showcase the potential of \impatto{} on the \bignum{} library\sidenote{\rurl{github.com/awslabs/s2n-bignum}}.
 % In \Appendix{sv-comp}, we show an evaluation on the \svcomp{} benchmarks, focusing on the effect of changes in the input space, the analysis time, and the categorization of input variables.
 
 % \subsection{\texorpdfstring{\bignum{} Library}{S2N Bignum Library}}
@@ -26,7 +26,7 @@ Furthermore, on ARM platforms, the library sets the DIT (Data Independent Timing
 The library is fully verified for functional correctness in \hollight~\sidecite{Harrison2009}, but the verification of the constant-time property is still ongoing.
 At present, the constant-time property is enforced by the strict compliance to the constant-time design discipline and the use of empirical testing.
 Their empirical
-result\sidenote{(Last accessed: 14th May 2024) \url{https://github.com/awslabs/s2n-bignum?tab=readme-ov-file\#benchmarking-and-constant-time}}
+result\sidenote{(Last accessed: 14th May 2024) \rurl{github.com/awslabs/s2n-bignum?tab=readme-ov-file\#benchmarking-and-constant-time}}
 shows that the variation in runtime with respect to the data being manipulated is within a few percent in all the cases.
 Unfortunately, the empirical study is not sufficient to guarantee the constant-time property, as it is not exhaustive and does not cover all the possible inputs.
 On the other hand, the quantitative analysis of \impatto{} provides a formal verification of the constant-time property.
@@ -40,7 +40,7 @@ The nominal size variables and additional parameters that may safely influence t
 The variables that represent the actual numerical values and additional parameters that, instead, should not influence the execution time into $\numericalvariables$.
 The \bignum{} library is free of timing side-channels, whenever for any program $\defprogram$ in \bignum{} and any numerical input variable $\definputvariable\in\numericalvariables$, it holds that $\abstractrange(\backwardsemantics) = 0$.
 
-For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\url{https://ghidra-sre.org/}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
+For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\rurl{ghidra-sre.org/}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
 Mostly, the rewriting steps soundly resolve the few jumps that arise from the disassembling process.
 Our benchmark contains a total of 72 disassembled arithmetic routines, excluding only a single operation (program \texttt{bignum\_modexp}) that has function calls, which our tool does not yet support.
 On average, each program has about 83 lines of code, for a total of 5984 lines of code.
@@ -94,7 +94,7 @@ Up to the decompilation phase and the chosen abstraction of the runtime, \cf{} t
 \labsec{sv-comp}
 
 
-The \svcomp{} benchmarks\sidenote{\url{https://sv-comp.sosy-lab.org/2024}} are a collection of programs used for verification competition.
+The \svcomp{} benchmarks\sidenote{\rurl{sv-comp.sosy-lab.org/2024}} are a collection of programs used for verification competition.
 The benchmarks are divided into different categories, such as termination, memory safety, reachability.
 As of 2024, the \svcomp{} repository hosts thousands of programs, which are written in C and annotated with assertions.
 In this evaluation, we conduct a comprehensive study focusing on: the effect of changes in the input space, the analysis time, and the categorization of input variables.

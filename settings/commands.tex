@@ -12,6 +12,15 @@
  }
 \ExplSyntaxOff
 
+% breaks url everywhere
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+% Define URL with default https://
+\newcommand\rurl[1]{%
+  \href{https://#1}{\nolinkurl{#1}}%
+}
+
 % Define Seaborn colors
 \definecolor{seabornBlue}{RGB}{76, 114, 176}
 \definecolor{seabornOrange}{RGB}{221, 132, 82}

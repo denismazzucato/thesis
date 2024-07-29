@@ -40,14 +40,14 @@ For these systems, detecting and addressing bugs before deployment is mandatory 
 Beyond traditional software, the rise of machine learning software has introduced new challenges.
 Machine learning is increasingly impacting society by assisting or even automating decision-making in fields such as social welfare \sidecite{Larson2016}, criminal justice \sidecite{Buolamwini2018}, and healthcare \sidecite{Obermeyer2019}.
 However, recent cases have shown that such software can reproduce or even reinforce biases present in the training data \cite{Buolamwini2018,Kay2015,Larson2016,Obermeyer2019}\phantomcite{Kay2015}.
-In response to the rise of machine learning software based software, and thus the potential risks associated with it, the European Commission proposed the Artificial Intelligence Act~\sidecite{Commission2021}, a first legal framework on machine learning software, imposing strict requirements to minimize the risk of discriminatory outcomes.
+In response to the rise of machine learning software based software, and thus the potential risks associated with it, the European Commission proposed the Artificial Intelligence Act~\sidecite{Commission2021}: a first legal framework on machine learning software, imposing strict requirements to minimize the risk of discriminatory outcomes.
 Detecting bugs and bias in machine learning software is crucial to ensure that the software behaves as intended and does not harm users.
 
 
 Even more recently, the last advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications.
-Agents like OpenAI's ChatGPT\sidenote{\url{https://chatgpt.com}} and Google's Gemini\sidenote{\url{https://gemini.google.com}} are gaining widespread use.
-Specifically designed for coding, GitHub Copilot\sidenote{\url{https://github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers.
-Despite their benefits, AI-generated code can introduce as many bugs as human-written code, making it crucial to use techniques that detect software errors or certify intended behaviors.
+Agents like OpenAI's ChatGPT\sidenote{\rurl{chatgpt.com}} and Google's Gemini\sidenote{\rurl{gemini.google.com}} are gaining widespread use.
+Specifically designed for coding, GitHub Copilot\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}.
+Despite their benefits, AI-generated code can introduce bugs as human-written code \sidecite{Asare2023}, making it crucial to use techniques that detect software errors or certify intended behaviors.
 
 Detecting software errors is mandatory across various contexts, from more traditional safety-critical systems to the latest AI-generated applications, to ensure a correct software behavior.
 
@@ -74,10 +74,10 @@ According to software engineering practices, formal methods should be introduced
 To answer this question, consider the following examples where testing failed:
 
 \begin{itemize}
-\item The Ariane 5 rocket failure in 1996, caused by an integer overflow bug, resulted in a loss of \$370 million\sidenote{\url{https://esamultimedia.esa.int/docs/esa-x-1819eng.pdf}}.
+\item The Ariane 5 rocket failure in 1996, caused by an integer overflow bug, resulted in a loss of \$370 million\sidenote{\rurl{esamultimedia.esa.int/docs/esa-x-1819eng.pdf}}.
 \item The Therac-25 radiation therapy machine malfunctioned due to software bugs, resulting in patient deaths and serious injuries \sidecite{Leveson1993}.
-\item The Toyota unintended acceleration case, where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion\sidenote{\url{https://www.embeddedrelated.com/showarticle/1574.php}}.
-\item A round-off error in the Patriot missile system caused the death of 28 people during the Gulf War\sidenote{\url{https://www.ima.umn.edu/~arnold/disasters/patriot.html}}.
+\item The Toyota unintended acceleration case, where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion\sidenote{\rurl{www.embeddedrelated.com/showarticle/1574.php}}.
+\item A round-off error in the Patriot missile system caused the death of 28 people during the Gulf War\sidenote{\rurl{www.ima.umn.edu/~arnold/disasters/patriot.html}}.
 \end{itemize}
 
 These cases could have been avoided with formal methods.
@@ -201,7 +201,7 @@ This approach allows end-users to choose the impact that fits their needs, ensur
 Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
 \marginnote{\formatmargincitation{Mazzucato2024b}}
 
-\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\impattourl}, against six use cases.
+\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, against six use cases.
 
 \marginnote{\refch{quantitative-fairness} and \refch{evaluation-on-neural-networks} in \arefpart{extensional} are based on the work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
 \marginnote{\formatmargincitation{Mazzucato2021}}
@@ -220,10 +220,10 @@ The followings are the contributions of \arefpart{extensional}, containing \cref
 \begin{itemize}
   \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact notions.
   \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances.
-  \item In \refch{showcase} our tool called \impatto\sidenote{\impattourl} showcases our approach against a set of six scenarios.
+  \item In \refch{showcase} our tool called \impatto showcases our approach against a set of six scenarios.
   \item In \refch{quantitative-fairness}, we present two impact notions for neural networks.
   \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
-  \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra{} tools to evaluate our quantitative analysis on neural networks.
+  \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
 \end{itemize}
 
 \subsection{Quantitative Verification of Intensional Properties}[Intensional Properties]
