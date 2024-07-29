@@ -1374,7 +1374,7 @@ We exemplify the analysis below.
 
 \begin{example}
   Consider again \refprog*{school-year}[*-2]. The syntactic dependency analysis $\synsemanticsnoparam\semanticsof{\texttt{school-year}}$ starts from the stack $\langle \usagemap_0 \rangle$ where $\usagemap_0$ maps the output variable $\texttt{passing}$ to $\usedtag$ and the rest to $\unusedtag$.
-  The analysis first approaches the last conditional statement (the analysis proceed backwardly) at \refline{third-cond}.
+  The analysis first approaches the last conditional statement (the analysis proceed backwards) at \refline{third-cond}.
   A modified copy $\usagemap_1$ of the map on top of the stack $\usagemap_0$ is pushed back to the stack:
   as \texttt{passing} is used in $\usagemap_0$, in $\usagemap_1$ it is marked as $\belowtag$, meaning that \texttt{passing} is used in a lower nesting level; all the other variables are propagated as unused.
   Then, the assignment on \refline{third-assignment}, \texttt{passing} is overwritten (\cf{} $\overwrittentag$) and \texttt{bonus} is used (\cf{} $\usedtag$).

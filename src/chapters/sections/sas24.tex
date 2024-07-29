@@ -2,21 +2,21 @@
 \labch{quantitative-static-timing-analysis}
 
 This chapter presents a static analysis for quantifying the impact of input variables on the number of iterations of a program.
-The analysis is based on abstract interpretation and combines a syntactic dependency analysis with a global loop bound analysis to derive an over-approximation of the impact quantity.
+The analysis combines a syntactic dependency analysis with a semantic global loop bound analysis to derive an over-approximation of the impact quantity.
 First, we introduce the maximal trace semantics augmented with a global loop counter to model the number of iterations of all the loops of a program.
-Then, we show an abstract global loop bound analysis, followed by the impact quantification, which is employed to verify the $\defbound$-impact property.
+Then, we show an abstract global loop bound analysis, followed by the impact quantification, which is employed to verify the corresponding $\defbound$-impact property.
 The output buckets are handled symbolically in order to reduce the number of backward passes the static analysis needs to perform.
-Finally, we discuss some implementation details and optimizations.
 This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024c}.
+\refch{sas24-eval} will discuss some implementation details and optimizations, as well as the evaluation of the analysis presented on this chapter.
 
-\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse repose sur l'interprétation abstraite et combine une analyse de dépendance syntaxique avec une analyse globale des limites de boucle pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur de boucle global pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous présentons une analyse globale des limites de boucle abstraite, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact $\defbound$. Les seaux de sortie sont traités de manière symbolique afin de réduire le nombre de passages en arrière que l'analyse statique doit effectuer. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté lors du 31ème Symposium d'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
+\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse combine une analyse de dépendance syntaxique avec une analyse sémantique des bornes globales des boucles pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur global de boucles pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous montrons une analyse abstraite des bornes globales des boucles, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact correspondante $\defbound$. Les seaux de sortie sont traités symboliquement afin de réduire le nombre de passes en arrière que l'analyse statique doit effectuer. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
 
 
 
 \section{Global Loop Bound Semantics}
 
 
-In this section, we present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
+We present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
 We recall that the variables of the program are represented by the set $\variables$, where the finite set $\inputvariables\subseteq\variables$ contains the input variables.
 
 \marginnote{
@@ -37,8 +37,11 @@ We recall that the variables of the program are represented by the set $\variabl
 
 In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
 Consequently, we extend the program states to include the value of the global loop counter, \ie, $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
-The maximal trace semantics is extended to include the global loop counter as follows:
+We extend the maximal trace semantics $\tracesemantics$ to include the global loop counter as follows:
 
+\begin{definition}[Maximal Trace Semantics with the Global Loop Counter]\labdef{counter-semantics}
+  The semantics $\countertracesemanticsnoparam\in\tracetype$ is defined as:
+  \denis{fix, now is reachability, not maximal trace}
 \begin{align*}
   % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
   &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
@@ -58,24 +61,23 @@ The maximal trace semantics is extended to include the global loop counter as fo
   \\
   &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
   \lfp{}\fixpointfunction\\
-  &\qquad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \spacearound\setjoin  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \incr(X))
+  &\qquad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \spacearound\setjoin  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
   \\
   &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
   \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
   \\
   &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ
-  \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0}) \\
-  \text{\denis{fix}}
+  \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0})
 \end{align*}
+\end{definition}
 
-The above semantics is quite standard, see for reference the maximal trace semantics of \refsec{maximal-trace-semantics}.
-Differently, the propagation of the global loop counter affects the loop constructs, and the entry point.
-Specifically, the global loop counter is incremented at each iteration (of all the loops).
-Therefore, at the end of the program computation, the global loop counter $\counter$ contains the number of iterations.
+
+The semantics $\countertracesemanticsnoparam$ increments the value of the global loop counter $\counter$ at each iteration.
+Therefore, the global loop counter $\counter$ contains the number of iterations of all the loops in the program.
 % To some extent, the maximal trace semantics augmented with the global loop counter foresees the global number of iterations before computing the program traces. Whenever $\counter$ reaches $0$, the program will terminate without further loop iterations.
 
-The hierarchy of semantics applies accordingly from the maximal trace semantics.
-Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
+% The hierarchy of semantics applies accordingly from the maximal trace semantics.
+% Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 
 \begin{marginlisting}[*-24]
   \caption{Program \add, computing the sum of two numbers \texttt{x} and \texttt{y} into \texttt{z}.}
@@ -157,11 +159,16 @@ The statements that are not relevant to the number of iterations of loops are co
 As we will discover later, these irrelevant statements are pruned by the syntactic dependency analysis.
 The \reftab{add-execution} shows a few executions of the program \add{}.
 
-The maximal trace semantics of the program \add{} is defined backwardly from any state with the global loop counter $\counter$ set to $0$.
-Thus, traces of the program \add{} are produced by the maximal trace semantics, where the global loop counter $\counter$ contains the number of iterations of each trace in their initial; and 0 in the final\sidenote{Note that, the program \add{} contains only finite-length traces.} states.
+The semantics of the program \add, \cf{} \refdef{counter-semantics}, is defined backwards from any state with the global loop counter $\counter$ initialized to $0$.
+Thus, starting from final states where $\counter = 0$, the semantics of the program \add{} decrements (in a backward fashion) the global loop counter $\counter$ at each iteration of the loops. The backward decrement is defined as $\bwddecr(\defsetofstates) \defeq \setdef{\defstate \in \state}{\updatemem{\defstate}{\counter}{\defstate(\counter) - 1} \in \defsetofstates}$. After the computation of the semantics of a given program, we obtain the number of iterations of all the loops in the program.
 \reftab{add-trace} shows the maximal traces of the executions of the program \add{}, intermediate states are omitted for brevity.
 
-We can further abstract to the dependency semantics, where the intermediate states of the traces are abstracted.
+Importantly, our goal is to quantify the impact of input variables on the global number of iterations.
+As a consequence, only the initial and final states are relevant, \ie, where the program loop counter contains the global number of iterations.
+In fact, we reduced from proving an \emph{intensional} property about the global number of iterations of a program to an \emph{extensional} property by collecting the global number of iterations
+into input-output dependencies.
+Thus, the hierarchy of semantics (\cref{sec:dependency-semantics,sec:output-abstraction-semantics}) applies accordingly from the maximal trace semantics $\countertracesemanticsnoparam$.
+We retrieve the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 We obtain \reftab{add-trace} where the omitted states are, in fact, removed from the traces, maintaining only the input-output dependencies with the additional variable for the global loop counter $\counter$.
 \end{example}
 
@@ -188,20 +195,21 @@ We obtain \reftab{add-trace} where the omitted states are, in fact, removed from
   \caption{Maximal traces of the program \add{}.}
   \labtab{add-trace}
   \hspace{2cm}
+  \centering
   \begin{tabular}{c C{1.5cm} c}
-    $\langle\tikzmark{a1}$ \texttt{p}, \texttt{m}, \texttt{n}, $\dots$, $\counter$ $\tikzmark{a2}\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle\tikzmark{b1}\texttt{p}$, \texttt{m}, \texttt{n}, $\dots$ $\counter\tikzmark{b2}\rangle$ \\
+    $\langle\tikzmark{a1}$ \texttt{p}, \texttt{m}, \texttt{n}, $\dots$, $\counter$ $\tikzmark{a2}\rangle$ & $\tracearrow$ & $\langle\tikzmark{b1}\texttt{p}$, \texttt{m}, \texttt{n}, $\dots$ $\counter\tikzmark{b2}\rangle$ \\
   \hline\hline
-    $\langle$ 0, 0, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 0, 0, 0, $\dots$, \blue{0} $\rangle$ \\
-    $\langle$ 1, 0, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 1, 0, 0, $\dots$, \blue{1} $\rangle$ \\
-    $\langle$ 2, 0, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 2, 0, 0, $\dots$, \blue{2} $\rangle$ \\
-    $\langle$ 0, 1, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 0, 1, 0, $\dots$, \blue{0} $\rangle$ \\
-    $\langle$ 1, 1, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 1, 1, 0, $\dots$, \blue{1} $\rangle$ \\
-    $\langle$ 2, 1, 0, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 2, 1, 0, $\dots$, \blue{2} $\rangle$ \\
-    $\langle$ 0, 0, 1, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 0, 0, 1, $\dots$, \blue{0} $\rangle$ \\
-    $\langle$ 1, 0, 1, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 1, 0, 1, $\dots$, \blue{1} $\rangle$ \\
-    $\langle$ 2, 0, 1, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$ & $\langle$ 2, 0, 1, $\dots$, \blue{2} $\rangle$ \\
+    $\langle$ 0, 0, 0, $\dots$, \blue{0} $\rangle$ & $\tracearrow$ & $\langle$ 0, 0, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 1, 0, 0, $\dots$, \blue{1} $\rangle$ & $\tracearrow$ & $\langle$ 1, 0, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 2, 0, 0, $\dots$, \blue{2} $\rangle$ & $\tracearrow$ & $\langle$ 2, 0, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 0, 1, 0, $\dots$, \blue{0} $\rangle$ & $\tracearrow$ & $\langle$ 0, 1, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 1, 1, 0, $\dots$, \blue{1} $\rangle$ & $\tracearrow$ & $\langle$ 1, 1, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 2, 1, 0, $\dots$, \blue{2} $\rangle$ & $\tracearrow$ & $\langle$ 2, 1, 0, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 0, 0, 1, $\dots$, \blue{0} $\rangle$ & $\tracearrow$ & $\langle$ 0, 0, 1, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 1, 0, 1, $\dots$, \blue{1} $\rangle$ & $\tracearrow$ & $\langle$ 1, 0, 1, $\dots$, \blue{0} $\rangle$ \\
+    $\langle$ 2, 0, 1, $\dots$, \blue{2} $\rangle$ & $\tracearrow$ & $\langle$ 2, 0, 1, $\dots$, \blue{0} $\rangle$ \\
     $\vdots$ & & $\vdots$ \\
-    \tikzmark{c} $\langle$ a, b, c, $\dots$, \anyvalue{} $\rangle$ & $\rightarrow \dots \rightarrow$& $\langle$ a, b, c, $\dots$, \blue{a} $\rangle$
+    \tikzmark{c} $\langle$ a, b, c, $\dots$, \blue{a} $\rangle$ & $\tracearrow$& $\langle$ a, b, c, $\dots$, \blue{0} $\rangle$
   \end{tabular}
   \begin{tikzpicture}[overlay, remember picture]
     % \draw [decorate,decoration={brace,amplitude=10pt,raise=4pt}] (a1.north) --node[above=14pt]{$\state$} (a2.north);
@@ -211,11 +219,76 @@ We obtain \reftab{add-trace} where the omitted states are, in fact, removed from
 \end{tikzpicture}
 \end{table}
 
+Similarly to \refdef*{bounded}, we define the $\defbound$-impact property, which quantifies the impact of input variables on the global number of iterations of a program.
+
+\begin{definition}[$\defbound$-Bounded Impact Property with loop iterations]\labdef{counter-bounded}
+  Let $\defprogram$ be a program, $\definputvariables$ the set of input variables of interest, $\impactwrapper \in \tracetype\to\valuesposplus$ an impact notion,
+  and $\defbound\in\valuesposplus$ the threshold.
+  The $\defbound$-bounded impact property with loop iterations is defined as:
+  \begin{equation*}
+    \GENBOUNDED \DefeQ \setdef{\countertracesemanticsnoparam\in\tracetype}{\impactwrapper(\countertracesemanticsnoparam) \comparison \defbound}
+  \end{equation*}
+  where $\comparison\in\{\leq, <\}$.
+\end{definition}
+
+To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact notion.
+As a design choice, we choose the \rangename{} notion among the notions defined in \refsec{k-bounded-impact-property}.
+This decision is motivated by the fact that we are mostly interested in capturing the impact of input variables based on the range of iterations of loops rather than the number of different iterations.
+The range notion instrumented with the global loop counter $\counter$ as output variables and the identity function as output observer $\outputobs$ is defined as follows:
+\begin{align*}
+  \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
+    \size(\setdef{
+      \retrieveoutput{\defseq}(\counter)
+    }{
+      \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
+    })
+\end{align*}
+
+Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact notion. Formally:
+\begin{align*}
+  \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
+\end{align*}
+
+The dependency semantics $\dependencysemantics$ is sound and complete for validating $\boundedrange$.
+\begin{lemma}\lablemma{counter-range-validation}
+  \begin{align*}
+    \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \dependencysemantics \subseteq \dependencyabstraction(\BOUNDEDRANGE)
+  \end{align*}
+\end{lemma}
+\begin{proof}
+  The proof is similar to the proof of \reflemma*{range-validation}.
+\end{proof}
+
+\begin{example}
+  Consider the trace semantics $\countertracesemanticsnoparam\semanticsof\add$ defined in~\reftab{add-trace}.
+  For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
+  % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
+  where $p$ is the value of \texttt{p}, $m$ of \texttt{m}, $n$ of \texttt{n}, all ranging in the interval $[0, u]$.
+  % We abuse the notation and use states as set of tuples instead of a map between variables and values, the two views are equivalent.
+  Assuming we are interested in the impact of the input variable \texttt{p}, $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)$ considers all possible input values $\definput\in\reducedstate$, on the left of~\reftab{add-trace}.
+  We collect all the input-output dependencies $\tuple{\defstate}{\defstate'}\in\countertracesemanticsnoparam\semanticsof\add$ that agree with the input value $\definput$ on the variables $\texttt{m}$ and $\texttt{n}$, \ie, $\defstate\stateeq{\{\{\texttt{m}\},\texttt{n}\}}\definput$.
+  For instance, $\definput = \langle 0, 0, 0\rangle$ collects the dependencies that start from states in $\setdef{\langle p, 0, 0\rangle}{0 \le p \le u}$.
+  From this set of dependencies, we consider only the output values $\defstate'(\counter)$, on the right of~\reftab{add-trace}.
+  For instance, regarding the input $\definput = \langle 0, 0, 0\rangle$, we collect the output values $[0, u]$.
+  Then, we apply the operator $\size([0, u]) = \sup\; [0, u] - \inf\; [0, u] = u$.
+  For all the input values, the maximum value is taken; we obtain $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)= u$.
+
+
+  Let us analyze the impact of other input variables, \eg{} the input variable \texttt{m}.
+  By considering the input value $\definput = \langle 0, 0, 0\rangle$, we collect the dependencies that start from states in $\setdef{\langle 0, m, 0\rangle}{m\in[0, u]}$. As we notice from~\reftab{add-trace}, the number of iterations starting from any of these states is always $0$.
+  Hence, $\size(\{0\}) = \sup\; \{0\} - \inf\; \{0\} = 0$.
+  For all the input values, we obtain: $\rangename_{\{\texttt{m}\}}(\countertracesemanticsnoparam\semanticsof\add)=\rangename_{\{\texttt{n}\}}(\countertracesemanticsnoparam\semanticsof\add)=0$.
+%
+  We conclude that:
+  \[ \add \satisfies \mathscr{B}^{\le u}_{\{\texttt{p}\}}, \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{n}\}},\text{ and} \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{m}\}}\]
+  As a consequence, we can infer that there exist two executions starting from a different value for the input variable \texttt{p} that differ in the global number of iterations by at most $u$. On the contrary, any variation in the input variables \texttt{m} and \texttt{n} does not affect the global number of iterations.
+\end{example}
+
 
 \section{Static Analysis for Global Loop Bound}
 
 This section presents a sound computable static analysis to propagate the global loop counter $\counter$ through the program.
-An over-approximation of the global loop counter is computed by analyzing the program backwardly.
+An over-approximation of the global loop counter is computed by analyzing the program backwards.
 The soundness of the approach leverages: $(1)$ an abstract domain of conjunctions of linear constraints, $(2)$ a sound global loop bound analysis to collect the dependencies of the loop counter $\counter$ from the input variables, and $(3)$ a linear programming encoding as a sound implementation of the impact $\rangename$, called $\counterrangename$.
 
 \subsection{Conjunctions of Linear Constraints}
@@ -440,30 +513,7 @@ By extension, $\boundedrange$ is the set of trace semantics extended with the gl
   \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
 \end{align*}
 
-\begin{example}
-  Consider the trace semantics $\countertracesemanticsnoparam\semanticsof\add$ defined in~\reftab{add-trace}.
-  For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  where $p$ is the value of \texttt{p}, $m$ of \texttt{m}, $n$ of \texttt{n}, all ranging in the interval $[0, u]$.
-  % We abuse the notation and use states as set of tuples instead of a map between variables and values, the two views are equivalent.
-  Assuming we are interested in the impact of the input variable \texttt{p}, $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)$ considers all possible input values $\definput\in\reducedstate$, on the left of~\reftab{add-trace}.
-  We collect all the input-output dependencies $\tuple{\defstate}{\defstate'}\in\countertracesemanticsnoparam\semanticsof\add$ that agree with the input value $\definput$ on the variables $\texttt{m}$ and $\texttt{n}$, \ie, $\defstate\stateeq{\{\{\texttt{m}\},\texttt{n}\}}\definput$.
-  For instance, $\definput = \langle 0, 0, 0\rangle$ collects the dependencies that start from states in $\setdef{\langle p, 0, 0\rangle}{0 \le p \le u}$.
-  From this set of dependencies, we consider only the output values $\defstate'(\counter)$, on the right of~\reftab{add-trace}.
-  For instance, regarding the input $\definput = \langle 0, 0, 0\rangle$, we collect the output values $[0, u]$.
-  Then, we apply the operator $\size([0, u]) = \sup\; [0, u] - \inf\; [0, u] = u$.
-  For all the input values, the maximum value is taken; we obtain $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)= u$.
 
-
-  Let us analyze the impact of other input variables, \eg~the input variable \texttt{m}.
-  By considering the input value $\definput = \langle 0, 0, 0\rangle$, we collect the dependencies that start from states in $\setdef{\langle 0, m, 0\rangle}{m\in[0, u]}$. As we notice from~\reftab{add-trace}, the number of iterations starting from any of these states is always $0$.
-  Hence, $\size(\{0\}) = \sup\; \{0\} - \inf\; \{0\} = 0$.
-  For all the input values, we obtain: $\rangename_{\{\texttt{m}\}}(\countertracesemanticsnoparam\semanticsof\add)=\rangename_{\{\texttt{n}\}}(\countertracesemanticsnoparam\semanticsof\add)=0$.
-%
-  We conclude that:
-  \[ \add \satisfies \mathscr{B}^{\le u}_{\{\texttt{p}\}}, \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{n}\}},\text{ and} \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{m}\}}\]
-  As a consequence, we can infer that there exist two executions starting from a different value for the input variable \texttt{p} that differ in the global number of iterations by at most $u$. On the contrary, any variation in the input variables \texttt{m} and \texttt{n} does not affect the global number of iterations.
-\end{example}
 
 Finally, we present a linear programming encoding $\counterrange\in\abstractdomain\to\valuesposplus$ to compute the abstract implementation of the impact $\range$ from the result of the global loop bound analysis $\counterbackwardsemanticsnoparam$.
 
