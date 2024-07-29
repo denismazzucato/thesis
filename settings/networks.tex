@@ -1,10 +1,10 @@
 
 
-\newcommand*{\layername}{\textup{\textsc{l}}}
+\newcommand*{\layername}{\normalfont \textup{\textsc{l}}}
 \newcommand*{\inputlayer}{\layername_0}
-\newcommand*{\lastlayerindex}{\textup{\textsc{n}}}
-\newcommand*{\outputlayer}{\layername_\lastlayerindex}
-\newcommand*{\hiddenlayer}[1]{\layername_{#1}}
+\newcommand*{\lastlayerindex}{{\normalfont \textup{\textsc{n}}}}
+\newcommand*{\outputlayer}{\normalfont  \layername_\lastlayerindex}
+\newcommand*{\hiddenlayer}[1]{\normalfont \layername_{#1}}
 \newcommand*{\hiddenlayers}{\hiddenlayer{1},\ldots,\hiddenlayer{\lastlayerindex-1}}
 
 \newcommand*{\weightmatrix}[1]{W_{#1}}

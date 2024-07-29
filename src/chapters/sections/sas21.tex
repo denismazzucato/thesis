@@ -1455,28 +1455,26 @@ The abstract implementation $\parallelqlibra$ is defined as the sum of the volum
 \renewcommand\O{\textup{O}}
 \renewcommand\o{\textup{o}}
 \renewcommand\j{\textit{j}}
-\newcommand\tune{\textup{tune}}
 
 
 
 \refalg{parallel-qlibra} shows the implementation of $\parallelqlibra$, combining a forward with a backward analysis.
-The forward analysis uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
+The forward analysis (\cf{} \refalg{forward-neural-networks}) uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis (\cf{} \refalg{backward-neural-networks}) employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
 Then, we perform the quantification of the biased space.
 
 
 
 More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
 We represent each path by an activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model.}.
-The analysis receives a \emph{budget} providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie, the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
-The forward analysis starts with the trivial partition of the whole input space, \ie, $\definputpartitions = \{\reducedstate\}$.
-Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$, starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome, then the partition is already fair without further analysis.
-Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$.
+The analysis receives a \emph{budget} parameter, called $\tune$ in \refline{parameters}, providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie, the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
+The forward analysis starts with the trivial partition of the whole input space, \ie, $\definputpartitions = \{\reducedstate\}$ in \refline{initial-partition}.
+Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$ (\cf{} \refline{forward}), starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome (\cf{} \refline{unique}), then the partition is already fair without further analysis.
+Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$, (\cf{} \refline{completed}).
 On the other hand, if abstract activation pattern $\defabstractactivationpattern$ fixes the activation status of enough \relu{} nodes, then we declare the partition $\definputpartition$ \emph{feasible} and ready for the backward analysis.
-In this case, the pair of $\defabstractactivationpattern$ and $\definputpartition$ is added into a map $\feasiblepartitions$ from abstract activation patterns to input partitions.
-The insertion takes care of merging the activation patterns that are subsumed by other (weaker) activation patterns.
-Otherwise, the partition $\definputpartition$ needs to be further refined, with respect to the variables in $\inputvariableswithoutw$.
-Partitioning may continue until the volume of the partition is below a certain threshold $\lowerbound$.
-Finally, whenever the partition is smaller than $\lowerbound$, we exclude it from the set of partitions to be analyzed until more resources become available.
+In this case, the pair of $\defabstractactivationpattern$ and $\definputpartition$ is added into a map $\feasiblepartitions$ from abstract activation patterns to input partitions (\cf{} \refline{feasible}).
+Otherwise, the partition $\definputpartition$ needs to be further refined, with respect to the variables in $\inputvariableswithoutw$ (\cf{} \refline{partition}).
+Partitioning may continue until the volume of the partition is below a certain threshold $\lowerbound$ from the budget configuration $\tune$.
+Finally, whenever the partition is smaller than $\lowerbound$ (\cf{} \refline{lower}), we exclude it from the set of partitions to be analyzed until more resources become available (\cf{} \refline{excluded}).
 Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
 
 \begin{marginalgorithm}[*-18]
@@ -1487,47 +1485,46 @@ Note that, the forward analysis does not need expressive and slow abstract domai
   style=algorithm,
   escapechar=\%,
   ]
-QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$\analysisinputspace$%, %$\tune$%):
-  %$\upperbound$%, %$\lowerbound$%, %$\maxupperbound$%, %$\minlowerbound$%, %$\heuristic$% = %$\tune$%
+QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$\tune$%):
+  %$\upperbound$%, %$\lowerbound$%, %$\maxupperbound$%, %$\minlowerbound$%, %$\heuristic$% = %$\tune$%%\labline{parameters}%
   %\F%, %\E%, %\C% = %$\emptyset$%, %$\emptyset$%, %$\emptyset$%
-  %$\definputpartitions$% = %$\{\analysisinputspace\}$%
+  %$\definputpartitions$% = %$\{\reducedstate\}$%%\labline{initial-partition}%
   do
     while %$\definputpartitions \neq \emptyset$% do
       %\I% = %$\definputpartitions$%.pop()
-      %$\a$%, %$\p$% = Forward%${}_{\defmodel, \abstractdomain}$%(%\I%)
-      if %$\a$% is unique then
-        %\C% = %$\C \cup \{\p \mapsto \I\}$%
+      %$\a$%, %$\p$% = Forward%${}_{\defmodel, \abstractdomain}$%(%\I%)%\labline{forward}%
+      if %$\a$% is unique then%\labline{unique}%
+        %\C% = %$\C \cup \{\tuple{\p }{ \I}\}$%%\labline{completed}%
       else if %$\cardinalitynospaces\defmodel - \cardinalitynospaces\p \le \upperbound$% then
-        %\F% = %$\F \cup \{\I\}$%
-      else if %$\cardinalitynospaces\I \le \lowerbound$% then
-        %\E% = %$\E \cup \{\I\}$%
+        %\F% = %$\F \cup \{\I\}$%%\labline{feasible}%
+      else if %$\cardinalitynospaces\I \le \lowerbound$% then%\labline{lower}%
+        %\E% = %$\E \cup \{\I\}$%%\labline{excluded}%
       else
-        %$\definputpartitions$% = %$\definputpartitions$% %$\cup$% Partition%${}_{\inputvariableswithoutw}$%(%\I%)
-    %$\definputpartitions$% = %\E%
-    %$\upperbound$%, %$\lowerbound$% = %$\heuristic$%(%$\upperbound$%, %$\lowerbound$%)
+        %$\definputpartitions$% = %$\definputpartitions$% %$\cup$% Partition%${}_{\inputvariableswithoutw}$%(%\I%)%\labline{partition}%
+    %$\definputpartitions$% = %\E%%\labline{previously-excluded}%
+    %$\upperbound$%, %$\lowerbound$% = %$\heuristic$%(%$\upperbound$%, %$\lowerbound$%)%\labline{tuning}%
   while %$\upperbound \neq \maxupperbound$% and %$\lowerbound \neq \minlowerbound$%
   %\E% = %$\definputpartitions$%
   %\B% = %$\emptyset$%
-  for %$\p\mapsto \definputpartitions$% in %\F% do
+  for %$\tuple{\p}{ \definputpartitions}$% in %\F% do%\labline{independent}%
     %\O% = %$\emptyset$%
     for %\j% = 0 up to %$\cardinalitynospaces{\hiddenlayer{\lastlayerindex}}$% do
       %$\a$% = Backward%${}_{\defmodel, \disjunctivepolyabstractdomain, \p}$%(%$\node[\hiddenlayer{\lastlayerindex}]$%)
-      %\O% = %$\O \cup \{\node[\hiddenlayer{\lastlayerindex}] \mapsto \a\}$%
+      %\O% = %$\O \cup \{\tuple{\node[\hiddenlayer{\lastlayerindex}] }{ \a}\}$%
     for %\I% in %$\definputpartitions$% do
       %\O'% = %$\emptyset$%
-      for %$\o \mapsto \a$% in %\O% do
-        %\O'% = %$\O' \cup \{\o \mapsto \abstractdomainprojectothers(\a)\}$%
+      for %$\tuple{\o }{ \a}$% in %\O% do
+        %\O'% = %$\O' \cup \{\tuple{\o }{ \abstractdomainprojectothers(\a)}\}$%
       %\B% = %$\B \cup \textup{Check}(\O')$%
-  return %$\sum_{\a\in\B} \abstractdomainvolume(\a)$%
+  return %$1-\sum_{\a\in\B} \abstractdomainvolume(\a)$%%\labline{sum}%
 \end{lstlisting}
 \end{marginalgorithm}
 
-The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic} $\heuristic$. By default, whenever an input partition exceeds the current configuration, the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.).
+The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic} $\heuristic$ (\cf{} \refline{tuning}). By default, whenever an input partition exceeds the current configuration (\cf{} \refline{previously-excluded}), the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.). To guarantee the termination of the whole analysis, the search heuristic should return $(\maxupperbound, \minlowerbound)$ after a finite number of iterations.
 
 
-Then, the analysis proceeds backwardly, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$.
-By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status.
-This is also why it is advantageous to merge subsumed abstract activation paths in the forward analysis.
+Then, the analysis proceeds backwardly, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$ (\cf{} \refline{independent}).
+By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status. For each input partition, the analysis computes the abstract domain representing the biased input space (\cf{} \refline{sum}). Specifically, the function \textup{Check}, \cf{} \refalg{check}, performs the pair-wise intersection among the abstract values coming from different output buckets (\ie, different network classifications) and returns the set of abstract values that intersect, representing the biased input space.
 
 \begin{marginalgorithm}
   \caption{Bias check.}
@@ -1547,14 +1544,16 @@ Check(%\O%):
 \end{lstlisting}
 \end{marginalgorithm}
 
-Finally, the abstract implementation $\parallelqlibra$ computes the sum of the volumes of the fair portion of each partition together.
+Finally, the abstract implementation $\parallelqlibra$ computes the sum of the volumes of the biased portion of each partition together (\cf{} \refline{sum}).
+The complement of the biased input space is an under-approximation of the fair input space.
+
 The next result shows that the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
 Therefore, it can be used to validate the $\boundedqlibra$ property.
 
 \begin{theorem}
   Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
   \begin{align*}
-    \parallelqlibra(\defmodel, \buckets) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRA
+    \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRA
   \end{align*}
 \end{theorem}
 \begin{proof}

@@ -3,7 +3,7 @@
 \labch{showcase}
 
 
-In this chapter, we demonstrate the potential applications of our quantitative input data usage analysis, by evaluating an automatic proof-of-concept tool of our static analysis, called \impatto\sidenotemark[\ref{impatto}], on six different scenarios. The tool \impatto{} is implemented in Python 3 and uses the \interproc\sidenotemark[\ref{interproc}] abstract interpreter to perform the backward analysis. To highlight the potential of our static analysis for quantitative input data usage, we exploit \impatto{} to automatically derive a sound input data usage of six different scenarios: a simplified program from the Reinhart and Rogoff article (\cf{} \refsec{rr}), a program extracted from a recent OpenAI keynote (\cf{} \refsec{gpt-4-turbo}), two programs from the software verification competition SV-Comp (\cf{} \refsec{termination-analysis-A} and \refsec{app:termination-analysis-B}), a program computing a linear expression via repeated additions (\cf{} \refsec{linear-loops}), and the program computing the landing risk coefficient for an alarm system (\cf{} \refsec{landing-risk}).
+In this chapter, we demonstrate the potential applications of our quantitative input data usage analysis, by evaluating an automatic proof-of-concept tool of our static analysis, called \impatto\sidenotemark[\ref{impatto}], on six different scenarios. The tool \impatto{} is implemented in Python 3 and uses the \interproc\sidenotemark[\ref{interproc}] abstract interpreter to perform the backward analysis. To highlight the potential of our static analysis for quantitative input data usage, we exploit \impatto{} to automatically derive a sound input data usage of six different scenarios: a simplified program from the Reinhart and Rogoff article (\cf{} \refsec{rr}), a program extracted from a recent OpenAI keynote (\cf{} \refsec{gpt-4-turbo}), two programs from the software verification competition SV-Comp (\cf{} \refsec{termination-analysis-A} and \refsec{app:termination-analysis-B}), a program computing a linear expression via repeated additions (\cf{} \refsec{linear-loops}), and \refprog{landing-alarm-system} computing the landing risk coefficient for an alarm system (\cf{} \refsec{landing-risk}).
 We exploit this tool to automatically derive a sound quantification of the input data usage of each scenario.
 As each impact result must be interpreted with respect to what the program computes, we analyze each scenario separately.
 
@@ -191,7 +191,7 @@ On the other hand, perturbations on $\texttt{y}$ can only result in the program 
 Such difference is motivated by the fact that $\texttt{y}$ is only used to determine the number of iterations in the case where $\texttt{y}$ is greater than 50, otherwise it is not used at all. Therefore, two values of $\texttt{y}$, \eg, $y_0$ and $y_1$, only result in two different ranges of iterations required to make the program terminate if either both of them are below $50$ or $y_0 < 50\land y_1 \ge 50$ or $y_0\ge50\land y_1 <50$, not in all the cases.
 
 
-\begin{margintable}[-4cm]
+\begin{margintable}
   \caption{Quantitative input usage for \refprog{timing-analysis}.}
   \labtab{termination-analysis}
   \centering
