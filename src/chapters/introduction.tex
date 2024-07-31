@@ -212,7 +212,7 @@ Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
 \marginnote{\formatmargincitation{Mazzucato2021}}
 
 In \refch{quantitative-fairness}, we extend the quantitative input data usage property to neural networks.
-We propose two impact notions for neural networks, addressing the ragged input space and measuring input features' fairness.
+We propose two impact quantifiers for neural networks, addressing the ragged input space and measuring input features' fairness.
 We refine the backward analysis to exploit parallel computations for better performance, employing a combination of forward and backward analyses.
 The forward pass reduces the backward analysis's combinatorial explosion, partitioning the input space into subregions for easier parallel analysis.
 \refch{evaluation-on-neural-networks} demonstrates the effectiveness of our approach on neural networks, showing that our method can identify input features with a disproportionate impact on the network's output, or quantify the fairness of neural networks.
@@ -223,10 +223,10 @@ The forward pass reduces the backward analysis's combinatorial explosion, partit
 The followings are the contributions of \arefpart{extensional}, containing \cref{ch:quantitative-input-data-usage,ch:showcase,ch:quantitative-fairness,ch:evaluation-on-neural-networks}:
 
 \begin{itemize}
-  \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact notions.
+  \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact quantifiers.
   \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances.
-  \item In \refch{showcase} our tool called \impatto showcases our approach against a set of six scenarios.
-  \item In \refch{quantitative-fairness}, we present two impact notions for neural networks.
+  \item In \refch{showcase} our tool called \impatto showcases our approach against a set of six demonstrative programs.
+  \item In \refch{quantitative-fairness}, we present two impact quantifiers for neural networks.
   \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
   \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
 \end{itemize}

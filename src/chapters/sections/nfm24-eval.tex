@@ -1,23 +1,43 @@
 \setchapterpreamble[u]{\margintoc}
 
-\chapter{Showcase of Quantitative Input Data Usage}
+\chapter{Implementation}
 \labch{showcase}
 
 
-In this chapter, we demonstrate the potential applications of our quantitative input data usage analysis, by evaluating an automatic proof-of-concept tool of our static analysis, called \impatto\sidenotemark[\ref{impatto}], on six different scenarios. The tool \impatto{} is implemented in Python 3 and uses the \interproc\sidenotemark[\ref{interproc}] abstract interpreter to perform the backward analysis. To highlight the potential of our static analysis for quantitative input data usage, we exploit \impatto{} to automatically derive a sound input data usage of six different scenarios: a simplified program from the Reinhart and Rogoff article (\cf{} \refsec{rr}), a program extracted from a recent OpenAI keynote (\cf{} \refsec{gpt-4-turbo}), two programs from the software verification competition SV-Comp (\cf{} \refsec{termination-analysis-A} and \refsec{app:termination-analysis-B}), a program computing a linear expression via repeated additions (\cf{} \refsec{linear-loops}), and \refprog{landing-alarm-system} computing the landing risk coefficient for an alarm system (\cf{} \refsec{landing-risk}).
-We exploit this tool to automatically derive a sound quantification of the input data usage of each scenario.
-As each impact result must be interpreted with respect to what the program computes, we analyze each scenario separately.
+In this chapter, we demonstrate the potential applications of our quantitative input data usage analysis, by evaluating an automatic proof-of-concept tool of our static analysis, called \impatto\sidenotemark[\ref{impatto}], on six different demonstrative programs:
+a simplified program from the Reinhart and Rogoff article (\cf{} \refsec{rr}),
+a program extracted from a recent OpenAI keynote (\cf{} \refsec{gpt-4-turbo}),
+two programs from the software verification competition SV-Comp (\cf{} \refsec{termination-analysis-A} and \refsec{app:termination-analysis-B}),
+a program computing a linear expression via repeated additions (\cf{} \refsec{linear-loops}),
+and \refprog{landing-alarm-system} computing the landing risk coefficient for an alarm system (\cf{} \refsec{landing-risk}).
+The tool \impatto{} is implemented in Python 3 and uses the \interproc\sidenotemark[\ref{interproc}] abstract interpreter to perform the backward analysis.
+We exploit this tool to automatically derive a sound quantification of the input data usage of each use case.
+As each impact result must be interpreted with respect to what the program computes, we analyze each use case separately.
 
-The impact notions considered in this chapter are \outcomesname{} and \rangename{}. The \qusedname{} notion has not been considered in the evaluation as of a little practical interest. Indeed, it is the only metric that works with non-deterministic program semantics but rarely reveals differences in the usage of variables in practice.
-Additionally, we consider a continuous input space in most of the use cases, in such instance $\qusedname$ would either return $+\infty$ or $0$ for each variable as it would discover that either are missing an infinite amount of input values or none at all.
+The impact quantifiers considered in this chapter are \outcomesname{} and \rangename{}.
+The \qusedname{} quantifier has not been considered in the evaluation since we consider a continuous input space in most of the use cases: in such instance $\qusedname$ would either return $+\infty$ or $0$ for each variable as it would discover that either are missing an infinite amount of input values or none at all.
 
 This chapter is based on the evaluation section of the work published at NASA Formal Methods Symposium (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. In the next chapters, we will apply our quantitative framework in the context of neural networks.
 
-\emph{Dans ce chapitre, nous démontrons les applications potentielles de notre analyse quantitative de l'utilisation des données d'entrée, en évaluant un outil de preuve de concept automatique de notre analyse statique, appelé \impatto\sidenote{\label{impatto}\impattourl}, sur six scénarios différents. L'outil \impatto{} est implémenté en Python 3 et utilise l'interpréteur abstrait \interproc\sidenote{\label{interproc}\rurl{github.com/jogiet/interproc}} pour effectuer l'analyse rétrospective. Pour mettre en évidence le potentiel de notre analyse statique pour l'utilisation quantitative des données d'entrée, nous exploitons \impatto{} pour dériver automatiquement une utilisation fiable des données d'entrée de six scénarios différents : un programme simplifié tiré de l'article de Reinhart et Rogoff (\cf{} \refsec{rr}), un programme extrait d'une présentation récente de OpenAI (\cf{} \refsec{gpt-4-turbo}), deux programmes de la compétition de vérification logicielle SV-Comp (\cf{} \refsec{termination-analysis-A} et \refsec{app:termination-analysis-B}), un programme calculant une expression linéaire via des additions répétées (\cf{} \refsec{linear-loops}) et le programme calculant le coefficient de risque d'atterrissage pour un système d'alarme (\cf{} \refsec{landing-risk}). Nous exploitons cet outil pour dériver automatiquement une quantification fiable de l'utilisation des données d'entrée de chaque scénario. Comme chaque résultat d'impact doit être interprété par rapport à ce que le programme calcule, nous analysons chaque scénario séparément.}
+\emph{Dans ce chapitre, nous démontrons les applications potentielles de notre analyse d'utilisation des données d'entrée quantitatives, en évaluant un outil de preuve de concept automatique de notre analyse statique, appelé \impatto\sidenotemark[\ref{impatto}], sur six programmes démonstratifs différents :
+un programme simplifié de l'article de Reinhart et Rogoff (\cf{} \refsec{rr}),
+un programme extrait d'une présentation récente d'OpenAI (\cf{} \refsec{gpt-4-turbo}),
+deux programmes du concours de vérification logicielle SV-Comp (\cf{} \refsec{termination-analysis-A} et \refsec{app:termination-analysis-B}),
+un programme calculant une expression linéaire via des additions répétées (\cf{} \refsec{linear-loops}),
+et \refprog{landing-alarm-system} calculant le coefficient de risque d'atterrissage pour un système d'alarme (\cf{} \refsec{landing-risk}).
+L'outil \impatto{} est implémenté en Python 3 et utilise l'interpréteur abstrait \interproc\sidenotemark[\ref{interproc}] pour effectuer l'analyse rétrograde.
+Nous exploitons cet outil pour dériver automatiquement une quantification solide de l'utilisation des données d'entrée de chaque cas d'utilisation.
+Comme chaque résultat d'impact doit être interprété par rapport à ce que le programme calcule, nous analysons chaque cas d'utilisation séparément.
+}
 
-\emph{Les notions d'impact considérées dans ce chapitre sont \outcomesname{} et \rangename{}. La notion de \qusedname{} n'a pas été prise en compte dans l'évaluation car elle présente peu d'intérêt pratique. En effet, c'est la seule métrique qui fonctionne avec les sémantiques de programme non déterministes mais elle révèle rarement des différences dans l'utilisation des variables en pratique. De plus, nous considérons un espace d'entrée continu dans la plupart des cas d'utilisation, dans ce cas \qusedname{} retournerait soit $+\infty$ soit $0$ pour chaque variable, car elle découvrirait qu'elles manquent soit d'une quantité infinie de valeurs d'entrée, soit d'aucune.}
+\emph{
+Les quantificateurs d'impact considérés dans ce chapitre sont \outcomesname{} et \rangename{}.
+Le quantificateur \qusedname{} n'a pas été pris en compte dans l'évaluation car nous considérons un espace d'entrée continu dans la plupart des cas d'utilisation : dans ce cas, $\qusedname$ renverrait soit $+\infty$ soit $0$ pour chaque variable, car il découvrirait qu'il manque soit une quantité infinie de valeurs d'entrée soit aucune.
+}
 
-\emph{Ce chapitre est basé sur la section d'évaluation du travail publié au Symposium sur les Méthodes Formelles de la NASA (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. Dans les prochains chapitres, nous appliquerons notre cadre quantitatif dans le contexte des réseaux neuronaux.}
+\emph{
+Ce chapitre est basé sur la section d'évaluation du travail publié au Symposium des Méthodes Formelles de la NASA (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. Dans les prochains chapitres, nous appliquerons notre cadre quantitatif dans le contexte des réseaux de neurones.}
+
 
 \section{Growth in a Time of Debt}
 \labsec{rr}
@@ -88,7 +108,7 @@ We assume growth rate values between $-20\%$ and $20\%$ for all countries, conse
 \end{margintable}
 %
 Results for both \outcomesname{} and \rangename{} are shown in \reftab{rr}.
-The analysis discovers that the Norway's only observation for this category $\texttt{norway1}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 10 different outcomes (\cf~column $\texttt{norway1}$), while the other countries only have 5, 2, and 3, respectively for Portugal, UK, and US.
+The analysis discovers that the Norway's only observation for this category $\texttt{norway1}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 10 different outcomes (\cf~row $\texttt{norway1}$), while the other countries only have 5, 2, and 3, respectively for Portugal, UK, and US.
 The same applies to \rangename{} as the output buckets have size $1$ and all the input perturbations are only capable of reaching contiguous buckets. Hence, we obtain the same exact results.
 
 Our analysis is able to discover the disproportionate impact of Norway's only observation in the mean computation, which would have prevented one of the several programming errors found in the article.

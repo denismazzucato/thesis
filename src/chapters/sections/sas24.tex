@@ -224,7 +224,7 @@ Thus, starting from final states where $\counter = 0$, the semantics of the prog
 We define the $\defbound$-impact property, which quantifies the impact of input variables on the global number of iterations of a program.
 
 \begin{definition}[$\defbound$-Bounded Impact Property with Loop Iterations]\labdef{counter-bounded}
-  Let $\defprogram$ be a program, $\definputvariables$ the set of input variables of interest, $\impactwrapper \in \tracetype\to\valuesposplus$ an impact notion,
+  Let $\defprogram$ be a program, $\definputvariables$ the set of input variables of interest, $\impactwrapper \in \tracetype\to\valuesposplus$ an impact quantifier,
   and $\defbound\in\valuesposplus$ the threshold.
   The $\defbound$-bounded impact property with loop iterations is defined as:
   \begin{equation*}
@@ -233,10 +233,10 @@ We define the $\defbound$-impact property, which quantifies the impact of input 
   where $\comparison\in\{\leq, <\}$.
 \end{definition}
 
-To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact notion.
-As a design choice, we choose the \rangename{} notion among the notions defined in \nrefsec{k-bounded-impact-property}.
+To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact quantifier.
+As a design choice, we choose the \rangename{} quantifier among the quantifiers defined in \nrefsec{k-bounded-impact-property}.
 This decision is motivated by the fact that we are mostly interested in capturing the impact of input variables based on the range of iterations they may affect rather than the number of different iterations.
-The range notion instrumented with the global loop counter $\counter$ as output variables and the identity function as output observer $\outputobs$ is defined as follows:
+The range quantifier instrumented with the global loop counter $\counter$ as output variables and the identity function as output observer $\outputobs$ is defined as follows:
 \begin{align*}
   \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
     \distance(\setdef{
@@ -246,7 +246,7 @@ The range notion instrumented with the global loop counter $\counter$ as output 
     })
 \end{align*}
 
-Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact notion. Formally:
+Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact quantifier. Formally:
 \begin{align*}
   \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
 \end{align*}
@@ -512,7 +512,7 @@ The following result states the soundness of the backward semantics defined in \
 \end{lemma}
 
 Next, we show how to quantify the impact of the input variables on the global loop counter $\counter$.
-We employ the $\rangename$ impact notion, instrumented with $\counter$ as output variable, and we design a linear programming encoding to compute the abstract implementation of the impact $\range$.
+We employ the $\rangename$ impact quantifier, instrumented with $\counter$ as output variable, and we design a linear programming encoding to compute the abstract implementation of the impact $\range$.
 
 \begin{example}
   We consider the \refprog*{add}[*-6], where states $\state$ are tuples $\langle p, m, n, nit\rangle$, respectively for the variables \texttt{p}, \texttt{m}, \texttt{n}, and the global loop counter $\counter$.

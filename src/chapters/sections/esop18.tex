@@ -190,7 +190,7 @@ Indeed, only the initial value $\tuple\false\anyvalue$ yields the result value $
 \labfig{school-year-traces}
 \end{marginfigure}
 
-\begin{example}
+\begin{example}\labexample{syntactic-vs-semantic-usage}
   \begin{marginlisting}
     \caption{Syntactic versus semantic usage of the input variable \texttt{x}.}
     \labprog{syntactic-vs-semantic-usage}
@@ -693,7 +693,7 @@ The next result shows that the abstract unused predicate is equivalent to the or
 With the use of the next example, we show that non-determinism may affect the abstract non-interference property: non-interfering programs may be wrongly deemed as interfering when non-deterministic statements are present.
 
 
-\begin{example}
+\begin{example}\labexample{ani-non-determinism}
   Let us consider the simplified trace semantics of the \refprog{school-year}, considering only the variables \texttt{sci} and \texttt{passing}.
   As this set of traces is non-deterministic, the predicate $\aniwrapper$ would discover that the variable \texttt{sci} interferes with the output states.
   In fact, assuming:

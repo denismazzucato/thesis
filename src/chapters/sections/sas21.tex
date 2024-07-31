@@ -5,7 +5,7 @@
 \labch{quantitative-fairness}
 
 In this chapter, we introduce feed-forward deep neural networks classifiers.
-We define two new quantitative impact notions: the \changesname{} impact notion, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact notion, which measures the amount of unused input space. We then present the abstract implementation of the two impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both notions. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact notion.
+We define two new quantitative impact quantifiers: the \changesname{} impact quantifier, which targets the repetitions of changes in the outcome, and the \qlibraname{} impact quantifier, which measures the amount of unused input space. We then present the abstract implementation of the two impact quantifiers, respectively called $\abstractchangesname$ and $\abstractqlibraname$, and we show how to validate the $\defbound$-bounded impact property for both quantifiers. Finally, we present the parallel implementation $\parallelqlibraname$ for efficient neural network verification of the $\qlibraname$ impact quantifier.
 This chapter is based on the work presented at the 28th Static Analysis Symposium (SAS) 2021~\cite{Mazzucato2021}.
 The next chapter will present the experimental evaluation for the quantitative verification of neural networks.
 
@@ -336,19 +336,19 @@ New abstract domains only need to implement the interface to share bounds inform
 
 % \denis{Add lemmas showing that the forward and backward analyses are sound (maybe compared to the output semantics).}
 
-\section{Quantitative Impact Notions}
-\labsec{quantitative-impact-notions}
+\section{Quantitative Impact Quantifiers}
+\labsec{quantitative-impact-quantifiers}
 
 This section elaborates on quantitative notions that can be used to measure the influence of input variables on the output of a neural network.
-Namely, we introduce the \changesname{} and \qlibraname{} impact notions, which are specifically designed to handle neural network models.
+Namely, we introduce the \changesname{} and \qlibraname{} impact quantifiers, which are specifically designed to handle neural network models.
 
-\subsection{The \changesname{} Impact Notion}[\changesname]
-\labsec{changes-impact-notion}
+\subsection{The \changesname{} Impact Quantifier}[\changesname]
+\labsec{changes-impact-quantifier}
 
 
-The \changesname{} impact notion is designed to overcome the limitations of the impact notions defined in the previous chapter when applied in the context of neural networks.
+The \changesname{} impact quantifier is designed to overcome the limitations of the impact quantifiers defined in the previous chapter when applied in the context of neural networks.
 Indeed, for neural networks, all possible input variations typically lead to all possible outcomes (\ie, classifications).
-Therefore, the impact notions defined in the previous chapter would not be useful as they measure the impact of input variables based on the number (\eg, \outcomesname{}) or the magnitude (\eg, \rangename{}) of the output values; even \qusedname{} would be meaningless in this setting as all the classification targets are often reachable by all the input values.
+Therefore, the impact quantifiers defined in the previous chapter would not be useful as they measure the impact of input variables based on the number (\eg, \outcomesname{}) or the magnitude (\eg, \rangename{}) of the output values; even \qusedname{} would be meaningless in this setting as all the classification targets are often reachable by all the input values.
 Therefore, these metrics would not provide any meaningful information about how the input variables influence the network's outcome.
 
 \begin{example}
@@ -395,8 +395,8 @@ Therefore, these metrics would not provide any meaningful information about how 
   \end{marginfigure}
   Consider a simple neural network with two input variables $x$ and $y$, and three possible outcomes, denoted by the colors green, yellow, and red.
   A potential input space of such a model $\defmodel$ is represented in \reffig{irregular}, where each outcome is reachable by the portion of the input space that is colored with the corresponding color.
-  In this case, the \outcomesname{} impact notion would not be useful as all the outcomes are reachable by perturbations of any input value. Consider for example the point $(x_0, y_0)$ in the input space of outcome red, by applying a perturbation of one axis, the outcome can change to green or yellow, for both axes. Thus, the impact of both $x$ and $y$ is maximal, \cf{} $\outcomesname_x(\semanticsof\defmodel) = \outcomesname_y(\semanticsof\defmodel) = 3$.
-  A similar reasoning applies to the \rangename{} or \qusedname{} impact notions, hence neither of them provides any insight.
+  In this case, the \outcomesname{} impact quantifier would not be useful as all the outcomes are reachable by perturbations of any input value. Consider for example the point $(x_0, y_0)$ in the input space of outcome red, by applying a perturbation of one axis, the outcome can change to green or yellow, for both axes. Thus, the impact of both $x$ and $y$ is maximal, \cf{} $\outcomesname_x(\semanticsof\defmodel) = \outcomesname_y(\semanticsof\defmodel) = 3$.
+  A similar reasoning applies to the \rangename{} or \qusedname{} impact quantifiers, hence neither of them provides any insight.
 \end{example}
 
 On the other hand, we notice that one way to discriminate which input variable is more impactful is to consider the number of times the classification changes when the input variables are modified.
@@ -407,12 +407,12 @@ On the other hand, we notice that one way to discriminate which input variable i
 \end{example}
 
 
-The \changesname{} impact notion is designed to count how many times the network outcome changes by modification in the value of the input variables $\definputvariables$.
-In contrast with the previously defined $\outcomesname$ impact notion, in this case, we consider changes in the outcome \emph{with repetitions}: if two different variations in $\definputvariables$ result in the same change in outcome, it counts as double change.
+The \changesname{} impact quantifier is designed to count how many times the network outcome changes by modification in the value of the input variables $\definputvariables$.
+In contrast with the previously defined $\outcomesname$ impact quantifier, in this case, we consider changes in the outcome \emph{with repetitions}: if two different variations in $\definputvariables$ result in the same change in outcome, it counts as double change.
 The higher the number of changes in the outcome, the greater the influence on the program outcome.
-Therefore, this notion demonstrates its effectiveness when the same outcomes are reachable by multiple variations.
+Therefore, this quantifier demonstrates its effectiveness when the same outcomes are reachable by multiple variations.
 Such situation often arises in the context of neural networks, where generally all the possible input variations lead to every possible outcome.
-The design of this notion builds on this observation.
+The design of this quantifier builds on this observation.
 Thus, counting the repetitions is a potential solution to define a meaningful impact definition for neural networks.
 
 \begin{marginfigure}
@@ -632,7 +632,7 @@ In words, a set of input variables $\definputvariables$ has a high impact on the
 \end{definition}
 The auxiliary set $Q_{\definputvariables, \definput, \defoutput}$ contains the set of stable regions leading to an output value different from $\defoutput$.
 Additionally, $\changes$ requires the set of traces $\defsetoftraces$ to be deterministic, that is, that there is only one output value for each input configuration. Such a requirement is necessary to ensure that segments are well-defined.
-Therefore, the \changesname{} impact notion would potentially be meaningless in such a setting.
+Therefore, the \changesname{} impact quantifier would potentially be meaningless in such a setting.
 Nevertheless, since we consider neural networks for classification tasks in this chapter, the output value is deterministic for each input configuration, and thus the set of traces $\defsetoftraces$ is deterministic.
 
 \begin{marginfigure}
@@ -715,11 +715,11 @@ Nevertheless, since we consider neural networks for classification tasks in this
   \end{marginfigure}
 
 \begin{example}
-  \reffig{changes} shows the \changesname{} impact notion applied to the input space of the neural network in \reffig{irregular}.
+  \reffig{changes} shows the \changesname{} impact quantifier applied to the input space of the neural network in \reffig{irregular}.
   The function $\changes$ returns the maximum number of stable regions in which the output value changes when the input variables are modified.
   As illustrated, for the variable $x$, this can only happen when $y=y_0$ as all the other values of $y$ lead to the same or fewer changes.
   Consider the outcomes green, yellow, and red (graphically represented by the three figures in \reffig{changes}, top to bottom), modifying the input variable $x$ may lead to 5, 5, and 4 different outcomes, respectively.
-  Therefore, the \changesname{} impact notion for the input variable $x$ is 5.
+  Therefore, the \changesname{} impact quantifier for the input variable $x$ is 5.
 \end{example}
 
 
@@ -736,7 +736,7 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
   We conclude that $\changes(\defsetoftraces) \le \changes(\defsetoftraces')$.
 \end{proof}
 
-We show the validation of the $\defbound$-bounded impact property when instantiated with the $\changesname$ impact notion,
+We show the validation of the $\defbound$-bounded impact property when instantiated with the $\changesname$ impact quantifier,
 denoted $\boundedchanges$.
 
 \siderefbox{def}{output-abstraction-semantics}
@@ -746,24 +746,24 @@ denoted $\boundedchanges$.
   \end{align*}
 \end{lemma}
 \begin{proof}[Proof (Sketch)]
-  The $\changesname$ impact notion does not consider the intermediate states, in fact, it only employs the first state in the definition of $Q_{\definputvariables, \definput, \defoutput}$ and the last one in the definition of $\segments$.
+  The $\changesname$ impact quantifier does not consider the intermediate states, in fact, it only employs the first state in the definition of $Q_{\definputvariables, \definput, \defoutput}$ and the last one in the definition of $\segments$.
   Thus, the abstraction to dependencies does not affect the validation of the property.
-  Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\changesname$ impact notion already abstracts the output values before comparing to the given output $\defoutput$, \cf{} $\outputobs(\retrieveoutput{\deftrace}) = \defoutput$ in \nrefdef{segments}.
+  Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\changesname$ impact quantifier already abstracts the output values before comparing to the given output $\defoutput$, \cf{} $\outputobs(\retrieveoutput{\deftrace}) = \defoutput$ in \nrefdef{segments}.
 \end{proof}
 
-\reflemma{changes-monotonic} and \reflemma{changes-validation} show that the $\changesname$ impact notion can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
-% In case of non-deterministic set of traces, the $\changesname$ impact notion would not be meaningful, as the number of stable regions leading to a different output value would be always infinite.
+\reflemma{changes-monotonic} and \reflemma{changes-validation} show that the $\changesname$ impact quantifier can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
+% In case of non-deterministic set of traces, the $\changesname$ impact quantifier would not be meaningful, as the number of stable regions leading to a different output value would be always infinite.
 
 
-\subsection{The \qlibraname{} Impact Notion}[\qlibraname]
-\labsec{qlibra-impact-notion}
+\subsection{The \qlibraname{} Impact Quantifier}[\qlibraname]
+\labsec{qlibra-impact-quantifier}
 
-The second notion introduced in this section is the \qlibraname{} impact notion, which stands for \underline{q}uantitative \underline{a}bstract \underline{u}nused.
-Notably, this notion is designed to quantify the amount of neural network's input space that does not use a given set of input features.
-In the context of neural networks, the \qlibraname{} impact notion is particularly relevant as it induces a quantification of the fair space of a model.
+The second quantifier introduced in this section is the \qlibraname{} impact quantifier, which stands for \underline{q}uantitative \underline{a}bstract \underline{u}nused.
+Notably, this quantifier is designed to quantify the amount of neural network's input space that does not use a given set of input features.
+In the context of neural networks, the \qlibraname{} impact quantifier is particularly relevant as it induces a quantification of the fair space of a model.
 A network is fair whenever the classification determined by a model does not depend on the ``sensitive'' input variables.
 In our setting, the sensitive input variables are represented by the set of input variables $\definputvariables$ and measuring the inability of the input variables $\definputvariables$ to affect the network outcome is equivalent to quantifying the amount of fair space.
-To this end, we define the \qlibraname{} impact notion as the volume of input space that is not able to change the model classification by perturbation of the input variables $\definputvariables$.
+To this end, we define the \qlibraname{} impact quantifier as the volume of input space that is not able to change the model classification by perturbation of the input variables $\definputvariables$.
 The higher the volume the higher the fairness of the model, and thus the lower the amount of space that is prone to bias.
 
 In practice, we collect the input space (without the input variables $\definputvariables$ to account for any possible permutations of their input values) where the variables $\definputvariables$ do not influence the network outcome.
@@ -771,7 +771,7 @@ To do so, we employ the $\unusediowrapper$ predicate to check whether a subset o
 % Among all the possible subsets, we consider the maximal one, that is, the one that cannot be extended without changing the network outcome.
 % To do so, we retrieve the input values of traces that do not change the network outcome when the input variables $\definputvariables$ are modified, similarly to the $\unusediowrapper$ predicate.
 We determine the volume of this set of points by applying the standard volume operation inherent to metric spaces.
-Formally, the \qlibraname{} impact notion is defined as follows:
+Formally, the \qlibraname{} impact quantifier is defined as follows:
 
 \begin{definition}[\qlibraname]\labdef{qlibra}
   Given a set of input variables of interest $\definputvariables\in\setof\inputvariables$, and an output descriptor $\outputobs$,
@@ -821,8 +821,8 @@ Formally, the \qlibraname{} impact notion is defined as follows:
 
 In other words, the \qlibraname{} quantifies the volume of the biggest set of traces $\defsetoftraces' \subseteq \defsetoftraces$ that does not contain bias, \ie, where the predicate $\unusediowrapper$ holds.
 
-% Such a definition is important because it highlights the relation between the \qlibraname{} impact notion and the $\unusediowrapper$ predicate.
-% In fact, the \qlibraname{} impact notion quantifies the bigger volume of input space where the $\unusediowrapper$ predicate holds.
+% Such a definition is important because it highlights the relation between the \qlibraname{} impact quantifier and the $\unusediowrapper$ predicate.
+% In fact, the \qlibraname{} impact quantifier quantifies the bigger volume of input space where the $\unusediowrapper$ predicate holds.
 
 \begin{marginfigure}
   \centering
@@ -876,11 +876,11 @@ In other words, the \qlibraname{} quantifies the volume of the biggest set of tr
 
 \begin{example}
 Consider the network of example presented in \reffig{irregular}.
-The \qlibraname{} impact notion quantifies the volume of the input space where the input variable $x$ does not influence the network outcome.
+The \qlibraname{} impact quantifier quantifies the volume of the input space where the input variable $x$ does not influence the network outcome.
 In \reffig{qlibra}, it is clear that the input variable $x$ does not influence the network outcome when $y$ is below a certain threshold. This volume of fair input space is denoted by $\defbound_x$ in \reffig{qlibra}.
 \end{example}
 
-As noticed for the previous impact notion $\changesname$, neural network models produce deterministic set of traces.
+As noticed for the previous impact quantifier $\changesname$, neural network models produce deterministic set of traces.
 Hence, we have that by adding more traces to a given (deterministic) set of traces, the volume of the fair space can only decrease as more traces are able to change the network outcome.
 
 \begin{lemma}[\qlibraname{} is Anti-Monotonic]
@@ -897,7 +897,7 @@ For all deterministic set of traces $\defsetoftraces, \defsetoftraces'\in\tracet
   We conclude that $\qlibra(\defsetoftraces) \ge \qlibra(\defsetoftraces')$.
 \end{proof}
 
-We show the validation of the $\defbound$-bounded impact property when instantiated with the $\qlibraname$ impact notion,
+We show the validation of the $\defbound$-bounded impact property when instantiated with the $\qlibraname$ impact quantifier,
 denoted $\boundedqlibra$.
 
 \siderefbox{def}{output-abstraction-semantics}
@@ -907,13 +907,13 @@ denoted $\boundedqlibra$.
   \end{align*}
 \end{lemma}
 \begin{proof}
-  The $\qlibraname$ impact notion employs the $\unusediowrapper$ predicate to determine the volume of the input space that does not contain bias.
+  The $\qlibraname$ impact quantifier employs the $\unusediowrapper$ predicate to determine the volume of the input space that does not contain bias.
   Thus, this proof directly follows from \refthm*{output-validation}.
 \end{proof}
 
-\reflemma{qlibra-monotonic} and \reflemma{qlibra-validation} show that the $\qlibraname$ impact notion can be used to certify that a program has impact of \emph{at least} $\defbound$, meaning that the input variables $\definputvariables$ of a network are fair for at least $\defbound$ fraction of the input space.
+\reflemma{qlibra-monotonic} and \reflemma{qlibra-validation} show that the $\qlibraname$ impact quantifier can be used to certify that a program has impact of \emph{at least} $\defbound$, meaning that the input variables $\definputvariables$ of a network are fair for at least $\defbound$ fraction of the input space.
 
-% For clarity, we unfold the $\unusediowrapper$ predicate in the definition of the \qlibraname{} impact notion (assuming the set of traces $\defsetoftraces$ is deterministic).
+% For clarity, we unfold the $\unusediowrapper$ predicate in the definition of the \qlibraname{} impact quantifier (assuming the set of traces $\defsetoftraces$ is deterministic).
 % From \refprop{ani-predicate-equivalence}, we notice that the $\unusediowrapper$ predicate is equivalent to the $\aniwrapper$ predicate whenever the set of traces is deterministic, thus obtaining the following definition:
 
 % \begin{align*}
@@ -946,8 +946,8 @@ denoted $\boundedqlibra$.
 \labsec{quantitative-analysis-neural-networks}
 
 
-This section presents the abstract implementations of the \changesname{} and \qlibraname{} impact notions, respectively called $\abstractchangesname$ and $\abstractqlibraname$.
-We show how to validate the $\defbound$-bounded impact property for both notions.
+This section presents the abstract implementations of the \changesname{} and \qlibraname{} impact quantifiers, respectively called $\abstractchangesname$ and $\abstractqlibraname$.
+We show how to validate the $\defbound$-bounded impact property for both quantifiers.
 
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractchanges$}{Abstract Changes}}[Abstract \texorpdfstring{$\abstractchanges$}{Changes}]
@@ -955,17 +955,17 @@ We show how to validate the $\defbound$-bounded impact property for both notions
 In this section, we introduce $\abstractchanges$ as a sound implementation of $\changes$.
 First, we describe the implementation, followed by the validation of the $\defbound$-bounded impact property $\boundedchanges$.
 
-% As previously noted, the $\changesname$ impact notion suffers from non-deterministic set of traces, which would render it meaningless.
+% As previously noted, the $\changesname$ impact quantifier suffers from non-deterministic set of traces, which would render it meaningless.
 % The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
 % In this case, whenever the over-approximation overlaps the result of the abstract backward analysis coming from different output buckets, in the concrete, this would be like having non-deterministic set of traces.
 % To address this issue, we need an abstract domain that is exact for our property and underlying network model.
 
-As previously noted, the $\changesname$ impact notion suffers from the case in which the input is a non-deterministic set of traces, rendering it ineffective.
+As previously noted, the $\changesname$ impact quantifier suffers from the case in which the input is a non-deterministic set of traces, rendering it ineffective.
 The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
 In cases where this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it would correspond to a non-deterministic set of traces when concretized.
 To address this issue, we require an abstract domain that is exact for our property and underlying network model.
 
-The core idea of the $\changesname$ impact notion is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{abstract-domains}), are inadequate for representing multiple distinct stable regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
+The core idea of the $\changesname$ impact quantifier is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{abstract-domains}), are inadequate for representing multiple distinct stable regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
 %
 We leverage the \textit{disjunctive polyhedra abstract domain} $\disjunctivepolyabstractdomain$, defined as
 $
@@ -1003,7 +1003,7 @@ It counts the number of indices $l$ in each connected component $J$ where $k$ is
   \end{align*}
 \end{definition}
 
-Before proceeding with the soundness proof of $\abstractchanges$, we recall the requirements on the concrete impact notion $\changes$, namely, the requirement on determinism.
+Before proceeding with the soundness proof of $\abstractchanges$, we recall the requirements on the concrete impact quantifier $\changes$, namely, the requirement on determinism.
 Such a requirement is necessary to ensure a meaningful quantity of changes in the outcome, otherwise the number of changes would be infinite in the presence of stable regions with non-deterministic output values.
 Equivalently, in the abstract, any over-approximation from the backward analysis that overlaps different preconditions $\prefrombucket$ would lead to an infinite number of changes.
 To this end, we require the backward analysis to be exact: sound and \emph{complete}.
@@ -1084,7 +1084,7 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
 \end{proof}
 
 While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires to explore all the possible paths of the network.
-In the next section, we introduce the \qlibraname{} impact notion, which--in a sense--still requires an exact backward analysis, but is more scalable and efficient thanks to the use or parallelization.
+In the next section, we introduce the \qlibraname{} impact quantifier, which--in a sense--still requires an exact backward analysis, but is more scalable and efficient thanks to the use or parallelization.
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
 \labsec{abstract-qlibra}
@@ -1325,7 +1325,7 @@ Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can ve
 \begin{proof}
   Note that, by \refdef{qlibra}, $\qlibra(\defsetoftraces)$ computes the volume of input space that does not use the input variables $\definputvariables$. It does so by partitioning the set of given traces that are perturbations of the input variables $\definputvariables$, \cf{} the set $\defsetoftraces_{\retrieveinput{\deftrace}}$ on the side. By definition, these partitions are fair partitions by \refdef{fair-input-partition}.
   Furthermore, we could call these partitions as \emph{minimal} in the sense that they are the smallest fair partitions that can be obtained from the input space.
-  As a consequence, the $\qlibra$ impact notion could be written as the sum of the impacts of the minimal fair partitions, \ie, $\qlibra(\tracesemantics) = \sum_{\deftrace\in\tracesemantics} \qlibra(\setdef{\deftrace'\in\tracesemantics}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}})$.
+  As a consequence, the $\qlibra$ impact quantifier could be written as the sum of the impacts of the minimal fair partitions, \ie, $\qlibra(\tracesemantics) = \sum_{\deftrace\in\tracesemantics} \qlibra(\setdef{\deftrace'\in\tracesemantics}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}})$.
   Since any combination of minimal fair partitions is a fair partition, it holds that:
   \begin{align}\labeq{qlibra-sum-of}
     \qlibra(\tracesemantics) = \sum_{\definputpartition\in\definputpartitions} \qlibra(\reduceinit[\tracesemantics]{\definputpartition})
@@ -1567,10 +1567,10 @@ Therefore, it can be used to validate the $\boundedqlibra$ property.
 
 \section{Summary}
 
-In this chapter, we presented the \changesname{} and \qlibraname{} impact notions, and their abstract implementations, $\abstractchangesname$ and $\abstractqlibraname$, respectively.
-We validated the $\defbound$-bounded impact property for both notions.
+In this chapter, we presented the \changesname{} and \qlibraname{} impact quantifiers, and their abstract implementations, $\abstractchangesname$ and $\abstractqlibraname$, respectively.
+We validated the $\defbound$-bounded impact property for both quantifiers.
 To address the scalability issues of the backward analysis, we introduced the parallel semantics and the abstract implementation $\parallelqlibraname$.
-The next chapter will present the experimental results of the \changesname{} and \qlibraname{} impact notions applied to neural networks.
+The next chapter will present the experimental results of the \changesname{} and \qlibraname{} impact quantifiers applied to neural networks.
 Afterwards, the thesis will focus on intensional properties, specifically how to quantify the influence of input variables on the number of iterations of a program.
 
 \emph{Dans ce chapitre, nous avons présenté les notions d'impact \changesname{} et \qlibraname{}, ainsi que leurs implémentations abstraites, $\abstractchangesname$ et $\abstractqlibraname$, respectivement. Nous avons validé la propriété d'impact bornée par $\defbound$ pour les deux notions. Pour aborder les problèmes de scalabilité de l'analyse rétrospective, nous avons introduit les sémantiques parallèles et l'implémentation abstraite $\parallelqlibraname$. Le prochain chapitre présentera les résultats expérimentaux des notions d'impact \changesname{} et \qlibraname{} appliquées aux réseaux neuronaux. Par la suite, la thèse se concentrera sur les propriétés intentionnelles, en particulier sur la manière de quantifier l'influence des variables d'entrée sur le nombre d'itérations d'un programme.}
