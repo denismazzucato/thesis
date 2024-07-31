@@ -3,54 +3,31 @@
   style=mystyle,
   escapechar=\%]
 def Add(p, z, m, x, n, y):
-  r = min(p, m)%\labline{min1}%
-  s = min(p, n)%\labline{min2}%
-  if (r < s):%\labline{if1}%
-    t = p - s%\labline{sub1}%
-    q = s - r%\labline{sub2}%
-    # i = 0
-    # a = 0
-    for (; r > 0; r--):%\labline{for1}%
-      # s = x[i] %\labline{array}%
-      # w = y[i]
-      # z[i] = s + w + a
-      # i = i + 1
-      # a = (w < a) ||%\labline{bitwise}%
-      #   (s + w < s) ||
-      #   (s + w + a < s)
-    do:%\labline{do1}%
-      # r = y[i]
-      # b = (r < a) ||
-      #   (r + a < r)
-      # z[i] = r + a
-      # i = i + 1
+  r = min(p, m)
+  s = min(p, n)
+  if (r < s):
+    t = p - s
+    q = s - r
+    # %\dots%
+    for (; r > 0; r--):
+      # %\dots%
+    do:
+      # %\dots%
       q--
-      # a = b
+      # %\dots%
     while (q > 0)
-else:%\labline{else}%
-  t = p - r%\labline{sub3}%
-  q = r - s%\labline{sub4}%
-  # i = 0
-  # b = 0
-  for (; s > 0; s--):%\labline{for2}%
-    # r = x[i]
-    # w = y[i]
-    # z[i] = r + w + b
-    # i = i + 1
-    # b = (w < b) ||
-    #   (r + w < r) ||
-    #   (r + w + b < r)
-  for (; q > 0; q--):%\labline{for3}%
-    # r = x[i]
-    # z[i] = r + b
-    # i = i + 1
-    # b = (r < b) ||
-    #   (r + b < r)
-if (t > 0):%\labline{if2}%
-  # z[i] = b
-  while (t > 0):%\labline{while1}%
-    # i = i + 1
+else:
+  t = p - r
+  q = r - s
+  # %\dots%
+  for (; s > 0; s--):
+    # %\dots%
+  for (; q > 0; q--):
+    # %\dots%
+if (t > 0):
+  # %\dots%
+  while (t > 0):
+    # %\dots%
     t--
-    # if (t > 0):%\labline{padding}%
-      # z[i] = 0
+    # %\dots%
 \end{lstlisting}

@@ -1,17 +1,135 @@
+\setchapterpreamble[u]{\margintoc}
 
 \chapter{Experimental Evaluation}
 \labch{sas24-eval}
+
+This chapter presents \timesec\sidenotemark[\ref{sas24-eval:timesecurl}], in about 3000 lines of Python code.
+The global loop bound analysis is based on the numerical library \apron{} \cite{Jeannet2009}, we instrumented the analysis with widening and narrowing operators after 2 fixpoint iterations.
+For the linear programming encoding, we used the Python library \scipy\sidenotemark[\ref{sas24-eval:scipy}].
+In this chapter, we discuss some implementation features that make the analysis scalable, precise, and able to handle real-world programs.
+We evaluate \timesec{} on the \bignum{} library, a collection of arithmetic routines designed for cryptographic applications, and on the \svcomp{} benchmarks.
+An artifact of \timesec, including the source code, the benchmarks, and the evaluation results, is available in Zenodo\sidenotemark[\ref{sas24-eval:timeseczenodo}].
+This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024c}.
+
+\emph{Ce chapitre présente \timesec\sidenote{\label{sas24-eval:timesecurl}\timesecurl}, en environ 3000 lignes de code Python. L'analyse des bornes globales des boucles est basée sur la bibliothèque numérique \apron{} \sidecite{Jeannet2009}. Nous avons instrumenté l'analyse avec des opérateurs de large et d'étroitement après 2 itérations du point fixe. Pour l'encodage en programmation linéaire, nous avons utilisé la bibliothèque Python \scipy\sidenote{\label{sas24-eval:scipy}\rurl{scipy.org}}. Dans ce chapitre, nous discutons de certaines fonctionnalités de mise en œuvre qui rendent l'analyse évolutive, précise et capable de gérer des programmes réels. Nous évaluons \timesec{} sur la bibliothèque \bignum{}, une collection de routines arithmétiques conçues pour des applications cryptographiques, ainsi que sur les benchmarks \svcomp{}. Un artefact de \timesec, comprenant le code source, les benchmarks et les résultats de l'évaluation, est disponible sur Zenodo\sidenote{\label{sas24-eval:timeseczenodo}\timeseczenodo}. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
+
+\section{Implementation Discussion}
+
+The syntactic dependency analysis of \refsec{syntactic-dependency-analysis} can be helpful to reduce the number of variables in the abstract domain during the global loop bound analysis.
+In fact, the syntactic dependency analysis is used to determine an over-approximation of the set of relevant variables for the global loop counter, for each program location.
+We employ such information to apply program slicing.
+As a consequence, we reduce the number of variables in the underlying abstract domain, and avoid analyzing irrelevant statements.
+The program under analysis can be evaluated even in presence of statements and expressions that are hard to handle, \eg~bitwise operations, array manipulation, and function calls to name a few, as long as they are not relevant.
+Indeed, excluding irrelevant statements from the analysis does not affect the global loop bounds.
+The excluded statements are never looping structures as they are always relevant.
+
+
+We recall from \refsec{syntactic-dependency-analysis}, the syntactic dependency analysis already serves as an input data usage analysis, identifying variables with zero impact on the global loop counter.
+
+\begin{example}
+% \begin{figure}[t]
+%   \input{code/add}
+%   \caption{Full code for program \add{}, irrelevant statements are marked as comments.}
+%   \label{fig:add-full}
+%   \end{figure}
+
+Regarding the \refprog*{add}, the syntactic dependency analysis is able to discover that most of the variables are irrelevant for the global loop bound.
+Therefore, we are able to exclude most of the statements, including the bitwise operations regarding the remainder (\eg~\refline{bitwise}), the array indices (\eg~\refline{array}), the conditional for the padding at the end (\cf~\refline{padding}).
+%
+Overall, we excluded $33$ from the original $52$ lines of code (about the 60\%), and the analysis was able to handle the program with ease without any specific handling for the excluded statements.
+Regarding the amount of variables, we reduced the number of variables from $13$ to $7$ (without counting the global loop counter $\counter$).
+% Note that, the handling of arrays may generate many symbolic variables during the abstract analysis, hence the reduction in the number of variables is even more significant.
+\end{example}
+
+
+
+% Additionally, even though our formal syntax does not include the use of arrays, real-world programs often do.
+% To remain sound, the syntactic dependency analysis can be extended to handle arrays, by considering a conservative points-to analysis to determine the shared memory locations.
+% For our work, we consider a classical flow-insensitive points-to analysis~\sidecite{Steensgaard1996} to determine an over-approximation of the memory locations shared by the variables at any program location.
+% Whenever the analysis discovers that a variable is potentially used, all the variables that share the same memory location are considered relevant as well.
+
+
+Moreover, we combine forward and backward phases to provide tighter invariants in the global loop bound analysis, using the abstract domain of conjunctions of linear constraints (\cf{} \refsec{conjunctions-of-linear-constraints}).
+Specifically, an initial forward reachability analysis enhances both the syntactic dependency analysis and the global loop bound analysis.
+Additionally, we employ a narrowing operator to refine the upper bound of the least fixpoint computed by the widening operator \sidecite{Cousot1977}.
+
+
+\begin{marginlisting}
+  \begin{lstlisting}[
+    language=customPython,
+    style=mystyle,
+    escapechar=\%]
+assert r >= 0
+while (r > 0):
+  r = r - 1
+\end{lstlisting}
+\end{marginlisting}
+\begin{example}
+  Consider the first for-loop at~\refline{for1} of the \refprog{add}.
+  For simplicity, we reported it in the form of a while loop on the side.
+Without a forward pre-analysis, the backward analysis would infer that the global number of iterations is always greater or equal to the initial value of \texttt{r}.
+The missing information is that the value of \texttt{r} is always non-negative at the beginning of the loop.
+%
+However, a forward pre-analysis could easily propagate such information to the backward analysis.
+As a consequence, the backward analysis would infer that the global number of iterations is always equal to the initial value of \texttt{r}.
+The main difference of the two approaches can be observed when the result of the backward analysis is used to verify the global loop bound property.
+With the invariant discovered without the forward analysis, \cf~$\texttt{r} \ge \counter$, the impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} \ge \counter)$ to $u$ (\cf~$0 \le \texttt{r} \le u$), for all input variables $\definputvariables$, even when $\definputvariable \neq \texttt{r}$.
+The linear programming problem $\counterrange(\texttt{r} \ge \counter)$ is:
+\begin{align}
+  \text{maximize} \spacer\spacer& \defbound \\
+  \text{subject to} \spacer\spacer
+    & \texttt{r} \ge \counterup \\
+    \land\spacer\spacer& \texttt{r} \ge \counterdown \\
+    \land\spacer\spacer& 0\le \texttt{r} \le u \\
+    \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
+\end{align}
+In this case, the variable $\counterup$ and $\counterdown$ are not constrained to be equal, thus they can be minimized and maximized independently as long as they satisfy the other constraints, resulting in $\defbound = u$.
+%
+On the other hand, the invariant discovered with the help of the forward pre-analysis is $\texttt{r} = \counter$.
+The impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} = \counter)$ to $0$ whenever the input variable $\definputvariable \neq \texttt{r}$. In such case, the linear programming problem $\counterrange(\texttt{r} = \counter)$ is:
+\begin{align}
+  \text{maximize} \spacer\spacer& \defbound \\
+  \text{subject to} \spacer\spacer
+    & \texttt{r} = \counterup \\
+    \land\spacer\spacer& \texttt{r} = \counterdown \\
+    \land\spacer\spacer& 0\le \texttt{r} \le u \\
+    \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
+\end{align}
+Note that, both $\counterup$ and $\counterdown$ are constrained to be equal. Therefore, their maximum distance is $0$.
+\end{example}
+
+\begin{marginlisting}[*1]
+  \begin{lstlisting}[
+      language=customPython,
+      style=mystyle,
+      escapechar=\%]
+x = y %\labline{first}%
+x = x - y %\labline{second}%
+\end{lstlisting}
+  \end{marginlisting}
+\begin{example}
+  To show that also the syntactic dependency analysis can benefit from a forward pre-analysis (and in general, from a numerical analysis~\sidecite[*1]{Parolini2024}), consider the program on the side.
+  It assigns first the value of \texttt{y} to \texttt{x} and then subtracts \texttt{y} from \texttt{x}.
+  The result is that \texttt{x} is zero at the end of the program execution, while \texttt{y} maintains its input value.
+%
+  Let us assume we are interested in the variables that are relevant to compute the value of \texttt{x}.
+  Without a forward pass, the syntactic dependency analysis (a backward analysis) would infer that \texttt{y} is relevant for the value of \texttt{x} after handling the second assignment at~\refline{second}. Then, the first assignment at~\refline{first} would add no dependency as \texttt{x} is overwritten.
+  On the other hand, a forward analysis could be able to infer that at the end of the program, the value of \texttt{x} is zero.
+  As a consequence, the information that \texttt{x} is a constant value supersedes the information that \texttt{x} is used (at the end of the program).
+  Therefore, the syntactic dependency analysis would infer that \texttt{y} is, in fact, irrelevant.
+\end{example}
+
 
 \section{Timing Side-Channels}
 \labsec{timing-side-channels}
 
 
-In this section, we showcase the potential of \impatto{} on the \bignum{} library\sidenote{\rurl{github.com/awslabs/s2n-bignum}}.
+In this section, we showcase the potential of \timesec{} on the \bignum{} library\sidenote{\rurl{github.com/awslabs/s2n-bignum}}.
 % In \Appendix{sv-comp}, we show an evaluation on the \svcomp{} benchmarks, focusing on the effect of changes in the input space, the analysis time, and the categorization of input variables.
-
+%
 % \subsection{\texorpdfstring{\bignum{} Library}{S2N Bignum Library}}
 % \label{sec:s2n-bignum-library}
-
+%
 The \bignum{} library~\sidecite{bignum} is a collection of arithmetic routines designed for cryptographic applications.
 All the routines are written in pure machine code, designed to be callable from C and other high-level languages.
 Each function is written in a constant-time style, to avoid leaking information through timing side-channels.
@@ -29,7 +147,7 @@ Their empirical
 result\sidenote{(Last accessed: 14th May 2024) \rurl{github.com/awslabs/s2n-bignum?tab=readme-ov-file\#benchmarking-and-constant-time}}
 shows that the variation in runtime with respect to the data being manipulated is within a few percent in all the cases.
 Unfortunately, the empirical study is not sufficient to guarantee the constant-time property, as it is not exhaustive and does not cover all the possible inputs.
-On the other hand, the quantitative analysis of \impatto{} provides a formal verification of the constant-time property.
+On the other hand, the quantitative analysis of \timesec{} provides a formal verification of the constant-time property.
 In particular, whenever an input variable has no impact on the global number of loop iterations, it is formally guaranteed that the number of iterations is independent of the values of that input variable.
 Formally, a program $\defprogram$ is free of timing side-channels with respect to an input variable $\definputvariable\in\inputvariables$, if and only if $\defprogram \satisfies \mathscr{B}^{\le 0}_{\definputvariable}$.
 % \denis{Add a theorem such like: if is side channel freedom on numerical variables that the library is safe.}
@@ -40,13 +158,104 @@ The nominal size variables and additional parameters that may safely influence t
 The variables that represent the actual numerical values and additional parameters that, instead, should not influence the execution time into $\numericalvariables$.
 The \bignum{} library is free of timing side-channels, whenever for any program $\defprogram$ in \bignum{} and any numerical input variable $\definputvariable\in\numericalvariables$, it holds that $\abstractrange(\backwardsemantics) = 0$.
 
+\begin{table}[p]
+  \rowcolors{3}{white}{\customrowcolor}
+  \centering
+  \caption{Input composition of the \bignum{} library. The variables \textsc{Safe} $\nominalvariables$ are \green{highlighted in green}, while the variables \textsc{Numerical} $\numericalvariables$ \red{in red}. No numerical variable should be \textsc{Maybe Dangerous}.}
+  \labtab{bignum-inputs}
+  \renewcommand{\arraystretch}{1}
+  \begin{adjustbox}{max width=\textwidth}
+  \begin{tabular}{l  cc || cc}
+    \multirow{2}{*}{\textsc{Program}}  & \multicolumn{2}{c||}{\textsc{Input Variables} $\inputspace$} & \textsc{Maybe} & \textsc{Zero} \\
+    & \spacearound{\textsc{Safe} $\nominalvariables$} & \spacearound{\textsc{Numerical} $\numericalvariables$} & \spacearound{\textsc{Dangerous}} & \spacearound{\textsc{Impact}} \\[2pt]
+    \hline\hline
+    \texttt{Add} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}$ & $ \green{s_3}, \green{s_5},  \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Amontifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Amontmul} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Amontredc} & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Amontsqr} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Bitfield} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Bitsize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Cdiv} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Cdiv\_exact} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \green{s_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Cld} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Clz} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Cmadd} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Cmnegadd} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Cmod} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Cmul} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Coprime} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Copy} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table} & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ \\
+    \texttt{Copy\_row\_from\_table\_16\_neon} & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table\_32\_neon} & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table\_8n\_neon} & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ \\
+    \texttt{Ctd} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Ctz} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Demont} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Digit} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Digitsize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Divmod10} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Emontredc} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Eq} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Even} & $ \green{s_1}$ & $ \red{n_2}$ & $ $ & $ \green{s_1}, \red{n_2}$ \\
+    \texttt{Ge} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Gt} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Iszero} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Le} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Lt} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Madd} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Modadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Moddouble} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Modifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Modinv} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Modoptneg} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Modsub} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Montmul} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montredc} & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montsqr} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Mul} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Muladd10} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Mux} & $ \green{s_2}$ & $ \red{n_1}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_2}$ & $ \red{n_1}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Mux16} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Negmodinv} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Nonzero} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Normalize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Odd} & $ \green{s_1}$ & $ \red{n_2}$ & $ $ & $ \green{s_1}, \red{n_2}$ \\
+    \texttt{Of\_word} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Optadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Optneg} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Optsub} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Optsubadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Pow2} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Shl\_small} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Shr\_small} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \green{s_3}, \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Sqr} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Sub} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}$ & $ \green{s_3}, \green{s_5}, \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Word\_bytereverse} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_clz} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_ctz} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_divstep59} & & $ \red{n_1}, \red{n_2}, \red{n_3}, \red{n_4}$ & & $ \red{n_1}, \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Word\_max} & & $ \red{n_1}, \red{n_2}$ & & $ \red{n_1}, \red{n_2}$ \\
+    \texttt{Word\_min} & & $ \red{n_1}, \red{n_2}$ & & $ \red{n_1}, \red{n_2}$ \\
+    \texttt{Word\_negmodinv} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_recip} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \hline \hline & & & & \\
+    \rowcolor{white} \textsc{Total Variables:} &  93 &  179 &  85 &  187
+    %  & & & & & \\
+  \end{tabular}
+  \end{adjustbox}
+\end{table}
+
 For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\rurl{ghidra-sre.org/}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
 Mostly, the rewriting steps soundly resolve the few jumps that arise from the disassembling process.
 Our benchmark contains a total of 72 disassembled arithmetic routines, excluding only a single operation (program \texttt{bignum\_modexp}) that has function calls, which our tool does not yet support.
 On average, each program has about 83 lines of code, for a total of 5984 lines of code.
 % For each input variable we consider an unbounded non-negative input space, \ie, for any input variable $\definputvariable\in\inputvariables$, we have $\definputvariable \ge 0$.
 
-% \input{tables/bignum-inputs}
+
+
 %
 The library contains a total of 1172 variables, 272 of which are input variables.
 \reftab{bignum-inputs} reports the analysis findings for the input variables of the \bignum{} library: column \textsc{Maybe Dangerous} reports variables which could be prone to timing side-channel attacks (namely $\abstractrange(\backwardsemantics) > 0$),
@@ -66,8 +275,44 @@ We conclude that the \bignum{} library is \emph{free of timing side-channels}.
 
 % \input{tables/bignum-ablation}
 
+
+\begin{margintable}
+  \centering
+  \caption{Ablation study of \timesec{} on the \bignum{} benchmark. How input variables are influenced by the syntactic dependency analysis and other optimizations.}
+  \labtab{bignum-abl-inputs}
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{c|c|c}
+     & \nodepnoopt & \timesec \\
+    \toprule
+    \makecell{\textsc{Maybe} \\ \textsc{Dangerous}} & 266 & 85 \\
+    \midrule
+    \makecell{\textsc{Zero}\\ \textsc{Impact}} & 6 & 187 \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{margintable}
+\begin{margintable}
+  \centering
+  \caption{Ablation study of \timesec{} on the \bignum{} benchmark. How analysis time (s) is influenced by the syntactic dependency analysis and other optimizations.}
+  \labtab{bignum-abl-time}
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{c|c|c}
+     & \nodepnoopt & \timesec \\
+    \toprule
+    \depslabel & 0.0s & 51.81s \\
+    \invlabel & 16.36s & 55.83s \\
+    \lplabel & 7.79s & 0.27s \\
+    \midrule
+    \multicolumn{1}{c|}{\textsc{Tot}} & \makecell{$26.45$s \\ ~~~~~~$\pm 0.81$} & \makecell{$110.48$s \\ ~~~~~~$\pm 4.94$} \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{margintable}
+
+
+
 Additionally, we perform an ablation study to evaluate the impact of the dependency analysis and the other optimizations on our tool.
-The first row \nodepnoopt{} of \reftab{bignum-abl} reports the analysis findings without the various analysis stages of \refsec{implementation}, while the second row \depopt{} shows the finding of the full \impatto{} analysis.
+The first row \nodepnoopt{} of \reftab{bignum-abl} reports the analysis findings without the various analysis stages of \refsec{implementation}, while the second row \depopt{} shows the finding of the full \timesec{} analysis.
 Without the dependency analysis we do not apply program slicing anymore, we handle bitwise operations and array accesses with a conservative over-approximation that may lead to false positives.
 Generally, we notice that the invariant inferred from the global loop bound analysis alone is not tight enough to produce a precise quantification of the impact.
 Therefore, we are not able to infer useful insights from our analysis as 266 input variables are maybe dangerous.
@@ -102,13 +347,37 @@ We focus on the categories of \textsc{Termination Crafted}, and \textsc{Terminat
 These categories describe programs that are crafted to be challenging for termination analysis.
 In total, we selected 208 programs (68 from \textsc{Termination Crafted}, and 140 from \textsc{termination Crafted Lit}), with 5705 total lines of code. An average of 27 lines of code per program.
 
+
+\begin{table*}[b]
+  \centering
+  \caption{Quantitative results for the \svcomp{} benchmarks.}
+  \labtab{svcomp}
+  \begin{tabular}{c|c|cc|cccc}
+    \multirow{2}{*}{\textsc{Benchmark}} & \multirow{2}{*}{~\makecell{\textsc{Bound} \\ \textsc{Ranges}}~} & \multicolumn{2}{c|}{\textsc{Quantities} $(< \infty)$} & \multicolumn{4}{c}{\textsc{Analysis Time} (s)} \\
+    & & \textsc{Average} & \textsc{Std} & \spacearound{\depslabel} & \spacearound{\invlabel} & \spacearound{\lplabel} & \spacearound{\textsc{Tot}} \\
+    \hline\hline
+    \multirow{5}{*}{\makecell{\textsc{Termination}\\ \textsc{Crafted} \\ (68 programs)}}
+    & $0-10$ & 6.12 & 6.16 & 0.51 & 3.54 & 0.32 & 6.19 \\
+    & $0-100$ & 50.13 & 48.44 & 0.51 & 3.5 & 0.32 & 6.18 \\
+    & $0-1000$ & 500.13 & 483.18 & 0.5 & 3.53 & 0.32 & 6.15 \\
+    & $\ge 0$ & 0.0 & 0.0 & 0.5 & 2.4 & 0.26 & 5.03 \\
+    & $[-\infty,+\infty]$ & 0.0 & 0.0 & 0.46 & 2.01 & 0.05 & 4.38\\
+  \hline\hline
+  \multirow{5}{*}{\makecell{\textsc{Termination}\\ \textsc{Crafted}\\ \textsc{Lit} \\ (140 programs)}}
+    & $0-10$ & 435.46 & 1892.32 & 1.56 & 16.6 & 1.02 & 23.08 \\
+    & $0-100$ & 38248.52 & 194557.7 & 1.54 & 16.66 & 1.01 & 23.04 \\
+    & $0-1000$ & 38577853.04 & 192885029.79 & 1.55 & 16.66 & 1.01 & 23.03 \\
+    & $\ge 0$ & 0.0 & 0.0 & 1.49 & 9.66 & 0.77 & 15.8 \\
+    & $[-\infty,+\infty]$ & 0.0 & 0.0 & 1.4 & 8.27 & 0.22 & 13.65
+  \end{tabular}
+\end{table*}
+
+
 To evaluate \timesec{} against the \svcomp{} benchmarks, we consider the input variables as unbounded non-negative integers.
 We repeat the analysis 5 times, each time with a different bound on the input variables, ranging from $[0, 10]$ to $[-\infty, +\infty]$.
 \reftab{svcomp} reports, for each bound range, the average quantity of impact (column \textsc{Average}), the standard deviation (column \textsc{Std}), and the analysis time for the dependency analysis (column \depslabel), the global loop bound analysis (column \invlabel), and the quantification of the impact (column \lplabel).
 We exclude to take into account quantities that are infinite, as they would disrupt the average calculation.
 Note that, even in presence of a bounded input space, the impact of a variable could be infinite if the global loop bound analysis is not able to infer a bound on the possible number of iterations.
-
-
 
 From \reftab{svcomp}, we observe that the average quantity of impact increases with the bound range (column \textsc{Average}).
 This is expected, as the larger the input space, the more the variance in the values of input variables, and the more the impact on the global number of iterations.
@@ -123,8 +392,31 @@ The global loop bound analysis is the most time-consuming part of the analysis.
 Overall, the analysis time is acceptable, with an average of 0.11 seconds per program, and a total of about 126 seconds for the whole benchmark suite, \cf~208 programs for 5 different bound ranges (1055 programs in total).
 
 
-% \input{tables/sv-bounds}
-% \input{tables/sv-info}
+
+
+\begin{table}[t]
+  \centering
+  \caption{Analysis findings for the \svcomp{} benchmarks.}
+  \labtab{svcomp2}
+  \begin{tabular}{c|c|cc}
+    \multirow{2}{*}{\textsc{Benchmark}} & \multirow{2}{*}{~\makecell{\textsc{Bound} \\ \textsc{Ranges}}~} & \multicolumn{2}{c}{\textsc{Variables}} \\
+    & & \spacearound{\textsc{May Impact}} & \spacearound{\textsc{Zero Impact}} \\
+    \hline\hline
+    \multirow{5}{*}{\makecell{\textsc{Termination}\\ \textsc{Crafted} \\ (68 programs)}}
+    & $0-10$ & 99/135 & 13/284 \\
+    & $0-100$ & 99/135 & 13/284 \\
+    & $0-1000$ & 99/135 & 13/284 \\
+    & $\ge 0$ & 99/135 & 13/284 \\
+    & $[-\infty,+\infty]$ & 105/141 & 7/278\\
+  \hline\hline
+  \multirow{5}{*}{\makecell{\textsc{Termination}\\ \textsc{Crafted}\\ \textsc{Lit} \\ (140 programs)}}
+    & $0-10$ & 275/336 & 36/707 \\
+    & $0-100$ & 277/338 & 34/705 \\
+    & $0-1000$ & 277/338 & 34/705 \\
+    & $\ge 0$ & 277/338 & 34/705 \\
+    & $[-\infty,+\infty]$ & 286/348 & 25/695
+  \end{tabular}
+\end{table}
 
 \reftab{svcomp2} shows the composition of variables of the two categories of \svcomp{} benchmarks.
 In terms of the $\defbound$-bounded impact property (\cf~\refeq{bounded}), the column \textsc{May Impact} corresponds to $\bounded$ for $\defbound > 0$, while the columns \textsc{Zero Impact} corresponds to $\resize{\mathscr{B}}{\definputvariable}[\le 0]$.
@@ -141,3 +433,6 @@ In conclusion, we notice that by enlarging the input space, the number of variab
 
 This chapter concludes the main body of the thesis, presenting the evaluation of our static analysis for quantitative program properties.
 Next, we provide a discussion of the related work, followed by the conclusion and future work in the final chapter.
+
+\emph{Ce chapitre conclut le corps principal de la thèse, en présentant l'évaluation de notre analyse statique des propriétés quantitatives des programmes.
+Ensuite, nous discutons des travaux connexes, suivis de la conclusion et des perspectives de travaux futurs dans le chapitre final.}

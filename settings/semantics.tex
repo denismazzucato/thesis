@@ -10,7 +10,7 @@
 \newsemantics{trace}
 
 %% trace semantics
-\newcommand*{\countertracesemanticsnoparam}{\resize{\semanticsletter}{\counter}[\leftarrow]}
+\newcommand*{\countertracesemanticsnoparam}{\semanticsletter_\counter}
 \newcommand*{\countertracesemantics}{\countertracesemanticsnoparam \semanticsof\defprogram}
 
 % collecting
@@ -46,16 +46,18 @@
 \newcommand*{\counterdependencysemantics}{\counterdependencysemanticsnoparam \semanticsof\defprogram}
 \newcommand*{\counterdependencyconcretization}{\dependencyconcretization}
 
+%% backawrd reachability
+\newcommand*{\backwardreachabilitysym}{\normalfont r}
+\newcommand*{\backwardreachabilitytype}{\setofsetof\state}
+\newsemantics{backwardreachability}
+\renewcommand*{\backwardreachabilitysubseteq}{\subseteq}
+
 %% output
 \newcommand*{\outputobs}{\aniobserver}
 \newcommand*{\outputsym}{\aniobserver}
 \newcommand*{\outputtype}{\dependencytype}
 \newsemantics{output}
 \renewcommand*{\outputsubseteq}{\subseteq}
-
-
-\newcommand*{\counteroutputsemanticsnoparam}{\resize{\semanticsletter}{\counter}[\outputsym]}
-\newcommand*{\counteroutputsemantics}{\counteroutputsemanticsnoparam \semanticsof\defprogram}
 
 %% parallel
 \newcommand*{\parallelsym}{\definputpartitions}
@@ -75,6 +77,7 @@
 \newcommand*{\counterbackwardsemanticsnoparam}{\resize{\semanticsletter}{\counter}[\backwardsym]}
 \newcommand*{\counterbackwardsemantics}{\counterbackwardsemanticsnoparam \semanticsof\defprogram}
 \newcommand*{\counterbackwardconcretization}{\backwardconcretization}
+\newcommand*{\counterbackwardtype}{\abstractdomain}
 
 %% forward
 \newcommand*{\forwardsym}{\rightarrow}

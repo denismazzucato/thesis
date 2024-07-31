@@ -1,15 +1,21 @@
+\pagelayout{wide} % No margins
+\addpart{Quantitative Verification of Intensional Properties}
+\labpart{intensional}
+\pagelayout{margin} % Restore margins
+
+\setchapterpreamble[u]{\margintoc}
+
 \chapter{Quantitative Static Timing Analysis}
 \labch{quantitative-static-timing-analysis}
 
 This chapter presents a static analysis for quantifying the impact of input variables on the number of iterations of a program.
-The analysis combines a syntactic dependency analysis with a semantic global loop bound analysis to derive an over-approximation of the impact quantity.
+The analysis employs a semantic global loop bound analysis to derive an over-approximation of the impact quantity.
 First, we introduce the maximal trace semantics augmented with a global loop counter to model the number of iterations of all the loops of a program.
 Then, we show an abstract global loop bound analysis, followed by the impact quantification, which is employed to verify the corresponding $\defbound$-impact property.
-The output buckets are handled symbolically in order to reduce the number of backward passes the static analysis needs to perform.
 This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024c}.
 \refch{sas24-eval} will discuss some implementation details and optimizations, as well as the evaluation of the analysis presented on this chapter.
 
-\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse combine une analyse de dépendance syntaxique avec une analyse sémantique des bornes globales des boucles pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur global de boucles pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous montrons une analyse abstraite des bornes globales des boucles, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact correspondante $\defbound$. Les seaux de sortie sont traités symboliquement afin de réduire le nombre de passes en arrière que l'analyse statique doit effectuer. Enfin, nous discutons de certains détails de mise en œuvre et optimisations. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
+\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse utilise une analyse sémantique des bornes globales des boucles pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur global de boucles pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous montrons une analyse abstraite des bornes globales des boucles, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact correspondante $\defbound$. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}. \refch{sas24-eval} discutera de certains détails de mise en œuvre et optimisations, ainsi que de l'évaluation de l'analyse présentée dans ce chapitre.}
 
 
 
@@ -37,7 +43,8 @@ We recall that the variables of the program are represented by the set $\variabl
 
 In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
 Consequently, we extend the program states to include the value of the global loop counter, \ie, $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
-We extend the maximal trace semantics $\tracesemantics$ to include the global loop counter as follows:
+As a consequence, $\counter$ is neither an input variable, \ie, $\counter\notin\inputvariables$.
+We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the global loop counter as follows:
 
 \begin{definition}[Maximal Trace Semantics with the Global Loop Counter]\labdef{counter-semantics}
   The semantics $\countertracesemanticsnoparam\in\tracetype$ is defined as:
@@ -79,7 +86,7 @@ Therefore, the global loop counter $\counter$ contains the number of iterations 
 % The hierarchy of semantics applies accordingly from the maximal trace semantics.
 % Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 
-\begin{marginlisting}[*-24]
+\begin{marginlisting}[*-18]
   \caption{Program \add, computing the sum of two numbers \texttt{x} and \texttt{y} into \texttt{z}.}
   \labprog{add}
   \vspace{15pt}
@@ -141,38 +148,7 @@ def Add(p, z, m, x, n, y):
 \end{lstlisting}
 \end{marginlisting}
 
-\begin{example}
-  Consider the \refprog{add}, called \add{}, presented on the side.
-The goal of program \add{} is to compute the sum of two given numbers \texttt{x} and \texttt{y}, storing the result into \texttt{z}.
-The input variables \texttt{x}, \texttt{y}, and the output \texttt{z} are represented in the form of arrays, respectively of length \texttt{m}, \texttt{n}, and \texttt{p}, of 64-bit unsigned integers.
-\add{} computes the column addition of the two input arrays. For instance, assuming $\texttt{x} = [3\spacer 8]$, $\texttt{y} = [4]$ and size of $\texttt{z}$ is 3, then $\add(3, \texttt{z}, 2, [3\spacer 8], 1, [4])$ computes:
-\begin{center}
-  \begin{tabular}{c@{\,}r@{\,}r@{\,}c}
-       & [3 &  8] & + \\
-       &    & [4] & = \\
-    \hline
-    [0 &  4 &  2] &  \\
-  \end{tabular}
-\end{center}
-where the result is stored back into \texttt{z}, available in the calling context of the function.
-The statements that are not relevant to the number of iterations of loops are commented out (\cf{} \textcolor{codecomment}{\texttt{\#}}).
-As we will discover later, these irrelevant statements are pruned by the syntactic dependency analysis.
-The \reftab{add-execution} shows a few executions of the program \add{}.
-
-The semantics of the program \add, \cf{} \refdef{counter-semantics}, is defined backwards from any state with the global loop counter $\counter$ initialized to $0$.
-Thus, starting from final states where $\counter = 0$, the semantics of the program \add{} decrements (in a backward fashion) the global loop counter $\counter$ at each iteration of the loops. The backward decrement is defined as $\bwddecr(\defsetofstates) \defeq \setdef{\defstate \in \state}{\updatemem{\defstate}{\counter}{\defstate(\counter) - 1} \in \defsetofstates}$. After the computation of the semantics of a given program, we obtain the number of iterations of all the loops in the program.
-\reftab{add-trace} shows the maximal traces of the executions of the program \add{}, intermediate states are omitted for brevity.
-
-Importantly, our goal is to quantify the impact of input variables on the global number of iterations.
-As a consequence, only the initial and final states are relevant, \ie, where the program loop counter contains the global number of iterations.
-In fact, we reduced from proving an \emph{intensional} property about the global number of iterations of a program to an \emph{extensional} property by collecting the global number of iterations
-into input-output dependencies.
-Thus, the hierarchy of semantics (\cref{sec:dependency-semantics,sec:output-abstraction-semantics}) applies accordingly from the maximal trace semantics $\countertracesemanticsnoparam$.
-We retrieve the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
-We obtain \reftab{add-trace} where the omitted states are, in fact, removed from the traces, maintaining only the input-output dependencies with the additional variable for the global loop counter $\counter$.
-\end{example}
-
-\begin{table}[t]
+\begin{table}[b]
   \caption{A few executions to show how many times the program \add{} iterates over the loops. The symbol \anyvalue denotes any possible value.}
   \labtab{add-execution}
   \centering
@@ -190,6 +166,29 @@ We obtain \reftab{add-trace} where the omitted states are, in fact, removed from
     $\add( 2$, & \anyvalue, & 0, & \anyvalue, & 1, & $\anyvalue)$ & $\rightsquigarrow$ & \blue{2}
   \end{tabular}
 \end{table}
+
+\begin{example}\labexample{add}
+  Consider the \refprog{add}, called \add{}, presented on the side.
+The goal of program \add{} is to compute the sum of two given numbers \texttt{x} and \texttt{y}, storing the result into \texttt{z}.
+The input variables \texttt{x}, \texttt{y}, and the output \texttt{z} are represented in the form of arrays, respectively of length \texttt{m}, \texttt{n}, and \texttt{p}.
+The program \add{} computes the column addition of the two input arrays. For instance, assuming $\texttt{x} = [3\spacer 8]$, $\texttt{y} = [4]$ and the size of $\texttt{z}$ is 3, then $\add(3, \texttt{z}, 2, [3\spacer 8], 1, [4])$ computes:
+\begin{center}
+  \begin{tabular}{c@{\,}r@{\,}r@{\,}c}
+       & [3 &  8] & + \\
+       &    & [4] & = \\
+    \hline
+    [0 &  4 &  2] &  \\
+  \end{tabular}
+\end{center}
+where the result is stored back into \texttt{z}, available in the calling context of the function.
+The statements that are not relevant to the number of iterations of loops are commented out (\cf{} \textcolor{codecomment}{\texttt{\#}}).
+As we will discover in the next chapter, these irrelevant statements are pruned by the syntactic dependency analysis.
+\reftab{add-execution} shows a few executions of the program \add{}.
+
+The semantics of the program \add, \cf{} \refdef{counter-semantics}, is defined backwards from any state with the global loop counter $\counter$ initialized to $0$.
+Thus, starting from final states where $\counter = 0$, the semantics of the program \add{} decrements (in a backward fashion) the global loop counter $\counter$ at each iteration of the loops. The backward decrement is defined as $\bwddecr(\defsetofstates) \defeq \setdef{\defstate \in \state}{\updatemem{\defstate}{\counter}{\defstate(\counter) - 1} \in \defsetofstates}$. After the computation of the semantics of a given program, we obtain the number of iterations of all the loops in the program.
+\reftab{add-trace} shows the maximal traces of the executions of the program \add{}, intermediate states are omitted for brevity.
+\end{example}
 
 \begin{table}[t]
   \caption{Maximal traces of the program \add{}.}
@@ -219,9 +218,12 @@ We obtain \reftab{add-trace} where the omitted states are, in fact, removed from
 \end{tikzpicture}
 \end{table}
 
-Similarly to \refdef*{bounded}, we define the $\defbound$-impact property, which quantifies the impact of input variables on the global number of iterations of a program.
 
-\begin{definition}[$\defbound$-Bounded Impact Property with loop iterations]\labdef{counter-bounded}
+
+
+We define the $\defbound$-impact property, which quantifies the impact of input variables on the global number of iterations of a program.
+
+\begin{definition}[$\defbound$-Bounded Impact Property with Loop Iterations]\labdef{counter-bounded}
   Let $\defprogram$ be a program, $\definputvariables$ the set of input variables of interest, $\impactwrapper \in \tracetype\to\valuesposplus$ an impact notion,
   and $\defbound\in\valuesposplus$ the threshold.
   The $\defbound$-bounded impact property with loop iterations is defined as:
@@ -232,13 +234,13 @@ Similarly to \refdef*{bounded}, we define the $\defbound$-impact property, which
 \end{definition}
 
 To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact notion.
-As a design choice, we choose the \rangename{} notion among the notions defined in \refsec{k-bounded-impact-property}.
-This decision is motivated by the fact that we are mostly interested in capturing the impact of input variables based on the range of iterations of loops rather than the number of different iterations.
+As a design choice, we choose the \rangename{} notion among the notions defined in \nrefsec{k-bounded-impact-property}.
+This decision is motivated by the fact that we are mostly interested in capturing the impact of input variables based on the range of iterations they may affect rather than the number of different iterations.
 The range notion instrumented with the global loop counter $\counter$ as output variables and the identity function as output observer $\outputobs$ is defined as follows:
 \begin{align*}
   \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
-    \size(\setdef{
-      \retrieveoutput{\defseq}(\counter)
+    \distance(\setdef{
+      \retrieveinput{\defseq}(\counter)
     }{
       \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
     })
@@ -249,52 +251,145 @@ Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterati
   \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
 \end{align*}
 
-The dependency semantics $\dependencysemantics$ is sound and complete for validating $\boundedrange$.
+\begin{example}
+  Consider the trace semantics $\countertracesemanticsnoparam\semanticsof\add$ defined in~\reftab{add-trace}.
+  For brevity, we consider states as $\state = \setdef{\langle p, m, n, nit \rangle}{p, m, n, nit\in[0, u]}$,
+  % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
+  where $p$ is the value of \texttt{p}, $m$ of \texttt{m}, $n$ of \texttt{n}, and $nit$ of $\counter$, all ranging in the interval $[0, u]$.
+  % We abuse the notation and use states as set of tuples instead of a map between variables and values, the two views are equivalent.
+  Assuming we are interested in the impact of the input variable \texttt{p}, $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)$ considers all possible input values $\definput\in\reducedstate$, on the left of~\reftab{add-trace}.
+  We collect all the input states that agree with the input value $\definput$ on the other input variables, \cf{} $\texttt{m}$ and $\texttt{n}$.
+  Specifically, we collect all the input states $\defstate$ such that $\defstate\stateeq{\{\texttt{m},\texttt{n}\}}\definput$.
+  For instance, for the input value $\definput = \langle 0, 0, 0, 0\rangle$, we collect the set of states $\setdef{\langle p, 0, 0, nit\rangle}{p, nit\in[0, u]}$ where everything but \texttt{p} and \counter{} is fixed.
+  From this set of states, we consider only the values of the counter $\counter$.
+  For instance, regarding the input $\definput = \langle 0, 0, 0, 0\rangle$, we collect the values $[0, u]$.
+  Then, we apply the operator $\distance([0, u]) = \sup\; [0, u] - \inf\; [0, u] = u$.
+  For all the input values, the maximum value is taken; we obtain $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)= u$.
+
+
+  Let us analyze the impact of other input variables, \eg{}, the input variable \texttt{m}.
+  By considering the input value $\definput = \langle 0, 0, 0, 0\rangle$, we collect the dependencies that start from states in $\setdef{\langle 0, m, 0, nit\rangle}{m, nit\in[0, u]}$. As we notice from left columns of \reftab{add-trace}, the number of iterations starting from any of these states is always $0$.
+  Hence, $\distance(\{0\}) = \sup\; \{0\} - \inf\; \{0\} = 0$.
+  For all the input values, we obtain: $\rangename_{\{\texttt{m}\}}(\countertracesemanticsnoparam\semanticsof\add)=\rangename_{\{\texttt{n}\}}(\countertracesemanticsnoparam\semanticsof\add)=0$.
+%
+  We conclude that:
+  \[ \add \satisfies \mathscr{B}^{\le u}_{\rangename_{\{\texttt{p}\}}}, \qquad \add \satisfies \mathscr{B}^{\le 0}_{\rangename_{\{\texttt{n}\}}},\text{ and} \qquad \add \satisfies \mathscr{B}^{\le 0}_{\rangename_{\{\texttt{m}\}}}\]
+  As a consequence, we can infer that there exist two executions starting from a different value for the input variable \texttt{p} that differ in the global number of iterations by at most $u$. On the contrary, any variation in the input variables \texttt{m} and \texttt{n} does not affect the global number of iterations.
+\end{example}
+
+
+Importantly, our goal is to quantify the impact of input variables on the global number of iterations.
+As a consequence, only the initial and final states are relevant, \ie, where the program loop counter contains the global number of iterations.
+In fact, we reduced from proving an \emph{intensional} property about the global number of iterations of a program to an \emph{extensional} property by collecting the global number of iterations into input-output dependencies.
+Thus, the hierarchy of semantics (\cref{sec:dependency-semantics,sec:output-abstraction-semantics}) applies accordingly from the maximal trace semantics $\countertracesemanticsnoparam$.
+We retrieve the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, \cf{} \refdef{collecting-semantics}, and the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, \cf{} \refdef{dependency-semantics}.
+Regarding \refexample{add}, the left and right columns of \reftab{add-trace} contain, in fact, the input-output dependencies with the additional variable for the global loop counter $\counter$.
+
+
+Next, we show that the dependency semantics $\dependencysemanticsnoparam$ is sound and complete for validating $\boundedrange$.
+\siderefbox{def}{dependency-semantics}
 \begin{lemma}\lablemma{counter-range-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \dependencysemantics \subseteq \dependencyabstraction(\BOUNDEDRANGE)
   \end{align*}
 \end{lemma}
 \begin{proof}
-  The proof is similar to the proof of \reflemma*{range-validation}.
+  The proof is similar to the proof of \reflemma*{range-validation} where $\outputobs = \identity$.
 \end{proof}
 
-\begin{example}
-  Consider the trace semantics $\countertracesemanticsnoparam\semanticsof\add$ defined in~\reftab{add-trace}.
-  For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  where $p$ is the value of \texttt{p}, $m$ of \texttt{m}, $n$ of \texttt{n}, all ranging in the interval $[0, u]$.
-  % We abuse the notation and use states as set of tuples instead of a map between variables and values, the two views are equivalent.
-  Assuming we are interested in the impact of the input variable \texttt{p}, $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)$ considers all possible input values $\definput\in\reducedstate$, on the left of~\reftab{add-trace}.
-  We collect all the input-output dependencies $\tuple{\defstate}{\defstate'}\in\countertracesemanticsnoparam\semanticsof\add$ that agree with the input value $\definput$ on the variables $\texttt{m}$ and $\texttt{n}$, \ie, $\defstate\stateeq{\{\{\texttt{m}\},\texttt{n}\}}\definput$.
-  For instance, $\definput = \langle 0, 0, 0\rangle$ collects the dependencies that start from states in $\setdef{\langle p, 0, 0\rangle}{0 \le p \le u}$.
-  From this set of dependencies, we consider only the output values $\defstate'(\counter)$, on the right of~\reftab{add-trace}.
-  For instance, regarding the input $\definput = \langle 0, 0, 0\rangle$, we collect the output values $[0, u]$.
-  Then, we apply the operator $\size([0, u]) = \sup\; [0, u] - \inf\; [0, u] = u$.
-  For all the input values, the maximum value is taken; we obtain $\rangename_{\{\texttt{p}\}}(\countertracesemanticsnoparam\semanticsof\add)= u$.
+Note that we do not consider the output observer $\outputobs$, hence the output-abstraction semantics $\outputabstraction$ is not needed.
+Furthermore, we notice from the example above that as the loop counter $\counter$ holds the global number of iterations in the initial states of the dependency semantics, we can further abstract the dependency semantics to the backward co-reachability semantics by removing output states as not necessary for $\boundedrange$.
 
 
-  Let us analyze the impact of other input variables, \eg{} the input variable \texttt{m}.
-  By considering the input value $\definput = \langle 0, 0, 0\rangle$, we collect the dependencies that start from states in $\setdef{\langle 0, m, 0\rangle}{m\in[0, u]}$. As we notice from~\reftab{add-trace}, the number of iterations starting from any of these states is always $0$.
-  Hence, $\size(\{0\}) = \sup\; \{0\} - \inf\; \{0\} = 0$.
-  For all the input values, we obtain: $\rangename_{\{\texttt{m}\}}(\countertracesemanticsnoparam\semanticsof\add)=\rangename_{\{\texttt{n}\}}(\countertracesemanticsnoparam\semanticsof\add)=0$.
+\section{Backward Reachability Semantics}
+\labsec{backwardreachability-semantics}
+
+We define the pair of right-left adjoints $\tuple{\backwardreachabilityabstraction}{\backwardreachabilityconcretization}$ to abstract the dependency semantics into the backward co-reachability semantics.
+\begin{definition}[Right-Left Adjoints for the Backward Reachability Semantics]\labdef{right-left-adjoints-for-the-backwardreachability-semantics}
+\begin{align*}
+  \backwardreachabilityabstraction \IN& \dependencytype \to \backwardreachabilitytype \\
+  \backwardreachabilityabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{
+    \setdef{\retrieveinput{\defseq}}{\inputoutputtuple{\defseq}\in\defsetofdependencies}
+  }{
+    \defsetofdependencies\in\defsetofsetofdependencies
+  }\\
+  \backwardreachabilityconcretization \IN& \backwardreachabilitytype \to \dependencytype \\
+  \backwardreachabilityconcretization(\defsetofsetofstates) \DefeQ& \setdef{
+    \pair\defsetofstates{Q}
+  }{
+    \defsetofstates \in \defsetofsetofstates
+    \land Q \subseteq \stateandbottom
+  }
+\end{align*}
+\end{definition}
+The function $\backwardreachabilityabstraction$ abstracts away output states of any dependency, preserving the set-structure of $\defsetofsetofdependencies$.
+The concretization $\backwardreachabilityconcretization$ yields all the semantics that share the same input states of, at least, one of the set of semantics in $\defsetofsetofstates$.
+
+
+\begin{theorem}\labthm{collecting-backwardreachability-galois-connection}
+The two adjoints $\tuple{\backwardreachabilityabstraction}{\backwardreachabilityconcretization}$ form a \emph{Galois insertion}:
+\begin{align*}
+  \galoisinjbetweensemantics{collecting}{backwardreachability}
+\end{align*}
+\end{theorem}
+\begin{proof}
+  % Given a set of semantics $\defsetofsetofdependencies\in\setofsetof\finiteinfinitesequences$ and a set of sets of input-output observations $\defsetofsetofstates\in\setofsetof\pairofstates$ implied by the abstraction of $\defsetofsetofdependencies$, $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \defsetofsetofstates$, we obtain that $\defsetofsetofdependencies\subseteq\backwardreachabilityconcretization(\defsetofsetofstates)$ since the concretization $\backwardreachabilityconcretization$ builds all the possible semantics with the same set of input-output observations of at least one of the starting semantics.
+  % Moreover, it is easy to note that $\backwardreachabilityabstraction(\backwardreachabilityconcretization(\defsetofsetofstates)) = \defsetofsetofstates$ since the concretization maintains the same input-output observations and the abstraction removes only intermediate states.
+  We need to show that $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \defsetofsetofstates \iff \defsetofsetofdependencies\subseteq\backwardreachabilityconcretization(\defsetofsetofstates)$.
+  First, we show the direction $(\implies)$.
+  Assuming $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \defsetofsetofstates$, we have that $\backwardreachabilityconcretization(\defsetofsetofstates)$ contains all the possible semantics that share the same set of input states of at least one of the semantics in $\defsetofsetofstates$. Thus, $\backwardreachabilityconcretization(\defsetofsetofstates)$ also contains all the semantics in $\defsetofsetofdependencies$, \ie, $\defsetofsetofdependencies\subseteq\backwardreachabilityconcretization(\defsetofsetofstates)$.
+  To show $(\Leftarrow)$, we assume $\defsetofsetofdependencies\subseteq\backwardreachabilityconcretization(\defsetofsetofstates)$.
+  It is easy to note that $\backwardreachabilityabstraction(\backwardreachabilityconcretization(\defsetofsetofstates)) = \defsetofsetofstates$ since the concretization maintains the same set of input states and the abstraction removes only output states.
+  Hence, by monotonicity of $\backwardreachabilityabstraction$, we obtain $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \backwardreachabilityabstraction(\backwardreachabilityconcretization(\defsetofsetofstates)) = \defsetofsetofstates$.
+\end{proof}
+
+We now derive the \emph{backward co-reachability semantics} $\backwardreachabilitysemantics$ as an abstraction of the dependency semantics.
+
+\begin{definition}[Dependency Semantics]\labdef{backwardreachability-semantics}
+  The \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
+  \begin{align*}
+    \backwardreachabilitysemanticsnoparam\DefeQ& \backwardreachabilityabstraction(\dependencysemanticsnoparam) \\
+    % \spacearound{=}& \backwardreachabilityabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
+    % \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
+    \spacearound{=}& \{\spacearound{\setdef{\retrieveinput{\deftrace}}{\deftrace \in \countertracesemanticsnoparam}}\}
+  \end{align*}
+\end{definition}
+
+The next result shows that the backward co-reachability semantics $\backwardreachabilitysemantics$ allows a sound and complete verification of $\boundedrange$.
+
+\begin{lemma}\lablemma{backwardreachability-validation}
+\begin{align*}
+  \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \backwardreachabilitysemantics \subseteq \backwardreachabilityabstraction(\dependencyabstraction(\BOUNDEDRANGE))
+\end{align*}
+\end{lemma}
+\begin{proof}
+  The implication $(\implies)$ follows from the monotonicity of $\backwardreachabilityabstraction$, as an implication from the fact that the two adjoints $\tuple\backwardreachabilityabstraction\backwardreachabilityconcretization$ form a Galois connection (\cf{} \refthm{collecting-backwardreachability-galois-connection}), and \refdef{backwardreachability-semantics} of $\backwardreachabilitysemanticsnoparam$.
+  Obtaining
+  $
+    \collectingsemanticsnoparam \subseteq \unused \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \backwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused)
+  $.
 %
-  We conclude that:
-  \[ \add \satisfies \mathscr{B}^{\le u}_{\{\texttt{p}\}}, \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{n}\}},\text{ and} \qquad \add \satisfies \mathscr{B}^{\le 0}_{\{\texttt{m}\}}\]
-  As a consequence, we can infer that there exist two executions starting from a different value for the input variable \texttt{p} that differ in the global number of iterations by at most $u$. On the contrary, any variation in the input variables \texttt{m} and \texttt{n} does not affect the global number of iterations.
-\end{example}
+  Regarding the other implication $(\Leftarrow)$, from \refdef{backwardreachability-semantics} of $\backwardreachabilitysemanticsnoparam$ and the property of \refthm{collecting-backwardreachability-galois-connection}, we obtain $\backwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused) \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \collectingsemanticsnoparam \subseteq \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$, which can be written as $\tracesemanticsnoparam \in \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$ by the definition of $\collectingsemanticsnoparam$.
+  By \refdef{right-left-adjoints-for-the-backwardreachability-semantics} of $\backwardreachabilityconcretization$ it follows that $\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\tracesemanticsnoparam}\in\backwardreachabilityabstraction(\unused)$.
+  Finally, by application of \refdef{right-left-adjoints-for-the-backwardreachability-semantics} of $\backwardreachabilityabstraction$ we obtain $\tracesemanticsnoparam\in\unused$.
+  The conclusion $\collectingsemanticsnoparam \subseteq \unused$ trivially follows from the definition of the subset inclusion $(\subseteq)$.
+\end{proof}
+
+
+
 
 
 \section{Static Analysis for Global Loop Bound}
 
-This section presents a sound computable static analysis to propagate the global loop counter $\counter$ through the program.
+This section presents a sound computable static analysis to automatically compute the global number of iterations.
 An over-approximation of the global loop counter is computed by analyzing the program backwards.
 The soundness of the approach leverages: $(1)$ an abstract domain of conjunctions of linear constraints, $(2)$ a sound global loop bound analysis to collect the dependencies of the loop counter $\counter$ from the input variables, and $(3)$ a linear programming encoding as a sound implementation of the impact $\rangename$, called $\counterrangename$.
 
 \subsection{Conjunctions of Linear Constraints}
+\refsec{conjunctions-of-linear-constraints}
 
 We define the numerical abstract state domain used in the global loop bound analysis.
-In principle, our abstract domain could be any convex abstract domain subsumed by the polyhedra domain~\sidecite{Cousot1978}, such as the interval domain, octagon domain~\sidecite{Min_e2006a}, or the polyhedra domain itself.
+In principle, our abstract domain could be any convex abstract domain subsumed by the polyhedra domain~\sidecite{Cousot1978}, such as the interval domain~\cite{Cousot1978}, octagon domain~\sidecite{Min_e2006a}, or the polyhedra domain itself.
 The elements of the abstract domain are conjunctions of linear constraints of the form:
 %
 \begin{equation*}
@@ -302,15 +397,17 @@ The elements of the abstract domain are conjunctions of linear constraints of th
 \end{equation*}
 %
 where $\defvariable_j\in\variablesandcounter$ are variables and $c_j \in \values$ are constant values.
-For a better readability, we avoid writing the constant-variable multiplication term $c_i\cdot\defvariable_i$ when $c_i=0$; and we abuse the notation, \eg, for the constraint $\defvariable_1 = \defvariable_2$, to denote the conjunction of the two linear constraints $\defvariable_1 - \defvariable_2 \ge 0$ and $\defvariable_2 - \defvariable_1 \ge 0$.
-The abstract domain is a lattice $\langle\abstractdomain, \abstractdomainsubseteq, \abstractdomainjoin, \abstractdomainmeet, \abstractdomaintop, \abstractdomainbottom\rangle$ equipped with a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof\state$, defined as:
-%
+For better readability, we avoid writing the constant-variable multiplication term $c_i\cdot\defvariable_i$ when $c_i=0$; and we abuse the notation, \eg, for the constraint $\defvariable_1 = \defvariable_2$, to denote the conjunction of the two linear constraints $\defvariable_1 - \defvariable_2 \ge 0$ and $\defvariable_2 - \defvariable_1 \ge 0$.
+The abstract domain is a lattice $\langle\abstractdomain, \abstractdomainsubseteq, \abstractdomainjoin, \abstractdomainmeet, \abstractdomaintop, \abstractdomainbottom\rangle$ equipped with a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof\state$, defined as follows:
+
+\begin{definition}[Concretization of Linear Constraints]\labdef{concretization-of-conjunctions-of-linear-constraints}
+  The concretization $\abstractdomainconcretization$ of conjunctions of linear constraints $\defabstractvalue\in\abstractdomain$ is defined as:
 \begin{align*}
-  \abstractdomainconcretization(\defabstractvalue) \DefeQ \setdef{\defstate\in\state}{&\spacer
-    \forall  \left(c_1\cdot\defvariable_1 + \ldots + c_n\cdot\defvariable_n + c_{n+1} \ge 0\right) \in \defabstractvalue. \\ &\spacer
+  \abstractdomainconcretization(\defabstractvalue) \DefeQ \setdef*{\defstate\in\state}{\forall  \left(c_1\cdot\defvariable_1 + \ldots + c_n\cdot\defvariable_n + c_{n+1} \ge 0\right) \in \defabstractvalue. \\
       c_1\cdot\defstate(\defvariable_1) + \ldots + c_n\cdot\defstate(\defvariable_n) + c_{n+1} \ge 0
   }
 \end{align*}
+\end{definition}
 Additionally, in order to be effectively used in the context of the global loop bound analysis, we assume:
 \begin{enumerate}[label=(\roman*)]
   \item an operator $\abstractdomainsubstitute{\defvariable}{\defaexp}\in\abstractdomain\to\abstractdomain$ to substitute the variable $\defvariable\in\variablesandcounter$ with the expression $\defaexp$,
@@ -319,43 +416,49 @@ Additionally, in order to be effectively used in the context of the global loop 
   \item a project operator $\abstractdomainproject\in\abstractdomain\to\abstractdomain$ to remove the input variables $\definputvariables$ from the given abstract state.
 \end{enumerate}
 
+These requirements are satisfied by any of the commonly used numerical abstract domains \sidecite{Cousot1978,Min_e2006a}.
+
 \subsection{Global Loop Bounds}
 
 \newcommand{\s}{\red{\texttt{s}_x}}
-The global loop bound semantics $\counterbackwardsemanticsnoparam\in\backwardtype$ is a backward abstract semantics that generates an
-invariant over the global loop counter $\counter$.
+The global loop bound semantics $\counterbackwardsemanticsnoparam\in\counterbackwardtype$ is a backward abstract semantics that generates an
+invariant over input variables and the global loop counter $\counter$.
 % over-approximation of the global number of iterations, \cf~the global loop counter $\counter$.
-We set the global loop bound semantics $\counterbackwardsemanticsnoparam$ to start from the post-condition $\counter = 0$.
+% We set the global loop bound semantics $\counterbackwardsemanticsnoparam$ to start from the post-condition $\counter = 0$.
 %
 During the backward analysis, the value of $\counter$ increases from $0$ to an over-approximation of the possible global number of iterations.
-As a consequence, the pre-condition invariant generated by the backward semantics $\counterbackwardsemantics\abstractdomaintop$ over-approximates relations between $\counter$ and the initial values of variables in $\variables$.
-The concretization function $\backwardconcretization\in\abstractdomain\to\dependencytype$ maps an abstract state to a set of input-output dependencies.
+As a consequence, the pre-condition invariant generated by the backward semantics $\counterbackwardsemantics$ over-approximates relations between $\counter$ and the initial values of variables in $\variables$.
+The concretization function $\backwardconcretization\in\counterbackwardtype\to\backwardreachabilitytype$ maps an abstract state to a set of sets of input states.
 Its goal is to preserve the relations between input values and the global loop counter $\counter$.
-Potentially, $\backwardconcretization$ introduces dependencies that are not present in the concrete dependency semantics $\counterdependencysemanticsnoparam$.
-Nevertheless, these additional dependencies are irrelevant for the quantification of the impact.
+% Potentially, $\backwardconcretization$ introduces dependencies that are not present in the concrete dependency semantics $\counterdependencysemanticsnoparam$.
+% Nevertheless, these additional dependencies are irrelevant for the quantification of the impact.
 Formally:
 \begin{align*}
-  &\backwardconcretization(\counterbackwardsemantics\abstractdomaintop) \DefeQ \\
-  &\quad \finitesetof{\setjoin\setdef{
-      \pair{
-        \bigsetjoin_{\defvalue\in\values}\updatemem{\defstate}{\counter}{\defvalue}}{
-        \bigsetjoin_{\defvariable\in\variables, \defvalue\in\values}\updatemem{\defstate}{\defvariable}{\defvalue}
-        }}{
-      \defstate\in\abstractdomainconcretization(\counterbackwardsemantics\abstractdomaintop)}}
+  \backwardconcretization(\counterbackwardsemantics) \DefeQ \setof{\abstractdomainconcretization(\counterbackwardsemantics)}
 \end{align*}
-The concretization $\backwardconcretization$ restores the relations between concrete input-output dependencies.
-The result of the backward semantics $\counterbackwardsemantics\abstractdomaintop$ is an abstract element relating variables' input values to the global loop counter $\counter$.
-% We restore the input states by concretizing the given abstract value.
-Specifically, the input states are $\bigsetjoin_{\defvalue\in\values}\updatemem{\defstate}{\counter}{\defvalue}$ where we reset $\counter$ to any possible value, as it is irrelevant for input states.
-The output states $\bigsetjoin_{\defvariable\in\variables, \defvalue\in\values}\updatemem{\defstate}{\defvariable}{\defvalue}$ preserve only the value of the global loop counter $\counter$ and ignore the other variables.
-Finally, all the subsets of possible input-output dependencies are generated by the finite power set operator.
-% Thus, the concretization function $\backwardconcretization$ restores the input-output dependencies from the backward semantics $\counterbackwardsemantics$.
-Potentially, such operation may introduce dependencies that do not belong to the concrete dependency semantics $\counterdependencysemanticsnoparam$.
-This is due to the fact that the backward semantics $\counterbackwardsemanticsnoparam$ looses relations among the variables of output states.
-% This is due to the fact that the backward semantics $\counterbackwardsemantics$ does not allow a more precise concretization of output states.
-However, the additional dependencies do not affect the value of the global loop counter $\counter$ and are irrelevant for the quantification of the impact.
+The concretization $\backwardconcretization$ restores all possible input states that satisfy the relations between the input variables and the global loop counter $\counter$.
 %
 %
+% Note that, the use of this global loop bound analysis removes the need for the set of $\numberofbuckets$ starting output buckets.
+% Effectively, we reduce the number of backward passes prior to the impact quantification from $\numberofbuckets$ to only one.
+% The reason is that there is only one output state to consider, the one where the global loop counter $\counter$ is $0$.
+% The impact quantification can be performed by analyzing the abstract element resulting from the global loop bound analysis, which alone contains all the necessary information as it comprises relations between the input variables and the global loop counter $\counter$.
+% To some extent, $\counter=0$ could be seen as a single output bucket, which intuitively is compatible and covers all the possible output states.
+%
+% The soundness of the abstract semantics is adjusted accordingly, to handle the absence of the output buckets.
+For the backward semantics $\counterbackwardsemanticsnoparam$ to be sound, we require the concretization $\backwardconcretization$ to over-approximate the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam$.
+Formally, for all programs $\defprogram$, it should hold that:
+\begin{equation}
+  \labeq{sound-abstract-dependency-semantics}
+  \backwardreachabilitysemantics\SubseteQ\backwardconcretization(\counterbackwardsemantics)
+\end{equation}
+%
+The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\boundedrange$.
+% Note that, originally in \refdef*{sound-over-approximation} we required the concretization to be a sound over-approximation of the output-abstraction semantics.
+% However, in the context of the global loop bound analysis, the output-abstraction semantics is not needed, as the output observer is the identity function.
+% Thus, we state the sound over-approximation condition on the dependency semantics directly.
+
+
 \begin{figure}[t]
   \caption{Global loop bound semantics.}
   \labfig{backward-semantics}
@@ -388,33 +491,13 @@ However, the additional dependencies do not affect the value of the global loop 
     &\counterbackwardsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']} \defabstractvalue \DefeQ
       \counterbackwardsemanticsnoparam \semanticsof{\defstmt} (\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)
       \\\\
-    &\counterbackwardsemanticsnoparam \semanticsof{\progstmt}\defabstractvalue \DefeQ
-    \counterbackwardsemanticsnoparam \semanticsof{\defstmt} (\abstractdomainsubstitute{\counter}{0}\defabstractvalue)
+    &\counterbackwardsemanticsnoparam \semanticsof{\progstmt} \DefeQ
+    \counterbackwardsemanticsnoparam \semanticsof{\defstmt} (\counter = 0)
     \numberthis \labeq{backward-init}
 \end{align*}
 \end{figure}
-
-Note that, the use of this global loop bound analysis removes the need for the set of $\numberofbuckets$ starting output buckets.
-Effectively, we reduce the number of backward passes prior to the impact quantification from $\numberofbuckets$ to only one.
-The reason is that there is only one output state to consider, the one where the global loop counter $\counter$ is $0$.
-The impact quantification can be performed by analyzing the abstract element resulting from the global loop bound analysis, which alone contains all the necessary information as it comprises relations between the input variables and the global loop counter $\counter$.
-To some extent, $\counter=0$ could be seen as a single output bucket, which intuitively is compatible and covers all the possible output states.
-
-The soundness of the abstract semantics is adjusted accordingly, to handle the absence of the output buckets.
-Indeed, for the backward semantics $\counterbackwardsemanticsnoparam$ to be sound, we require the concretization $\backwardconcretization$ to over-approximate the dependency semantics $\counterdependencysemanticsnoparam$.
-Formally, for all programs $\defprogram$, it should hold that:
-\begin{equation}
-  \labeq{sound-abstract-dependency-semantics}
-  \counterdependencysemantics\subseteq\backwardconcretization(\counterbackwardsemantics\abstractdomaintop)
-\end{equation}
-%
-The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\bounded$.
-Note that, originally in \refdef*{sound-over-approximation} we required the concretization to be a sound over-approximation of the output-abstraction semantics.
-However, in the context of the global loop bound analysis, the output-abstraction semantics is not needed, as the output observer is the identity function.
-Thus, we state the sound over-approximation condition on the dependency semantics directly.
-
-A possible candidate semantics for the global loop bound analysis $\counterbackwardsemanticsnoparam\in\backwardtype$ is defined in \reffig{backward-semantics}.
-The semantics $\counterbackwardsemanticsnoparam$ is a \textit{backward co-reachability semantics} instrumented to increment the loop counter $\counter$ after each loop iteration, \cf{} \refeq{backward-incr}.
+A possible candidate semantics for the global loop bound analysis $\counterbackwardsemanticsnoparam\in\counterbackwardtype$ is defined in \reffig{backward-semantics}.
+The semantics $\counterbackwardsemanticsnoparam$ is a \textit{backward co-reachability semantics} instrumented to increment the loop counter $\counter$ at each loop iteration, \cf{} \refeq{backward-incr}.
 The loop counter $\counter$ is handled semantically in the abstract domain without loss of precision, initialized to $0$ at the program exit, \cf{} \refeq{backward-init}.
 % The semantics of the loop statement is defined by a fixpoint computation that iteratively applies the loop body semantics and decrements the loop counter $\counter$, \cf~\refeq{bac-incr}.
 The rest of the semantics is classical.
@@ -422,9 +505,9 @@ The following result states the soundness of the backward semantics defined in \
 %
 
 \begin{lemma}[Soundness of $\counterbackwardsemanticsnoparam$]\lablemma{candidate-backward}
-  For all programs $\defprogram$, the semantics $\counterbackwardsemantics\in\backwardtype$ defined in~\reffig{backward-semantics} is a \textup{sound over-approximation} of the dependency semantics $\counterdependencysemantics$:
+  For all programs $\defprogram$, the semantics $\counterbackwardsemantics\in\counterbackwardtype$ defined in~\reffig{backward-semantics} is a \textup{sound over-approximation} of the backward co-reachability semantics $\backwardreachabilitysemantics$:
   \begin{equation*}
-    \counterdependencysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics\abstractdomaintop)
+    \backwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)
   \end{equation*}
 \end{lemma}
 
@@ -432,113 +515,50 @@ Next, we show how to quantify the impact of the input variables on the global lo
 We employ the $\rangename$ impact notion, instrumented with $\counter$ as output variable, and we design a linear programming encoding to compute the abstract implementation of the impact $\range$.
 
 \begin{example}
-  We consider the \refprog*{add}[*-15], where states $\state$ are tuples $\langle p, m, n, nit\rangle$, respectively for the variables \texttt{p}, \texttt{m}, \texttt{n}, and the global loop counter $\counter$.
+  We consider the \refprog*{add}[*-6], where states $\state$ are tuples $\langle p, m, n, nit\rangle$, respectively for the variables \texttt{p}, \texttt{m}, \texttt{n}, and the global loop counter $\counter$.
   Let us assume that the computation of the backward semantics on the program \add{} results in:
   \[
-    \counterbackwardsemanticsnoparam\semanticsof{\add}\abstractdomaintop \spacearound=
+    \counterbackwardsemanticsnoparam\semanticsof{\add} \spacearound=
     (\texttt{p} = \counter)
   \]
   % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  Then, the concretization of the abstract element $\texttt{p} = \counter$ is:
+  Then, from \refdef*{concretization-of-conjunctions-of-linear-constraints}[*-19], the concretization of the abstract element $\texttt{p} = \counter$ is:
   \begin{align*}
     \abstractdomainconcretization(\texttt{p} = \counter) \spacearound= \setdef{\langle p, m, n, p\rangle}{p, m, n\in\values}
 \end{align*}
 where $\langle p, m, n, p\rangle$ is the concrete state in which the input variable \texttt{p} (first $p$ in the tuple) is equal to the loop counter $\counter$ (last $p$ in the tuple).
-The goal of the concretization $\backwardconcretization$ is to over-approximate the dependency semantics $\counterdependencysemanticsnoparam\semanticsof\add$.
-Additional dependencies may be introduced, but they are irrelevant for the quantification of the impact.
-For instance, consider the state $\langle 2, 0, 1, 2\rangle$ from $\abstractdomainconcretization(\texttt{p} = \counter)$, representing input-output dependencies from $\texttt{p} = 2, \texttt{m} = 0,$ and $\texttt{n}=1$ to an output state with $2$ iterations.
-From that state we concretize the following dependencies: $\setdef{\langle 2, 0, 1, \defvalue\rangle}{\defvalue\in\values} \times \setdef{\langle \defvalue, \defvalue', \defvalue'', 2\rangle}{\defvalue, \defvalue', \defvalue''\in\values}$.
-
-From any state $\langle p, m, n, p\rangle$ we obtain the left part of \reftab{add-dep}, \cf{} the input states, by resetting the value global loop counter $\counter$:
-\begin{align*}
-  \bigsetjoin_{\defvalue\in\values}\updatemem{\langle p, m, n, p\rangle}{\counter}{\defvalue}
-  &\spacearound= \setdef{\langle p, m, n, \defvalue\rangle}{\defvalue\in\values}
-\end{align*}
-Regarding the right part of \reftab{add-abs}, \cf{} the output states, we are only interested in the value of the global loop counter $\counter$. We reset the value of all the other variables, obtaining:
-\begin{align*}
-  \bigsetjoin_{\defvariable\in\variables, \defvalue\in\values}\updatemem{\langle p, m, n, p\rangle}{\defvariable}{\defvalue}
-  &\spacearound= \setdef{\langle \defvalue, \defvalue', \defvalue'', p\rangle}{\defvalue, \defvalue', \defvalue''\in\values}
-\end{align*}
-The modifier $\defvariable\in\variables$ collects all the variables but the global loop counter $\counter$.
-\reftab{add-abs} shows the concretization of the backward semantics, which over-approximates the dependency semantics $\dependencysemanticsnoparam\semanticsof\add$.
+The goal of the concretization $\backwardconcretization$ is to over-approximate the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam\semanticsof\add$.
+By concretizing any subset of $\abstractdomainconcretization(\texttt{p} = \counter)$ we obtain all the possible input states such that the input variable \texttt{p} is equal to the value of the global loop counter $\counter$, including the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam\semanticsof\add$.
 \end{example}
 
-\begin{table}[t]
-  \centering
-  \caption{Concretization of the backward semantics of program \add{}. The global number of iterations is \blue{highlighted in blue} on the right. \denis{Fix this table}}
-  \labtab{add-abs}
-  \begin{tabular}{lcl p{1cm} rcl}
-    $\tikzmark{a1}\{\langle$& $p$, $m$, $n$, $\defvalue$ & $\rangle \mid \defvalue\in\values\}\tikzmark{a2}$ & \centering$\times$ & $\tikzmark{b1}\{\langle$ & $\defvalue$, $\defvalue'$, $\defvalue''$, $\blue{p}$ & $\rangle \mid \defvalue,\defvalue'\defvalue''\in\values \}\tikzmark{b2}$ \\
-  \hline\hline
-    & 0, 0, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{0} & \\
-    & 1, 0, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{1} & \\
-    & 2, 0, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{2} & \\
-    & 0, 1, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{0} & \\
-    & 1, 1, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{1} & \\
-    & 2, 1, 0, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{2} & \\
-    & 0, 0, 1, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{0} & \\
-    & 1, 0, 1, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{1} & \\
-    & 2, 0, 1, \anyvalue & &&& \anyvalue, \anyvalue, \anyvalue, \blue{2} & \\
-    \tikzmark{c}& $\vdots$ & & & & \vdots &
-  \end{tabular}
 
-%   \begin{tikzpicture}[overlay, remember picture]
-%     \draw [decorate,decoration={brace,amplitude=10pt,raise=4pt}] (a1.north) --node[above=14pt]{$\bigsetjoin_{\defvalue\in\values}\updatemem{\tikzmark{d1}\langle p, m, n, p\rangle\tikzmark{d2}}{\counter}{\defvalue}$} (a2.north);
-%     \draw [decorate,decoration={brace,amplitude=10pt,raise=4pt}] (b1.north) --node[above=14pt]{$\bigsetjoin_{\defvariable\in\variables, \defvalue\in\values}\updatemem{\tikzmark{e1}\langle p, m, n, p\rangle\tikzmark{e2}}{\defvariable}{\defvalue}$} (b2.north);
-%     \draw [decorate,decoration={brace,amplitude=4pt,mirror,raise=4pt}] (a1.north) --node[left=7pt]{$???(\abssemanticsadd)$} (c.south);
-%     \draw [decorate,decoration={brace,amplitude=5pt,raise=2pt}] (d1.north) --node[above=10pt]{$\abstractdomainconcretization(\abssemanticsadd)$} (d2.north);
-%     \draw [decorate,decoration={brace,amplitude=5pt,raise=2pt}] (e1.north) --node[above=10pt]{$\abstractdomainconcretization(\abssemanticsadd)$} (e2.north);
-% \end{tikzpicture}
-  \end{table}
+\section{An Abstract Range Implementation via a Linear Programming Encoding}
 
-
-\section{An Abstract Range Implementation via reflinear Programming Encoding}
-
-To quantify the impact of input variables on the global loop counter, we employ the $\rangename$ impact notion (\refdef*{range}) instrumented with $\counter$ as output variable.
-Here is the formal definition where the output observer $\outputobs$ is the identity function:
-
-\begin{align*}
-  \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
-    \size(\setdef{
-      \retrieveoutput{\defseq}(\counter)
-    }{
-      \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
-    })
-\end{align*}
-
-For the property of interest, \cf{} the $\defbound$-impact property (\refdef*{bounded}), we are interested in the impact of the input variables on the global loop counter.
-By extension, $\boundedrange$ is the set of trace semantics extended with the global loop counter with an impact bounded by $\defbound$:
-
-\begin{align*}
-  \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
-\end{align*}
-
-
-
-Finally, we present a linear programming encoding $\counterrange\in\abstractdomain\to\valuesposplus$ to compute the abstract implementation of the impact $\range$ from the result of the global loop bound analysis $\counterbackwardsemanticsnoparam$.
+We present a linear programming encoding $\counterrange\in\abstractdomain\to\valuesposplus$ to compute the abstract implementation of the impact $\range$ from the result of the global loop bound analysis $\counterbackwardsemanticsnoparam$.
 
 \begin{definition}[$\counterrange$]\labdef{counterrange}
-  For all programs $\defprogram$, $\counterrange(\counterbackwardsemantics\abstractdomaintop) \DefeQ$ is defined as:
+  Let $\counterbackwardsemanticsnoparam\in\counterbackwardtype$ be the global loop bound analysis and $\definputvariables\subseteq\inputvariables$ be the input variables of interest.
+  For all programs $\defprogram$, $\counterrange(\counterbackwardsemantics)$ is defined as:
 \begin{align}
   \label{eq:obj}
   \text{maximize} \spacer\spacer& \defbound \\
   \label{eq:a}
   \text{subject to} \spacer\spacer
-    & \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterup}(\counterbackwardsemantics\abstractdomaintop)) \\
+    & \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterup}(\counterbackwardsemantics)) \\
     \label{eq:b}
-    \land\spacer\spacer& \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterdown}(\counterbackwardsemantics\abstractdomaintop)) \\
+    \land\spacer\spacer& \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterdown}(\counterbackwardsemantics)) \\
     \label{eq:slack}
     \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
 \end{align}
 where $\counterup,\counterdown$ are fresh variables.
 \end{definition}
 Since $\defbound$ should be an integer variable, we specifically solve a mixed-integer linear programming problem.
-As seen in the overview, \refeq{a} substitutes the variable $\counter$ with $\counterup$ to account for the maximal value of the global loop counter $\counter$.
+\refeq{a} substitutes the variable $\counter$ with $\counterup$ to account for the maximal value of the global loop counter $\counter$.
 Then, it
-projects away the input variables $\definputvariables$ to encompass any possible variation of that variable.
+projects away the input variables $\definputvariables$ to encompass any possible variation of that variables.
 \refeq{b} substitutes the variable $\counter$ with $\counterdown$ for the minimal value of $\counter$, and again projects away the input variables $\definputvariables$.
 Hence, the set of constraints from~\refeq{a} and~\refeq{b} only differ in the variable of the loop counter, respectively $\counterup$ and $\counterdown$.
-Finally, the objective function, \refeq{obj}, maximizes the value of the bound $\defbound$, which ranges between $0$ and $\counterup - \counterdown$, \cf~\refeq{slack}.
+Finally, the objective function, \cf{} \refeq{obj}, maximizes the value of the bound $\defbound$, which ranges between $0$ and $\counterup - \counterdown$, \cf~\refeq{slack}.
 The maximum value of the bound $\defbound$ is the length of the range of the feasible values for the loop counter $\counter$.
 
 
@@ -572,16 +592,127 @@ The maximum value of the bound $\defbound$ is the length of the range of the fea
   Interestingly, we did not lose any precision regarding the $\defbound$-bounded impact property as $\range(\countertracesemanticsnoparam\semanticsof\add) = \counterrange(\counterbackwardsemanticsnoparam\semanticsof{\add})$ for all input variables $\definputvariables$ in the program \add.
 \end{example}
 
+\begin{marginfigure}
+  \centering
+    \begin{tikzpicture}[scale=0.73]
+      % Grid
+      \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (5.5,6.4);
+      % Polyhedra
+      \fill[color=seabornGreen, opacity=0.5] (0,0) -- (5,2) -- (5,6) -- (0,1) -- cycle;
+      % line equations
+      \draw (2.5,3.5) node[above,rotate=45] {$\texttt{y}+1$};
+      \draw (3,1.2) node[below,rotate=22] {$\frac{2}{5}\cdot\texttt{y}$};
+      % x-axis
+      \draw[->,ultra thick] (0,0)--(5.5,0) node[above]{\texttt{y}};
+      % y-axis
+      \draw[->,ultra thick] (0,0)--(0,6.4) node[above]{\counter};
+      % x right boundary
+      \draw[dashed] (5,0) -- (5,6.4);
+      % x-axis ticks
+      \foreach \x in {0, 1,2,3,4, 5}
+          \draw (\x,0.1) -- (\x,-0.1) node[below] {\x};
+      % y-axis ticks
+      \foreach \y in {1,2,3,4,5,6}
+          \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+      % contours
+      \fill[color=seabornGreen] (0,0) circle[radius=2pt];
+      \fill[color=seabornGreen] (5,2) circle[radius=2pt];
+      \fill[color=seabornGreen] (5,6) circle[radius=2pt];
+      \fill[color=seabornGreen] (0,1) circle[radius=2pt];
+      \draw[color=seabornGreen, ultra thick] (0.01,0) -- (5,2) -- (5,6) -- (0.01,1) -- cycle;
+      % maximization line
+      \draw[ultra thick, color=black] (5,2) -- (5,6);
+      \draw (5,4) node[left] {$\defbound=4$};
+      \draw[ultra thick, color=black] (4.9,2) -- (5.1,2);
+      \draw[ultra thick, color=black] (4.9,6) -- (5.1,6);
+    \end{tikzpicture}
+    \caption{$\frac{2}{5}\cdot\texttt{y} \LE \counter \LE \texttt{y}+1$.}
+    % \caption{Feasible region for $\texttt{x}$}
+    \labfig{feasible-region-A}
+  \end{marginfigure}
+    \begin{marginfigure}
+    \centering
+    \begin{tikzpicture}[scale=0.73]
+      % Grid
+      \draw[help lines, color=gray!30, dashed] (-0.1,-0.1) grid (5.5,6.4);
+      % Polyhedra
+      \fill[color=seabornRed, opacity=0.5] (0,0) -- (5,1) -- (5,6) -- (0,5) -- cycle;
+      % line equations
+      \draw (1.5,5.25) node[above,rotate=11] {$\frac{1}{5}\cdot\texttt{x}+2$};
+      \draw (4.3,0.9) node[below,rotate=11] {$\frac{1}{5}\cdot\texttt{x}$};
+      % x-axis
+      \draw[->,ultra thick] (0,0)--(5.5,0) node[above]{\texttt{x}};
+      % y-axis
+      \draw[->,ultra thick] (0,0)--(0,6.4) node[above]{\counter};
+      % x right boundary
+      \draw[dashed] (5,0) -- (5,6.4);
+      % x-axis ticks
+      \foreach \x in {0, 1,2,3,4, 5}
+          \draw (\x,0.1) -- (\x,-0.1) node[below] {\x};
+      % y-axis ticks
+      \foreach \y in {1,2,3,4,5,6}
+          \draw (0.1,\y) -- (-0.1,\y) node[left] {\y};
+      % contours
+      \fill[color=seabornRed] (0,0) circle[radius=2pt];
+      \fill[color=seabornRed] (5,1) circle[radius=2pt];
+      \fill[color=seabornRed] (5,6) circle[radius=2pt];
+      \fill[color=seabornRed] (0,5) circle[radius=2pt];
+      \draw[color=seabornRed, ultra thick] (0.01,0) -- (5,1) -- (5,6) -- (0.01,5) -- cycle;
+      % maximization line
+      \draw[ultra thick, color=black] (2.5,0.5) -- (2.5,5.5);
+      \draw (2.5,3) node[left] {$\defbound=5$};
+      \draw[ultra thick, color=black] (2.4,0.5) -- (2.6,0.5);
+      \draw[ultra thick, color=black] (2.4,5.5) -- (2.6,5.5);
+    \end{tikzpicture}
+    \caption{$\frac{1}{5}\cdot\texttt{x} \LE \counter \LE \frac{1}{5}\cdot\texttt{x}+2$.}
+    \labfig{feasible-region-B}
+
+\end{marginfigure}
+\begin{example}
+  \labexample{difficult}
+  In the previous example, the projection of \texttt{p} alone produced the invariant $0 \le \counter \le u$, which gives already the bound on the impact of the input variable \texttt{p} on the global loop counter $\counter$.
+  We consider a more complex example to demonstrate the necessity of the linear programming encoding, in a scenario where the invariant computed by the global loop bound analysis does not already reveal the impact of input variables.
+  Let us assume that the computation of the abstract dependency semantics for a program $\defprogram$ results in:
+  \begin{align*}
+    \counterbackwardsemantics \spacearound=\left(\frac{2}{5}\cdot\texttt{y}+\frac{1}{5}\cdot\texttt{x} \LE \counter \LE \texttt{y} + \frac{1}{5}\cdot\texttt{x} \LanD \texttt{x}, \texttt{y} \in [0, 5]\right)
+  \end{align*}
+  To compute the abstract range $\abstractrangename_{\texttt{x}}$ for the input variable \texttt{x}, we first project away the variable \texttt{x} from the abstract state, obtaining:
+  \begin{align*}
+    \frac{2}{5}\cdot\texttt{y} \LE \counter \LE \texttt{y}+1 \LanD \texttt{y} \in [0, 5]
+  \end{align*}
+  % The 2-dimensional representation of the feasible region is shown in \reffig{A}.
+  Then, we solve the linear programming problem, where we substitute the variable $\counter$ with $\counterup$ and $\counterdown$ to respectively maximize and minimize the global loop counter $\counter$:
+  \begin{align*}
+    \text{maximize} \spacer\spacer& \defbound \\
+    \text{subject to} \spacer\spacer & \frac{2}{5}\cdot\texttt{y} \LE \counterup \LE \texttt{y}+1 \LanD \texttt{y} \in [0, 5] \\
+    \land\spacer\spacer& \frac{2}{5}\cdot\texttt{y} \LE \counterdown \LE \texttt{y}+1 \LanD \texttt{y} \in [0, 5] \\
+    \land\spacer\spacer& 0 \LE \defbound \LE \counterup - \counterdown
+  \end{align*}
+  The linear programming encoding maximizes at $\defbound=4$ where $\texttt{y} = 5$, \reffig{A} shows graphically the feasible region and maximization point.
+  %
+  On the other hand, to compute the abstract range $\abstractrangename_{\texttt{y}}$ for the input variable \texttt{y}, we solve linear programming encoding where we project away the variable \texttt{y} from the abstract state, obtaining:
+  \begin{align*}
+    \text{maximize} \spacer\spacer& \defbound \\
+    \text{subject to} \spacer\spacer & \frac{1}{5}\cdot\texttt{x} \LE \counterup \LE \frac{1}{5}\cdot\texttt{x}+2 \LanD \texttt{x} \in [0, 5] \\
+    \land\spacer\spacer& \frac{1}{5}\cdot\texttt{x} \LE \counterdown \LE \frac{1}{5}\cdot\texttt{x}+2 \LanD \texttt{x} \in [0, 5] \\
+    \land\spacer\spacer& 0 \LE \defbound \LE \counterup - \counterdown
+    % \frac{1}{5}\texttt{x} \LE \counter \LE \frac{1}{5}\texttt{x}+2 \LanD \texttt{x} \in [0, 5]
+  \end{align*}
+  This second linear programming problem maximizes at $\defbound=5$ for any value of \texttt{x}, \reffig{B} shows graphically the feasible region and maximization point for this second programming problem.
+  As a result, we obtain $\abstractrangename_{\texttt{x}}(\counterbackwardsemantics) = 4$ and $\abstractrangename_{\texttt{y}}(\counterbackwardsemantics) = 5$, showing that the variable \texttt{y} has a higher impact on the global loop counter $\counter$ than the variable \texttt{x}.
+\end{example}
+
+
 The next result shows that $\counterrange$ is a sound implementation of the impact $\range$, by means of \refdef*{sound-implementation}.
 That is, the abstract quantity is always higher than the concrete counterpart.
-Note that, we relax the constraint about the output buckets, as this linear programming encoding does not need to concretize each possible concrete value for $\counter$ before performing the backward semantics.
-To some extent, the output buckets are handled symbolically.
+% Note that, we relax the constraint about the output buckets, as this linear programming encoding does not need to concretize each possible concrete value for $\counter$ before performing the backward semantics.
+% To some extent, the output buckets are handled symbolically.
 \begin{lemma}[Sound Implementation of \rangename]
   \lablemma{sound-implementation}
-  For any program $\defprogram$ and set of traces $\defsetoftraces$ in $\counterdependencyconcretization(\counterbackwardconcretization(\counterbackwardsemantics\abstractdomaintop))$,
+  For any program $\defprogram$,
   the following holds:
   \begin{equation*}
-    \range(\defsetoftraces) \LE \counterrange(\counterbackwardsemantics\abstractdomaintop)
+    \range(\countertracesemantics) \LE \counterrange(\counterbackwardsemantics)
   \end{equation*}
 \end{lemma}
   \begin{proof}
@@ -592,133 +723,19 @@ To some extent, the output buckets are handled symbolically.
 % %
 %     From \refthm{candidate-backward} and the fact that $\range$ is monotonic, \cf{} \refeq{monotonic}, we conclude that:
 %     \begin{math}
-%       \label{eq:p}
+%       \labeq{p}
 %       \range(\counterdependencysemantics) \LE \range(\backwardconcretization(\counterbackwardsemantics)) \LE \counterrange(\counterbackwardsemantics)
 %     \end{math}.
 \denis{Todo.}
   \end{proof}
 %
-Thus, by the application of the quantitative framework, it holds that our static analysis is sound when employed to verify the property of interest $\bounded$ for the program $\defprogram$.
-Here, we show \refthm{soundness} with the output buckets symbolically handled by the global loop counter $\counter$ of the backward semantics in \reffig{backward-semantics} and the linear programming encoding in \refeq{obj}-\refeq{slack}.
-%
-\begin{theorem}[Soundness of $\counterrange$]
-  \labthm{soundness}
-  % Let $\backwardsemantics\in\glotype$ be the global loop bound abstract semantics such that $\counterbackwardsemantics\defeq\backwardsemantics(\counter = 0)$ is a sound over-approximation of the dependency semantics $\dependencysemantics$.
-  Given a program $\defprogram$ and a set of input variables $\definputvariables\in\setof\inputvariables$, the following holds:
-  \begin{align*}
-    \counterrange(\counterbackwardsemantics\abstractdomaintop) \le \defbound \ImplieS \defprogram \satisfies \BOUNDED
-  \end{align*}
-\end{theorem}
-\begin{proof}
-  \denis{Fix.} From the fact that the abstract semantics $\counterbackwardsemantics$ is sound with respect to the dependency semantics $\dependencysemantics$, \cf~\reflemma{candidate-backward}, and that $\counterrange$ is a sound implementation of the impact $\range$, \cf~\reflemma{sound-implementation}, we obtain that $\range(\dependencysemantics) \le \defbound$.
-  Hence, it means that the collecting semantics $\collectingsemantics$ is a subset of the property $\bounded$.
-  By \reflemma{range-validation} we conclude that $\defprogram \satisfies \bounded$.
-\end{proof}
+Thus, by \nrefthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrange$.
 
 
-\section{Implementation Discussion}
-
-The syntactic dependency analysis \refsec{syntactic-dependency-analysis} can be helpful to reduce the number of variables in the abstract domain during the global loop bound analysis.
-In fact, the syntactic dependency analysis is used to determine an over-approximation of the set of relevant variables for the global loop counter, for each program location.
-We employ such information to apply program slicing.
-As a consequence, we reduce the number of variables in the underlying abstract domain, and avoid analyzing irrelevant statements.
-The program under analysis can be evaluated even in presence of statements and expressions that are hard to handle, \eg~bitwise operations, array manipulation, and function calls to name a few, as long as they are not relevant.
-Indeed, excluding irrelevant statements from the analysis does not affect the global loop bounds.
-
-We recall from \refsec{syntactic-dependency-analysis} that this syntactic dependency analysis is already an input data usage analysis, as it already determines which variables have zero impact on the global loop counter, and which have a non-zero impact.
-Indeed, the syntactic dependency analysis is a qualitative counterpart to our quantitative definition.
-
-\begin{example}
-% \begin{figure}[t]
-%   \input{code/add}
-%   \caption{Full code for program \add{}, irrelevant statements are marked as comments.}
-%   \label{fig:add-full}
-%   \end{figure}
-
-Regarding the \refprog*{add}[*-29], the syntactic dependency analysis is able to discover that most of the variables are irrelevant for the global loop bound.
-Therefore, we are able to exclude most of the statements, including the bitwise operations regarding the remainder (\eg~\refline{bitwise}), the array indices (\eg~\refline{array}), the conditional for the padding at the end (\cf~\refline{padding}).
-%
-Overall, we excluded $33$ from the original $52$ lines of code (about the 60\%), and the analysis was able to handle the program with ease without any specific handling for the excluded statements.
-Regarding the amount of variables, we reduced the number of variables from $13$ to $7$ (without counting the global loop counter $\counter$).
-% Note that, the handling of arrays may generate many symbolic variables during the abstract analysis, hence the reduction in the number of variables is even more significant.
-\end{example}
-
-
-
-% Additionally, even though our formal syntax does not include the use of arrays, real-world programs often do.
-% To remain sound, the syntactic dependency analysis can be extended to handle arrays, by considering a conservative points-to analysis to determine the shared memory locations.
-% For our work, we consider a classical flow-insensitive points-to analysis~\sidecite{Steensgaard1996} to determine an over-approximation of the memory locations shared by the variables at any program location.
-% Whenever the analysis discovers that a variable is potentially used, all the variables that share the same memory location are considered relevant as well.
-
-
-Moreover, we combine forward and backward phases to provide tighter invariants in the global loop bound analysis.
-Specifically, an initial forward reachability analysis enhances both the syntactic dependency analysis and the global loop bound analysis.
-Additionally, we employ a narrowing operator to refine the upper bound of the least fixpoint computed by the widening operator \sidecite{Cousot1977}.
-
-
-\begin{marginlisting}
-  \begin{lstlisting}[
-    language=customPython,
-    style=mystyle,
-    escapechar=\%]
-assert r >= 0
-while (r > 0):
-  r = r - 1
-\end{lstlisting}
-\end{marginlisting}
-\begin{example}
-  Consider the first for-loop at~\refline{for1} of the \refprog{add}.
-  For simplicity, we reported it in the form of a while loop on the side.
-Without a forward pre-analysis, the backward analysis would infer that the global number of iterations is always greater or equal to the initial value of \texttt{r}.
-The missing information is that the value of \texttt{r} is always non-negative at the beginning of the loop.
-%
-However, a forward pre-analysis could easily propagate such information to the backward analysis.
-As a consequence, the backward analysis would infer that the global number of iterations is always equal to the initial value of \texttt{r}.
-The main difference of the two approaches can be observed when the result of the backward analysis is used to verify the global loop bound property.
-With the invariant discovered without the forward analysis, \cf~$\texttt{r} \ge \counter$, the impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} \ge \counter)$ to $u$ (\cf~$0 \le \texttt{r} \le u$), for all input variables $\definputvariables$, even when $\definputvariable \neq \texttt{r}$.
-The linear programming problem $\counterrange(\texttt{r} \ge \counter)$ is:
-\begin{align}
-  \text{maximize} \spacer\spacer& \defbound \\
-  \text{subject to} \spacer\spacer
-    & \texttt{r} \ge \counterup \\
-    \land\spacer\spacer& \texttt{r} \ge \counterdown \\
-    \land\spacer\spacer& 0\le \texttt{r} \le u \\
-    \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
-\end{align}
-In this case, the variable $\counterup$ and $\counterdown$ are not constrained to be equal, thus they can be minimized and maximized independently as long as they satisfy the other constraints, resulting in $\defbound = u$.
-%
-On the other hand, the invariant discovered with the help of the forward pre-analysis is $\texttt{r} = \counter$.
-The impact quantity maximizes the linear programming problem $\counterrange(\texttt{r} = \counter)$ to $0$ whenever the input variable $\definputvariable \neq \texttt{r}$. In such case, the linear programming problem $\counterrange(\texttt{r} = \counter)$ is:
-\begin{align}
-  \text{maximize} \spacer\spacer& \defbound \\
-  \text{subject to} \spacer\spacer
-    & \texttt{r} = \counterup \\
-    \land\spacer\spacer& \texttt{r} = \counterdown \\
-    \land\spacer\spacer& 0\le \texttt{r} \le u \\
-    \land\spacer\spacer& 0 \le \defbound \le \counterup - \counterdown
-\end{align}
-Note that, both $\counterup$ and $\counterdown$ are constrained to be equal. Therefore, their maximum distance is $0$.
-\end{example}
-
-\begin{marginlisting}[*1]
-  \begin{lstlisting}[
-      language=customPython,
-      style=mystyle,
-      escapechar=\%]
-x = y %\labline{first}%
-x = x - y %\labline{second}%
-\end{lstlisting}
-  \end{marginlisting}
-\begin{example}
-  To show that also the syntactic dependency analysis can benefit from a forward pre-analysis (and in general, from a numerical analysis~\sidecite[*1]{Parolini2024}), consider the program on the side.
-  It assigns first the value of \texttt{y} to \texttt{x} and then subtracts \texttt{y} from \texttt{x}.
-  The result is that \texttt{x} is zero at the end of the program execution, while \texttt{y} maintains its input value.
-%
-  Let us assume we are interested in the variables that are relevant to compute the value of \texttt{x}.
-  Without a forward pass, the syntactic dependency analysis (a backward analysis) would infer that \texttt{y} is relevant for the value of \texttt{x} after handling the second assignment at~\refline{second}. Then, the first assignment at~\refline{first} would add no dependency as \texttt{x} is overwritten.
-  On the other hand, a forward analysis could be able to infer that at the end of the program, the value of \texttt{x} is zero.
-  As a consequence, the information that \texttt{x} is a constant value supersedes the information that \texttt{x} is used (at the end of the program).
-  Therefore, the syntactic dependency analysis would infer that \texttt{y} is, in fact, irrelevant.
-\end{example}
 
 \section{Summary}
+
+This chapter presented a static analysis for quantifying the impact of input variables on the number of iterations of a program.
+The following chapter presents the experimental evaluation of our approach and concludes the main body of this thesis.
+
+\emph{Ce chapitre a présenté une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. Le chapitre suivant présente l'évaluation expérimentale de notre approche et conclut le corps principal de cette thèse.}
