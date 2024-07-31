@@ -1,12 +1,11 @@
 \begin{lstlisting}[language=Python,escapechar=|,style=mystyle]
-is_passed(eng, math, science,
-    bonus):
+is_passed(eng, math, sci, plus):
   passing = True;|\labline{initial}|
   if not eng:|\labline{first-cond}|
     eng = False;|\labline{err1}|
   if not math:|\labline{second-cond}|
-    passing = bonus;
+    passing = plus;
   if not math:|\labline{err2}\labline{third-cond}|
-    passing = bonus; |\labline{third-assignment}|
+    passing = plus; |\labline{third-assignment}|
 |\labline{last}|
 \end{lstlisting}
