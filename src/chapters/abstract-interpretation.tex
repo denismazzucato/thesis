@@ -8,46 +8,136 @@
 \setchapterpreamble[u]{\margintoc}
 
 
-
 \chapter{Abstract Interpretation}
 \labch{abstract-interpretation}
 
+In this chapter, we introduce the concepts that are the foundation of this work.
+We assume basic knowledge of mathematics, we summarize the necessary background in set theory and logic.
+We present an overview of Abstract Interpretation and define the notations and concepts that will be used in the rest of the thesis.
 
-\begin{definition}[Validation]
-  \labdef{validation}
-  \begin{align}
-    \labeq{validation}
-    \defprogram \satisfies \defproperty \iff \collectingsemantics \subseteq \defproperty
-  \end{align}
-\end{definition}
+\section{Set Theory}
 
-\begin{definition}[Collecting Semantics]
-  \labdef{collecting-semantics}
-  \begin{align}
-    \labeq{collecting-semantics}
-    \collectingsemanticsnoparam \defeq \{ \dependencysemanticsnoparam \}
-  \end{align}
-\end{definition}
+Here, we briefly revisit well-known concepts to establish the logical and mathematical notation.
 
-\begin{definition}[Dependency Semantics]
-  \labdef{dependency-semantics}
-  \begin{align*}
-    \dependencysemanticsnoparam \DefeQ \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}
-  \end{align*}
-\end{definition}
+\subsection{Logic Notation}
+
+We write $p \defeq P$ to define the mathematical object $p$ to be equal to the object $P$.
+Let $\B \defeq \{\true, \false\}$ be the set of Boolean values, where $\true$ represents true and $\false$ represents false.
+We can state properties by logical predicates, for instance, $x \le x + 1$ is a basic logical predicate.
+We combine predicates using logical connectives: $\land$ for conjunction, $\lor$ for disjunction, $\neg$ for negation, $\implies$ for implication (respectively, $\Leftarrow$ for reverse implication), and $\iff$ for if and only if, as well as $\forall$ for universal and $\exists$ for existential quantification.
+In the logical predicate $P \implies Q$, $P$ is called the premise and $Q$ the conclusion.
+We call $P$ the \emph{sufficient} condition for $Q$ to hold and, conversely, $Q$ the \emph{necessary} condition for $P$ to hold.
+In $P \iff Q$, $P$ is a necessary and sufficient condition for $Q$ to hold, and vice versa.
+$P \implies Q$ holds \emph{vacuously} when $P$ is false or when $Q$ is true.
+We write $P \defiff Q$ to denote that $P$ is defined to hold whenever $Q$ holds.
+
+\subsection{Set Theory}
 
 
-\section{Order Theory}
-\labsec{order-theory}
+A set $X$ is an unordered collection of distinct elements. We use $x \in X$ (respectively, $x \notin X$) to indicate that $x$ is (respectively, is not) an element of the set $X$. A set is expressed in extension when it is uniquely determined by its elements: \eg, $\{x, y\}$ represents the set containing elements $x$ and $y$. The empty set is denoted by $\emptyset$ and no element belong to it, \ie, $\foralldef{x}{x \notin \emptyset}$.
+A singleton $\{x\}$ is a set containing only one element $x$.
+A set is defined in comprehension\sidenote{Set comprehension notation will be, in particular, pervasively used in the rest of this thesis.} when its elements are characterized by a common property: $\setdef{x \in X}{P(x)}$ denotes the set of elements $x\in X$ for which $P(x)$ holds.
+% In particular, $P$ is a logical predicate that either holds or does not.
+% Let $\B \defeq \{\true, \false\}$ be the set of Boolean values, where $\true$ represents true ($P = \true$ means that $P$ holds) and $\false$ represents false ($P = \false$ means that $P$ does not hold).
+% We combine predicates using logical connectives: $\land$ for conjunction, $\lor$ for disjunction, $\neg$ for negation, $\implies$ for implication (respectively, $\Leftarrow$ for reverse implication), and $\iff$ for if and only if, as well as $\forall$ for universal and $\exists$ for existential quantification.
+% In the logical predicate $P \implies Q$, $P$ is called the premise and $Q$ the conclusion.
+% We call $P$ the \emph{sufficient} condition for $Q$ to hold and, conversely, $Q$ the \emph{necessary} condition for $P$ to hold.
+% In $P \iff Q$, $P$ is a necessary and sufficient condition for $Q$ to hold, and vice versa.
+% $P \implies Q$ holds \emph{vacuously} when $P$ is false or when $Q$ is true.
+Contradictions such as circular definitions, \eg, $X \defeq \setdef{x}{x \notin X}$, are avoided in this thesis.
+The cardinality of a set $X$ is represented by $\cardinalitynospaces{X}$, \eg, $\cardinalitynospaces{\emptyset} = 0$ and $\cardinalitynospaces{\{x, y\}} = 2$.
 
-\subsection{Sets}
-\labsec{sets}
+A set $X$ is a subset of another set $X'$, denoted $X \subseteq X'$, if every element of $X$ is also an element of $X'$. The empty set $\emptyset$ is subset of any set. The power set $\setof{X}$ of a set $X$ is defined as the set of all the subsets of $X$, \ie, $\setof{X} \defeq \setdef{X'}{X' \subseteq X}$. The union of two sets $X$ and $Y$, denoted $X \setjoin Y$, is the set containing all elements of $X$ and all elements of $Y$, \ie, $X \setjoin Y \defeq \setdef{x}{x \in X \lor x \in Y}$. More generally, the union of a set of sets $X$ is denoted by $\bigsetjoin X$, \ie, $\bigsetjoin X \defeq \bigsetjoin_{X' \in X} X' = \setdef{x}{\existsdef{X' \in X}{x \in X'}}$. The intersection $X \setmeet Y$ of two sets $X$ and $Y$ is the set of all elements that are common to both $X$ and $Y$, \ie, $X \setmeet Y \defeq \setdef{x}{x \in X \land x \in Y}$.
+Similarly to the set union, we generalize the intersection to a set of sets $X$ by defining $\bigsetmeet X$ as $\bigsetmeet X \defeq \bigsetmeet_{X' \in X} X' = \setdef{x}{\foralldef{X' \in X}{x \in X'}}$. The relative complement of a set $Y$ in a set $X$, denoted $X \setminus Y$, is the set of all elements of $X$ that are not elements of $Y$, \ie, $X \setminus Y \defeq \setdef{x}{x \in X \land x \notin Y}$. When $Y \subseteq X$ and the set $X$ is clear from the context, we simply write $\neg Y$ for $X \setminus Y$ and we call it the complement of $Y$.
+A tuple is an ordered list of elements, \eg, $\langle x_1, \dots, x_n \rangle$ is a tuple of $n$ elements, also called $n$-tuple. Differently from sets, the order of elements in a tuple is significant, \eg, $\langle x, y \rangle \neq \langle y, x \rangle$.
+A pair\sidenote{
+  Formally, a pair $\tuple{x}{y}$ can be defined as the set $\{\{x\}, \{x, y\}\}$ \cite{Kuratowski1921}.
+  Thus, the first coordinate $\tuple{x}{y}_1$ is $z$ such that $\forall X \in \tuple{x}{y}$ it holds that $z \in X$.
+  The second coordinate $\tuple{x}{y}_2$ is $z$ such that $\exists X \in \tuple{x}{y}$ such that $z \in X$ and that $\forall X, X' \in \tuple{x}{y}$ it holds that if $X \neq X'$ then $z \notin X$ or $z \notin X'$.
+  We have that, $\tuple{x}{y}_1 = x$ and $\tuple{x}{y}_2 = y$.
+}\phantomcite{Kuratowski1921} is a tuple of two elements, \eg, $\langle x, y \rangle$ is a pair where the first element is $x$ and the second $y$.
+The Cartesian product of two sets $X$ and $Y$, denoted $X \times Y$, is the set of all pairs where the first component is an element of $X$ and the second component is an element of $Y$, \ie, $X \times Y \defeq \setdef{(x, y)}{x \in X \land y \in Y}$.
+More generally, $X_1 \times \cdots \times X_n \defeq \setdef{(x_1, \ldots, x_n)}{x_1 \in X_1 \land \cdots \land x_n \in X_n}$ denotes the set of all $n$-tuples from elements of $X_1, \dots, X_n$, and $X^n$ when $X_1 = \cdots = X_n = X$.
+The selection of the
+$i$-th element of a tuple
+$\langle{x_1, \dots, x_n}\rangle$ is denoted by the subscript notation, \ie,
+${\langle{x_1, \dots, x_n}\rangle}_i = x_i$ for
+$1 \le i \le n$.
+
+A covering of a set $X$ is a set $Z$ of non-empty subsets of $X$ such that every element $x \in X$ belongs to a set in $Z$, \ie, $X = \bigsetjoin Z$. A partition of a set $X$ is a covering $Z$ such that any two sets in $Z$ are disjoint, \ie, every element $x \in X$ belongs to a unique set in $Z$, \ie, $\forall X, Y \in Z : X \neq Y \implies X \setmeet Y = \emptyset$.
+
+
+\subsection{Numbers}
+
+Let $\N$, $\Z$, and $\R$ be the set of all naturals, integers, and reals, respectively.
+In general, whenever the precise numerical type is not known or required, we write $\values\in\{\N, \Z, \R\}$ denoting any possible set of numbers.
+We write $\valuesinf$ to denote $\values$ extended with the symbols $-\infty$ and $+\infty$.
+The set $\values_{\ge 0}$ denotes the set of non-negative numbers, \ie, $\values_{\ge 0} \defeq \setdef{n \in \values}{n \geq 0}$.
+Similarly, we can use this notation with other predicates, for instance, $\values_{\le m} \defeq \setdef{n \in \values}{n \leq m}$ denotes the set of numbers less than or equal to $m$.
+As we did not specify whether natural numbers include zero, this notation comes in handy as it permits us to be explicit about the inclusion of zero.
+For example, $\N_{\ge 0}^{+\infty}$ denotes the set of natural numbers including zero and $+\infty$, on the other hand, $\N_{> 0}$ denotes the set of strictly positive natural numbers.
+
+Given two bounds $l, u \in \values$, we define the interval $[l, u]$ as the set of numbers between $l$ and $u$, \ie, $[l, u] \defeq \setdef{n \in \values}{l \le n \le u}$. Hence, $[l, u] = \emptyset$ when $l > u$.
+
 
 \subsection{Relations}
-\labsec{relations}
+A binary relation $R$ between two sets $X$ and $Y$ is a subset of the cartesian product $X \times Y$.
+The following are some important properties which may hold for a binary relation $R$ over a set $S$:
+\begin{description}
+    \item[Reflexivity]: $\forall x \in S : \tuple{x}{x} \in R$
+    \item[Irreflexivity]: $\forall x \in S : \tuple{x}{x} \notin R$
+    \item[Symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \implies \tuple{x}{y} \in R$
+    \item[Anti-symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \wedge \tuple{x}{y} \in R \implies x = y$
+    \item[Transitivity]: $\forall x, y, z \in S : \tuple{x}{y} \in R \wedge \tuple{y}{z} \in R \implies \tuple{x}{z} \in R$
+    \item[Totality]: $\forall x, y \in S : \tuple{x}{y} \in R \vee \tuple{x}{y} \in R$
+\end{description}
+
+An equivalence relation is a binary relation which is reflexive, symmetric, and transitive. A binary relation which is reflexive (resp. irreflexive), anti-symmetric, and transitive is called a partial order (resp. strict partial order). A preorder is reflexive and transitive, but not necessarily anti-symmetric. A (strict) total order is a (strict) partial order which is total.
+
+
+
 
 \subsection{Ordered Sets}
 \labsec{ordered-sets}
+
+
+% A partially ordered set or poset (resp. preordered set) $\langle D, \leq \rangle$ is a set $D$ equipped with a partial order (resp. preorder) $\leq$. A finite partially ordered set $\langle D, \leq \rangle$ can be represented by a Hasse diagram such as the one in Figure~\ref{fig:hasse_diagram}: each element $x \in D$ is uniquely represented by a node of the diagram, and there is an edge from a node $x \in D$ to a node $y \in D$ if $y$ covers $x$, that is, $x \leq y$ and there exists no $z \in D$ such that $x \leq z \leq y$. Hasse diagrams are usually drawn placing the elements higher than the elements they cover.
+
+% \begin{figure}[h]
+% \centering
+% \begin{tikzpicture}[scale=0.8]
+%   \node (a) at (0,0) {$\emptyset$};
+%   \node (b) at (-2,2) {$\{a\}$};
+%   \node (c) at (0,2) {$\{b\}$};
+%   \node (d) at (2,2) {$\{c\}$};
+%   \node (e) at (-2,4) {$\{a,b\}$};
+%   \node (f) at (0,4) {$\{a,c\}$};
+%   \node (g) at (2,4) {$\{b,c\}$};
+%   \node (h) at (0,6) {$\{a,b,c\}$};
+
+%   \draw (a) -- (b);
+%   \draw (a) -- (c);
+%   \draw (a) -- (d);
+%   \draw (b) -- (e);
+%   \draw (b) -- (f);
+%   \draw (c) -- (e);
+%   \draw (c) -- (g);
+%   \draw (d) -- (f);
+%   \draw (d) -- (g);
+%   \draw (e) -- (h);
+%   \draw (f) -- (h);
+%   \draw (g) -- (h);
+% \end{tikzpicture}
+% \caption{Hasse diagram for the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$.}
+% \label{fig:hasse_diagram}
+% \end{figure}
+
+% Let $\langle D, \leq \rangle$ be a partially ordered set. The least element of the poset, when it exists, is denoted by $\bot$: $\forall d \in D : \bot \leq d$. Similarly, the greatest element of the poset, when it exists, is denoted by $\top$: $\forall d \in D : d \leq \top$. Note that any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element. Let $X \subseteq D$. A maximal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $x \leq d$. When $X$ has a unique maximal element, it is called maximum and it is denoted by $\max X$. Dually, a minimal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $d \leq x$. When $X$ has a unique minimal element, it is called minimum and it is denoted by $\min X$. An upper bound of $X$ is an element $d \in D$ (not necessarily belonging to $X$) such that, for each $x \in X$, $x \leq d$. The least upper bound (or lub, or supremum) of $X$ is an upper bound $d \in D$ of $X$ and such that, for every upper bound $d' \in D$ of $X$, $d \leq d'$. When it exists, it is unique and denoted by $\bigvee X$ (or $\sup X$). Dually, a lower bound of $X$ is an element $d \in D$ such that, for each $x \in X$, $d \leq x$. The greatest lower bound (or glb, or infimum) of $X$ is a lower bound $d \in D$ of $X$ such that, for every lower bound $d' \in D$ of $X$, $d' \leq d$. When it exists, it is unique and denoted by $\bigwedge X$ (or $\inf X$). Note that the notion of maximal element, maximum, and least upper bound (resp. minimal element, minimum, and greatest lower bound) are different, as illustrated by the following example.
+
+% \begin{example}
+% Let us consider the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$ represented in Figure~\ref{fig:hasse_diagram} and the subset $X \triangleq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$. The maximal elements of $X$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$. Thus, the maximum $\max X$ of $X$ does not exist, while its least upper bound is $\sup X = \{a, b, c\}$. Similarly, the minimal elements of $X$ are $\{a\}$, $\{b\}$, and $\{c\}$. Thus, the minimum $\min X$ of $X$ does not exist, while its greatest lower bound is $\inf X = \emptyset$.
+% \end{example}
+
 
 \subsection{Lattices}
 \labsec{lattices}
@@ -59,8 +149,90 @@
 \subsection{Functions}
 \labsec{functions}
 
+% A partial function $f$ from a set $A$ to a set $B$, written $f : A \rightharpoonup B$, is a binary relation between $A$ and $B$ that pairs each element $x \in A$ with no more than one element $y \in B$. The set of all partial functions from a set $A$ to a set $B$ is denoted by $A \rightharpoonup B$. We write $f(x) = y$ if there exists an element $y$ such that $(x, y) \in f$, and we say that $f(x)$ is defined, otherwise we say that $f(x)$ is undefined. Given a partial function $f : A \rightharpoonup B$, we define its domain as $\text{dom}(f) \triangleq \{x \in A \mid \exists y \in B : f(x) = y\}$. The totally undefined function, denoted by $\emptyset$, has the empty set as domain: $\text{dom}(\emptyset) = \emptyset$. The join of two partial functions $f_1 : A \rightharpoonup B$ and $f_2 : A \rightharpoonup B$ with disjoint domains, denoted by $f_1 \cup f_2 : A \rightharpoonup B$, is defined as follows:
+% \[
+% (f_1 \cup f_2)(x) \triangleq
+% \begin{cases}
+% f_1(x) & x \in \text{dom}(f_1) \\
+% f_2(x) & x \in \text{dom}(f_2) \\
+% \text{undefined} & \text{otherwise}
+% \end{cases}
+% \]
+% where $\text{dom}(f_1) \cap \text{dom}(f_2) = \emptyset$.
+
+% A (total) function $f$ from a set $A$ to a set $B$, written $f : A \to B$, is a partial function that pairs each $x \in A$ with exactly one element $y \in B$. Equivalently, a (total) function $f : A \to B$ is a partial function such that $\text{dom}(f) = A$. The set of all functions from a set $A$ to a set $B$ is denoted by $A \to B$.
+
+% We sometimes denote functions using the lambda notation $\lambda x \in A. f(x)$, or more concisely $\lambda x. f(x)$.
+
+% The composition of two functions $f : A \to B$ and $g : B \to C$ is another function $g \circ f : A \to C$ such that $\forall x \in A : (g \circ f)(x) = g(f(x))$.
+
+% The following properties may hold for a function $f : A \to B$:
+% \begin{itemize}
+%     \item Injectivity: $\forall x, y \in A : f(x) = f(y) \implies x = y$
+%     \item Surjectivity: $\forall y \in B : \exists x \in A : f(x) = y$
+% \end{itemize}
+
+% A bijective function, also called isomorphism, is both injective and surjective. Two sets $A$ and $B$ are isomorphic if there exists a bijective function $f : A \to B$. The inverse of a bijective function $f : A \to B$ is the bijective function $f^{-1} : B \to A$ defined as $f^{-1} \triangleq \{(b, a) \mid (a, b) \in f\}$.
+
+% Let $\langle D_1, \leq_1 \rangle$ and $\langle D_2, \leq_2 \rangle$ be partially ordered sets. A function $f : D_1 \to D_2$ is said to be monotonic when, for each $x, y \in D_1, x \leq_1 y \implies f(x) \leq_2 f(y)$. It is continuous (or Scott-continuous) when it preserves existing least upper bounds of chains, that is, for each chain $C \subseteq D_1$, if $\bigvee C$ exists then $f(\bigvee C) = \bigvee \{f(x) \mid x \in C\}$. Dually, it is co-continuous when it preserves existing greatest lower bounds of chains, that is, if $\bigwedge C$ exists then $f(\bigwedge C) = \bigwedge \{f(x) \mid x \in C\}$. A complete $\bigvee$-morphism (resp. complete $\bigwedge$-morphism) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
+
+% Given a complete lattice $\langle D, \leq, \bigvee, \bigwedge, \bot, \top \rangle$ (resp. a lattice, a cpo, a poset) and a set $S$, the set $S \to D$ of all functions from $S$ to $D$ inherits the complete lattice (resp. lattice, cpo, poset) structure of $D$: $\langle S \to D, \leq, \bigvee, \bigwedge, \bot, \top \rangle$ where the dotted operators are defined by pointwise lifting:
+% \[
+% \begin{aligned}
+% f \leq g & \triangleq \forall s \in S : f(s) \leq g(s) \\
+% \bigvee X & \triangleq \lambda s. \bigvee \{f(s) \mid f \in X\} \\
+% \bigwedge X & \triangleq \lambda s. \bigwedge \{f(s) \mid f \in X\} \\
+% \bot & \triangleq \lambda s. \bot \\
+% \top & \triangleq \lambda s. \top
+% \end{aligned}
+% \]
+
 \subsection{Fixpoints}
 \labsec{fixpoints}
+
+% Given a partially ordered set $\langle D, \leq \rangle$ and a function $f : D \to D$, a fixpoint of $f$ is an element $x \in D$ such that $f(x) = x$. An element $x \in D$ such that $x \leq f(x)$ is called a pre-fixpoint while, dually, a post-fixpoint is an element $x \in D$ such that $f(x) \leq x$. The least fixpoint of $f$, written $\text{lfp} \, f$, is a fixpoint of $f$ such that, for every fixpoint $x \in D$ of $f$, $\text{lfp} \, f \leq x$. We write $\text{lfp}_d f$ for the least fixpoint of $f$ which is greater than or equal to an element $d \in D$. Dually, we define the greatest fixpoint of $f$, denoted by $\text{gfp} \, f$, and the greatest fixpoint of $f$ smaller than or equal to $d \in D$, denoted by $\text{gfp}_d f$. When the order $\leq$ is not clear from the context, we explicitly write $\text{lfp}_{\leq} f$ and $\text{gfp}_{\leq} f$.
+
+% We now recall a fundamental theorem due to Alfred Tarski:
+
+% \begin{theorem}[Tarski's Fixpoint Theorem]
+% The set of fixpoints of a monotonic function $f : D \to D$ over a complete lattice is also a complete lattice.
+% \end{theorem}
+% \begin{proof}
+% See \cite{Tarski1955}.
+% \end{proof}
+
+% In particular, the theorem guarantees that $f$ has a least fixpoint $\text{lfp} \, f = \bigwedge \{x \in D \mid f(x) \leq x\}$ and a greatest fixpoint $\text{gfp} \, f = \bigvee \{x \in D \mid x \leq f(x)\}$.
+
+% However, such fixpoint characterizations are not constructive. An alternative constructive characterization is often attributed to Stephen Cole Kleene:
+
+% \begin{theorem}[Kleene's Fixpoint Theorem]
+% Let $\langle D, \leq \rangle$ be a complete partial order and let $f : D \to D$ be a Scott-continuous function. Then, $f$ has a least fixpoint which is the least upper bound of the increasing chain
+% \[
+% \bot \leq f(\bot) \leq f(f(\bot)) \leq f(f(f(\bot))) \leq \cdots
+% \]
+% i.e., $\text{lfp} \, f = \bigvee \{f^n(\bot) \mid n \in \mathbb{N}\}$.
+% \end{theorem}
+
+% In case of monotonic but not continuous functions, a theorem by Patrick Cousot and Radhia Cousot expresses fixpoints as limits of possibly transfinite iteration sequences:
+
+% \begin{theorem}
+% Let $f : D \to D$ be a monotonic function over a complete partial order and let $d \in D$ be a pre-fixpoint. Then, the iteration sequence:
+% \[
+% f^\alpha \triangleq
+% \begin{cases}
+% d & \alpha = 0 \\
+% f(f^\beta) & \alpha = \beta + 1 \\
+% \bigvee \{f^\beta \mid \beta < \alpha\} & \text{otherwise}
+% \end{cases}
+% \]
+% converges towards the least fixpoint $\text{lfp}_d f$.
+% \end{theorem}
+% \begin{proof}
+% See \cite{Cousot1979}.
+% \end{proof}
+
+% In the following, the partial order between the fixpoint iterates is called computational order, in order to distinguish it from the approximation order defined in the next Section 2.2.2.
+
 
 \section{Notations of Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
@@ -154,6 +326,29 @@
 
 \subsection{Backward Reachability State Semantics}
 \labsec{backward-reachability-state-semantics}
+
+\begin{definition}[Validation]
+  \labdef{validation}
+  \begin{align}
+    \labeq{validation}
+    \defprogram \satisfies \defproperty \iff \collectingsemantics \subseteq \defproperty
+  \end{align}
+\end{definition}
+
+\begin{definition}[Collecting Semantics]
+  \labdef{collecting-semantics}
+  \begin{align}
+    \labeq{collecting-semantics}
+    \collectingsemanticsnoparam \defeq \{ \dependencysemanticsnoparam \}
+  \end{align}
+\end{definition}
+
+\begin{definition}[Dependency Semantics]
+  \labdef{dependency-semantics}
+  \begin{align*}
+    \dependencysemanticsnoparam \DefeQ \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}
+  \end{align*}
+\end{definition}
 
 \begin{definition}[Backward Semantics]\labdef{backward-semantics}
 \begin{align*}
