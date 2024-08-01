@@ -11,8 +11,8 @@
 
 
 In this chapter, we present a quantitative notion of input data usage, extending the definition introduced in the previous chapter.
-We define three different quantitative measures for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property of a program.
-At the end, we present abstract versions of the quantitative measures and show how they can be used to verify the corresponding quantitative property.
+We define three different quantifiers for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property of a program.
+At the end, we present abstract versions of these quantifiers and show how they can be used to verify the corresponding quantitative property.
 This chapter is based on work published at NASA Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024b}.
 In the rest of this thesis, we will apply this quantitative framework in the context of neural networks and timing side-channel attacks.
 
@@ -605,8 +605,11 @@ Notably, the property $\boundedrange$ is subset-closed, \ie, if a program semant
 The quantifier $\qused\in\tracetype\to\Nplus$ counts the number of input values for the variables in $\definputvariables\in\setof\inputvariables$ of $\definputvariables$ that are \emph{not} used to produce the outcomes.
 Unlike \outcomesname{} and \rangename{} the impact of an input variable is zero \wrt{} \qusedname{} if and only if the input variable is not used to produce any outcome, even in the presence of non-deterministic statements.
 
-Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$, \qusedname{} collects the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. Then, it gathers the set of input values of the variables in $\definputvariables$ that correspond to these traces.
-The number of missing input values is obtained by subtracting the set of input values that can produce the outcome $\retrieveoutput\defstate$ from the set of all input values for the variables in $\definputvariables$.
+Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$, \qusedname{} collects the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. Then, it gathers the set of input values of the variables in $\definputvariables$ that correspond to these traces, called $I_\deftrace(\defsetoftraces)$.
+The number of missing input values is obtained by subtracting
+the set of input values from traces that share the same output abstraction, \cf{} $I_\deftrace(\defsetoftraces)$,
+from
+the set of input values that can produce the outcome $\retrieveoutput\defstate$ by variations of the variables in $\definputvariables$, called $Q_\definputvariables(I_\deftrace(\defsetoftraces))$.
 Finally, $\qused$ yields the maximum number of input values that are not used to produce the outcomes.
 
 
@@ -931,7 +934,7 @@ Note the use of the $\ge$ operator\sidenote{Previously, for the \outcomesname{} 
       \sup_{\inputoutputtuple{\defstate} \in \defsetofdependencies}
     \cardinality*{
         Q_\definputvariables(I_{\retrieveoutput{\defstate}}(\defsetofdependencies)) \setminus I_{\retrieveoutput{\defstate}}(\defsetofdependencies)
-      } \le \defbound
+      } \ge \defbound
     }
   \end{eqnarray*}
   As noticed before, the $\qusedname$ impact quantifier does not consider the intermediate states and abstracts the output states before any computation.
@@ -1093,14 +1096,14 @@ false_or_rand(x, y):
  \end{lstlisting}
 \end{marginlisting}
 This example shows that \[\qusedname_{\{\texttt{x} \}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}}) \LE \qusedname_{\{\texttt{x} \}}(\defsetoftraces) \GE \qusedname_{\{\texttt{x} \}}(\defsetoftraces')\] where $\tracesemanticsnoparam\semanticsof{\texttt{id2}} \subseteq \defsetoftraces \subseteq \defsetoftraces'$.
-Thus, the $\qusedname$ impact quantifier is neither monotonic nor anti-monotonic in the amount of traces, as the quantity $\qusedname$ may increase or decrease by adding or removing traces from a given set.
+Thus, the $\qusedname$ impact quantifier is neither monotonic nor anti-monotonic in the amount of traces, as the quantifier $\qusedname$ may increase or decrease by adding or removing traces from a given set.
 \end{example}
 
 
 
 
 
-Unlike for the previous impact quantifiers, it holds that, whenever the quantity $\qused(\tracesemantics)$ is 0, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
+Unlike for the previous impact quantifiers, it holds that, whenever $\qused(\tracesemantics)$ is 0, the program $\defprogram$ does not use the input variable $\definputvariables$, even in the presence of non-determinism.
 Thus, we can establish the following equivalence:
 
 \siderefbox{def}{abstract-unused}
@@ -1129,13 +1132,13 @@ As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain a
 \]
 meaning that if a program semantics utilizes the variables $\definputvariables$, then it has an impact of at least $1$, and vice versa.
 
-In the rest of this chapter, we present the static analysis to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantitative measures introduced in this chapter.
+In the rest of this chapter, we present the static analysis to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantifiers introduced in this chapter.
 
 \section{Abstract Quantitative Input Data Usage}
 \labsec{abstract-quantitative-input-data-usage}
 
 In this section, we introduce a sound and computable static analysis to verify the $\defbound$-bounded impact property of a program.
-The soundness of the approach leverages two elements: (1) a backward abstract semantics, and (2) sound and computable implementations of the quantitative measures \outcomesname{}, \rangename{}, and \qusedname{} (written as $\abstractoutcomesname$, $\abstractrangename$, and $\abstractqusedname$ respectively).
+The soundness of the approach leverages two elements: (1) a backward abstract semantics, and (2) sound and computable implementations of the quantifiers \outcomesname{}, \rangename{}, and \qusedname{} (written as $\abstractoutcomesname$, $\abstractrangename$, and $\abstractqusedname$ respectively).
 
 
 To quantify the usage of the input variables $\definputvariables$, we mostly need to determine the input configurations leading to specific output values.
@@ -1287,8 +1290,8 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
   \end{eqnarray*}
 \end{definition}
 
-\refdef{sound-implementation} is of importance to ensure that the soundness of the static analysis is preserved when computing the quantity $\defbound$.
-We define the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower (respectively bigger depending on the comparison operator $\comparison$) than the computed bound.
+\refdef{sound-implementation} ensures that the soundness of the static analysis is preserved when computing the quantity $\defbound$.
+We define the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$. It concretizes the set of trace semantics that yield an impact lower than the computed bound.
 \marginnote[*7]{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
   The concretization of a measured quantity $\defbound$ is $\boundconcretization\in\valuesinf\to\collectingtype$, defined as:
@@ -1930,9 +1933,9 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
 \section{Summary}
 \labsec{quantitative-input-data-usage-summary}
 
-In this chapter, we introduced the quantitative measures $\outcomes$, $\range$, and $\qused$ to quantify the impact of input variables on the output of a program.
-We developed a theoretical framework to verify the $\defbound$-bounded impact property of a program and showed the abstract version of the quantitative measures.
-In the next chapter, we present the evaluation of the quantitative measures on a set of use cases.
+In this chapter, we introduced the quantifiers $\outcomes$, $\range$, and $\qused$ to measure the impact of input variables on the output of a program.
+We developed a theoretical framework to verify the $\defbound$-bounded impact property of a program and showed the abstract version of the quantifiers.
+In the next chapter, we present the evaluation of the quantifiers on a set of use cases.
 Later, we will show how we handle the quantification of the impact of input variables in the context of neural network models.
 
 
