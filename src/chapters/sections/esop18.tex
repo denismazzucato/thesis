@@ -1008,7 +1008,7 @@ Formally, the pair of right-left adjoints $\tuple{\dependencyabstraction}{\depen
 \marginnote[*2]{
   The notion $\retrieveinput{\deftrace}\in\state$ refers to the initial state of a trace $\deftrace$ and $\retrieveoutput{\deftrace}\in\stateandbottom$, where $\stateandbottom \defeq \state \setjoin \{\statebottom\}$ to the final one if $\deftrace$ is of finite length, otherwise $\statebottom$ for non-terminating traces.
 }
-\begin{definition}[Right-Left Adjoints for the Dependency Semantics]\labdef{right-left-adjoints-for-the-dependency-semantics}
+\begin{definition}[Right-Left Adjoints for the Dependency Semantics]\labdef{right-left-adjoints-for-the-dependency-semantics}\labdef{abstraction-dependency-semantics}\labdef{concretization-dependency-semantics}
 \begin{align*}
   \dependencyabstraction \IN& \collectingtype \to \dependencytype \\
   \dependencyabstraction(\defsetofsetoftraces) \DefeQ& \setdef{
@@ -1100,7 +1100,7 @@ The next result shows that the dependency semantics $\dependencysemantics$ allow
 We further abstract the dependency semantics $\dependencysemanticsnoparam$ into the output-abstraction semantics $\outputsemanticsnoparam$ as the unused property $\unused$ never considers output states without first abstracting them via the output observer $\aniobserver$, \refdef*{output-observer}[*-5].
 Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as:
 %
-\begin{definition}[Right-Left Adjoints for the Output Abstraction Semantics]\labdef{right-left-adjoints-for-the-output-abstraction-semantics}
+\begin{definition}[Right-Left Adjoints for the Output Abstraction Semantics]\labdef{right-left-adjoints-for-the-output-abstraction-semantics}\labdef{abstraction-output-semantics}\labdef{concretization-output-semantics}
 \begin{align*}
   \outputabstraction \IN& \dependencytype \to \outputtype \\
   \outputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{

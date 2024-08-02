@@ -3,7 +3,7 @@
 \newcommand*{\impactsubseteq}{\le}
 
 \newcommand{\impactinstance}{\resize{\textup{\texttt{Impact}}}{\definputvariables}[\natural]}
-\newcommand{\boundconcretization}{\resize{\concretization}{\impactwrapper}[\comparison]}
+\newcommand{\boundconcretization}{\concretization^{\impactwrapper}}
 \newcommand{\leconcretization}{\concretization^\le_\definputvariables}
 \newcommand{\geconcretization}{\concretization^\ge_\definputvariables}
 
@@ -28,27 +28,50 @@
 \newcommand*{\qlibra}{\qlibraname_\definputvariables}
 \newcommand*{\volume}{\textup{\textsc{Volume}}}
 
-\newcommand*{\LEK}{{\le\defbound}}
-\newcommand*{\lek}{{\scaleto{\le}{5pt}\defbound}}
-\newcommand*{\gek}{{\scaleto{\ge}{5pt}\defbound}}
-\newcommand*{\comparisonk}{{\scaleto{\comparison}{5pt}\defbound}}
-\newcommand*{\genbounded}{\resize{\mathscr{B}}{\impactwrapper}[\comparisonk]}
-\newcommand*{\GENBOUNDED}{\mathscr{B}_{\impactwrapper}^{\comparisonk}}
-\newcommand*{\bounded}{\resize{\mathscr{B}}{\impactwrapper}[\lek]}
-\newcommand*{\BOUNDED}{\mathscr{B}_{\impactwrapper}^{\lek}}
-\newcommand*{\revbounded}{\resize{\mathscr{B}}{\impactinstance}[\gek]}
-\newcommand*{\REVBOUNDED}{\mathscr{B}_{\impactinstance}^{\gek}}
 
-\newcommand*{\boundedoutcomes}{\resize{\mathscr{B}}{\outcomes}[\lek]}
-\newcommand*{\BOUNDEDOUTCOMES}{\mathscr{B}_{\outcomes}^{\lek}}
-\newcommand*{\boundedrange}{\resize{\mathscr{B}}{\range}[\lek]}
-\newcommand*{\BOUNDEDRANGE}{\mathscr{B}_{\range}^{\lek}}
-\newcommand*{\boundedqused}{\resize{\mathscr{B}}{\qused}[\gek]}
-\newcommand*{\BOUNDEDQUSED}{\mathscr{B}_{\qused}^{\gek}}
-\newcommand*{\boundedchanges}{\resize{\mathscr{B}}{\changes}[\lek]}
-\newcommand*{\BOUNDEDCHANGES}{\mathscr{B}_{\changes}^{\lek}}
-\newcommand*{\boundedqlibra}{\resize{\mathscr{B}}{\qlibra}[\gek]}
-\newcommand*{\BOUNDEDQLIBRA}{\mathscr{B}_{\qlibra}^{\gek}}
+\newcommand*{\lek}[1][\defbound]{{\scaleto{\le}{5pt}{#1}}}
+\newcommand*{\gek}[1][\defbound]{{\scaleto{\ge}{5pt}{#1}}}
+\newcommand*{\comparisonk}[1][\defbound]{{\scaleto{\comparison}{5pt}{#1}}}
+\newcommand*{\genbounded}[1][\defbound]{\resize{\mathscr{B}}{\impactwrapper}[{\comparisonk[#1]}]}
+\newcommand*{\GENBOUNDED}[1][\defbound]{\mathscr{B}_{\impactwrapper}^{{\comparisonk[#1]}}}
+\newcommand*{\bounded}[1][\defbound]{\resize{\mathscr{B}}{\impactwrapper}[{\lek[#1]}]}
+\newcommand*{\boundedle}[1][\defbound]{\resize{\mathscr{B}}{\impactwrapper}[{\lek[#1]}]}
+\newcommand*{\BOUNDED}[1][\defbound]{\mathscr{B}_{\impactwrapper}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDLE}[1][\defbound]{\mathscr{B}_{\impactwrapper}^{{\lek[#1]}}}
+\newcommand*{\revbounded}[1][\defbound]{\resize{\mathscr{B}}{\impactinstance}[{\gek[#1]}]}
+\newcommand*{\boundedge}[1][\defbound]{\resize{\mathscr{B}}{\impactinstance}[{\gek[#1]}]}
+\newcommand*{\REVBOUNDED}[1][\defbound]{\mathscr{B}_{\impactinstance}^{{\gek[#1]}}}
+\newcommand*{\BOUNDEDGE}[1][\defbound]{\mathscr{B}_{\impactinstance}^{{\gek[#1]}}}
+\newcommand*{\boundedoutcomes}[1][\defbound]{\resize{\mathscr{B}}{\outcomes}[{\comparisonk[#1]}]}
+\newcommand*{\boundedoutcomesle}[1][\defbound]{\resize{\mathscr{B}}{\outcomes}[{\lek[#1]}]}
+\newcommand*{\boundedoutcomesge}[1][\defbound]{\resize{\mathscr{B}}{\outcomes}[{\gek[#1]}]}
+\newcommand*{\BOUNDEDOUTCOMES}[1][\defbound]{\mathscr{B}_{\outcomes}^{{\comparisonk[#1]}}}
+\newcommand*{\BOUNDEDOUTCOMESLE}[1][\defbound]{\mathscr{B}_{\outcomes}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDOUTCOMESGE}[1][\defbound]{\mathscr{B}_{\outcomes}^{{\gek[#1]}}}
+\newcommand*{\boundedrange}[1][\defbound]{\resize{\mathscr{B}}{\range}[{\comparisonk[#1]}]}
+\newcommand*{\boundedrangele}[1][\defbound]{\resize{\mathscr{B}}{\range}[{\lek[#1]}]}
+\newcommand*{\boundedrangege}[1][\defbound]{\resize{\mathscr{B}}{\range}[{\gek[#1]}]}
+\newcommand*{\BOUNDEDRANGE}[1][\defbound]{\mathscr{B}_{\range}^{{\comparisonk[#1]}}}
+\newcommand*{\BOUNDEDRANGELE}[1][\defbound]{\mathscr{B}_{\range}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDRANGEGE}[1][\defbound]{\mathscr{B}_{\range}^{{\gek[#1]}}}
+\newcommand*{\boundedqused}[1][\defbound]{\resize{\mathscr{B}}{\qused}[{\comparisonk[#1]}]}
+\newcommand*{\boundedqusedle}[1][\defbound]{\resize{\mathscr{B}}{\qused}[{\lek[#1]}]}
+\newcommand*{\boundedqusedge}[1][\defbound]{\resize{\mathscr{B}}{\qused}[{\gek[#1]}]}
+\newcommand*{\BOUNDEDQUSED}[1][\defbound]{\mathscr{B}_{\qused}^{{\comparisonk[#1]}}}
+\newcommand*{\BOUNDEDQUSEDLE}[1][\defbound]{\mathscr{B}_{\qused}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDQUSEDGE}[1][\defbound]{\mathscr{B}_{\qused}^{{\gek[#1]}}}
+\newcommand*{\boundedchanges}[1][\defbound]{\resize{\mathscr{B}}{\changes}[{\comparisonk[#1]}]}
+\newcommand*{\boundedchangesle}[1][\defbound]{\resize{\mathscr{B}}{\changes}[{\lek[#1]}]}
+\newcommand*{\boundedchangesge}[1][\defbound]{\resize{\mathscr{B}}{\changes}[{\gek[#1]}]}
+\newcommand*{\BOUNDEDCHANGES}[1][\defbound]{\mathscr{B}_{\changes}^{{\comparisonk[#1]}}}
+\newcommand*{\BOUNDEDCHANGESLE}[1][\defbound]{\mathscr{B}_{\changes}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDCHANGESGE}[1][\defbound]{\mathscr{B}_{\changes}^{{\gek[#1]}}}
+\newcommand*{\boundedqlibra}[1][\defbound]{\resize{\mathscr{B}}{\qlibra}[{\comparisonk[#1]}]}
+\newcommand*{\boundedqlibrale}[1][\defbound]{\resize{\mathscr{B}}{\qlibra}[{\lek[#1]}]}
+\newcommand*{\boundedqlibrage}[1][\defbound]{\resize{\mathscr{B}}{\qlibra}[{\gek[#1]}]}
+\newcommand*{\BOUNDEDQLIBRA}[1][\defbound]{\mathscr{B}_{\qlibra}^{{\comparisonk[#1]}}}
+\newcommand*{\BOUNDEDQLIBRALE}[1][\defbound]{\mathscr{B}_{\qlibra}^{{\lek[#1]}}}
+\newcommand*{\BOUNDEDQLIBRAGE}[1][\defbound]{\mathscr{B}_{\qlibra}^{{\gek[#1]}}}
 
 
 \newcommand*{\numberofbuckets}{n}

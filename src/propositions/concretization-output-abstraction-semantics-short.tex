@@ -1,0 +1,20 @@
+\begin{align*}
+  &\outputconcretization \in \outputtype \\
+  &\quad\to \dependencytype \\
+  &\outputconcretization(\defsetofsetofdependencies) \DefeQ \\
+  &\quad \setdef@{
+    \bigsetjoin \setdef@{
+      \defsetofdependencies' \subseteq
+      \defsetofstates_{\inputoutputtuple{\defstate}}
+    }{
+      \inputoutputtuple{\defstate} \in \defsetofdependencies
+    }
+  }{
+    \defsetofdependencies\in\defsetofsetofdependencies
+  }
+\end{align*}
+where \[\defsetofstates_{\inputoutputtuple{\defstate}} = \setdef{
+  \tuple{\retrieveinput\defstate}{\retrieveoutput\defstate'}
+}{
+  \retrieveoutput{\defstate} = \outputobs(\retrieveoutput{\defstate'})
+}\]
