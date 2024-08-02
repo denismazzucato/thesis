@@ -1499,9 +1499,9 @@ Before defining the concretization, we show an example where not all subsets of 
 % \marginnote[*7]{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
 
 \marginnote{
-  \begin{tikzpicture}[scale=1]
-    \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{3}:$};
+  \begin{tikzpicture}[scale=0.9]
+    \node (linit) at (-0.7,2) {$\locinit:$};
+    \node (lend) at (-0.7,0) {$\loc{3}:$};
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
     \node (TF) at (1,2) {${\tuple\true\false}$};
@@ -1514,7 +1514,7 @@ Before defining the concretization, we show an example where not all subsets of 
     \draw[->] (TF) -> (F);
     \draw[->] (FT) -> (T);
     \draw[->] (FF) -> (F);
-    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{id2}}$};
+    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=0pt] (-0.8,2.2) -- (-0.8,-0.2) node [black,midway,xshift=-0.6cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{id2}}$};
 \end{tikzpicture}
 }
 \begin{example}
@@ -1522,7 +1522,7 @@ Before defining the concretization, we show an example where not all subsets of 
   We consider the trace semantics of the program \refprog{id2}, \ie, $\tracesemanticsnoparam\semanticsof{\texttt{id2}}$, depicted on the side.
   Consider an abstract semantics $\multisemanticsnoparam\semanticsof{\texttt{id2}}$ that concretize to the following sets of dependencies:
   \begin{align*}
-    \multiconcretization(\multisemanticsnoparam) =
+    \multiconcretization(\multisemanticsnoparam\semanticsof{\texttt{id2}})\buckets \spacearound{=}
     \setof*{\left\{
     \begin{array}{l}
       \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
@@ -1532,11 +1532,12 @@ Before defining the concretization, we show an example where not all subsets of 
     \end{array}
     \right\}}
   \end{align*}
+  where the dependency $\tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}$ is the result of the over-approximation.
   As noted in \refexample{qused-not-monotonic}, the $\qusedname_{\{\texttt{x}\}}$ applied to the biggest set of the concretized dependencies above is 1.
-  We assume the abstract impact returns the bound 1.
-  In this case, we filter from $\multiconcretization(\multisemantics)$ the set of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqused$ employs the $\ge$ operator.
-  For instance, the following set of dependencies is removed:
+  If we assume the abstract impact returns the bound 1, \ie, $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets) = 1$, then $\boundconcretization$ should filter from $\multiconcretization(\multisemantics)\buckets$ the sets of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqused$ employs the $\ge$ operator.
+  In particular, the following set of dependencies is removed:
   \begin{align*}
+    \tracesemanticsnoparam\semanticsof{\texttt{id2}} \spacearound{=}
     \left\{
     \begin{array}{l}
       \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
@@ -1546,7 +1547,9 @@ Before defining the concretization, we show an example where not all subsets of 
     \end{array}
     \right\}
   \end{align*}
-  as $\qusedname_{\{\texttt{x}\}}$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
+  as $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
+  Note that, there is a contradiction as the abstract impact $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets)$ is assumed to be $1$ and should be smaller that the concrete one, which is $0$.
+  In fact, to be sound, the abstract impact should return a number not greater than $0$, and the concretization $\boundconcretization$ should not filter any set of dependencies.
 \end{example}
 
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
@@ -1626,7 +1629,7 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
   Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
   \begin{enumerate}[label=(\roman*)]
-    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5],
     \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5], and
     \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*3],
 \end{enumerate}
@@ -1681,15 +1684,16 @@ It follows the classic definition of soundness.
 \labsec{abstract-outcomes}
 
 
-The definition of $\abstractoutcomes$ first projects away the input variables $\definputvariables$ from all the given abstract values, then it collects all possible abstract values resulting from the meet operation over any two resulting abstract domain elements.
+The definition of $\abstractoutcomes$ first projects away the input variables $\definputvariables$ from all the given abstract values ($\abstractdomainproject$ in the definition below), then it collects the set of indices of abstract values resulting from the meet operation over any two resulting abstract domain elements ($\intersectallfunction$ in the definition below).
 These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
 We return the maximum number of abstract values that intersect after projections:
 \begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
+  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
   We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
   \begin{equation*}
   \abstractoutcomes(\presfrombuckets, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
   \end{equation*}
-  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$.
+  where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $\cardinalitynospaces{J}$ is the cardinality of the set of indices $J$.
 \end{definition}
 Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}[*-5]) since the number of intersecting abstract values is finite and bounded by $n$, the number of output buckets.
 The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
@@ -1788,7 +1792,10 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
     \item \label{proof:b1} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*1], and
     \item \label{proof:d} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*5];
   \end{enumerate}
-  then, $\abstractoutcomes$ is a sound implementation of $\outcomes$.
+  then, $\abstractoutcomes$ is a sound implementation of $\outcomes$ \wrt{} the $\le$ operator:
+  \begin{align*}
+    \outcomes(\tracesemanticsnoparam) \LE \abstractoutcomes(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
+  \end{align*}
 \end{lemma}
 \begin{proof}[Proof (Sketch)]
   We need to prove that
@@ -1858,6 +1865,23 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
 
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractoutcomes$.
+
+\begin{theorem}[Soundness of $\boundedoutcomesle$] \labthm{soundness-boundedoutcomesle}
+  Let $\boundedoutcomesle$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5],
+\end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \abstractoutcomes(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDOUTCOMESLE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{abstractoutcomes-is-sound} shows that $\abstractoutcomes$ is a sound implementation of $\outcomes$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractoutcomes$ and comparison operator $\le$.
+\end{proof}
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractrange$}{Abstract Range}}[Abstract \texorpdfstring{$\abstractrange$}{Range}]
 \labsec{abstract-range}
@@ -1866,21 +1890,22 @@ We define $\abstractrange$ as the maximum distance of the range of the extreme v
 In such case, we assume $\abstractdomain$ is equipped with an additional abstract operator $\abstractdomaindistance\in\abstractdomain\to\valuesposplus$, which returns the size of the given abstract element, otherwise $+\infty$ if the abstract element is unbounded or represents multiple variables.
 
 \begin{example}
-  In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomaindistance(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
+  In the context of the interval domain, where each input variable is related to a (possibly infinite) lower and upper bound, $\abstractdomaindistance(\langle \defvariable \mapsto [2, 4]\rangle) = 2$.
   On the other hand, whenever the input abstract element is unbounded, the size is $+\infty$, \eg, $\abstractdomaindistance(\langle \defvariable \mapsto [0, +\infty]\rangle) = +\infty$.
   % The function $\abstractdomaindistance$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 \end{example}
 
-The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values.
-Then, it collects all the possible intersections among the projected abstract values.
+The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values (\cf{} $\abstractdomainproject$).
+Then, it collects the indices of all possible intersections among the projected abstract values (\cf{} $\intersectallfunction$).
 These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
-All the possible combination of intersections are joined together to find the maximum range of the extreme values of the buckets.
+All the buckets of corresponding intersections are joined together and the projected away all but the output variables (\cf{} $\abstractdomainproject[\inputvariables \setminus \defoutputvariables]$) to find the maximum range of the extreme values of the buckets.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
+  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
   Let $\defoutputvariables$ be the output variables of interest.
 We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
 \begin{align*}
-\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(\abstractdomainproject[\defoutputvariables](K))}{K \in I} \\
+\abstractrange(\presfrombuckets, \buckets) \DefeQ& \max~\seTDef{\abstractdomaindistance(\abstractdomainproject[\inputvariables \setminus \defoutputvariables](K))}{K \in I} \\
 \text{where}~
 I ~=~& \seTDef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
 \end{align*}
@@ -1935,16 +1960,21 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
 
 The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{} \refdef*{range}[*-16.2].
 
+\refdef@{range}[*-4]
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
   \begin{enumerate}[label=(\roman*)]
-    \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-16.7],
-    \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*-12.3],
-    \item \label{proof:ad} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*-8.5], and
-    \item \label{proof:ae} $\abstractdomaindistance$ is sound, \cf{} \refdef*{soundness-size}[*-4];
+    % \item \label{proof:a} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation},
+    \item \label{proof:ab} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-3.5],
+    \item \label{proof:ac} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*1],
+    \item \label{proof:ad} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*5], and
+    \item \label{proof:ae} $\abstractdomaindistance$ is sound, \cf{} \refdef*{soundness-size}[*10];
   \end{enumerate}
-  then, $\abstractrange$ is a sound implementation of $\range$.
+  then, $\abstractrange$ is a sound implementation of $\range$ \wrt{} the $\le$ operator:
+  \begin{align*}
+    \range(\tracesemanticsnoparam) \LE \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
+  \end{align*}
 \end{lemma}
 \begin{proof}[Proof (Sketch)]
   We need to prove that
@@ -1952,7 +1982,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
     \range(\tracesemanticsnoparam) = \sup_{\definput\in\reducedstate}
     \distance(\setdef{\outputobs(\retrieveoutput{\deftrace})(\defoutputvariable)}{\deftrace\in\tracesemanticsnoparam\land\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \definput})
     \LE \\
-    \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomaindistance(K)}{K \in I}
+    \abstractrange(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max~\setdef{\abstractdomaindistance(\abstractdomainproject[\inputvariables \setminus \defoutputvariables](K))}{K \in I}
   \end{gather*}
   where $I = \setdef{\abstractdomainjoin\seTDef{\bucket}{j\in J}}{J \in \intersectallfunction((\abstractdomainproject(\backwardconcretization(\backwardsemanticsnoparam)\bucket))_{j\le\numberofbuckets})}$.
   Let $\overline{\definput}\in\reducedstate$ be such that:
@@ -1996,6 +2026,24 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   as expected by \refthm*{soundness}[*-4].
 \end{example}
 
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractrange$.
+
+\begin{theorem}[Soundness of $\boundedrangele$] \labthm{soundness-boundedrangele}
+  Let $\boundedrangele$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5],
+\end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \abstractrange(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDOUTCOMESLE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{abstractrange-is-sound} shows that $\abstractrange$ is a sound implementation of $\range$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractrange$ and comparison operator $\le$.
+\end{proof}
+
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
 \labsec{abstract-qused}
 
@@ -2007,6 +2055,7 @@ To compute the number of missing (total) input configurations, we multiply the n
 This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
 The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that may lead to different outcomes.
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
+  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
     \abstractqused(\presfrombuckets, \buckets) \DefeQ& \max_{j \le \numberofbuckets}\spacer
@@ -2077,7 +2126,7 @@ The result is a measure of the influence of the input variables on the output of
 \end{example}
 
 To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the sound soundness condition on the abstract operator $\abstractdomaincount$, ensuring that the abstract count is always lower than the concrete one.
-This requirement comes from the comparison operator $\ge$ in the property $\boundedqused$.
+%
 Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is the cardinality operator $\cardinalitynospaces{\cdot}$.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
@@ -2096,7 +2145,10 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
     \item \label{pp3} $\abstractdomainproject[]$ is sound, \cf{} \refdef*{soundness-project}[*6], and
     \item \label{pp4} $\abstractdomaincount$ is sound, \cf{} \refdef*{soundness-count}[*10.8];
   \end{enumerate}
-  then, $\abstractqused$ is a sound implementation of $\qused$.
+  then, $\abstractqused$ is a sound implementation of $\qused$ \wrt{} the $\ge$ operator:
+  \begin{align*}
+    \qused(\tracesemanticsnoparam) \GE \abstractqused(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
+  \end{align*}
 \end{lemma}
 \begin{proof}[Proof (Sketch)]
   We need to prove that
@@ -2156,6 +2208,195 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   In this case, the bound computed in the abstract is the same as the concrete one, as the abstract domain is precise enough to capture the exact number of missing input configurations.
 \end{example}
 
+
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqused$.
+
+\begin{theorem}[Soundness of $\boundedqusedge$] \labthm{soundness-boundedqusedge}
+  Let $\boundedqusedge$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5],
+\end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \abstractqused(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQUSEDGE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{abstractqused-is-sound} shows that $\abstractqused$ is a sound implementation of $\qused$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractqused$ and comparison operator $\le$.
+\end{proof}
+
+Interestingly, the abstract implementation $\abstractqused$ under-approximates the \emph{used} variables, whereas the syntactic dependency analysis $\synsemanticsnoparam$ (\cf{} \refsec{syntactic-dependency-analysis}) under-approximates the \emph{unused} variables.
+Let us define the syntactic dependency analysis as an abstract implementation:
+\begin{align*}
+\synunused(\defprogram) \DefeQ \begin{cases}
+  \true &\text{if } \forall \definputvariable\in\definputvariables.\spacer \synsemanticsnoparam\semanticsof{\defprogram}(\definputvariable) \in \{ \unusedtag, \overwrittentag \} \\
+  \false &\text{otherwise}
+\end{cases}
+\end{align*}
+returning $\true$ if the syntactic dependency analysis $\synsemanticsnoparam$ found that all the input variables $\definputvariables$ are unused, \ie, unused ($\unusedtag$) or overwritten ($\overwrittentag$), in the program $\defprogram$.
+It holds that, whenever $\abstractqused = 0$ we cannot conclude anything about $\synunused$. Respectively, whenever $\synunused$ does not hold we cannot conclude anything about $\abstractqused$.
+However, it holds that:
+\begin{align*}
+  \abstractqused \neq 0 &\ImplieS \neg\synunused \\
+  \synunused &\ImplieS \abstractqused = 0
+\end{align*}
+In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{note the double negation in $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
+
+\section{Related Work}
+\labsec{nfm24-related-work}
+
+\newcommand*{\entropypartitions}[1][\defprogram]{\Pi(#1)}
+\newcommand*{\exampleinput}{\textsc{Input}_\defprogram}
+
+Given the connection between \emph{qualitative} input usage and information flow analyses \sidecite{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to use \emph{quantitative} information flow \sidecite{Denning1982,Gray1991}.
+%formerly introduced by the pioneering work of \sidetextcite{Denning1982} and \sidetextcite{Gray1991}.
+Such analyses measure information leakage about a secret through the concept of entropy, based on observations of the program's output values.
+%
+Remarkably, this similarity between entropy and our notion of impact is even more evident
+in the work proposed by \sidetextcite{K_opf2013} which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
+% In particular, \textcolor{red}{we focus on the work proposed by \sidetextcite{K_opf2013}} \marginpar{\textcolor{red}{why this work and not others? we should justify}} which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
+For example, the equivalence classes of the program \landingprogram{} are $\entropypartitions[\landingprogram]=\setdef{\setdef{\tuple{x}{y}}{\landingprogram(x, y)=\defoutput}}{\defoutput\in\{0, 1, 2, 3\}}
+=\{\{\tuple{1}{1}\}, \{\tuple{1}{2}\}, \{\tuple{1}{3}\}, \{\tuple{-4}{1}, \tuple{-4}{2}, \tuple{-4}{3}\}\}$.
+We developed our impact definitions by adapting entropy measures to our needs in three successive attempts.
+
+% Various static analyses \sidecite{Clark2007,Malacaria2007} derived from information theory. Entropy measures, such as \textit{Shannon}- or \textit{min}-entropy, are employed to define average or worst-case bounds on the level of difficulty faced by an attacker in discovering a secret.
+% These measures are commonly utilized to defend against security threats, \eg, side-channel attacks~\cite{Malacaria2018}.
+
+% In particular, the work of \sidetextcite{K_opf2013} quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. This framework quantifies Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
+% For example, the equivalence classes of the program of \Figure{program}, denoted as $\defprogram$, with output variable \z, are defined as $\entropypartitions=\setdef{\setdef{\tuple{x}{y}}{\defprogram(\tuple{x}{y})=\defoutput}}{\defoutput\in\{0, 1, 2, 3\}}
+% =\{\{\tuple{1}{1}\}, \{\tuple{1}{2}\}, \{\tuple{1}{3}\}, \{\tuple{-4}{1}, \tuple{-4}{2}, \tuple{-4}{3}\}\}$.
+
+% \paragraph*{First Attempt.}
+\newcommand{\shannonentropy}{H}
+\newcommand{\probability}{E_\defprogram}
+
+% Given the set of all input values $\exampleinput$, the Shannon-entropy of a program is:
+% \begin{align}
+%   \labeq{shannon-entropy}
+%   \shannonentropy(\defprogram) \DefeQ
+%     \frac{1}{\cardinalitynospaces{\exampleinput}} \sum_{B\in\entropypartitions} \cardinalitynospaces{B} \log_2 \cardinalitynospaces{B}
+% \end{align}
+Initially, we notice that Shannon-entropy computes the average uncertainty of input values based on observations of the program's outcomes, while min-entropy, defined as:
+\newcommand{\minentropy}{{H_\infty}}
+\begin{align}
+  \labeq{min-entropy}
+  \minentropy(\defprogram) \DefeQ
+  \log_2 \frac{\cardinalitynospaces{\exampleinput}}{\cardinalitynospaces{\entropypartitions}}
+\end{align}
+computes the worst-case uncertainty,
+where $\exampleinput$ is the set of all input values of a given program \defprogram.
+As a first attempt, we consider min-entropy as closer to our needs since our aim is to discover the worst-case impact, \ie, the case in which a variable contributes the most.
+By computing min-entropy on the program \landingprogram, we obtain $\minentropy(\landingprogram)=0.58$, indicating that the input is highly guessable.
+Indeed, when the risk level is 3, the potential values of input variables are ${\texttt{angle}}=-4$ and ${\texttt{speed}}\in{1, 2, 3}$; for all other output values, the input values are completely determined.
+%
+Unfortunately, min-entropy lacks granularity and measures the uncertainty of the input variables collectively. Instead, our aim is to quantify the individual contributions.
+
+To address the previous issue, as a second attempt we exploit low and high labels for input variables, where the former are considered as public, available to the attacker, and the latter as secret.
+To assess the impact of each input variable, we prioritize one high variable at a time, considering all others as low variables.
+Subsequently, we compute the min-entropy of the labelled program to quantify the extent of the impact.
+%
+% We define $\landingprogram^{\texttt{angle}}_y(x)\defeq\landingprogram(x, y)$ as the program where {\texttt{angle}} is high and {\texttt{speed}} is low with value $y$.
+%
+We define $\landingprogram^{\texttt{angle}}(x)\defeq \langle\landingprogram(x, 1), \landingprogram(x, 2), \landingprogram(x, 3)\rangle$ which represents the sequence of programs where ${\texttt{angle}}$ is high and ${\texttt{speed}}$ is low.
+%
+Similarly, $\landingprogram^{\texttt{speed}}(y)\defeq\langle\landingprogram(-4, y), \landingprogram(1, y)\rangle$ where ${\texttt{speed}}$ is high and ${\texttt{angle}}$ is low.
+%
+Computing $\minentropy(\landingprogram^{\texttt{angle}})$ and $\minentropy(\landingprogram^{\texttt{speed}})$ yields 0 on both because all equivalence classes consist of singletons, meaning the number of inputs equals the number of outputs. Thus, there's no uncertainty in the value of ${\texttt{angle}}$ given outputs of $\landingprogram^{\texttt{angle}}$, or in the value of ${\texttt{speed}}$ given outputs of $\landingprogram^{\texttt{speed}}$.
+Indeed, observing the output $\langle 3, 3, 3\rangle$ from the program $\landingprogram^{\texttt{angle}}$ implies that ${\texttt{angle}}$ is $-4$, while observing $\langle 0, 1, 2 \rangle$ implies that ${\texttt{angle}}$ is $1$. The same applies to $\landingprogram^{\texttt{speed}}$ where observing $\langle 3, 0 \rangle$ implies ${\texttt{speed}}=1$, $\langle 3, 1\rangle$ implies ${\texttt{speed}}=2$, and $\langle 3, 2\rangle$ implies ${\texttt{speed}}=3$.
+%
+However, this approach does not isolate the contributions of high variables; these outcomes are combined into a tuple of values through the return statement and thus evaluated together. Consequently, min-entropy cannot distinguish the contribution of each input variable independently.
+
+\newcommand{\outcomesentropy}{{H_\textsc{O}}}
+An immediate solution is to develop a similar approach to the one used for the high-low variables, but instead of using min-entropy for the derived programs ($\landingprogram^{\texttt{angle}}$ and $\landingprogram^{\texttt{speed}}$), we count the number of outcomes of the partially-applied programs, \cf{} programs
+$\landingprogram(x, 1), \landingprogram(x, 2),$ and $\landingprogram(x, 3)$ for $\landingprogram^{\texttt{angle}}$; $\landingprogram(-4, y)$ and $\landingprogram(1, y)$ for $\landingprogram^{\texttt{speed}}$.
+These programs are referred to as $\landingprogram^{\texttt{angle}}_y$ and $\landingprogram^{\texttt{speed}}_x$ respectively.
+Therefore, the third attempt defines $\outcomesentropy(\landingprogram^{\texttt{angle}})\DefeQ \max \setdef{ \cardinalitynospaces{\entropypartitions[\landingprogram^{\texttt{angle}}_y]}}{y\in\{1, 2, 3\}}$ and $\outcomesentropy(\landingprogram^{\texttt{speed}})\DefeQ \max \setdef{\cardinalitynospaces{\entropypartitions[\landingprogram^{\texttt{speed}}_x]}}{x\in\{-4, 1\}}$ retaining the maximum to obtain the worst-case scenario.
+As a result, $\outcomesentropy(\landingprogram^{\texttt{angle}})=2$ and $\outcomesentropy(\landingprogram^{\texttt{speed}})=3$. This means that variations of the value of ${\texttt{angle}}$ result in at most 2 different outputs, while variations of the value of ${\texttt{speed}}$ result in at most 3.
+Effectively, this is the first notion of impact derived from min-entropy capable of discriminating the contribution of each input variable on the program computation, exploiting the number of reachable outcomes from variations of the value of the input variable under consideration.
+Indeed, $\outcomesentropy(\defprogram^\definputvariables)=\outcomes(\defprogram)$ holds for a generic program $\defprogram$.
+% Effectively, this is the first notion of impact capable of discriminating the contribution of each input variable on the program computation, exploiting the number of reachable outcomes from variations of the value of the input variable under consideration.
+
+
+Overall, entropy measures and the approach proposed by \sidetextcite{K_opf2013} can be adapted to our needs. Nevertheless, their analysis grows exponentially with the number of low variables, which in our adaptation corresponds to the number of inputs, minus one. To address this limitation, we leverage an over-approximation of input-output observations of the program, focusing solely on the low variables. By doing so, we obtain the set of input configurations that lead to the same output value by variation on the value of high variables.
+As a result, our approach performs the backward analysis only one time per output bucket, independently of the number of low variables.
+A similar technique could also be used to mitigate such explosion in their work.
+
+
+% \section{Discussion}\label{sec:discussion}
+
+% Our research draws inspiration from~\cite{Barowy2014} where an empirical analysis explores the usage of data for debugging spreadsheet applications through stochastic sampling.
+% \cite{Urban2018} introduce a formal qualitative property, called \textit{Input Data Usage}, to determine whether an input is used by a program or not.
+% Their work establishes the theoretical foundations for understanding the usage of input variable.
+% Building upon these foundations, subsequent studies~\cite{Urban2020,Mazzucato2021} extend the qualitative input data usage property through static analysis.
+% These studies focused on computing the qualitative property as an indicator of bias in neural network models.
+% Detecting bias is essential for assessing fairness and discriminatory behavior within these models.
+% %
+% In our work, we further expand on this framework by considering quantitative properties of input data usage.
+% While the qualitative property provides insights into the presence or absence of bias in neural networks, our work offers more flexibility.
+% This extension, in the context of fairness verification, enables the identification of input variables more prone to bias.
+% This knowledge facilitates a more efficient and targeted analyses, allowing researchers to leverage fairness techniques directly on the variables at a higher risk.
+% Without our contribution, identifying biased variables would require running the qualitative analysis separately on each variable, which is computationally intensive and time-consuming.
+% %
+% % Accordingly, whenever our quantitative prototype yields an impact value of 0, it holds that the input variable under consideration is definitely fair.
+% However, it is important to note that input data usage, as developed by~\cite{Urban2018} for programs beyond neural networks, is robust enough to account for the effect of non-determinism. In our prototype, specifically designed for neural network verification, we do not consider non-determinism.
+% Therefore, if our quantitative analysis returns an impact value of 0, it holds that the input variable under consideration is definitely not used, but the other implication may not hold.
+% It would be interesting to explore the development of a new impact definition capable of resolving non-determinism within our generic framework.
+% %
+% Furthermore, recent developments~\cite{Ranzato2020,Ranzato2021,Pal2022} are currently targeting other machine learning models, such as decision trees and support vector machines, developing formal methods to discover the usage of input variables.
+% Quantitative analyses have the potential to enhance these techniques by leveraging a broader spectrum of possible results.
+
+% \subsection*{Quantitative Information Flow}
+
+% \begin{description}
+%   \item[\cite{Gray1991,Denning1982}] first introduced, in a pioneering work, quantitative information flow. Its goal is to measure the amount of information leaked about a secret by observing program computations.
+%   \item[\cite{Clark2007}] proposed a first static analysis to quantify interference in a simple imperative language. They quantify leakage in terms of Shannon's information theory.
+%   \item[\cite{Malacaria2007}] improved precision of information-theoretic models of programs by focusing on a semantics for looping constructor. Previous series of papers~\cite{Clark2002,Clark2005a,Clark2005b,Clark2007} were overly conservative treatment of looping constructor.
+%   \item[\cite{Smith2009}] claimed that Shannon entropy is the wrong measure, because it fails to accurately capture the probability of the attacker first guess at the high data is correct. Another measure is proposed, min-entropy.
+%   \item[\cite{Clarkson2009}] developed a new model that that describes how attacker beliefs change due to the attacker's observation of the execution of a non-deterministic program. Another measure is proposed since Shannon mutual information does not appear to result in a theory that allows compositional reasoning.
+%   \item[\cite{Phan2012}] proposed a static analysis based on symbolic execution to quantify information leaks.
+%   \item[\cite{Alvim2014}] began to address the problem that different pieces of high-security data might be worth more than others, not all leaked bits are equal.
+%   \item[\cite{Yasuoka2014}] unified and extended the previous results on the hardness of checking and inferring quantitative information flow
+%   \item[\cite{Assaf2016}] improved the traditional techniques of approximating and counting the reachable states in presence of low inputs with the cardinal abstraction.
+%   \item[\cite{Assaf2017}] static analysis in the abstract interpretation framework to quantify information leakage employing a fixpoint characterization of hypercollecting semantics.
+%   \item[\cite{Cousot2019}] summarized various formal verification techniques for dependencies among input variables of programs into a value dependency static analysis which can be further abstracted to provide insights about information flow, non-interference, and taint analyses to name a few.
+%   \item[\cite{Zhang2022}] developed a \textit{strongest-postcondition-style} calculus to enable reasoning about the flow of quantitative information.
+%   \item[\cite{Henzinger2023}]generalized the hierarchy of safety and liveness properties to quantitative safety and liveness studying relations among these new classes of properties.
+% \end{description}
+
+% Our framework draws inspiration by the works of \sidetextcite{Urban2018}, who introduces a backward analysis for  the qualitative property of ``input data usage'', and of \sidetextcite{Barowy2014}, which explores the data usage with a stochastic approach for debugging spreadsheet applications.
+% Here, we further advance by considering quantitative properties of input data usage.
+% While the qualitative property provides insights into the usage or not of program inputs, our work offers more flexibility providing a quantification of such a usage.
+% Conversely, our quantitative framework is derived from the qualitative input data usage property, which bears similarities with information flow properties, we drew inspiration from this field to construct our framework.
+
+Other works include \sidetextcite{Chothia2014}, which proposed a statistical approach to quantify information leakage for Java programs. \sidetextcite{Phan2012} and \sidetextcite{Saha2023} employed symbolic execution techniques and model counting to obtain sound bounds on the entropy of programs.
+Other static analyses, \eg, \sidetextcite{Assaf2017} and \sidetextcite{Clark2007}, are based on abstract interpretation.
+%
+% A series of papers~\cite{Clark2005a,Clark2005b,Clark2007,Malacaria2007} proposed static analyses to verify quantitative interference using Shannon's information theory and semantics of looping constructors, refining information-theoretic models.
+% However,~\cite{Smith2009} argued against the extent of the Shannon entropy measure, proposing min-entropy as more accurate to measure the probability that an attacker guesses private data correctly in the first attempt.
+% \cite{Clarkson2009} focused on non-deterministic program and proposed and variation of the Shannon entropy measure.
+% Various static analysis techniques have been developed mainly based on abstract interpretation and symbolic execution~\cite{Phan2012,Assaf2017}.
+% As a result, there is a need of a generic framework parametric in the definition of the quantitative measure.
+% An unification proposed by~\cite{Yasuoka2014} extended previous results on inferring quantitative information flow.
+% More recently,~\cite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and~\cite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness, exploring relationships among these new property classes.
+% %
+%
+The key difference among our framework and their work is the information we measure. Our analysis quantifies the effect of each of the input variables on the program outcome, focusing on numerical properties, while quantitative information flow usually measures quantities in terms of bits of information transferred from the input variables to the program outcome, more specific to security properties.
+For example, \sidetextcite{Assaf2017} counts how many bits of information of input variables are used to compute the result; \sidetextcite{Smith2009} computes the probability of guessing the value of a private variable from the value of input variables; and \sidetextcite{McCamant2008} retrieves the channel capability, which is the worst-case possible for information leakages. Most of these approaches are based on the concept of entropy measures, which are orthogonal to our approach.
+Instead, we present a more fine-grained analysis, which discovers the impact of each input variable separately.
+
+
+% Input data usage and non-interference relates also with \textit{Data Leakage}~\cite[Chapter~4]{Brownlee2020}.
+% This property holds relevance for data science software, particularly in addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
+% The series of papers developed by Subotić et al.~\cite{Drobnjaković2022,Subotić2021,Subotić2022} focuses on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, bringing new challenges in the topic of formal verification.
+% Within our framework, we could incorporate an adaptation of their work to encompass a notion of quantitative data leakage.
+% Further development of this concept could be of particular interest.
+
+
+
+
+% Recent developments, \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 
 \section{Summary}
 \labsec{quantitative-input-data-usage-summary}

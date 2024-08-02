@@ -735,6 +735,38 @@ That is, the abstract quantity is always higher than the concrete counterpart.
 Thus, by \nrefthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrange$.
 
 
+\section{Related Work}
+\labsec{sas24-related-work}
+
+
+Loop bound analyses are widely studied in the literature, as they are essential for various program analyses, including termination analysis, WCET analysis, and side-channel analysis. In this section, we discuss the most relevant works in these areas and compare them with our approach.
+
+\paragraph{Worst-Case Execution Time.}
+Worst-Case Execution Time (WCET) Analysis aims to derive sound upper bounds on the execution time of programs (see~\sidetextcite{Wilhelm2008} for a survey).
+On a broader perspective, the problem of deriving an upper bound on the number of loop iterations is a particular case of the problem of deriving loop bounds~\sidecite{Cadek2018,Ermedahl2007}, which aims to infer invariants on the number of iterations of a single specific loop.
+Global loop bound analyses, instead, consider the aggregate behavior of all the loops of a program~\sidecite{Carbonneaux2015,Sinn2017}.
+Our work is orthogonal to the existing literature on WCET and loop bound analysis as we do not generate invariants on the global number of iterations itself.
+Instead, we focus on quantifying the impact on the global number of loop iterations of each input variable individually.
+However, we leverage an underlying global loop bound analysis to understand the input-output relationship involving the global loop counter.
+
+\paragraph{Side-Channels Analysis.}
+Side-channel attacks exploit vulnerabilities in cryptographic system implementations rather than directly targeting computational complexity \sidecite{Kocher1996}.
+These attacks, including those based on power consumption \sidecite{Kocher1999} and speculative executions \sidecite{Kocher2019,Lipp2018}, can leak sensitive information without physical tampering \sidecite{Wong2005}.
+Various methods have been proposed to quantify the information leaked through side-channels.
+The quantitative analysis of side-channel attacks, initially introduced by \sidetextcite{K_opf2007}, utilizes model counting and a greedy algorithm to mitigate the exponential growth of potential paths that must be examined.
+\sidetextcite{Phan2017,Phan2012} and \sidetextcite{Saha2023} apply symbolic execution to enumerate the equivalence classes of program's output values, and utilizes entropy measures to quantify the information leakage.
+Other static analyses, \eg, \sidetextcite{Assaf2017} and~\sidetextcite{Clark2007}, are instead based on abstract interpretation.
+However, our work differs by quantifying the impact of each input variable separately, rather than providing a comprehensive quantification for all input variables.
+This fine-grained analysis is essential for identifying specific variables that significantly influence program behavior.
+While quantitative analyses theoretically could infer similar information, their entropy measures are not designed for this purpose (\cf{} \refsec{sec:nfm24-related-work}), and they usually require $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}, which is computationally expensive \sidecite{Antonopoulos2017}.
+Instead, our approach only requires a single abstract analysis and leverages variable projections to separate the contributions of each input variable \sidecite{Urban2020,Mazzucato2021}.
+
+\paragraph{Input Data Usage.}
+The syntactic dependency analysis proposed by~\sidetextcite{Urban2018} can be seen as the qualitative counterpart to our quantitative definition.
+It holds that whenever the measured impact is zero, the input variable is definitely unused, \wrt\ the number of iterations of the loop.
+Indeed, by considering only the syntactic dependencies, we would have obtained an abstraction of the input data usage property.
+
+
 
 \section{Summary}
 
