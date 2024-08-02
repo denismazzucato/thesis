@@ -8,7 +8,9 @@
 
 \DeclareBoolOption{framed}
 
-\newcommand{\kaotheorems@defaultbg}{Goldenrod!15!white}
+\definecolor{BLUE}{RGB}{76, 114, 176}
+% \newcommand{\kaotheorems@defaultbg}{Goldenrod!15!white}
+\newcommand{\kaotheorems@defaultbg}{BLUE!15!white}
 % \newcommand{\kaotheorems@defaultbg}{white}
 \DeclareStringOption[\kaotheorems@defaultbg]{background}
 \DeclareStringOption[\kaotheorems@defaultbg]{theorembackground}
@@ -20,6 +22,7 @@
 \DeclareStringOption[\kaotheorems@defaultbg]{remarkbackground}
 \DeclareStringOption[\kaotheorems@defaultbg]{examplebackground}
 \DeclareStringOption[\kaotheorems@defaultbg]{exercisebackground}
+
 
 \ProcessKeyvalOptions{kaotheorems}
 

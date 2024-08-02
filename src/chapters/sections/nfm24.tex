@@ -11,10 +11,10 @@
 
 
 In this chapter, we present a quantitative notion of input data usage, extending the definition introduced in the previous chapter.
-We define three different quantifiers for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property of a program.
-At the end, we present abstract versions of these quantifiers and show how they can be used to verify the corresponding quantitative property.
+We define three different quantifiers for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property.
+At the end, we present the abstract versions of these quantifiers and show how they can be used to verify the corresponding quantitative property.
 This chapter is based on work published at NASA Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024b}.
-In the rest of this thesis, we will apply this quantitative framework in the context of neural networks and timing side-channel attacks.
+Later this thesis, we will apply our quantitative framework in the context of neural networks and timing side-channel attacks.
 
 \frenchdiv
 
@@ -2047,19 +2047,24 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
 \labsec{abstract-qused}
 
-We define $\abstractqused$ as the number of input values that are missing from perturbation to the input variables $\definputvariables$ to reach the same outcomes.
+We define $\abstractqused$ as the number of input values that are missing from perturbation to the input variables $\definputvariables$ to reach the same outcomes. We assume the abstract domain $\abstractdomain$ is equipped with an abstract counting operator $\abstractdomaincount\in\abstractdomain\to\valuesposplus$ that returns the number of possible values of the given abstract element, \eg, $\abstractdomaincount(\langle \defvariable \mapsto [2, 4]\rangle) = 3$.
+As well as an abstract complement operator $\abstractdomaincomplement_{\defabstractvalue}\in\abstractdomain\to\abstractdomain$ that returns the complement of the given abstract element \wrt{} a given $\defabstractvalue$ which we assume to represent the whole space, \eg, assuming $\abstractdomaincomplement_{\langle \defvariable \mapsto \{0, 1, 2, 3\}\rangle}(\langle \defvariable \mapsto \{2, 3\}\rangle) = \langle \defvariable \mapsto \{0, 1\} \rangle$.
+In general, we use $\abstractdomaintop$ for the abstract element representing the whole space.
 
-Specifically, $\abstractqused$ first computes the input values of the variable in $\definputvariables$ that are missing coming from the same output bucket.
+Specifically, $\abstractqused$ first computes the number (\cf{} $\abstractdomaincount$) of input values of the variable in $\definputvariables$ (\cf{} $\abstractdomainprojectothers$) that are missing (\cf{} $\abstractdomaincomplement_\abstractdomaintop$) coming from the same output bucket.
 These values represent missing partial input configurations that the concrete impact quantifier $\qused$ may count.
-To compute the number of missing (total) input configurations, we multiply the number of missing input values for the number of possible values of the other input variables.
+To compute the number of missing (total) input configurations, we multiply the number of missing input values for the number of possible values of the other input variables (\cf{} $\prod_{\defvariable\in \definputvariables} l_{\defvariable}$).
 This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
 The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that may lead to different outcomes.
+\marginnote{
+  The symbol $\abstractdomaintop$ refers to ``top'', \ie, the abstract element representing the whole space.
+}
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
     \abstractqused(\presfrombuckets, \buckets) \DefeQ& \max_{j \le \numberofbuckets}\spacer
-    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket)) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
+    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket))) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{align*}
   where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $l$ is the total number of input values a variable takes:
   \begin{align*}
@@ -2069,8 +2074,8 @@ The result is a measure of the influence of the input variables on the output of
 
 \begin{example}\labexample{abstract-qused}
   We show the computation of $\abstractqused$ for the program \refprog*{landing-alarm-system}.
-  For the sake of the example, we consider as abstract domain the set of points for each variable, otherwise with the use of interval abstract domain, the result would be too imprecise.
-  The backward analysis returns the following set of points:
+  For the sake of the example, we consider as abstract domain the set of values for each variable, otherwise with the use of interval abstract domain, the result would be too imprecise.
+  The backward analysis returns the following set of values:
   \begin{align*}
     \backwardsemanticsnoparam(\bucket[\textup{low}]) \spacearound{&=} \prefrombucket[\textup{low}] \spacearound{=} \langle \texttt{angle} \mapsto \{1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \\
     \backwardsemanticsnoparam(\bucket[\textup{mid\-/low}]) \spacearound{&=} \prefrombucket[\textup{mid\-/low}] \spacearound{=} \langle \texttt{angle} \mapsto \{1\}, \texttt{speed} \mapsto \{2, 3\} \rangle \\
@@ -2079,18 +2084,18 @@ The result is a measure of the influence of the input variables on the output of
   \end{align*}
   We are interested in the impact of the input variable \texttt{angle}, hence we project away the other variables from the complement of the given abstract intervals, obtaining:
   \begin{align*}
-    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{low}]) \\
+    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{low}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{low}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \emptyset\rangle) \spacearound{=}\abstractdomainbottom \\
-    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{mid\-/low}]) \\
+    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{mid\-/low}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{mid\-/low}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \{1\}\rangle) \\
     &\quad\spacearound{=} \langle \texttt{angle} \mapsto \{-4\} \rangle \\
-    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{mid\-/high}]) \\
+    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{mid\-/high}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{mid\-/high}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \{1\}\rangle) \\
     &\quad\spacearound{=} \langle \texttt{angle} \mapsto \{-4\} \rangle \\
-    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{high}]) \\
+    &\abstractdomainproject[{\{\texttt{speed}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{high}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{speed}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{high}]) \spacearound{=} \abstractdomainbottom
   \end{align*}
   Then, $\abstractqusedname_{\{\texttt{angle}\}}$ counts the number of input configurations:
@@ -2102,18 +2107,18 @@ The result is a measure of the influence of the input variables on the output of
   The total number of missing input configurations is $3$ for the variable \texttt{angle}, hence $\abstractqusedname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3$.
   On the other hand, when interested in the variable \texttt{speed} we project away the variable \texttt{angle} from the abstract intervals, obtaining:
   \begin{align*}
-    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{low}]) \\
+    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{low}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{low}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \emptyset\rangle) \spacearound{=}\abstractdomainbottom \\
-    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{mid\-/low}]) \\
+    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{mid\-/low}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{mid\-/low}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \{1\}\rangle) \\
     &\quad\spacearound{=} \langle \texttt{speed} \mapsto \{1\} \rangle \\
-    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{mid\-/high}]) \\
+    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{mid\-/high}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{mid\-/high}]) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4\}, \texttt{speed} \mapsto \{1\}\rangle) \\
     &\quad\spacearound{=} \langle \texttt{speed} \mapsto \{1\} \rangle \\
-    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaintop \setminus \prefrombucket[\textup{high}]) \\
+    &\abstractdomainproject[{\{\texttt{angle}\}}](\abstractdomaincomplement_\abstractdomaintop(\prefrombucket[\textup{high}])) \\
     &\quad\spacearound{=} \abstractdomainproject[{\{\texttt{angle}\}}](\langle \texttt{angle} \mapsto \{-4, 1\}, \texttt{speed} \mapsto \{1, 2, 3\} \rangle \setminus \prefrombucket[\textup{high}]) \spacearound{=} \abstractdomainbottom
   \end{align*}
   Then, $\abstractqusedname_{\{\texttt{speed}\}}$ counts the number of input configurations:
@@ -2160,7 +2165,7 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
       } \\
     \GE \\
     \abstractqused(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = \max_{j \le \numberofbuckets}\spacer
-    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket)) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
+    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket))) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{gather*}
   Let $\overline{\defseq}\in\tracesemanticsnoparam$ be such that:
   \begin{gather*}
@@ -2176,13 +2181,13 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   Let $\overline{j} \le \numberofbuckets$ be such that:
   \begin{gather*}
     \max_{j \le \numberofbuckets}\spacer
-    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket)) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
+    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket))) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
     \spacearound{=}
-    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
+    \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket)[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{gather*}
   By contradiction, we assume that $\cardinality{
     Q_\definputvariables(I_{\overline{\deftrace}}(\defsetoftraces)) \setminus I_{\overline{\deftrace}}(\defsetoftraces)
-  } < \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaintop \setminus \prefrombucket[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}$, meaning that the number of missing input configurations is lower than the number of missing input values for the variable $\definputvariables$ coming from the same output bucket.
+  } < \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket)[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}$, meaning that the number of missing input configurations is lower than the number of missing input values for the variable $\definputvariables$ coming from the same output bucket.
   Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{qq1} there exist output abstractions that are not matched by any output bucket,
