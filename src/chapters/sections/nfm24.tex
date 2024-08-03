@@ -78,9 +78,7 @@ With such a definition, we allow abstractions of program semantics to return an 
   \end{align*}
 \end{remark}
 
-\begin{marginfigure}
-  \caption{Illustration of the $\defbound$-bounded impact property $\bounded$ for different values of $\defbound$.}
-  \labfig{le-bounded}
+\begin{marginfigure}[*-5]
   \centering
   \resizebox{\textwidth}{!}{
     \begin{tikzpicture}
@@ -140,11 +138,11 @@ With such a definition, we allow abstractions of program semantics to return an 
 
   \end{tikzpicture}
   }
+  \caption{Illustration of the $\defbound$-bounded impact property $\bounded$ for different values of $\defbound$.}
+  \labfig{le-bounded}
   \end{marginfigure}
 
-  \begin{marginfigure}
-    \caption{Illustration of the $\defbound$-bounded impact property $\revbounded$ for different values of $\defbound$.}
-    \labfig{ge-bounded}
+  \begin{marginfigure}[*10]
     \centering
     \resizebox{\textwidth}{!}{
       \begin{tikzpicture}
@@ -195,6 +193,8 @@ With such a definition, we allow abstractions of program semantics to return an 
 
     \end{tikzpicture}
     }
+    \caption{Illustration of the $\defbound$-bounded impact property $\revbounded$ for different values of $\defbound$.}
+    \labfig{ge-bounded}
     \end{marginfigure}
 
 As a consequence of the $\defbound$-bounded impact property, \cf{} \refdef{bounded}, we notice that by enlarging the threshold $\defbound$, the set of program semantics that satisfy the property also increases.
@@ -215,7 +215,7 @@ As a consequence of the $\defbound$-bounded impact property, \cf{} \refdef{bound
 
 
 
-Note that, in both cases whether $\comparison$ is $\le$ or $\ge$, the $\defbound$-bounded impact property $\genbounded$ is always subset of $\resize{\mathscr{B}}{\impactwrapper}[{\scaleto{\comparison}{5pt}\defbound'}]$.
+Note that, in both cases whether $\comparison$ is $\le$ or $\ge$, the $\defbound$-bounded impact property $\genbounded$ is always a subset of $\resize{\mathscr{B}}{\impactwrapper}[{\scaleto{\comparison}{5pt}\defbound'}]$.
 \reffig{le-bounded} compares the property $\bounded$ for different values of $\defbound$, the smallest being $\defbound = 0$ containing the program semantics whose input variables have no impact.
 By increasing $\defbound$, the set of program semantics that satisfy the property also increases.
 Regarding the other operator $\ge$, \reffig{ge-bounded} shows that $\resize{\mathscr{B}}{\impactwrapper}[{\scaleto{\ge}{5pt}0}]$ is the property containing all the program semantics, \ie, $\resize{\mathscr{B}}{\impactwrapper}[{\scaleto{\ge}{5pt}0}] = \tracetype$. By decreasing $\defbound$, the set of program semantics that satisfy the property also increases.
@@ -223,7 +223,7 @@ Therefore, the $\defbound$-bounded impact property $\bounded$ can be used to ver
 
 
 Next, we instantiate $\impactwrappername$ with the impact quantifiers of \outcomesname{}, \rangename{}, and \qusedname{}. Each of these quantifiers differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are \emph{not} used to produce the outcomes.
-To this end, these quantifiers employ the concept of output observer, \cf{} \refdef*{output-observer}.
+To this end, these quantifiers employ the concept of output observer, \cf{} \refdef*{output-observer}[*-9].
 % We expect the output observer $\outputobs$ (\refdef*{output-observer}[*-2]) to return a quantifiable element, \ie{}, a value in $\valuesinf$.
 % An output observer $\outputobs$ that returns a quantifiable element is called an \emph{output observer}.
 
@@ -236,7 +236,7 @@ To this end, these quantifiers employ the concept of output observer, \cf{} \ref
 % We leverage this output observer to provide the end user of the framework the flexibility to choose the meaning of program outputs, without establishing it beforehand.
 
 \begin{example}\labexample{output-observer-landing}
-  Consider the \refprog*{landing-alarm-system} for a landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\text{angle}$, $b$ of $\texttt{speed}$, $c$ of $\texttt{landing\_coeff}$, and $d$ of $\texttt{risk}$.
+  Consider the \refprog*{landing-alarm-system}[*-6] for a landing alarm system with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\{0,1,2,3\}}$, where $a$ is the value of $\text{angle}$, $b$ of $\texttt{speed}$, $c$ of $\texttt{landing\_coeff}$, and $d$ of $\texttt{risk}$.
   Here, we abuse the notation and write states in $\state$ as tuples of variable values, without considering program locations.
   The output observer is instantiated with
   \[
@@ -295,7 +295,7 @@ To this end, these quantifiers employ the concept of output observer, \cf{} \ref
     \langle \top, \top, \top, \top \rangle & \text{otherwise}
   \end{cases}
   \]
-  \begin{marginfigure}[*-11]
+  \begin{marginfigure}[*-9]
     \centering
     \begin{tikzpicture}
       \node (linit) at (0,3) {$\locinit$};
@@ -360,7 +360,7 @@ Then, it gathers the output values of this set of traces by means of the output 
 %
 Afterwards, it yields the number of these output values via the cardinality operator $\cardinality{\cdot}$.
 Finally, through the supremum operator: $\sup$, it returns the maximum value to ensure that the greatest impact is preserved.
-\marginnote[*-13]{
+\marginnote{
   The supremum operator $\sup$ yields the least upper bound of the given set of elements $X$:
   %  that is, the smallest $q$ such that $q$ is greater than or equal to all elements of the set.
   \begin{align*}
@@ -384,7 +384,7 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
 \end{definition}
 
 
-\begin{margintable}[*-9]
+\begin{margintable}[*-5]
   \caption{Overview of the $\outcomesname$ impact quantifier for the variable $\texttt{angle}$ of \nrefprog{landing-alarm-system}.}
   \labtab{overview-outcomes-angle}
   \resizebox{\textwidth}{!}{
@@ -392,7 +392,7 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
     \textsc{Input} & \textsc{Traces} & \outcomesname \\
     \hline
     \hline
-    $\tuple{\blue{-4}}{1}$ & \makecell{$\tuple{\blue{-4}}{1}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$} & 2 \\
+    $\tuple{\blue{-4}}{1}$ & \makecell{$\tuple{\blue{-4}}{1}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$} & 2 \\
     \hline
     $\tuple{\blue{-4}}{2}$ & \makecell{$\tuple{\blue{-4}}{2}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{2}\rightarrow\langle{1}\rangle$} & 2 \\
     \hline
@@ -407,7 +407,7 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
     \hline
   \end{tabular}}
 \end{margintable}
-\begin{margintable}[*5]
+\begin{margintable}[*9]
   \caption{Overview of the $\outcomesname$ impact quantifier for the variable $\texttt{speed}$ of \nrefprog{landing-alarm-system}.}
   \labtab{overview-outcomes-speed}
   \resizebox{\textwidth}{!}{
@@ -529,7 +529,7 @@ For the \outcomesname{} quantifier, an impact quantity of zero implies that the 
 On the other hand, non-deterministic statements in the program may mislead $\outcomesname$ to account for differences in the program output as a result of variations in the input variables.
 
 \begin{example}\labexample{outcomes-nondeterminism}
-  \marginnote{
+  \marginnote[*3]{
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
       \node (lend) at (-0.9,0) {$\loc{10}:$};
@@ -736,7 +736,7 @@ Notably, the property $\boundedrangele$ (with the operator $\le$) is subset-clos
 \begin{lemma}[$\boundedrangele$ is subset-closed]\lablemma{range-subset-closed-le}
   For any two sets of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
   \begin{gather*}
-    \defsetoftraces \subseteq \defsetoftraces' \land \defsetoftraces' \in \BOUNDEDOUTCOMESLE \ImplieS \defsetoftraces \in \BOUNDEDOUTCOMESLE
+    \defsetoftraces \subseteq \defsetoftraces' \land \defsetoftraces' \in \BOUNDEDRANGELE \ImplieS \defsetoftraces \in \BOUNDEDRANGELE
   \end{gather*}
 \end{lemma}
 \begin{proof}
@@ -748,7 +748,7 @@ Conversely, the property $\boundedrangege$ (with the operator $\ge$) is superset
 \begin{lemma}[$\boundedrangege$ is superset-closed]\lablemma{range-superset-closed-ge}
   For any two sets of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds that:
   \begin{gather*}
-    \defsetoftraces \subseteq \defsetoftraces' \land \defsetoftraces \in \BOUNDEDOUTCOMESGE \ImplieS \defsetoftraces' \in \BOUNDEDOUTCOMESGE
+    \defsetoftraces \subseteq \defsetoftraces' \land \defsetoftraces \in \BOUNDEDRANGEGE \ImplieS \defsetoftraces' \in \BOUNDEDRANGEGE
   \end{gather*}
 \end{lemma}
 \begin{proof}
@@ -819,7 +819,7 @@ Formally, the $\qusedname$ impact quantifier is defined as follows:
   The last two, \refprog{mix1} and \refprog{mix2}, combine together non-deterministic and deterministic statements.
   For simplicity, variables are assumed to range in $\{0, 1, 2\}$.
 
-  \begin{marginlisting}
+  \begin{marginlisting}[*-2]
     \caption{The identity program.}
     \labprog{id}
     \vspace{15pt}
@@ -834,13 +834,13 @@ id(x):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 0\rangle},\\
-        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 1\rangle},\\
-        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{3}}{\langle 2\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 0\rangle},\\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 1\rangle},\\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 2\rangle}
       \end{array}
     \right\}
   \end{align*}
-  \begin{marginfigure}[*-1.5]
+  \begin{marginfigure}[*-4]
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
       \node (lend) at (-0.9,0) {$\loc{3}:$};
@@ -885,9 +885,9 @@ random(x):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}
       \end{array}
     \right\}
   \end{align*}
@@ -944,9 +944,9 @@ mix1(x):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\rightarrow\tracetuple{\loc{6}}{\langle 0\rangle}, \\
-        \tracetuple{\locinit}{\langle 1\rangle}\rightarrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 2\rangle}\rightarrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{6}}{\langle 0\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}
       \end{array}
       \right\}
   \end{align*}
@@ -1004,11 +1004,11 @@ mix2(x, y):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{8}}{\langle \false\rangle}
+        \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}
       \end{array}
       \right\}
   \end{align*}
@@ -1119,10 +1119,10 @@ The trace semantics of \refprog{id2} is:
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
@@ -1158,11 +1158,11 @@ Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemant
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
@@ -1201,12 +1201,12 @@ Lastly, let us increase again the set of traces to $\defsetoftraces' \supseteq \
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\rightarrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
@@ -1283,8 +1283,6 @@ Thus, we can establish the following equivalence:
 
 
 \begin{marginfigure}
-  \caption{Graphical comparison between the unused $\unused$ and the $\defbound$-bounded impact property $\boundedqused$.}
-  \labfig{unused-bounded}
   % shows on top a bar going from $\defbound=0$ (left) to $\defbound=1$, $\defbound=2$, and finally $\defbound=\dots$ (right); this is a dashed bar with a bigger dot for numbers, label ar above.
   % Below, we have a dotted vertical line going from each dot to the bottom of the figure.
   % Here we have four layers, each one with two curly braces, splitting in two the layer.
@@ -1332,12 +1330,14 @@ Thus, we can establish the following equivalence:
     \draw [decorate,decoration={brace,amplitude=4pt},xshift=0pt,yshift=0pt] (\afterfourth,\thirdlevel) -- (\beforefourth,\thirdlevel) node [black,midway,yshift=-0.4cm] {$\boundedqusedge[3]$};
     \draw [decorate,decoration={brace,amplitude=4pt},xshift=0pt,yshift=0pt] (\afterfourth,\fourthlevel) -- (\beforefirst,\fourthlevel) node [black,midway,yshift=-0.4cm] {$\boundedqusedle[+\infty] = \boundedqusedge[0]$};
   \end{tikzpicture}
+  \caption{Graphical comparison between the unused $\unused$ and the $\defbound$-bounded impact property $\boundedqused$.}
+  \labfig{unused-bounded}
 \end{marginfigure}
 
 As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the (un)used property (\cf{} \refdef*{unused}) and the $\defbound$-bounded impact property (\cf{} \refdef*{bounded}) instantiated with the $\qusedname$ quantifier:
 \begin{align*}
-  \unused \spacearound{=} \BOUNDEDQUSEDLE[0] && \text{if } \comparison = \le\\
-  \neg\unused \spacearound{=} \BOUNDEDQUSEDGE[1] && \text{if } \comparison = \ge
+  \BOUNDEDQUSEDLE[0]\spacearound{=}\unused  && \text{if } \comparison = \le\\
+  \BOUNDEDQUSEDGE[1]\spacearound{=}  \neg\unused&& \text{if } \comparison = \ge
 \end{align*}
 meaning that if a program semantics does not utilize the variables $\definputvariables$, then it has an impact of \emph{at most} $0$ (and vice versa).
 Conversely, if a program semantics utilizes the variables $\definputvariables$, then it has an impact of \emph{at least} $1$ (and vice versa).
@@ -1481,8 +1481,8 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
   For all output buckets $\buckets$ and family of semantics $\multisemanticsnoparam$,
   whenever,
   \begin{enumerate}[label=(\roman*)]
-    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12], and
-    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-8],
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-4], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering},
   \end{enumerate}
   we say that $\impactinstance$ is a \textup{sound implementation} of $\impactwrapper$ if and only if:
   \begin{eqnarray*}
@@ -1629,9 +1629,9 @@ $\impactinstance$ returns the bound $\defbound'$, and $\defbound'\comparison\def
   Let $\genbounded$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
   \begin{enumerate}[label=(\roman*)]
-    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5],
-    \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5], and
-    \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*3],
+    \item \label{p:first} $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-12],
+    \item \label{p:second} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-8.5], and
+    \item \label{p:third} $\impactinstance$ is a sound implementation of $\impactwrapper$, \cf{} \refdef*{sound-implementation}[*-4],
 \end{enumerate}
   the following implication holds:
   \begin{align*}
@@ -1780,7 +1780,7 @@ Note that, $\outcomes$ is bounded by the number of buckets when the conditions o
   Therefore, there are at most $n$ different outputs.
 \end{proof}
 
-The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$.
+The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$ \wrt{} the $\le$ operator.
 
 \refdef@{outcomes}[*-4]
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
@@ -1865,7 +1865,7 @@ The next result shows that the abstract impact $\abstractoutcomes$ is a sound ov
   where $\landingprogram$ is the program of the landing alarm system, \cf{} \refprog{landing-alarm-system}.
 \end{example}
 
-Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractoutcomes$.
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractoutcomes$ and the comparison operator $\le$.
 
 \begin{theorem}[Soundness of $\boundedoutcomesle$] \labthm{soundness-boundedoutcomesle}
   Let $\boundedoutcomesle$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
@@ -1958,7 +1958,7 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
   \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomaindistance(\defstate^\natural)\]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{} \refdef*{range}[*-16.2].
+The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{} \refdef*{range}[*-16.2], \wrt{} the $\le$ operator.
 
 \refdef@{range}[*-4]
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
@@ -2026,7 +2026,7 @@ The next result shows that the abstract impact $\abstractrange$ is a sound over-
   as expected by \refthm*{soundness}[*-4].
 \end{example}
 
-Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractrange$.
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractrange$ and the comparison operator $\le$.
 
 \begin{theorem}[Soundness of $\boundedrangele$] \labthm{soundness-boundedrangele}
   Let $\boundedrangele$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
@@ -2037,7 +2037,7 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
 \end{enumerate}
   the following implication holds:
   \begin{align*}
-    \abstractrange(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDOUTCOMESLE
+    \abstractrange(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDRANGELE
   \end{align*}
 \end{theorem}
 \begin{proof}
@@ -2047,14 +2047,15 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqused$}{Abstract QUsed}}[Abstract \texorpdfstring{$\abstractqused$}{QUsed}]
 \labsec{abstract-qused}
 
-We define $\abstractqused$ as the number of input values that are missing from perturbation to the input variables $\definputvariables$ to reach the same outcomes. We assume the abstract domain $\abstractdomain$ is equipped with an abstract counting operator $\abstractdomaincount\in\abstractdomain\to\valuesposplus$ that returns the number of possible values of the given abstract element, \eg, $\abstractdomaincount(\langle \defvariable \mapsto [2, 4]\rangle) = 3$.
-As well as an abstract complement operator $\abstractdomaincomplement_{\defabstractvalue}\in\abstractdomain\to\abstractdomain$ that returns the complement of the given abstract element \wrt{} a given $\defabstractvalue$ which we assume to represent the whole space, \eg, assuming $\abstractdomaincomplement_{\langle \defvariable \mapsto \{0, 1, 2, 3\}\rangle}(\langle \defvariable \mapsto \{2, 3\}\rangle) = \langle \defvariable \mapsto \{0, 1\} \rangle$.
-In general, we use $\abstractdomaintop$ for the abstract element representing the whole space.
+We define $\abstractqused$ as the number of input values that are missing from perturbation to the input variables $\definputvariables$ to reach the same outcomes. We assume the abstract domain $\abstractdomain$ is equipped with an abstract counting operator $\abstractdomaincount\in\abstractdomain\to\valuesposplus$ that returns the number of possible values of the given abstract element, \eg, $\abstractdomaincount(\langle \defvariable \mapsto \{2, 3, 4\}\rangle) = 3$.
+As well as an abstract complement operator $\abstractdomaincomplement_{\defabstractvalue}\in\abstractdomain\to\abstractdomain$ that returns the complement of the given abstract element \wrt{} $\defabstractvalue$, which we assume to represent the whole space.
+For example, $\abstractdomaincomplement_{\langle \defvariable \mapsto \{0, 1, 2, 3\}\rangle}(\langle \defvariable \mapsto \{2, 3\}\rangle) = \langle \defvariable \mapsto \{0, 1\} \rangle$.
+In general, we use top ($\abstractdomaintop$) for the abstract element representing the whole space.
 
 Specifically, $\abstractqused$ first computes the number (\cf{} $\abstractdomaincount$) of input values of the variable in $\definputvariables$ (\cf{} $\abstractdomainprojectothers$) that are missing (\cf{} $\abstractdomaincomplement_\abstractdomaintop$) coming from the same output bucket.
 These values represent missing partial input configurations that the concrete impact quantifier $\qused$ may count.
 To compute the number of missing (total) input configurations, we multiply the number of missing input values for the number of possible values of the other input variables (\cf{} $\prod_{\defvariable\in \definputvariables} l_{\defvariable}$).
-This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
+This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element (\cf{} $\abstractdomainproject[\inputvariables \setminus \{\defvariable\}]$) and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
 The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that may lead to different outcomes.
 \marginnote{
   The symbol $\abstractdomaintop$ refers to ``top'', \ie, the abstract element representing the whole space.
@@ -2130,16 +2131,16 @@ The result is a measure of the influence of the input variables on the output of
   The total number of missing input configurations is then $2$ for the variable \texttt{speed}, hence $\abstractqusedname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 2$.
 \end{example}
 
-To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the sound soundness condition on the abstract operator $\abstractdomaincount$, ensuring that the abstract count is always lower than the concrete one.
+To prove that $\abstractqused$ is a sound implementation of $\qused$, we require the soundness condition on the abstract operators $\abstractdomaincount$ and $\abstractdomaincomplement$, ensuring that the abstract count of the complement of an abstract element is always lower than the concrete one.
 %
 Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is the cardinality operator $\cardinalitynospaces{\cdot}$.
 
 \begin{definition}[Soundness of \texorpdfstring{$\abstractdomaincount$}{Count}]\labdef{soundness-count}
   Given an abstract value $\defstate^\natural\in\abstractdomain$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, it holds that:
-  \[\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}} \GE \abstractdomaincount(\defstate^\natural) \]
+  \[\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\state \land \defstate \notin \abstractdomainconcretization(\defstate^\natural)}} \GE \abstractdomaincount(\abstractdomaincomplement_\abstractdomaintop(\defstate^\natural)) \]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}[*-5].
+The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}[*-9] \wrt{} the $\ge$ operator.
 
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -2214,7 +2215,7 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
 \end{example}
 
 
-Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqused$.
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqused$ and the comparison operator $\ge$.
 
 \begin{theorem}[Soundness of $\boundedqusedge$] \labthm{soundness-boundedqusedge}
   Let $\boundedqusedge$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
@@ -2247,9 +2248,9 @@ However, it holds that:
   \abstractqused \neq 0 &\ImplieS \neg\synunused \\
   \synunused &\ImplieS \abstractqused = 0
 \end{align*}
-In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{note the double negation in $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
+In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
 
-\section{Related Work}
+\section{Related Work--In Progress}[Related Work]
 \labsec{nfm24-related-work}
 
 \newcommand*{\entropypartitions}[1][\defprogram]{\Pi(#1)}

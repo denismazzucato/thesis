@@ -1,1 +1,6 @@
-\[\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}} \GE \abstractdomaincount(\defstate^\natural) \]
+\begin{gather*}
+\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\state \land \defstate \notin \abstractdomainconcretization(\defstate^\natural)}} \\
+\GE
+\\
+\abstractdomaincount(\abstractdomaincomplement_\abstractdomaintop(\defstate^\natural))
+\end{gather*}
