@@ -89,9 +89,9 @@ These cases could have been avoided with formal methods.
 
 Unlike testing, formal methods enable exhaustive search and detection of bugs that testing may miss.
 System requirements are translated into formal specifications, which are mathematically verified to ensure the system's behavior aligns with real-world scenarios.
-However, Rice's undecidability theorem \sidecite{Rice1953} states that all non-trivial program properties\sidenote{A property is non-trivial if it is not true for all programs or false for all programs.} are undecidable, meaning there is no always terminating algorithm that can decide whether any program satisfies a non-trivial program property.
-Consequently, formal methods either sacrifice: \emph{automation}, \emph{soundness}/\emph{termination}, or \emph{completeness}
-Based on this, formal methods are classified into three categories \sidecite{Cousot2010} (\reffig{formal-methods-trade-offs}): \emph{theorem provers}, \emph{model checking}, and \emph{static analysis}.
+However, Rice's undecidability theorem \sidecite{Rice1953} states that all non-trivial program properties\sidenote{A property is trivial if it is true for all programs or false for all programs.} are undecidable, meaning there is no always terminating algorithm that can decide whether any program satisfies a non-trivial program property.
+Consequently, formal methods either sacrifice: \emph{automation}, \emph{soundness}/\emph{termination}, or \emph{completeness}.
+Based on this, formal methods are classified into three categories \sidecite{Cousot2010} (\cf{} \reffig{formal-methods-trade-offs}): \emph{theorem provering}, \emph{model checking}, and \emph{static analysis}.
 
 \begin{marginfigure}
   \begin{tikzpicture}[scale=0.8]
@@ -106,7 +106,7 @@ Based on this, formal methods are classified into three categories \sidecite{Cou
     % Place the edges' labels inside the edges
     \node[fill=white, text width=1.18cm, align=center] at (2,1.4) {\small Static Analysis};
     \node[fill=white, text width=1.5cm, align=center] at (0,2.5) {\small Model Checking};
-    \node[fill=white, text width=1.3cm, align=center] at (2,3.6) {\small Theorem Provers};
+    \node[fill=white, text width=1.3cm, align=center] at (2,3.6) {\small Theorem Proving};
 \end{tikzpicture}
   \caption{Trade-offs in formal methods.}
   \labfig{formal-methods-trade-offs}
@@ -116,11 +116,11 @@ Theorem provers \sidecite{Nawaz2019} produce proofs of correctness using interac
 User interaction is ultimately required to guide the proof search in both the interactive and automatic cases.
 Theorem provers are complete and sound but not fully automated.
 
-Formal methods based on model checking automatically explore the state space of a program's model to verify whether undesirable states are reachable.
+Formal methods based on model checking \sidecite{Clarke1981,Queille1982} automatically explore the state space of a program's model to verify whether undesirable states are reachable.
 \sidetextcite{Clarke2004} applied model checking to prove the correctness of ANSI-C programs.
 However, modern model checker trades termination for automation and completeness, as state-of-the-art model checkers may not terminate.
 
-Static analysis analyzes the program source code at some level of abstraction without user interaction.
+Static analysis verifies the program source code at some level of abstraction without user interaction.
 This abstraction is sound but incomplete, meaning the analysis may report \emph{false alarms}, \ie, warnings that a correct program may be incorrect.
 However, whenever the static analysis certifies the absence of a bug, the program is indeed bug-free.
 In formal methods, the most common static analysis techniques are based on \emph{abstract interpretation}.
@@ -147,20 +147,19 @@ This article was heavily cited to justify austerity measures worldwide in the fo
 However, in 2013, \sidetextcite{Herndon2014} discovered that the authors had made a mistake in their Excel spreadsheet, leading to the erroneous conclusion.
 One of the errors was the incorrect usage of the input value relative to Norway's economic growth in 1964, with an excessive weight in the average growth rate computation.
 
-In data science applications, where software involves long pipelines that filter, merge, and manipulate data, programming errors causing input variables to have more or less influence than expected are likely.
+In data science applications, where software involves long pipelines that filter, merge, and manipulate data, programming errors causing input variables to have more or less influence than expected are even more likely to occur.
 Hence, it is essential to employ techniques that enhance confidence in the usage of input variables for data-driven applications.
 
 
-In \arefpart{background}, \refch{input-data-usage} formally introduces input data usage, a program property that captures the \emph{qualitative} usage of input data in a program as proposed by \sidetextcite{Urban2018}.
+In \arefpart{background}, \refch{input-data-usage} formally introduces input data usage, a program property that captures the \emph{qualitative} usage of input data in a program as proposed by \textcite{Urban2018}.
 We provide a hierarchy of semantics that precisely captures the input data usage property, abstracting unnecessary details.
 Finally, we report an abstract semantics that captures syntactic dependencies between variables from \sidetextcite{Urban2018}, used to approximate the input data usage property soundly.
 
-We extend the property to capture abstractions of output values, similarly to the generalization of non-interference \sidecite{Giacobazzi2018}, discussing relations between the two properties.
 
 \paragraph{Contributions}
 
 In \refch{input-data-usage}, we extend the original definition of the input data usage to capture abstractions of output values, similarly to abstract non-interference \sidecite{Giacobazzi2018}, discussing relations between the two properties.
-Such extension blends abstract non-interference with input data usage, providing a definition that works also for non-deterministic programs.
+Such extension blends abstract non-interference with input data usage, providing a definition that works for non-deterministic programs natively without the need of a specialized program semantics.
 
 
 \section{Quantitative Properties}
@@ -169,18 +168,18 @@ Typically, program properties are qualitative: a program either satisfies a prop
 This is not always sufficient to capture the complexity of real-world requirements \sidecite{Smith2007}.
 For instance, in program security, one fundamental requirement is protecting sensitive information confidentiality.
 Secure information flow analysis questions whether a program could leak information about its secrets.
-Noninterference, certifying that a program reveals no information about its secrets, is a classic secure information flow approach.
-However, noninterference is too strict for many practical applications.
+Non-interference, certifying that a program reveals no information about its secrets, is a classic secure information flow approach.
+However, non-interference is too strict for many practical applications.
 For example, in a digital election protocol, individual votes should be anonymous, but the final result needs to be revealed.
 A password checker should not reveal the password but should indicate whether the password is correct.
-These cases represent deliberate violations of noninterference necessary for the program to fulfill its purpose.
+These cases represent deliberate violations of non-interference necessary for the program to fulfill its purpose.
 
 To address this limitation, quantitative properties are considered \sidecite{Smith2009}.
 The key idea is to accept that a program may violate a property and compare such violation against a threshold.
 Programs are classified as \emph{safe} or \emph{unsafe} based on the degree of violation, inducing a classification among programs based on how much safety they provide.
 
 In the Reinhart and Rogoff case,
-The error was not whether
+the error was not whether
 the value of Norway's economic growth
 was used
 in the average computation
@@ -202,9 +201,9 @@ We introduce a backward static analysis based on abstract interpretation, parame
 The analysis computes the input states leading to output buckets, applying a computable implementation of the impact on the backward reachability analysis result.
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
 
-\marginnote{\refch{quantitative-input-data-usage} and \refch{showcase} in \arefpart{extensional} are based on the work published at NASA Formal Methods
+\marginnote[*-10]{\refch{quantitative-input-data-usage} and \refch{showcase} in \arefpart{extensional} are based on the work published at NASA Formal Methods
 Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
-\marginnote{\formatmargincitation{Mazzucato2024b}}
+\marginnote[*-6.7]{\formatmargincitation{Mazzucato2024b}}
 
 \refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, against six use cases.
 
@@ -212,9 +211,9 @@ Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
 \marginnote{\formatmargincitation{Mazzucato2021}}
 
 In \refch{quantitative-fairness}, we extend the quantitative input data usage property to neural networks.
-We propose two impact quantifiers for neural networks, addressing the ragged input space and measuring input features' fairness.
-We refine the backward analysis to exploit parallel computations for better performance, employing a combination of forward and backward analyses.
-The forward pass reduces the backward analysis's combinatorial explosion, partitioning the input space into subregions for easier parallel analysis.
+We propose two impact quantifiers for neural networks, addressing the challenges arising from the highly non-linear input space and measuring input features' fairness.
+We refine the backward analysis to exploit parallel computations for better performance, employing a combination of forward and backward analysis.
+The forward pass reduces the backward analysis's combinatorial explosion, partitioning the input space into subregions for easier parallelization.
 \refch{evaluation-on-neural-networks} demonstrates the effectiveness of our approach on neural networks, showing that our method can identify input features with a disproportionate impact on the network's output, or quantify the fairness of neural networks.
 
 
@@ -225,10 +224,12 @@ The followings are the contributions of \arefpart{extensional}, containing \cref
 \begin{itemize}
   \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact quantifiers.
   \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances.
-  \item In \refch{showcase} our tool called \impatto showcases our approach against a set of six demonstrative programs.
-  \item In \refch{quantitative-fairness}, we present two impact quantifiers for neural networks.
+  \item In \refch{showcase} our tool called \impatto{} showcases our approach against a set of six demonstrative programs.
+  \item An artifact of \impatto{} comprehensive of \impatto's source code, documentation, and evaluation benchmarks is available in Zenodo\sidenote{\impattozenodo}.
+  \item In \refch{quantitative-fairness}, we present two novel impact quantifiers for neural networks.
   \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
   \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
+  \item An artifact extending \libra{} with the quantitative evaluation of fairness is available in Zenodo\sidenote{\librazenodo}.
 \end{itemize}
 
 \subsection{Quantitative Verification of Intensional Properties}[Intensional Properties]
@@ -248,10 +249,10 @@ Even cryptographic programs are vulnerable to timing attacks, depending on imple
 Knowing the timing behavior of a program can certify intended behavior or reveal latent flaws by matching developers' expectations with actual program behavior.
 For performance optimization, identifying input variables that significantly affect loop iterations helps developers focus on critical code segments \sidecite{Omar2017}.
 Consequently, understanding the impact of input variables on runtime is paramount.
-In this study, we focus on quantifying input variables' impact on loop iterations as an indicator of runtime behavior.
+In this thesis, we focus on quantifying input variables' impact on loop iterations as an indicator of runtime behavior.
 
 We leverage global loop bound analysis to derive an over-approximation of the global loop bound, encoding the quantification of input variables' impact as a linear programming problem.
-Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite{Urban2018} for scalability.
+Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite[][Section 10]{Urban2018} for scalability.
 
 In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis.
 We demonstrate its effectiveness in a real-world cryptographic library, certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
@@ -265,9 +266,10 @@ The followings are the contributions of \arefpart{intensional}:
 \begin{itemize}
   \item In \refch{quantitative-static-timing-analysis}, we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
   \item In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp \sidenote{\svcompurl}.
+  \item An artifact of \timesec{} comprehensive of \timesec's source code and evaluation benchmarks is available in Zenodo\sidenote{\timeseczenodo}.
 \end{itemize}
 
 \frenchdiv
 
-Related works are discussed at the end of each chapter of \cref{part:extensional,part:intensional}, providing a comprehensive overview of the literature.
+Related works are discussed at the end of each chapter, providing a comprehensive overview of the literature.
 At the end of the thesis, in \arefpart{conclusion}, we conclude the thesis with a summary and future work.
