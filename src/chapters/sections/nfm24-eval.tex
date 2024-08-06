@@ -17,6 +17,7 @@ As each impact result must be interpreted with respect to what the program compu
 The impact quantifiers considered in this chapter are \outcomesname{} and \rangename{}.
 The \qusedname{} quantifier has not been considered in the evaluation since we consider a continuous input space in most of the use cases: in such instance $\qusedname$ would either return $+\infty$ or $0$ for each variable as it would discover that either are missing an infinite amount of input values or none at all.
 
+An artifact of \impatto, including the source code and the six use cases is available in Zenodo\sidenote{\impattozenodo}.
 This chapter is based on the evaluation section of the work published at NASA Formal Methods Symposium (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. In the next chapters, we will apply our quantitative framework in the context of neural networks.
 
 
@@ -92,7 +93,7 @@ We assume growth rate values between $-20\%$ and $20\%$ for all countries, conse
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{l | cc}
-    \textsc{Input} & \outcomesname{} & \rangename{} \\
+    \textsc{Input} & \abstractoutcomesname{} & \abstractrangename{} \\
     \toprule
     \texttt{portugal1} & 5 & 5 \\
     \texttt{portugal2} & 5 & 5 \\
@@ -110,9 +111,9 @@ We assume growth rate values between $-20\%$ and $20\%$ for all countries, conse
   }
 \end{margintable}
 %
-Results for both \outcomesname{} and \rangename{} are shown in \reftab{rr}.
+Results for both \abstractoutcomesname{} and \abstractrangename{} are shown in \reftab{rr}.
 The analysis discovers that the Norway's only observation for this category $\texttt{norway1}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 10 different outcomes (\cf~row $\texttt{norway1}$), while the other countries only have 5, 2, and 3, respectively for Portugal, UK, and US.
-The same applies to \rangename{} as the output buckets have size $1$ and all the input perturbations are only capable of reaching contiguous buckets. Hence, we obtain the same exact results.
+The same applies to \abstractrangename{} as the output buckets have size $1$ and all the input perturbations are only capable of reaching contiguous buckets. Hence, we obtain the same exact results.
 
 Our analysis is able to discover the disproportionate impact of Norway's only observation in the mean computation, which would have prevented one of the several programming errors found in the article.
 %Nevertheless,
@@ -162,7 +163,7 @@ From the keynote, we extracted the~\refprog{share-division} which computes the u
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{l | cc}
-    \textsc{Input} & \rotatebox{90}{\textsc{\outcomesname{}}} & \rotatebox{90}{\textsc{\rangename{}}} \\
+    \textsc{Input} & \rotatebox{90}{\textsc{\abstractoutcomesname{}}} & \rotatebox{90}{\textsc{\abstractrangename{}}} \\
     \toprule
     \texttt{airbnb\_total\_cost\_eur} & 10 & 1099 \\
     \texttt{flight\_cost\_usd} & 17 & 1709 \\
@@ -174,9 +175,9 @@ From the keynote, we extracted the~\refprog{share-division} which computes the u
 Regarding the input bounds, users are willing to spend between 500 and 2000 for the Airbnb, between 50 and 1000 for the flight, and travel with between 2 and 10 friends. As a result, they expect their share, variable $\texttt{total\_cost\_eur}$, to be between 90 and 1900.
 To compute the impact of the input variables we choose the output buckets to cover the expected output space in buckets of size $100$, \ie, $\setdef{100t + 90 \le \texttt{total\_cost\_eur} < \min \{100(t + 1) + 90, 1900\}}{0 \le t \le 19}$.
 The %analysis discovers similar
-findings are similar for both the \outcomesname{} and \rangename{} analysis, see~\reftab{gpt-4-turbo}.
+findings are similar for both the \abstractoutcomesname{} and \abstractrangename{} analysis, see~\reftab{gpt-4-turbo}.
 The input variable $\texttt{flight\_cost\_usd}$ has the biggest impact on the output, as perturbations on its value are capable of reaching 17 different output buckets (resp. a range of 1709 output values), while the other two, $\texttt{airbnb\_total\_cost\_eur}$ and $\texttt{number\_of\_friends}$, only reach 10 and 9 output buckets (resp. have ranges of size 1099 and 999), respectively.
-%Since the output buckets reached by perturbations of input values are contiguous, the \rangename{} analysis shows similar findings: 1709, 1099, and 999, respectively for \texttt{flight\_cost\_usd}, \texttt{airbnb\_total\_cost\_eur}, and \texttt{number\_of\_friends},
+%Since the output buckets reached by perturbations of input values are contiguous, the \abstractrangename{} analysis shows similar findings: 1709, 1099, and 999, respectively for \texttt{flight\_cost\_usd}, \texttt{airbnb\_total\_cost\_eur}, and \texttt{number\_of\_friends},
 
 These results confirm the user expectations about the proposed program from ChatGPT: the flight cost yields the biggest impact as it cannot be shared among friends.
 
@@ -214,13 +215,33 @@ Modifying the value of $\texttt{x}$ can result in the program terminating within
 On the other hand, perturbations on $\texttt{y}$ can only result in the program terminating within 10 different iteration ranges.
 Such difference is motivated by the fact that $\texttt{y}$ is only used to determine the number of iterations in the case where $\texttt{y}$ is greater than 50, otherwise it is not used at all. Therefore, two values of $\texttt{y}$, \eg, $y_0$ and $y_1$, only result in two different ranges of iterations required to make the program terminate if either both of them are below $50$ or $y_0 < 50\land y_1 \ge 50$ or $y_0\ge50\land y_1 <50$, not in all the cases.
 
+\begin{marginlisting}[*-14]
+  \caption{Example program from termination analysis.}
+  \labprog{timing-analysis}
+  \vspace{15pt}
+\begin{lstlisting}[
+    language=customPython,
+    style=mystyle,
+    escapechar=\%,
+    ]
+ def example(x, y):
+   counter = 0
+   while x >= 0:
+     if y <= 50:
+       x += 1
+     else
+       x -= 1
+     y += 1
+     counter += 1
+\end{lstlisting}
+\end{marginlisting}
 
 \begin{margintable}
   \caption{Quantitative input usage for \refprog{timing-analysis}.}
   \labtab{termination-analysis}
   \centering
   \begin{tabular}{l | c c}
-    \textsc{Input} & \textsc{\outcomesname{}} & \textsc{\rangename{}} \\
+    \textsc{Input} & \textsc{\abstractoutcomesname{}} & \textsc{\abstractrangename{}} \\
     \toprule
     \texttt{x} & 50 & 499 \\
     \texttt{y} & 10 & 99 \\
@@ -260,11 +281,11 @@ def termination_a(x, y):
 \refprog{termination-a} returns the value of \texttt{y} whenever $\texttt{x} = 0$, otherwise it returns $-1$.
 We assume both input variables are positive up to $1000$, $0 \le \texttt{x} \le 1000$ and $0 \le \texttt{y} \le 1000$.
 Regarding such a function, it is interesting to study its behaviors around $0$, thus the output bucket are $\{ \texttt{result < 0} \}, \{ \texttt{result} = 0 \}$, and $\{ \texttt{result > 0} \}$.
-With the above parameters, the analysis \outcomesname{} returns 1 for both input variables.
+With the above parameters, the analysis \abstractoutcomesname{} returns 1 for both input variables.
 Such result is not too interesting, but by looking at the internal stages of the analysis we notice that perturbations on the value of the variable \texttt{x} may be able to produce from an output negative value to zero or a positive one (and viceversa).
 While perturbations on the value of the variable \texttt{y} are only able to produce from zero to positive (and viceversa).
 
-As a second experiments, we consider the buckets from -1 to 19, $\setdef{ \texttt{result} = n}{-1 \le n \le 19}$, and we notice that the analysis \outcomesname{} returns 1 for the input variable \texttt{x} and 19 for \texttt{y}, meaning that the variable \texttt{y} is able to affect far more output values than \texttt{x}. However, combing the results of the previous experiment, only the variable \texttt{x} is able to affect the negative output values.
+As a second experiments, we consider the buckets from -1 to 19, $\setdef{ \texttt{result} = n}{-1 \le n \le 19}$, and we notice that the analysis \abstractoutcomesname{} returns 1 for the input variable \texttt{x} and 19 for \texttt{y}, meaning that the variable \texttt{y} is able to affect far more output values than \texttt{x}. However, combing the results of the previous experiment, only the variable \texttt{x} is able to affect the negative output values.
 
 \begin{marginlisting}[-1.4cm]
   \caption{Program Ex2.21 from software verification competition SV-Comp.}
@@ -284,7 +305,7 @@ def termination_b(x, y):
 \end{marginlisting}
 
 From the same work, we also consider \refprog{termination-b} which returns the value of \texttt{y} whenever $\texttt{x} = 0$, otherwise it returns $-1$.
-Unfortunately, the backward analysis does not capture a precise loop invariant, thus both the analyses \outcomesname{} and \rangename are inconclusive in such case.
+Unfortunately, the backward analysis does not capture a precise loop invariant, thus both the analyses \abstractoutcomesname{} and \abstractrangename are inconclusive in such case.
 The key takeaway is that our analysis is highly dependent on the precision of the underlying backward analysis.
 
 As a conclusion, even though SV-Comp proposes challenging benchmarks for termination, reachability, and safety analyses, they are not amenable for information flow analysis.
@@ -320,7 +341,7 @@ def linear_expression(x, y):
 Note that the invariant of the loop is indeed non-linear ($\texttt{result} = \texttt{i} * \texttt{x}$ and $\texttt{result} = \texttt{result}' + \texttt{i} * \texttt{y}$ respectively for the first and second loop, where $\texttt{result}'$ is the value of \texttt{result} before entering the second loop), but the loop is executed a fixed number of times, thus the analysis is able to compute the exact output buckets through loop unrolling.
 
 For the analysis the input bounds are $0 \le \texttt{x} \le 1000$ and $0 \le \texttt{y} \le 1000$, while the output buckets are $\setdef{n * 100 \le \texttt{result} < (n + 1) * 100}{n \le 70}$.
-Both analyses, \outcomesname{} and \rangename, show that \texttt{x} has an impact $\frac{5}{2}$ times bigger than \texttt{y} on the output.
+Both analyses, \abstractoutcomesname{} and \abstractrangename, show that \texttt{x} has an impact $\frac{5}{2}$ times bigger than \texttt{y} on the output.
 Thus, the impact quantity provides insight about the termination speed.
 Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y} only 2.
 
@@ -436,7 +457,7 @@ Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{cc|cc|cc}
-    \multicolumn{2}{c|}{\multirow{2}{*}{~\textbf{Input Bounds}}} & \multicolumn{2}{c|}{\outcomesname} & \multicolumn{2}{c}{\rangename} \\ \cline{3-6}
+    \multicolumn{2}{c|}{\multirow{2}{*}{~\textbf{Input Bounds}}} & \multicolumn{2}{c|}{\abstractoutcomesname} & \multicolumn{2}{c}{\abstractrangename} \\ \cline{3-6}
     & & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} & \texttt{angle} & \hspace{-5.5pt}\texttt{speed} \\ \hline\hline
     % $\texttt{angle} = -1 \lor \texttt{angle} = 4$ & \multirow{4}{*}{$1 \le \texttt{speed} \le 3$} & &
     % 1  &  2  & 3  & 2  \\ \cline{1-1} \cline{4-7}
@@ -453,7 +474,7 @@ Indeed, the loop for \texttt{x} is executed 5 times, while the one for \texttt{y
 Finally, we apply our quantitative analysis to~\refprog*{landing-alarm-system}[*-17] for the landing alarm system extended with the  continuous input space for the aircraft angle of approach, where $(-4 \le \texttt{angle} \le 4) \land (1 \le \texttt{speed} \le 3)$, see \reffig{extended}.
 In this instance, the precision of the abstraction drastically drops as convex abstract domains are not able to capture the symmetric features of the input space around 0.
 Indeed, the analysis result, \cf{} \reffig{analysis-convex}, is unable to reveal any difference in the input usage of input variables as all the abstract preconditions result of the backward analysis intersect together.
-As a consequence, \outcomesname{} and \rangename{} are unable to provide any meaningful information, first row of \reftab{landing-risk}.
+As a consequence, \abstractoutcomesname{} and \abstractrangename{} are unable to provide any meaningful information, first row of \reftab{landing-risk}.
 
 A possible approach to overcome the non-convexity of the input space is to split the input space into two subspaces (as a bounded set of disjunctive polyhedra), $-4 \le \texttt{angle} \le 0$ and $0 \le \texttt{angle} \le 4$, second and third row of \reftab{landing-risk}.
 In the first subset $-4 \le \texttt{angle} \le 0$, we are able to perfectly captures the input regions that lead to each output bucket with our abstract analysis, \cf{} \reffig{analysis}.

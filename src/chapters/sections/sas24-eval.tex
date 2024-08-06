@@ -3,7 +3,7 @@
 \chapter{Experimental Evaluation}
 \labch{sas24-eval}
 
-This chapter presents \timesec\sidenotemark[\ref{sas24-eval:timesecurl}], in about 3000 lines of Python code.
+This chapter presents \timesec\sidenotemark[\ref{sas24-eval:timesecurl}], written in about 3000 lines of Python code.
 The global loop bound analysis is based on the numerical library \apron{} \cite{Jeannet2009}, we instrumented the analysis with widening and narrowing operators after 2 fixpoint iterations.
 For the linear programming encoding, we used the Python library \scipy\sidenotemark[\ref{sas24-eval:scipy}].
 In this chapter, we discuss some implementation features that make the analysis scalable, precise, and able to handle real-world programs.
@@ -17,6 +17,7 @@ This chapter is based on the work presented at the 31st Static Analysis Symposiu
 \emph{Ce chapitre présente \timesec\sidenote{\label{sas24-eval:timesecurl}\timesecurl}, en environ 3000 lignes de code Python. L'analyse des bornes globales des boucles est basée sur la bibliothèque numérique \apron{} \sidecite{Jeannet2009}. Nous avons instrumenté l'analyse avec des opérateurs de large et d'étroitement après 2 itérations du point fixe. Pour l'encodage en programmation linéaire, nous avons utilisé la bibliothèque Python \scipy\sidenote{\label{sas24-eval:scipy}\rurl{scipy.org}}. Dans ce chapitre, nous discutons de certaines fonctionnalités de mise en œuvre qui rendent l'analyse évolutive, précise et capable de gérer des programmes réels. Nous évaluons \timesec{} sur la bibliothèque \bignum{}, une collection de routines arithmétiques conçues pour des applications cryptographiques, ainsi que sur les benchmarks \svcomp{}. Un artefact de \timesec, comprenant le code source, les benchmarks et les résultats de l'évaluation, est disponible sur Zenodo\sidenote{\label{sas24-eval:timeseczenodo}\timeseczenodo}. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
 
 \section{Implementation Discussion}
+\labsec{implementation}
 
 The syntactic dependency analysis of \refsec{syntactic-dependency-analysis} can be helpful to reduce the number of variables in the abstract domain during the global loop bound analysis.
 In fact, the syntactic dependency analysis is used to determine an over-approximation of the set of relevant variables for the global loop counter, for each program location.
@@ -154,12 +155,12 @@ On the other hand, the quantitative analysis of \timesec{} provides a formal ver
 In particular, whenever an input variable has no impact on the global number of loop iterations, it is formally guaranteed that the number of iterations is independent of the values of that input variable.
 Formally, a program $\defprogram$ is free of timing side-channels with respect to an input variable $\definputvariable\in\inputvariables$, if and only if $\defprogram \satisfies \mathscr{B}^{\le 0}_{\definputvariable}$.
 % \denis{Add a theorem such like: if is side channel freedom on numerical variables that the library is safe.}
-By \refthm{soundness}, we know that this is implied from $\abstractrange(\backwardsemantics) \le 0$.
+By \refthm{soundness}, we know that this is implied from $\counterrange(\backwardsemantics) \le 0$.
 Therefore, the verification of \textit{timing side-channel freedom} is sound with respect to our quantitative analysis of input variables.
 We partition the input variables of the \bignum{} library into two subsets.
 The nominal size variables and additional parameters that may safely influence the runtime into $\nominalvariables$.
 The variables that represent the actual numerical values and additional parameters that, instead, should not influence the execution time into $\numericalvariables$.
-The \bignum{} library is free of timing side-channels, whenever for any program $\defprogram$ in \bignum{} and any numerical input variable $\definputvariable\in\numericalvariables$, it holds that $\abstractrange(\backwardsemantics) = 0$.
+The \bignum{} library is free of timing side-channels, whenever for any program $\defprogram$ in \bignum{} and any numerical input variable $\definputvariable\in\numericalvariables$, it holds that $\counterrange(\backwardsemantics) = 0$.
 
 \begin{table}[p]
   \rowcolors{3}{white}{\customrowcolor}
@@ -251,7 +252,7 @@ The \bignum{} library is free of timing side-channels, whenever for any program 
   \end{adjustbox}
 \end{table}
 
-For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\rurl{ghidra-sre.org/}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
+For our setup, we consider the disassembled operations\sidenote{We used \ghidra{} (\rurl{ghidra-sre.org}) to disassemble the library and extract the arithmetic routines.} of the \bignum{} library as input programs with a few rewriting steps to fit the set of supported operations of our tool.
 Mostly, the rewriting steps soundly resolve the few jumps that arise from the disassembling process.
 Our benchmark contains a total of 72 disassembled arithmetic routines, excluding only a single operation (program \texttt{bignum\_modexp}) that has function calls, which our tool does not yet support.
 On average, each program has about 83 lines of code, for a total of 5984 lines of code.
@@ -261,8 +262,8 @@ On average, each program has about 83 lines of code, for a total of 5984 lines o
 
 %
 The library contains a total of 1172 variables, 272 of which are input variables.
-\reftab{bignum-inputs} reports the analysis findings for the input variables of the \bignum{} library: column \textsc{Maybe Dangerous} reports variables which could be prone to timing side-channel attacks (namely $\abstractrange(\backwardsemantics) > 0$),
-column \textsc{Zero Impact} reports the variables with an impact quantity of zero (namely $\abstractrange(\backwardsemantics) = 0$).
+\reftab{bignum-inputs} reports the analysis findings for the input variables of the \bignum{} library: column \textsc{Maybe Dangerous} reports variables which could be prone to timing side-channel attacks (namely $\counterrange(\backwardsemantics) > 0$),
+column \textsc{Zero Impact} reports the variables with an impact quantity of zero (namely $\counterrange(\backwardsemantics) = 0$).
 The property $\mathscr{B}\scalerel*{\vphantom{}^{{\scaleto{\le}{5pt}0}}_{\definputvariable}}{\padding}$ holds for input variables $\definputvariable$ that have an impact quantity of zero (column \textsc{Zero Impact}).
 % Interesting, the syntactic dependency analysis is already able to prove that 182 (66\%) of the input variables do not influence the global number of iterations.
 % The quantification of the impact further reduce the number of input variables that influence the global number of iterations to 85 (31\%).
@@ -315,16 +316,16 @@ We conclude that the \bignum{} library is \emph{free of timing side-channels}.
 
 
 Additionally, we perform an ablation study to evaluate the impact of the dependency analysis and the other optimizations on our tool.
-The first row \nodepnoopt{} of \reftab{bignum-abl} reports the analysis findings without the various analysis stages of \refsec{implementation}, while the second row \depopt{} shows the finding of the full \timesec{} analysis.
+The first row ``\nodepnoopt'' of \reftab{bignum-abl-inputs} reports the analysis findings without the various analysis stages of \refsec{implementation}, while the second row ``\timesec'' shows the finding of the full \timesec{} analysis.
 Without the dependency analysis we do not apply program slicing anymore, we handle bitwise operations and array accesses with a conservative over-approximation that may lead to false positives.
 Generally, we notice that the invariant inferred from the global loop bound analysis alone is not tight enough to produce a precise quantification of the impact.
 Therefore, we are not able to infer useful insights from our analysis as 266 input variables are maybe dangerous.
 In particular, the 6 input variables with zero impact belong to acyclic programs.
 % Without the forward pre-analysis and other optimizations, only 95 variables are maybe dangerous, but unfortunately the quantification of the impact is not tight enough to exclude more unused variables.
 Regarding the analysis time, column \depslabel{} refers to the time of the dependency analysis, column \invlabel{} for the global loop bound analysis, and column \lplabel{} for the quantification of impact.
-The time is reported in seconds for the evaluation of the 72 programs.
+The time is reported in seconds for the evaluation of the 72 programs in \reftab{bignum-abl-time}
 The last column \textsc{Tot} reports the total analysis time, with the standard deviation after the symbol $\pm$.
-\reftab{bignum-abl} does not show the time for parsing, logging and other overheads of the tool.
+\reftab{bignum-abl-time} does not show the time for parsing, logging and other overheads of the tool.
 We notice that without the optimizations, the analysis time is about 4 times faster than the full analysis, with most time spent on the linear programming problem as more variables need to be quantified.
 In this case, the standard deviation of the total analysis time (after $\pm$ in the column \textsc{Tot}) is the lowest, meaning that the analysis time is more consistent among programs.
 With only the dependency analysis on, the analysis usually takes around 50 seconds and, without optimizations, the global loop bound analysis is quite fast.
@@ -422,7 +423,7 @@ Overall, the analysis time is acceptable, with an average of 0.11 seconds per pr
 \end{table}
 
 \reftab{svcomp2} shows the composition of variables of the two categories of \svcomp{} benchmarks.
-In terms of the $\defbound$-bounded impact property (\cf~\refeq{bounded}), the column \textsc{May Impact} corresponds to $\bounded$ for $\defbound > 0$, while the columns \textsc{Zero Impact} corresponds to $\resize{\mathscr{B}}{\definputvariable}[\le 0]$.
+In terms of the $\defbound$-bounded impact property (\cf~\refdef{bounded}), the column \textsc{May Impact} corresponds to $\bounded$ for $\defbound > 0$, while the columns \textsc{Zero Impact} corresponds to $\resize{\mathscr{B}}{\definputvariable}[\le 0]$.
 For each bound range, we report the number of input variables / total variables (\cf, local and input variables together) that fall into each category.
 As expected, by enlarging the input space, the number of maybe dangerous variables increases, while the number of zero used variables decreases.
 % The syntactic dependency analysis instead does not depend on the input space, thus the number of unused variables remains constant.
@@ -435,7 +436,7 @@ In conclusion, we notice that by enlarging the input space, the number of variab
 \section{Summary}
 
 This chapter concludes the main body of the thesis, presenting the evaluation of our static analysis for quantitative program properties.
-Next, we provide a discussion of the related work, followed by the conclusion and future work in the final chapter.
+Next, we present the conclusion and future work.
 
 
 \frenchdiv

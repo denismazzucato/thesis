@@ -14,7 +14,7 @@ In this chapter, we present a quantitative notion of input data usage, extending
 We define three different quantifiers for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property.
 At the end, we present the abstract versions of these quantifiers and show how they can be used to verify the corresponding quantitative property.
 This chapter is based on work published at NASA Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024b}.
-Later this thesis, we will apply our quantitative framework in the context of neural networks and timing side-channel attacks.
+Later in this thesis, we will apply our quantitative framework in the context of neural networks and timing side-channel attacks.
 
 \frenchdiv
 
@@ -33,7 +33,7 @@ Later this thesis, we will apply our quantitative framework in the context of ne
 \section{The \texorpdfstring{$\defbound$}{k}-Bounded Impact Property}
 \labsec{k-bounded-impact-property}
 
-Quantitative input data usage should be understood as quantifying how much the input data influences the program outcomes.
+Quantitative input data usage should be understood as quantifying how much the input data influences the program outcome.
 To this end, we define the \emph{$\defbound$-bounded impact property}
 $\genbounded$ as the set of program semantics such that the input variables
 $\definputvariables\in\setof\inputvariables$ have an impact on the program outcome bounded by
@@ -291,7 +291,7 @@ To this end, these quantifiers employ the concept of output observer, \cf{} \ref
   In this case, the output observer $\outputobs$ could be defined as:
   \[
   \outputobs(\defstate) \DefeQ \begin{cases}
-    \langle \top, \top, \top, d \mod 2 \rangle & \text{if } \defstate = \langle a, b, c, d \rangle \\
+    \langle \top, \top, \top, d \!\!\mod 2 \rangle & \text{if } \defstate = \langle a, b, c, d \rangle \\
     \langle \top, \top, \top, \top \rangle & \text{otherwise}
   \end{cases}
   \]
@@ -345,7 +345,7 @@ Formally $\outcomes\in\tracetype\to\Nplus$ counts the number of different output
 % We instantiate of this quantity in the context of \refprog*{landing-alarm-system}[*-5] at the end, alongside with some properties of $\outcomesname$.
 
 
-Intuitively, $\outcomes$ collects,
+$\outcomes$ collects,
 for any possible input configuration $\definput\in\reducedstate$, all the traces that are starting from an input configuration that is a variation of $\definput$ on the input variable $\definputvariables$, \ie, $\setdef{
   \defseq\in \defsetoftraces
 }{
@@ -394,15 +394,15 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
     \hline
     $\tuple{\blue{-4}}{1}$ & \makecell{$\tuple{\blue{-4}}{1}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{-4}}{2}$ & \makecell{$\tuple{\blue{-4}}{2}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{2}\rightarrow\langle{1}\rangle$} & 2 \\
+    $\tuple{\blue{-4}}{2}$ & \makecell{$\tuple{\blue{-4}}{2}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{2}\tracearrow\langle{1}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{-4}}{3}$ & \makecell{$\tuple{\blue{-4}}{3}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{3}\rightarrow\langle{2}\rangle$} & 2 \\
+    $\tuple{\blue{-4}}{3}$ & \makecell{$\tuple{\blue{-4}}{3}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{3}\tracearrow\langle{2}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{1}}{1}$ & \makecell{$\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$, \\ $\tuple{\blue{-4}}{1}\rightarrow\langle{3}\rangle$} & 2 \\
+    $\tuple{\blue{1}}{1}$ & \makecell{$\tuple{\blue{1}}{1}\tracearrow\langle{0}\rangle$, \\ $\tuple{\blue{-4}}{1}\tracearrow\langle{3}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{1}}{2}$ & \makecell{$\tuple{\blue{1}}{2}\rightarrow\langle{1}\rangle$, \\ $\tuple{\blue{-4}}{2}\rightarrow\langle{3}\rangle$} & 2 \\
+    $\tuple{\blue{1}}{2}$ & \makecell{$\tuple{\blue{1}}{2}\tracearrow\langle{1}\rangle$, \\ $\tuple{\blue{-4}}{2}\tracearrow\langle{3}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{1}}{3}$ & \makecell{$\tuple{\blue{1}}{3}\rightarrow\langle{2}\rangle$, \\ $\tuple{\blue{-4}}{3}\rightarrow\langle{3}\rangle$} & 2 \\
+    $\tuple{\blue{1}}{3}$ & \makecell{$\tuple{\blue{1}}{3}\tracearrow\langle{2}\rangle$, \\ $\tuple{\blue{-4}}{3}\tracearrow\langle{3}\rangle$} & 2 \\
     \hline
     \hline
   \end{tabular}}
@@ -415,17 +415,17 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
     \textsc{Input} & \textsc{Traces} & \outcomesname \\
     \hline
     \hline
-    $\tuple{-4}{\blue{1}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 1 \\
+    $\tuple{-4}{\blue{1}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 1 \\
     \hline
-    $\tuple{-4}{\blue{2}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 1 \\
+    $\tuple{-4}{\blue{2}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 1 \\
     \hline
-    $\tuple{-4}{\blue{3}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 1 \\
+    $\tuple{-4}{\blue{3}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 1 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 3 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 3 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 3 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 3 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 3 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 3 \\
     \hline
     \hline
   \end{tabular}}
@@ -446,10 +446,10 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
   \newcommand*{\tracef}{\inputf\to\outputf}
   Let us revisit the example of the landing alarm system, \cf{} \refprog*{landing-alarm-system}[*-23], with program states $\state=\setdef{\langle a, b, c, d \rangle}{a\in\{-4,1\}\land b\in\{1,2,3\}\land c\in\N \land d\in\Nle{3}}$.
   For brevity, we refer to such program as program $\landingprogram$.
-  The input variables are $\setof\inputvariables = \{\texttt{angle},\texttt{speed}\}$, consequently the input space is the set of program states reduced to the input variables, \ie{}
+  The input variables are $\inputvariables = \{\texttt{angle},\texttt{speed}\}$, consequently the input space is the set of program states reduced to the input variables, \ie{}
   $\reducedstate=\{\inputa, \inputb, \inputc, \inputd, \inpute, \inputf\}$.
 %
-  We begin by considering $\definputvariables=\texttt{angle}$ and $\inputa$ as the first input configuration to be explored.
+  We begin by considering $\definputvariables=\{\texttt{angle}\}$ and $\inputa$ as the first input configuration to be explored.
   Hence, we collect all traces that are
   starting from an input configuration that is a variation of $\inputa$, \ie, $\setdef{
     \defseq \in \tracesemanticsnoparam\semanticsof{\landingprogram}
@@ -466,12 +466,12 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
   As a result, we obtain the set of output values $\{0, 3\}$.
   For instance, the output value $0$ is the result of the trace we exhibited previously, where the last state is $\langle 1, 1, 2, 0\rangle$ and thus the $\texttt{risk}$ variable of this trace is the last component with value $0$.
 %
-  Finally, the cardinality operator returns the value $2$, $\cardinality{\{0, 3\}} = 2$.
+  Finally, the cardinality operator returns the value $2$, $\cardinalitynospaces{\{0, 3\}} = 2$.
   By doing so for all possible input configurations in $\reducedstate$, we obtain $\outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})=2$.
   \reftab{overview-outcomes-angle} illustrate the steps for $\outcomesname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$ and \reftab{overview-outcomes-speed} for $\outcomesname_{\{\texttt{speed}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram})$.
 \end{example}
 
-The quantifier presented above is monotone in the amount of traces in $\defsetoftraces$.
+The $\outcomesname$ quantifier above is monotone in the amount of traces in $\defsetoftraces$.
 
 \begin{lemma}[\outcomesname{} is Monotonic]
   \lablemma{outcomes-monotonic}
@@ -495,7 +495,7 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 \end{proof}
 
 Let $\boundedoutcomes$ be the $\defbound$-bounded impact property when instantiated with the $\outcomesname$ impact quantifier.
-The output semantics $\outputsemantics$ is sound and complete for validating $\boundedoutcomes$.
+The output semantics $\outputsemanticsnoparam$ is sound and complete for validating $\boundedoutcomes$.
 
 \siderefbox{def}{output-abstraction-semantics}
 \siderefbox{def}{abstraction-dependency-semantics}
@@ -525,36 +525,36 @@ The output semantics $\outputsemantics$ is sound and complete for validating $\b
   Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\outcomesname$ impact quantifier already abstracts the output values before counting them.
 \end{proof}
 
-For the \outcomesname{} quantifier, an impact quantity of zero implies that the input variables of interest have no impact on the program outcomes, \ie, the set of input variables is unused, provided that the given program semantics is deterministic.
+For the \outcomesname{} quantifier, an impact quantity of zero implies that the input variables of interest have no impact on the program outcomes, \ie, the set of input variables is unused, provided that the given program semantics \emph{is deterministic}.
 On the other hand, non-deterministic statements in the program may mislead $\outcomesname$ to account for differences in the program output as a result of variations in the input variables.
 
 \begin{example}\labexample{outcomes-nondeterminism}
-  \marginnote[*3]{
-    \begin{tikzpicture}[scale=0.8]
-      \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{10}:$};
-      % Define the positions of the nodes
-      \node (TT) at (0,2) {${\tuple\true\true}$};
-      \node (TF) at (1,2) {${\tuple\true\false}$};
-      \node (FT) at (2,2) {${\tuple\false\true}$};
-      \node (FF) at (3,2) {${\tuple\false\false}$};
-      \node (outTT) at (0,0) {${\tuple\true\true}$};
-      \node (outTF) at (1,0) {${\tuple\true\false}$};
-      \node (outFT) at (2,0) {${\tuple\false\true}$};
-      \node (outFF) at (3,0) {${\tuple\false\false}$};
-      % Draw the edges
-      \draw[->] (TT) -> (outTT);
-      \draw[->] (TF) -> (outTT);
-      \draw[->] (TT) -> (outTF);
-      \draw[->] (TF) -> (outTF);
-      \draw[->] (FT) -> (outFT);
-      \draw[->] (FF) -> (outFT);
-      \draw[->] (FT) -> (outFF);
-      \draw[->] (FF) -> (outFF);
-      \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}$};
-  \end{tikzpicture}
-  }
-Consider the \refprog*{syntactic-vs-semantic-usage}[*-2] used in \refsec{input-data-usage} to illustrate the differences between syntactic and semantic input data usage. Notably: it contains a non-deterministic statement.
+  % \marginnote[*3]{
+  %   \begin{tikzpicture}[scale=0.8]
+  %     \node (linit) at (-0.9,2) {$\locinit:$};
+  %     \node (lend) at (-0.9,0) {$\loc{10}:$};
+  %     % Define the positions of the nodes
+  %     \node (TT) at (0,2) {${\tuple\true\true}$};
+  %     \node (TF) at (1,2) {${\tuple\true\false}$};
+  %     \node (FT) at (2,2) {${\tuple\false\true}$};
+  %     \node (FF) at (3,2) {${\tuple\false\false}$};
+  %     \node (outTT) at (0,0) {${\tuple\true\true}$};
+  %     \node (outTF) at (1,0) {${\tuple\true\false}$};
+  %     \node (outFT) at (2,0) {${\tuple\false\true}$};
+  %     \node (outFF) at (3,0) {${\tuple\false\false}$};
+  %     % Draw the edges
+  %     \draw[->] (TT) -> (outTT);
+  %     \draw[->] (TF) -> (outTT);
+  %     \draw[->] (TT) -> (outTF);
+  %     \draw[->] (TF) -> (outTF);
+  %     \draw[->] (FT) -> (outFT);
+  %     \draw[->] (FF) -> (outFT);
+  %     \draw[->] (FT) -> (outFF);
+  %     \draw[->] (FF) -> (outFF);
+  %     \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=-0.1pt] (-1.1,2.2) -- (-1.1,-0.2) node [black,midway,xshift=-0.7cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}$};
+  % \end{tikzpicture}
+  % }
+Consider the \refprog*{syntactic-vs-semantic-usage} used in \refsec{input-data-usage} to illustrate the differences between syntactic and semantic input data usage. Notably: it contains a non-deterministic statement.
 Assuming input values are $\N$, the $\outcomesname_{\texttt{x}}$ impact quantifier (for the variable $\texttt{x}$) is $+\infty$ as for any possible input value, the program can output any value in $\N$.
 Due to the non-deterministic statement, the variable \texttt{x} has an infinite impact on the output values, even though the program does not use the input variable \texttt{x}, \cf{} \refexample{syntactic-vs-semantic-usage}.
 \end{example}
@@ -589,7 +589,7 @@ Conversely, the property $\boundedoutcomesge$ (with the operator $\ge$) is super
 The quantity $\range\in\tracetype\to\Rposplus$ determines the
 size of the range of the output values for all the possible variations in the input variable $\definputvariables\in\setof\inputvariables$.
 Let $\defoutputvariables$ be the set of output variables on which the impact is measured.
-We are interested in the difference between the extreme values of the variable $\defoutputvariable$.
+We are interested in the difference between the extreme values of the variables $\defoutputvariables$.
 The difference of extreme values is computed by a distance measure $\distance$ computing the maximum distance between the set of given values. For instance, $\distance$ could be the Euclidean distance.
 
 \begin{margintable}[*-10]
@@ -600,17 +600,17 @@ The difference of extreme values is computed by a distance measure $\distance$ c
     \textsc{Input} & \textsc{Traces} & \rangename \\
     \hline
     \hline
-    $\tuple{\blue{-4}}{1}$ & \makecell{$\tuple{\blue{-4}}{1}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$} & 3 \\
+    $\tuple{\blue{-4}}{1}$ & \makecell{$\tuple{\blue{-4}}{1}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{1}\tracearrow\langle{0}\rangle$} & 3 \\
     \hline
-    $\tuple{\blue{-4}}{2}$ & \makecell{$\tuple{\blue{-4}}{2}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{2}\rightarrow\langle{1}\rangle$} & 2 \\
+    $\tuple{\blue{-4}}{2}$ & \makecell{$\tuple{\blue{-4}}{2}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{2}\tracearrow\langle{1}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{-4}}{3}$ & \makecell{$\tuple{\blue{-4}}{3}\rightarrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{3}\rightarrow\langle{2}\rangle$} & 1 \\
+    $\tuple{\blue{-4}}{3}$ & \makecell{$\tuple{\blue{-4}}{3}\tracearrow\langle{3}\rangle$, \\ $\tuple{\blue{1}}{3}\tracearrow\langle{2}\rangle$} & 1 \\
     \hline
-    $\tuple{\blue{1}}{1}$ & \makecell{$\tuple{\blue{1}}{1}\rightarrow\langle{0}\rangle$, \\ $\tuple{\blue{-4}}{1}\rightarrow\langle{3}\rangle$} & 3 \\
+    $\tuple{\blue{1}}{1}$ & \makecell{$\tuple{\blue{1}}{1}\tracearrow\langle{0}\rangle$, \\ $\tuple{\blue{-4}}{1}\tracearrow\langle{3}\rangle$} & 3 \\
     \hline
-    $\tuple{\blue{1}}{2}$ & \makecell{$\tuple{\blue{1}}{2}\rightarrow\langle{1}\rangle$, \\ $\tuple{\blue{-4}}{2}\rightarrow\langle{3}\rangle$} & 2 \\
+    $\tuple{\blue{1}}{2}$ & \makecell{$\tuple{\blue{1}}{2}\tracearrow\langle{1}\rangle$, \\ $\tuple{\blue{-4}}{2}\tracearrow\langle{3}\rangle$} & 2 \\
     \hline
-    $\tuple{\blue{1}}{3}$ & \makecell{$\tuple{\blue{1}}{3}\rightarrow\langle{2}\rangle$, \\ $\tuple{\blue{-4}}{3}\rightarrow\langle{3}\rangle$} & 1 \\
+    $\tuple{\blue{1}}{3}$ & \makecell{$\tuple{\blue{1}}{3}\tracearrow\langle{2}\rangle$, \\ $\tuple{\blue{-4}}{3}\tracearrow\langle{3}\rangle$} & 1 \\
     \hline
     \hline
   \end{tabular}}
@@ -623,17 +623,17 @@ The difference of extreme values is computed by a distance measure $\distance$ c
     \textsc{Input} & \textsc{Traces} & \rangename \\
     \hline
     \hline
-    $\tuple{-4}{\blue{1}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 0 \\
+    $\tuple{-4}{\blue{1}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 0 \\
     \hline
-    $\tuple{-4}{\blue{2}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 0 \\
+    $\tuple{-4}{\blue{2}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 0 \\
     \hline
-    $\tuple{-4}{\blue{3}}$ & \makecell{$\tuple{-4}{\blue{1}}\rightarrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\rightarrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\rightarrow\langle{3}\rangle$} & 0 \\
+    $\tuple{-4}{\blue{3}}$ & \makecell{$\tuple{-4}{\blue{1}}\tracearrow\langle{3}\rangle$, \\ $\tuple{-4}{\blue{2}}\tracearrow\langle{3}\rangle$ \\ $\tuple{-4}{\blue{3}}\tracearrow\langle{3}\rangle$} & 0 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 2 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 2 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 2 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 2 \\
     \hline
-    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\rightarrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\rightarrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\rightarrow\langle{2}\rangle$} & 2 \\
+    $\tuple{1}{\blue{1}}$ & \makecell{$\tuple{1}{\blue{1}}\tracearrow\langle{0}\rangle$, \\ $\tuple{1}{\blue{2}}\tracearrow\langle{1}\rangle$ \\ $\tuple{1}{\blue{3}}\tracearrow\langle{2}\rangle$} & 2 \\
     \hline
     \hline
   \end{tabular}}
@@ -699,7 +699,7 @@ For all set of traces $\defsetoftraces, \defsetoftraces'\in\tracetype$, it holds
 
 
 Let $\boundedrange$ be the $\defbound$-bounded impact property when instantiated with the $\rangename$ impact quantifier.
-The output semantics $\outputsemantics$ is sound and complete for validating $\boundedrange$.
+The output semantics $\outputsemanticsnoparam$ is sound and complete for validating $\boundedrange$.
 \siderefbox{def}{output-abstraction-semantics}
 \siderefbox{def}{abstraction-dependency-semantics}
 \siderefbox{def}{abstraction-output-abstraction-semantics}
@@ -758,14 +758,14 @@ Conversely, the property $\boundedrangege$ (with the operator $\ge$) is superset
 \subsection{The \qusedname{} Impact Quantifier}[\qusedname]
 \labsec{qused}
 
-The quantifier $\qused\in\tracetype\to\Nplus$ counts the number of input values for the variables in $\definputvariables\in\setof\inputvariables$ of $\definputvariables$ that are \emph{not} used to produce the outcomes.
+The quantifier $\qused\in\tracetype\to\Nplus$ counts the number of input states for the variables in $\definputvariables\in\setof\inputvariables$ that are \emph{not} used to produce the program outcomes.
 Unlike \outcomesname{} and \rangename{}, even in the presence of non-deterministic statements, the impact of an input variable is zero \wrt{} \qusedname{} if and only if the input variable is not used to produce any outcome.
 
-Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$, \qusedname{} collects the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. Then, it gathers the set of input values of the variables in $\definputvariables$ that correspond to these traces, called $I_\deftrace(\defsetoftraces)$.
-The number of missing input values is obtained by subtracting
-the set of input values from traces that share the same output abstraction, \cf{} $I_\deftrace(\defsetoftraces)$,
+Given a set of traces $\defsetoftraces$, for each possible outcome of a trace $\deftrace\in\defsetoftraces$, \qusedname{} collects the traces $\deftrace'\in\defsetoftraces$ that share the same output abstraction, \ie, $\outputobs(\retrieveoutput{\deftrace'}) = \outputobs(\retrieveoutput\defstate)$. Then, it gathers the set of input states of the variables in $\definputvariables$ that correspond to these traces, called $I_\deftrace(\defsetoftraces)$.
+The number of missing input states is obtained by subtracting
+the set $I_\deftrace(\defsetoftraces)$,
 from
-the set of input values that can produce the outcome $\retrieveoutput\defstate$ by variations of the variables in $\definputvariables$, called $Q_\definputvariables(I_\deftrace(\defsetoftraces))$.
+the set of input states that can produce the outcome $\retrieveoutput\defstate$ by variations of the variables in $\definputvariables$, called $Q_\definputvariables(I_\deftrace(\defsetoftraces))$.
 Finally, $\qused$ yields the maximum number of input values that are not used to produce the outcomes.
 
 
@@ -823,8 +823,8 @@ Formally, the $\qusedname$ impact quantifier is defined as follows:
     \caption{The identity program.}
     \labprog{id}
     \vspace{15pt}
-  \begin{lstlisting}[style=mystyle,language=customPython]
-id(x):
+  \begin{lstlisting}[style=mystyle,language=customPython, escapechar=\%]
+%\textcolor{black}{id}%(x):
   return x;
  \end{lstlisting}
   \end{marginlisting}
@@ -867,7 +867,7 @@ id(x):
   As explained above, for any $\deftrace\in \tracesemanticsnoparam\semanticsof{\texttt{id}}$ we collect the set of input states that belong to traces $\deftrace'\in\tracesemanticsnoparam\semanticsof{\texttt{id}}$ that share the same output abstraction as $\deftrace$, \cf{} $I_{\deftrace}(\tracesemanticsnoparam\semanticsof{\texttt{id}})$.
   In this case, the set of input states that can produce the outcome $0$ is $\{\tracetuple{\locinit}{\langle 0\rangle}\}$, for the outcome $1$ is $\{\tracetuple{\locinit}{\langle 1\rangle}\}$, and for the outcome $2$ is $\{\tracetuple{\locinit}{\langle 2\rangle}\}$, all singletons.
   Hence, the set of states that are variations, \cf{} $Q_{\{\texttt{x}\}}(I_{\deftrace}(\tracesemanticsnoparam\semanticsof{\texttt{id}}))$, is the complement of each singleton.
-  Hence, for the three set of input states, we obtain the values $2, 2, 2$, respectively.
+  Hence, for the three set of input states, we obtain the values $2$, $2$, and $2$, respectively.
   Thus, $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{id}})=2$, meaning that the input variable $\texttt{x}$ is used.
 
 \begin{marginlisting}[*-3]
@@ -989,12 +989,9 @@ mix1(x):
     \vspace{25pt}
   \begin{lstlisting}[style=mystyle,language=customPython]
 mix2(x, y):
-  if x and y:
-    return True
-  elif not x and y:
+  if (not x) and y:
     return rand()
-  else:
-    return False
+  return y
  \end{lstlisting}
   \end{marginlisting}
   For this last program we introduce another variable \texttt{y}, we simplify even further the variable to boolean values $\{\true, \false\}$.
@@ -1004,18 +1001,18 @@ mix2(x, y):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{8}}{\langle \false\rangle}
+        \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}
       \end{array}
       \right\}
   \end{align*}
   \begin{marginfigure}
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{8}:$};
+      \node (lend) at (-0.9,0) {$\loc{5}:$};
 
       % Define the positions of the nodes
       \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -1046,7 +1043,7 @@ mix2(x, y):
   Thus, we yield the highest value of missing states, obtaining $\qusedname_{\{\texttt{y}\}}(\tracesemanticsnoparam\semanticsof{\texttt{mix2}})=2$.
 
   From these examples we notice that the $\qusedname$ impact quantifier is able to capture that a variable is not used in a program, even in the presence of non-deterministic statements, \cf{} \refprog{random}.
-  Moreover, $\qusedname$ also discriminates between different amount of impact from \refprog{id}, \refprog{mix1}, and \refprog{mix2}.
+  Moreover, $\qusedname$ also discriminates between different amount of impact.
   Indeed, \refprog{id} is, intuitively, the program where the input variable has the highest impact possible as the output is exactly its value, while \refprog{random} the lowest as the output is random.
 \end{example}
 
@@ -1151,7 +1148,7 @@ The trace semantics of \refprog{id2} is:
 \caption{Graphical representation of the trace semantics of \refprog{id2}.}
 \labfig{id2-traces}
 \end{marginfigure}
-For the set of traces $\tracesemanticsnoparam\semanticsof{\texttt{id2}}$, we have that $\qusedname_{\{\texttt{x} \}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})=0$ as no input value is missing from both the sets of input values that can produce the outcomes $\true$ and $\false$. In fact, the variable \texttt{x} is \emph{not used} in the program.
+For the set of traces $\tracesemanticsnoparam\semanticsof{\texttt{id2}}$, we have that $\qusedname_{\{\texttt{x} \}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})=0$ as no input state is missing from both the sets that can produce the outcomes $\true$ and $\false$. In fact, the variable \texttt{x} is \emph{not used} in the program.
 Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemanticsnoparam\semanticsof{\texttt{id2}}$:
 \begin{align*}
   \defsetoftraces
@@ -1166,7 +1163,7 @@ Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemant
     \end{array}
     \right\}
 \end{align*}
-\begin{marginfigure}
+\begin{marginfigure}[*-8]
   \begin{tikzpicture}[scale=0.8]
     % \node (linit) at (-0.9,2) {$\locinit:$};
     % \node (lend) at (-0.9,0) {$\loc{3}:$};
@@ -1192,10 +1189,10 @@ Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemant
 \caption{Graphical representation of $\defsetoftraces$.}
 \labfig{defsetoftraces-traces}
 \end{marginfigure}
-This set of traces could be obtained by the \refprog{mix2}.
+This set of traces could be obtained by the \refprog*{mix2}[*-1].
 In this case, $\qusedname_{\{\texttt{x} \}}(\defsetoftraces)=1$ as the input value $\tracetuple{\locinit}{\langle \true, \true\rangle}$ is missing from the set of input values that can produce the outcome $\false$, \cf, the set $\{ \tracetuple{\locinit}{\langle \true, \false\rangle}, \tracetuple{\locinit}{\langle \false, \true\rangle}, \tracetuple{\locinit}{\langle \false, \false\rangle} \}$.
 Note that, in this case, the variable \texttt{x} is \emph{used} in the program.
-Lastly, let us increase again the set of traces to $\defsetoftraces' \supseteq \defsetoftraces$:
+Lastly, let us enlarge again the set of traces to $\defsetoftraces' \supseteq \defsetoftraces$:
 \begin{align*}
   \defsetoftraces'
   =
@@ -1334,7 +1331,7 @@ Thus, we can establish the following equivalence:
   \labfig{unused-bounded}
 \end{marginfigure}
 
-As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the (un)used property (\cf{} \refdef*{unused}) and the $\defbound$-bounded impact property (\cf{} \refdef*{bounded}) instantiated with the $\qusedname$ quantifier:
+As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain an equivalence between the (un)used property (\cf{} \refdef*{unused}) and the $\defbound$-bounded impact property (\cf{} \refdef{bounded}) instantiated with the $\qusedname$ quantifier:
 \begin{align*}
   \BOUNDEDQUSEDLE[0]\spacearound{=}\unused  && \text{if } \comparison = \le\\
   \BOUNDEDQUSEDGE[1]\spacearound{=}  \neg\unused&& \text{if } \comparison = \ge
@@ -1342,7 +1339,10 @@ As a consequence of \reflemma{qualitative-quantitative-equivalence}, we obtain a
 meaning that if a program semantics does not utilize the variables $\definputvariables$, then it has an impact of \emph{at most} $0$ (and vice versa).
 Conversely, if a program semantics utilizes the variables $\definputvariables$, then it has an impact of \emph{at least} $1$ (and vice versa).
 \reffig{unused-bounded} depicts an overview of the relationship between the unused property $\unused$ and the various $\defbound$-bounded impact properties $\boundedqused$ instantiated with different thresholds and comparison operators.
-
+\marginnote{The $\defbound$-bounded impact property instantiated with the $\qusedname$ quantifier:
+\[
+\BOUNDEDQUSED \DefeQ \setdef{\tracesemanticsnoparam}{\qused(\tracesemanticsnoparam)\comparison \defbound}
+\]}
 
 In the rest of this chapter, we present the static analysis to verify the $\defbound$-bounded impact property of a program and show the abstract version of the quantifiers introduced in this chapter.
 
@@ -1356,6 +1356,9 @@ The soundness of the approach leverages two elements: (1) a backward abstract se
 To quantify the usage of the input variables $\definputvariables$, we mostly need to determine the input configurations leading to specific output values.
 As our impact quantifiers measure over the reachable output values (more precisely, over their abstraction by $\outputobs$) our underlying abstract semantics will be a \emph{backward} (co-)reachability semantics starting from \emph{disjoint} abstract post-conditions, over-approximating the (concrete) output values of the dependency semantics.
 Specifically, we abstract the concrete output values with an indexed set $\buckets\in\vectorbuckets$ of $n$ disjoint \textit{output buckets}, where $\abstractdomainlattice$ is an abstract state domain with concretization function  $\abstractdomainconcretization\in\abstractdomain\to\setof\stateandbottom$. The choice of these output buckets is a parameter of the analysis and a \emph{good} choice is essential for obtaining a precise and meaningful analysis result.
+\marginnote{
+  An indexed set $F\in X^n$ where $n\in\N$, is a map from the set of indices $N_{\le n}$ to the set of elements $X$.
+}
 
 For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our analysis computes an over-approximation of the dependency semantics restricted to the input configurations leading to $\abstractdomainconcretization(\bucket)$.
 % More formally, the reduction of the output-abstraction semantics $\outputsemanticsnoparam$ to the dependencies with abstraction of a final state in $X$ is defined as:
@@ -1493,7 +1496,7 @@ We expect a sound implementation $\impactinstance\in\pair\vectorbuckets\vectorbu
 \end{definition}
 
 \refdef{sound-implementation} ensures that the soundness of the static analysis is preserved when computing the quantity $\defbound$.
-We define the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$ via $\boundconcretization \in \valuesinf \to \collectingtype$.
+Then, we define $\boundconcretization \in \valuesinf \to \collectingtype$, \ie, the concretization of the bound measured by the abstract impact $\impactinstance(\multisemantics\buckets, \buckets)$.
 The idea behind the concretization $\boundconcretization$ is to filter the set of sets of traces concretized by $\multiconcretization$ that yield an impact lower than the bound computed in the abstract, \cf{} $\impactinstance(\multisemantics\buckets, \buckets)$.
 Before defining the concretization, we show an example where not all subsets of $\multiconcretization$ satisfy the property $\genbounded$.
 % \marginnote[*7]{The operator $\singletonelimination \in \setof A \to \setof A$ removes the set around a singleton set, \ie, $\singletonelimination(\{a\}) = a$.}
@@ -1548,7 +1551,7 @@ Before defining the concretization, we show an example where not all subsets of 
     \right\}
   \end{align*}
   as $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
-  Note that, there is a contradiction as the abstract impact $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets)$ is assumed to be $1$ and should be smaller that the concrete one, which is $0$.
+  Note that, there is a contradiction here, as the abstract impact $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets)$ is assumed to be $1$ and should be smaller that the concrete one, which is $0$.
   In fact, to be sound, the abstract impact should return a number not greater than $0$, and the concretization $\boundconcretization$ should not filter any set of dependencies.
 \end{example}
 
@@ -1660,7 +1663,7 @@ to project away the input variables $\definputvariables$, that is, the reduction
 \begin{example}
 In the context of the interval domain, where each input variable is related to a possibly unbounded lower and upper bound, $\abstractdomainprojecti(\langle\definputvariable \mapsto [1, 3], j \mapsto [2, 4]\rangle) = \langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$
   removes the constraints related to the variables in $\{\definputvariable\}$.
-  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently $[-\infty, +\infty]$, we hide it from the abstract element, \eg, instead of $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$ we often write $\langle j \mapsto [2, 4] \rangle$.
+  Often, whenever a variable maps to $\abstractdomaintop$, or equivalently in the interval domain to $[-\infty, +\infty]$, we hide it from the abstract element, \eg, instead of $\langle \definputvariable \mapsto [-\infty, +\infty], j \mapsto [2, 4] \rangle$ we often write $\langle j \mapsto [2, 4] \rangle$.
 \end{example}
 %
 % We define the soundness condition on the project operator to ensure that $\abstractdomainproject(\defstate^\natural)$ represents all the concrete states result of perturbations on the variable $\definputvariables$ from a state represented by an abstract value $\defstate^\natural$.
@@ -1688,14 +1691,14 @@ The definition of $\abstractoutcomes$ first projects away the input variables $\
 These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
 We return the maximum number of abstract values that intersect after projections:
 \begin{definition}[\texorpdfstring{$\abstractoutcomes$}{Abstract Outcomes}]\labdef{abstract-outcomes}
-  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
   We define $\abstractoutcomes\in\pair\vectorbuckets\vectorbuckets\to\valuesinf$ as:
   \begin{equation*}
   \abstractoutcomes(\presfrombuckets, \buckets) \DefeQ \max~\setdef{\cardinalitynospaces{J}}{J \in \intersectallfunction((\abstractdomainproject(\prefrombucket))_{j\le\numberofbuckets})}
   \end{equation*}
   where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $\cardinalitynospaces{J}$ is the cardinality of the set of indices $J$.
 \end{definition}
-Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}[*-5]) since the number of intersecting abstract values is finite and bounded by $n$, the number of output buckets.
+Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}[*-5]) since the number of intersecting abstract values is finite and bounded by $n$, \cf{} the number of output buckets.
 The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
 
 \begin{definition}[\texorpdfstring{$\intersectallfunction$}{Intersect Function}]\labdef{intersect-all-function}
@@ -1759,7 +1762,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
   The maximum clique is of size $3$, \cf{} \cardinalitynospaces{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}\}}, hence $\abstractoutcomesname_{\{\texttt{speed}\}}(\presfrombuckets, \buckets) = 3$. This means that variations of the input variable \texttt{speed} may lead to changes of program outcome in three different buckets.
 \end{example}
 
-In order to prove that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$, we require the output buckets $\buckets$ to be \textit{compatible} with the output observer $\outputobs$.
+In order to prove that the abstract impact $\abstractoutcomesname$ is a sound over-approximation of the concrete impact $\outcomesname$, we require the output buckets $\buckets$ to be \textit{compatible} with the output observer $\outputobs$.
 That is, any two output states $\retrieveoutput\defstate, \retrieveoutput\defstate'$ that produce different output readings, \ie, $\outputobs(\retrieveoutput\defstate) \neq \outputobs(\retrieveoutput\defstate')$, belong to different buckets, \ie, $\retrieveoutput\defstate \in \abstractdomainconcretization(\bucket) $, $ \retrieveoutput\defstate' \in \abstractdomainconcretization(\bucket[p]) $, and $ \bucket \neq \bucket[p]$.
 Intuitively, compatibility ensures that the counting intersecting buckets in the abstract does not miss any concrete outcome.
 %
@@ -1780,7 +1783,8 @@ Note that, $\outcomes$ is bounded by the number of buckets when the conditions o
   Therefore, there are at most $n$ different outputs.
 \end{proof}
 
-The next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete impact $\outcomes$ \wrt{} the $\le$ operator.
+We designed $\abstractoutcomesname$ to over-approximates the concrete quantifier $\outcomesname$.
+Hence, the next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete $\outcomes$ \wrt{} the $\le$ operator.
 
 \refdef@{outcomes}[*-4]
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
@@ -1895,13 +1899,15 @@ In such case, we assume $\abstractdomain$ is equipped with an additional abstrac
   % The function $\abstractdomaindistance$ expects only a single variable to be constrained in the abstract domain, or in other words, only one variable is allowed to be not $\top$.
 \end{example}
 
+Let $\definputvariables$ be the set of input variables of interest and $\defoutputvariables$ be the set of output variables.
 The abstract range $\abstractrange$ first projects away the input variables $\definputvariables$ from all the given abstract values (\cf{} $\abstractdomainproject$).
 Then, it collects the indices of all possible intersections among the projected abstract values (\cf{} $\intersectallfunction$).
 These intersections represent concrete input configurations where variations on the values of $\definputvariables$ \emph{may} lead to changes of program outcome, from a bucket to another.
-All the buckets of corresponding intersections are joined together and the projected away all but the output variables (\cf{} $\abstractdomainproject[\inputvariables \setminus \defoutputvariables]$) to find the maximum range of the extreme values of the buckets.
+All the buckets of corresponding intersections are joined together.
+Thus, all but the output variables (\cf{} $\abstractdomainproject[\inputvariables \setminus \defoutputvariables]$) are projected away to find the maximum range of the extreme values of the buckets.
 
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
-  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
   Let $\defoutputvariables$ be the output variables of interest.
 We define $\abstractrange\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
 \begin{align*}
@@ -1958,7 +1964,8 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
   \[\distance(\setdef{\outputobs(\defstate)(\defoutputvariables)}{\defstate\in\abstractdomainconcretization(\defstate^\natural)}) \LE \abstractdomaindistance(\defstate^\natural)\]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractrange$ is a sound over-approximation of the concrete impact $\range$, \cf{} \refdef*{range}[*-16.2], \wrt{} the $\le$ operator.
+We designed $\abstractrangename$ to over-approximates the concrete quantifier $\rangename$.
+Hence, the next result shows that the abstract impact $\abstractrangename$ is a sound over-approximation of the concrete impact $\rangename$, \cf{} \refdef*{range}[*-16.2], \wrt{} the $\le$ operator.
 
 \refdef@{range}[*-4]
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
@@ -2051,17 +2058,18 @@ We define $\abstractqused$ as the number of input values that are missing from p
 As well as an abstract complement operator $\abstractdomaincomplement_{\defabstractvalue}\in\abstractdomain\to\abstractdomain$ that returns the complement of the given abstract element \wrt{} $\defabstractvalue$, which we assume to represent the whole space.
 For example, $\abstractdomaincomplement_{\langle \defvariable \mapsto \{0, 1, 2, 3\}\rangle}(\langle \defvariable \mapsto \{2, 3\}\rangle) = \langle \defvariable \mapsto \{0, 1\} \rangle$.
 In general, we use top ($\abstractdomaintop$) for the abstract element representing the whole space.
+This operator is useful to count missing states as those can be obtained as result from the complement of the states we do have.
 
 Specifically, $\abstractqused$ first computes the number (\cf{} $\abstractdomaincount$) of input values of the variable in $\definputvariables$ (\cf{} $\abstractdomainprojectothers$) that are missing (\cf{} $\abstractdomaincomplement_\abstractdomaintop$) coming from the same output bucket.
 These values represent missing partial input configurations that the concrete impact quantifier $\qused$ may count.
 To compute the number of missing (total) input configurations, we multiply the number of missing input values for the number of possible values of the other input variables (\cf{} $\prod_{\defvariable\in \definputvariables} l_{\defvariable}$).
 This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element (\cf{} $\abstractdomainproject[\inputvariables \setminus \{\defvariable\}]$) and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
-The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that may lead to different outcomes.
+The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that \emph{may} lead to different outcomes.
 \marginnote{
   The symbol $\abstractdomaintop$ refers to ``top'', \ie, the abstract element representing the whole space.
 }
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
-  Let $\numberofbuckets\in\N$ be the number of output buckets and $\buckets\in\vectorbuckets$ the set of output buckets.
+  Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
   We define $\abstractqused\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
     \abstractqused(\presfrombuckets, \buckets) \DefeQ& \max_{j \le \numberofbuckets}\spacer
@@ -2140,7 +2148,8 @@ Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is th
   \[\cardinality{\setdef{\retrieveinput{\defstate}(\definputvariables)}{\defstate\in\state \land \defstate \notin \abstractdomainconcretization(\defstate^\natural)}} \GE \abstractdomaincount(\abstractdomaincomplement_\abstractdomaintop(\defstate^\natural)) \]
 \end{definition}
 
-The next result shows that the abstract impact $\abstractqused$ is a sound over-approximation of the concrete impact $\qused$, \cf{} \refdef*{qused}[*-9] \wrt{} the $\ge$ operator.
+We designed $\abstractqused$ to under-approximate the concrete quantifier $\qusedname$.
+Hence, the next result shows that the abstract impact $\abstractqusedname$ is a sound over-approximation of the concrete impact $\qusedname$, \cf{} \refdef*{qused}[*-9] \wrt{} the $\ge$ operator.
 
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -2183,12 +2192,12 @@ The next result shows that the abstract impact $\abstractqused$ is a sound over-
   \begin{gather*}
     \max_{j \le \numberofbuckets}\spacer
     \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket))) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
-    \spacearound{=}
+    \spacearound{=} \\
     \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket)[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}
   \end{gather*}
-  By contradiction, we assume that $\cardinality{
+  By contradiction, we assume that \[\cardinality{
     Q_\definputvariables(I_{\overline{\deftrace}}(\defsetoftraces)) \setminus I_{\overline{\deftrace}}(\defsetoftraces)
-  } < \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket)[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}$, meaning that the number of missing input configurations is lower than the number of missing input values for the variable $\definputvariables$ coming from the same output bucket.
+  } < \abstractdomaincount(\abstractdomainprojectothers(\abstractdomaincomplement_\abstractdomaintop(\prefrombucket)[\overline{j}])) \cdot \prod_{\defvariable\in \definputvariables} l_{\defvariable}\] meaning that the number of missing input configurations is lower than the number of missing input values for the variable $\definputvariables$ coming from the same output bucket.
   Hence, either:
   \begin{enumerate}[label=(\alph*)]
     \item \label{qq1} there exist output abstractions that are not matched by any output bucket,
@@ -2390,17 +2399,18 @@ Other static analyses, \eg, \sidetextcite{Assaf2017} and \sidetextcite{Clark2007
 %
 The key difference among our framework and their work is the information we measure. Our analysis quantifies the effect of each of the input variables on the program outcome, focusing on numerical properties, while quantitative information flow usually measures quantities in terms of bits of information transferred from the input variables to the program outcome, more specific to security properties.
 For example, \sidetextcite{Assaf2017} counts how many bits of information of input variables are used to compute the result; \sidetextcite{Smith2009} computes the probability of guessing the value of a private variable from the value of input variables; and \sidetextcite{McCamant2008} retrieves the channel capability, which is the worst-case possible for information leakages. Most of these approaches are based on the concept of entropy measures, which are orthogonal to our approach.
+Recent developments, \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness.
 Instead, we present a more fine-grained analysis, which discovers the impact of each input variable separately.
 
 
-% Input data usage and non-interference relates also with \textit{Data Leakage}~\cite[Chapter~4]{Brownlee2020}.
-% This property holds relevance for data science software, particularly in addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
-% The series of papers developed by Subotić et al.~\cite{Drobnjaković2022,Subotić2021,Subotić2022} focuses on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, bringing new challenges in the topic of formal verification.
-% Within our framework, we could incorporate an adaptation of their work to encompass a notion of quantitative data leakage.
-% Further development of this concept could be of particular interest.
+Qualitative input data usage and non-interference relates also with \textit{Data Leakage}~\sidecite[][Chapter~4]{Brownlee2020}.
+This property holds relevance for data science software, particularly in addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
+The series of papers developed by \sidetextcite{Drobnjaković2022,Subotić2021,Subotić2022} focuses on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, bringing new challenges in the topic of formal verification.
+We could incorporate an adaptation of their work to encompass a notion of quantitative data leakage.
+Further development of this concept could be of particular interest.
 
 
-
+Moreover, we recognize that quantitative analyses are usually tightly coupled with probabilistic programming. \denis{...}
 
 % Recent developments, \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 

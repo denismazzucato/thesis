@@ -39,13 +39,13 @@ An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\net
 where $\weight_{j,k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider networks that have been previously trained.
 
 For the rest of this chapter, the letter $\defmodel$ denotes a neural network model. The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
-Note that, for the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration, and that all the traces terminate after a specific number of steps, which is exactly the number of nodes of the network.
+Note that, for the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration, and that all the traces terminate after a specific number of steps, which is exactly the number of nodes in the network.
 
 \subsection{Classification Task}
 
 In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, i.e., $\argmax_{j} \node[\lastlayerindex][j]$.
 
-In the quantitative framework, the classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the output values of the network to the target classes. The output observer returns $1$ if the given node (\ie, a variable of the neural network) corresponds to the target class with the highest value, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+In the quantitative framework of \nrefch{quantitative-input-data-usage}, the classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the output values of the network to the target classes. The output observer returns $1$ if the given node (\ie, a variable of the neural network) corresponds to the target class with the highest value, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
 \begin{align*}
 \outputobs(\defstate) \DefeQ \lambda \texttt{y}.\spacer
 \begin{cases}
@@ -342,7 +342,7 @@ New abstract domains only need to implement the interface to share bounds inform
 \section{Quantitative Impact Quantifiers}
 \labsec{quantitative-impact-quantifiers}
 
-This section elaborates on quantitative notions that can be used to measure the influence of input variables on the output of a neural network.
+This section elaborates on quantifiers that can be used to measure the influence of input variables on the output of a neural network.
 Namely, we introduce the \changesname{} and \qlibraname{} impact quantifiers, which are specifically designed to handle neural network models.
 
 \subsection{The \changesname{} Impact Quantifier}[\changesname]
@@ -754,7 +754,7 @@ denoted $\boundedchanges$.
   Furthermore, even handling the output abstraction at the semantic level, by abstracting output states to abstract output states, does not affect the validation of the property as the $\changesname$ impact quantifier already abstracts the output values before comparing to the given output $\defoutput$, \cf{} $\outputobs(\retrieveoutput{\deftrace}) = \defoutput$ in \nrefdef{segments}.
 \end{proof}
 
-\reflemma{changes-monotonic} and \reflemma{changes-validation} show that the $\changesname$ impact quantifier can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
+% \reflemma{changes-monotonic} and \reflemma{changes-validation} show that the $\changesname$ impact quantifier can be used to certify that a program has impact of \emph{at most} $\defbound$, meaning that the program output changes at most $\defbound$ times when the input variables vary.
 % In case of non-deterministic set of traces, the $\changesname$ impact quantifier would not be meaningful, as the number of stable regions leading to a different output value would be always infinite.
 
 
@@ -762,7 +762,7 @@ denoted $\boundedchanges$.
 \labsec{qlibra-impact-quantifier}
 
 The second quantifier introduced in this section is the \qlibraname{} impact quantifier, which stands for \underline{q}uantitative \underline{a}bstract \underline{u}nused.
-Notably, this quantifier is designed to quantify the amount of neural network's input space that does not use a given set of input features.
+Notably, this quantifier is designed to quantify the amount of neural network's input space that \emph{does not use} a given set of input features.
 In the context of neural networks, the \qlibraname{} impact quantifier is particularly relevant as it induces a quantification of the fair space of a model.
 A network is fair whenever the classification determined by a model does not depend on the ``sensitive'' input variables.
 In our setting, the sensitive input variables are represented by the set of input variables $\definputvariables$ and measuring the inability of the input variables $\definputvariables$ to affect the network outcome is equivalent to quantifying the amount of fair space.
@@ -914,7 +914,6 @@ denoted $\boundedqlibra$.
   Thus, this proof directly follows from \refthm*{output-validation}.
 \end{proof}
 
-\reflemma{qlibra-monotonic} and \reflemma{qlibra-validation} show that the $\qlibraname$ impact quantifier can be used to certify that a program has impact of \emph{at least} $\defbound$, meaning that the input variables $\definputvariables$ of a network are fair for at least $\defbound$ fraction of the input space.
 
 % For clarity, we unfold the $\unusediowrapper$ predicate in the definition of the \qlibraname{} impact quantifier (assuming the set of traces $\defsetoftraces$ is deterministic).
 % From \refprop{ani-predicate-equivalence}, we notice that the $\unusediowrapper$ predicate is equivalent to the $\aniwrapper$ predicate whenever the set of traces is deterministic, thus obtaining the following definition:
@@ -965,10 +964,10 @@ First, we describe the implementation, followed by the validation of the $\defbo
 
 As previously noted, the $\changesname$ impact quantifier suffers from the case in which the input is a non-deterministic set of traces, rendering it ineffective.
 The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
-In cases where this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it would correspond to a non-deterministic set of traces when concretized.
-To address this issue, we require an abstract domain that is exact for our property and underlying network model.
+In cases this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it would correspond to a non-deterministic set of traces when concretized.
+To address this issue, we require the backward analysis to be exact for our property and underlying network model.
 
-The core idea of the $\changesname$ impact quantifier is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{abstract-domains}), are inadequate for representing multiple distinct stable regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
+The core idea of the $\changesname$ impact quantifier is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{numerical-abstract-domains}), are inadequate for representing multiple distinct stable regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
 %
 We leverage the \textit{disjunctive polyhedra abstract domain} $\disjunctivepolyabstractdomain$, defined as
 $
@@ -990,7 +989,7 @@ The underlying idea is that each connected component corresponds to the set of s
 % This allows us to later exclude regions leading to the same bucket.
 %
 Finally, $\abstractchanges$ determines the maximum count of changes across all connected components $J$ and buckets $\buckets$.
-It counts the number of indices $l$ in each connected component $J$ where $k$ is not equal to $j$, thus excluding the polyhedra leading to the same output bucket $j$.
+It counts the number of indices $l$ (\cf{} $\cardinalitynospaces{\setdef{l \in J}{l \neq j}}$) in each connected component $J$ where $k$ is not equal to $j$, thus excluding the polyhedra leading to the same output bucket $j$.
 
 \begin{definition}[$\abstractchanges$]\labdef{abstractchanges}
   We define $\abstractchanges\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
@@ -1031,6 +1030,8 @@ Whenever the backward semantics $\backwardsemantics$ is both sound and complete,
 
 Note that, whenever the given program is deterministic, the traces concretized from the backward analysis are deterministic as well.
 With the exactness of the backward analysis, we show that $\abstractchanges$ is a sound implementation of $\changes$.
+The next result shows that the abstract impact $\abstractchanges$ is a sound over-approximation of the concrete $\changes$ \wrt{} the $\le$ operator.
+
 
 \begin{lemma}[$\abstractchanges$ is a Sound Implementation of $\changes$]\lablemma{abstractchanges-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -1041,7 +1042,10 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
     \item \label{tio3} $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
     \item \label{tio4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
-  then, $\abstractchanges$ is a sound implementation of $\changes$.
+  then, $\abstractchanges$ is a sound implementation of $\changes$ \wrt{} the $\ge$ operator:
+  \begin{align*}
+    \changes(\tracesemanticsnoparam) \LE \abstractchanges(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
+  \end{align*}
 \end{lemma}
 \begin{proof}[Proof (Sketch)]
   We need to prove that
@@ -1084,6 +1088,26 @@ With the exactness of the backward analysis, we show that $\abstractchanges$ is 
   thus, we need to show that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} \le \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$.
   By contradiction, we assume that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} > \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$, meaning that the number of stable regions leading to different output buckets is greater than the number of intersecting buckets in the abstract.
   \denis{Finish.......}
+\end{proof}
+
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractchanges$ and the comparison operator $\le$.
+
+\begin{theorem}[Soundness of $\boundedchangesle$] \labthm{soundness-boundedchangesle}
+  Let $\boundedchangesle$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
+    \item $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
+    \item $\backwardsemanticsnoparam$ is an exact backward semantics, \cf{} \reflemma{exact-backward-semantics}, and
+    \item $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
+\end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \abstractchanges(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDCHANGESLE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{abstractchanges-is-sound} shows that $\abstractchanges$ is a sound implementation of $\changes$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractchanges$ and comparison operator $\le$.
 \end{proof}
 
 While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires to explore all the possible paths of the network.
@@ -1217,13 +1241,32 @@ The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is a
     \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \reflemma{sound-over-approximation}, and
     \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
-  then, $\abstractqlibra$ is a sound implementation of $\qlibra$.
+  then, $\abstractqlibra$ is a sound implementation of $\qlibra$ \wrt{} the $\ge$ operator:
+  \begin{align*}
+    \qlibra(\tracesemanticsnoparam) \GE \abstractqlibra(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
+  \end{align*}
 \end{lemma}
 \begin{proof}
   \denis{todo}
 \end{proof}
 
+We show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqlibra$ and the comparison operator $\ge$.
 
+\begin{theorem}[Soundness of $\boundedqlibrage$] \labthm{soundness-boundedqlibrage}
+  Let $\boundedqlibrage$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever,
+  \begin{enumerate}[label=(\roman*)]
+    \item $\backwardsemanticsnoparam$ is sound with respect to $\outputsemanticsnoparam$, \cf{} \refdef*{sound-over-approximation}[*-5], and
+    \item $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-1.5],
+\end{enumerate}
+  the following implication holds:
+  \begin{align*}
+    \abstractqlibra(\multisemantics\buckets, \buckets) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRAGE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{abstractqlibra-is-sound} shows that $\abstractqlibra$ is a sound implementation of $\qlibra$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractqlibra$ and comparison operator $\le$.
+\end{proof}
 
 Although sound, the abstract implementation $\abstractqlibra$ does not work well in presence of imprecision from the abstract domain employed during the backward analysis.
 In fact, the abstract implementation $\abstractqlibra$ applied directly to the backward analysis represents the so called \emph{na\"ive casual-fairness analysis}~\sidecite{Urban2020}.
@@ -1321,7 +1364,7 @@ Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can ve
     \defprogram \satisfies \BOUNDEDQLIBRA \IfF
     \sum_{\definputpartition\in\definputpartitions} \qlibra(
       \defsetoftraces_{\definputpartition}
-    ) \ge \defbound
+    ) \comparison \defbound
   \end{align*}
   where $\defsetoftraces_\definputpartition \defeq \setdef{\deftrace\in\tracesemantics}{\retrieveinput\deftrace\in\definputpartition}$.
 \end{lemma}
@@ -1337,23 +1380,23 @@ Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can ve
   \begin{align*}
     &\defprogram \satisfies \boundedqlibra
       &&\text{by \refdef{bounded}} \\
-    &\iff \qlibra(\tracesemantics) \ge \defbound
-      &&\text{Let } \defbound' \le \defbound \text{ such that} \\
+    &\iff \qlibra(\tracesemantics) \comparison \defbound
+      &&\text{Let } \defbound' \comparison \defbound \text{ such that} \\
       & &&\quad \qlibra(\tracesemantics) = \defbound' \\
     &\iff \qlibra(\tracesemantics) = \defbound'
       &&\text{by \refeq{qlibra-sum-of}} \\
     &\iff \sum_{\definputpartition\in\definputpartitions} \qlibra(
       \defsetoftraces_{\definputpartition}
     ) = \defbound'
-      &&\text{by }\defbound' \le \defbound \\
+      &&\text{by }\defbound' \comparison \defbound \\
     &\iff \sum_{\definputpartition\in\definputpartitions} \qlibra(
       \defsetoftraces_{\definputpartition}
-    ) \ge \defbound
+    ) \comparison \defbound
   \end{align*}
   In fact, we proved an even stronger result, the fact that given a fair input partition $\definputpartitions$, the volume of fair input space is exactly as the sum of the volumes of fair space in each fair partition.
 \end{proof}
 
-We exploit the above insight to further abstract the output-abstraction semantics $\outputabstraction$ to the \emph{parallel semantics} $\parallelsemantics$.
+We exploit the above insight to further abstract the output-abstraction semantics $\outputabstraction$ to the \emph{parallel semantics} $\parallelsemanticsnoparam$.
 Formally, the right adjoint\sidenote{The left adjoint is uniquely defined by the right one.} $\parallelabstraction$ for the parallel semantics is defined as:
 %
 \begin{definition}[Right Adjoint for the Parallel Semantics]\labdef{right-adjoint-for-the-parallel-abstraction-semantics}
@@ -1483,7 +1526,7 @@ Partitioning may continue until the volume of the partition is below a certain t
 Finally, whenever the partition is smaller than $\lowerbound$ (\cf{} \refline{lower}), we exclude it from the set of partitions to be analyzed until more resources become available (\cf{} \refline{excluded}).
 Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
 
-\begin{marginalgorithm}[*-18]
+\begin{marginalgorithm}[*-13]
   \caption{Parallel Implementation $\parallelqlibra$}
   \labalg{parallel-qlibra}
 \begin{lstlisting}[
@@ -1553,13 +1596,13 @@ Check(%\O%):
 Finally, the abstract implementation $\parallelqlibra$ computes the sum of the volumes of the biased portion of each partition together (\cf{} \refline{sum}).
 The complement of the biased input space is an under-approximation of the fair input space.
 
-The next result shows that the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$.
-Therefore, it can be used to validate the $\boundedqlibra$ property.
+The next result shows that the abstract implementation $\parallelqlibra$ is a sound under-approximation of the concrete implementation $\qlibra$.
+Therefore, it can be used to validate the $\boundedqlibrage$ property with the $\ge$ operator.
 
 \begin{theorem}
   Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
   \begin{align*}
-    \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRA
+    \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRAGE
   \end{align*}
 \end{theorem}
 \begin{proof}

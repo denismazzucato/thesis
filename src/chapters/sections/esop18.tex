@@ -1108,7 +1108,7 @@ The next result shows that the dependency semantics $\dependencysemanticsnoparam
 We further abstract the dependency semantics $\dependencysemanticsnoparam$ into the output-abstraction semantics $\outputsemanticsnoparam$ as the unused property $\unused$ never considers output states without first abstracting them via the output observer $\aniobserver$, \refdef*{output-observer}[*-5].
 Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as:
 %
-\begin{definition}[Right-Left Adjoints for the Output-Abstraction Semantics]\labdef{right-left-adjoints-for-the-output-abstraction-semantics}\labdef{abstraction-output-semantics}\labdef{concretization-output-semantics}
+\begin{definition}[Right-Left Adjoints for the Output-Abstraction Semantics]\labdef{right-left-adjoints-for-the-output-abstraction-semantics}\labdef{abstraction-output-abstraction-semantics}\labdef{concretization-output-abstraction-semantics}
 \begin{align*}
   \outputabstraction \IN& \dependencytype \to \outputtype \\
   \outputabstraction(\defsetofsetofdependencies) \DefeQ& \setdef{

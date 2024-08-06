@@ -26,7 +26,7 @@ This chapter is based on the work presented at the 31st Static Analysis Symposiu
 
 
 We present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
-We recall that the variables of the program are represented by the set $\variables$, where the finite set $\inputvariables\subseteq\variables$ contains the input variables.
+\marginnote{We recall that the variables of the program are represented by the set $\variables$, where the finite set $\inputvariables\subseteq\variables$ contains the input variables.}
 
 \marginnote{
   \begin{align*}
@@ -233,7 +233,7 @@ We define the $\defbound$-impact property, which quantifies the impact of input 
   \begin{equation*}
     \GENBOUNDED \DefeQ \setdef{\countertracesemanticsnoparam\in\tracetype}{\impactwrapper(\countertracesemanticsnoparam) \comparison \defbound}
   \end{equation*}
-  where $\comparison\in\{\leq, <\}$.
+  where $\comparison\in\{\le, \ge\}$.
 \end{definition}
 
 To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact quantifier.
@@ -251,7 +251,7 @@ The range quantifier instrumented with the global loop counter $\counter$ as out
 
 Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact quantifier. Formally:
 \begin{align*}
-  \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \le \defbound}
+  \BOUNDEDRANGE \DefeQ \setdef{\countertracesemanticsnoparam \in \tracetype}{\range(\countertracesemanticsnoparam) \comparison \defbound}
 \end{align*}
 
 \begin{example}
@@ -346,7 +346,7 @@ The two adjoints $\tuple{\backwardreachabilityabstraction}{\backwardreachability
   Hence, by monotonicity of $\backwardreachabilityabstraction$, we obtain $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \backwardreachabilityabstraction(\backwardreachabilityconcretization(\defsetofsetofstates)) = \defsetofsetofstates$.
 \end{proof}
 
-We now derive the \emph{backward co-reachability semantics} $\backwardreachabilitysemantics$ as an abstraction of the dependency semantics.
+We now derive the \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam$ as an abstraction of the dependency semantics.
 
 \begin{definition}[Dependency Semantics]\labdef{backwardreachability-semantics}
   The \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
@@ -358,7 +358,7 @@ We now derive the \emph{backward co-reachability semantics} $\backwardreachabili
   \end{align*}
 \end{definition}
 
-The next result shows that the backward co-reachability semantics $\backwardreachabilitysemantics$ allows a sound and complete verification of $\boundedrange$.
+The next result shows that the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam$ allows a sound and complete verification of $\boundedrange$.
 
 \begin{lemma}\lablemma{backwardreachability-validation}
 \begin{align*}
@@ -389,7 +389,7 @@ An over-approximation of the global loop counter is computed by analyzing the pr
 The soundness of the approach leverages: $(1)$ an abstract domain of conjunctions of linear constraints, $(2)$ a sound global loop bound analysis to collect the dependencies of the loop counter $\counter$ from the input variables, and $(3)$ a linear programming encoding as a sound implementation of the impact $\rangename$, called $\counterrangename$.
 
 \subsection{Conjunctions of Linear Constraints}
-\refsec{conjunctions-of-linear-constraints}
+\labsec{conjunctions-of-linear-constraints}
 
 We define the numerical abstract state domain used in the global loop bound analysis.
 In principle, our abstract domain could be any convex abstract domain subsumed by the polyhedra domain~\sidecite{Cousot1978}, such as the interval domain~\cite{Cousot1978}, octagon domain~\sidecite{Min_e2006a}, or the polyhedra domain itself.
@@ -706,7 +706,7 @@ The maximum value of the bound $\defbound$ is the length of the range of the fea
 \end{example}
 
 
-The next result shows that $\counterrange$ is a sound implementation of the impact $\range$, by means of \refdef*{sound-implementation}.
+The next result shows that $\counterrange$ is a sound implementation of the impact $\range$, by means of \refdef*{sound-implementation} when applied to the $\le$ operator.
 That is, the abstract quantity is always higher than the concrete counterpart.
 % Note that, we relax the constraint about the output buckets, as this linear programming encoding does not need to concretize each possible concrete value for $\counter$ before performing the backward semantics.
 % To some extent, the output buckets are handled symbolically.
@@ -732,7 +732,7 @@ That is, the abstract quantity is always higher than the concrete counterpart.
 \denis{Todo.}
   \end{proof}
 %
-Thus, by \nrefthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrange$.
+Thus, by \nrefthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrangele$.
 
 
 \section{Related Work--In Progress}[Related Work]
@@ -761,10 +761,6 @@ This fine-grained analysis is essential for identifying specific variables that 
 While quantitative analyses theoretically could infer similar information, their entropy measures are not designed for this purpose (\cf{} \refsec{sec:nfm24-related-work}), and they usually require $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}, which is computationally expensive \sidecite{Antonopoulos2017}.
 Instead, our approach only requires a single abstract analysis and leverages variable projections to separate the contributions of each input variable \sidecite{Urban2020,Mazzucato2021}.
 
-\paragraph{Input Data Usage.}
-The syntactic dependency analysis proposed by~\sidetextcite{Urban2018} can be seen as the qualitative counterpart to our quantitative definition.
-It holds that whenever the measured impact is zero, the input variable is definitely unused, \wrt\ the number of iterations of the loop.
-Indeed, by considering only the syntactic dependencies, we would have obtained an abstraction of the input data usage property.
 
 
 
