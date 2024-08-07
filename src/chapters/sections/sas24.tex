@@ -351,10 +351,10 @@ We now derive the \emph{backward co-reachability semantics} $\backwardreachabili
 \begin{definition}[Dependency Semantics]\labdef{backwardreachability-semantics}
   The \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
   \begin{align*}
-    \backwardreachabilitysemanticsnoparam\DefeQ& \backwardreachabilityabstraction(\dependencysemanticsnoparam) \\
+    \backwardreachabilitysemanticsnoparam\DefeQ \backwardreachabilityabstraction(\dependencysemanticsnoparam)
     % \spacearound{=}& \backwardreachabilityabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
     % \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
-    \spacearound{=}& \{\spacearound{\setdef{\retrieveinput{\deftrace}}{\deftrace \in \countertracesemanticsnoparam}}\}
+    \spacearound{=} \{\spacearound{\setdef{\retrieveinput{\deftrace}}{\deftrace \in \countertracesemanticsnoparam}}\}
   \end{align*}
 \end{definition}
 
@@ -732,7 +732,7 @@ That is, the abstract quantity is always higher than the concrete counterpart.
 \denis{Todo.}
   \end{proof}
 %
-Thus, by \nrefthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrangele$.
+Thus, by \refthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrangele$.
 
 
 \section{Related Work--In Progress}[Related Work]

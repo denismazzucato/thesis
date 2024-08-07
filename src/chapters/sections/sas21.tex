@@ -206,8 +206,8 @@ The \boxes{} domain simply uses interval arithmetic \sidecite{Cousot1976, Hickey
     \draw (3,1.5) -- (3.2,1.5) node[above right]{$u$};
 
     % box around the function, fill with opaque \green and the contour in \green
-    \fill[color=seabornGreen, opacity=0.5] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- (0.5,1.5) -- cycle;
-    \draw[color=seabornGreen, ultra thick] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- (0.5,1.5) -- cycle;
+    \fill[color=seabornBlue, opacity=0.5] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- (0.5,1.5) -- cycle;
+    \draw[color=seabornBlue, ultra thick] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- (0.5,1.5) -- cycle;
 
     % label above the rectangle on the left: $\relu(x) \le u$
     \node[above] at (1,1.5) {\footnotesize $\relu(x) \le u$};
@@ -240,8 +240,8 @@ The \symbolic{} domain \sidecite{Wang2018b} combines \boxes{} with symbolic cons
     \draw[dashed] (3,1.5) -- (4.5,1.5);
 
     % box around the function, fill with opaque \green and the contour in \green
-    \fill[color=seabornGreen, opacity=0.5] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- cycle;
-    \draw[color=seabornGreen, ultra thick] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- cycle;
+    \fill[color=seabornBlue, opacity=0.5] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- cycle;
+    \draw[color=seabornBlue, ultra thick] (0.5,0) -- (4.5,0) -- (4.5,1.5) -- cycle;
 
     % sloped label with an angle of 30 degrees above the rectangle: $\relu(x) \le u$
     \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
@@ -266,8 +266,8 @@ The \symbolic{} domain \sidecite{Wang2018b} combines \boxes{} with symbolic cons
     \draw[dashed] (0.5,-2.5) -- (3,-2.5);
 
     % box around the function, fill with opaque \green and the contour in \green
-    \fill[color=seabornGreen, opacity=0.5] (0.5,0) -- (0.5,-2.5) -- (4.5,1.5) -- cycle;
-    \draw[color=seabornGreen, ultra thick] (0.5,0) -- (0.5,-2.5) -- (4.5,1.5) -- cycle;
+    \fill[color=seabornBlue, opacity=0.5] (0.5,0) -- (0.5,-2.5) -- (4.5,1.5) -- cycle;
+    \draw[color=seabornBlue, ultra thick] (0.5,0) -- (0.5,-2.5) -- (4.5,1.5) -- cycle;
 
     % label above the rectangle on the left: $\relu(x) \le u$
     \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
@@ -308,8 +308,8 @@ The concrete bounds are computed by back-substitution of the symbolic bounds up 
     \draw[dashed] (3,1.5) -- (4.5,1.5);
 
     % box around the function, fill with opaque \green and the contour in \green
-    \fill[color=seabornGreen, opacity=0.5] (0.5,0) -- (0.5,-0.95) -- (4.5,0.55) -- (4.5,1.5) -- cycle;
-    \draw[color=seabornGreen, ultra thick] (0.5,0) -- (0.5,-0.95) -- (4.5,0.55) -- (4.5,1.5) -- cycle;
+    \fill[color=seabornBlue, opacity=0.5] (0.5,0) -- (0.5,-0.95) -- (4.5,0.55) -- (4.5,1.5) -- cycle;
+    \draw[color=seabornBlue, ultra thick] (0.5,0) -- (0.5,-0.95) -- (4.5,0.55) -- (4.5,1.5) -- cycle;
 
     % label above the rectangle on the left: $\relu(x) \le u$
     \node[rotate=21] at (1.6,0.8) {\footnotesize $\relu(x) \le \frac{u(x-l)}{u-l}$};
@@ -1363,13 +1363,12 @@ Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can ve
   \begin{align*}
     \defprogram \satisfies \BOUNDEDQLIBRA \IfF
     \sum_{\definputpartition\in\definputpartitions} \qlibra(
-      \defsetoftraces_{\definputpartition}
+      \reduceinit[\tracesemantics]{\definputpartition}
     ) \comparison \defbound
   \end{align*}
-  where $\defsetoftraces_\definputpartition \defeq \setdef{\deftrace\in\tracesemantics}{\retrieveinput\deftrace\in\definputpartition}$.
 \end{lemma}
 \begin{proof}
-  Note that, by \refdef{qlibra}, $\qlibra(\defsetoftraces)$ computes the volume of input space that does not use the input variables $\definputvariables$. It does so by partitioning the set of given traces that are perturbations of the input variables $\definputvariables$, \cf{} the set $\defsetoftraces_{\retrieveinput{\deftrace}}$ on the side. By definition, these partitions are fair partitions by \refdef{fair-input-partition}.
+  Note that, by \refdef{qlibra}, $\qlibra(\defsetoftraces)$ computes the volume of input space that does not use the input variables $\definputvariables$ \wrt{} to the set of traces $\defsetoftraces$. It does so by partitioning the set of given traces that are perturbations of the input variables $\definputvariables$, \cf{} the set $\defsetoftraces_{\retrieveinput{\deftrace}}$ on the side. By definition, these partitions are fair partitions by \refdef{fair-input-partition}.
   Furthermore, we could call these partitions as \emph{minimal} in the sense that they are the smallest fair partitions that can be obtained from the input space.
   As a consequence, the $\qlibra$ impact quantifier could be written as the sum of the impacts of the minimal fair partitions, \ie, $\qlibra(\tracesemantics) = \sum_{\deftrace\in\tracesemantics} \qlibra(\setdef{\deftrace'\in\tracesemantics}{\retrieveinput{\deftrace'} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace}})$.
   Since any combination of minimal fair partitions is a fair partition, it holds that:
@@ -1452,13 +1451,10 @@ We have the following result:
 We can now derive the parallel semantics as an abstraction of the output-abstraction semantics.
 \begin{definition}[Parallel Abstraction Semantics]\labdef{parallel-abstraction-semantics}
   The \emph{parallel semantics} $\parallelsemanticsnoparam\in\paralleltype$ is defined as:
-  \marginnote{\begin{math}
-    \partition\tracesemanticsnoparam\definputpartition \DefeQ \setdef{\defstate}{\inputoutputtuple\defstate\in\tracesemanticsnoparam \land \retrieveinput{\defstate}\in\definputpartition}
-  \end{math}}
   \begin{align*}
-    \parallelsemanticsnoparam\DefeQ&\parallelabstraction(\outputsemanticsnoparam) \\
+    \parallelsemanticsnoparam\DefeQ\parallelabstraction(\outputsemanticsnoparam)
     % \spacearound{=}&\parallelabstraction(\{\spacearound{\setdef{\inputoutputtuple{\deftrace}}{\deftrace \in \tracesemanticsnoparam}}\}) \\
-    \spacearound{=}&
+    \spacearound{=}
     \setdef{\spacearound{
       \setdef{
         \tuple{\retrieveinput{\deftrace}}{\outputobs(\retrieveoutput{\deftrace})}
@@ -1467,6 +1463,7 @@ We can now derive the parallel semantics as an abstraction of the output-abstrac
       }
     }}{\definputpartition\in\definputpartitions}
   \end{align*}
+  where $\partition\tracesemanticsnoparam\definputpartition \DefeQ \setdef{\defstate}{\inputoutputtuple\defstate\in\tracesemanticsnoparam \land \retrieveinput{\defstate}\in\definputpartition}$.
 \end{definition}
 
 It remains to show soundness and completeness for the parallel semantics when applied to the $\boundedqlibra$ property.
@@ -1480,8 +1477,8 @@ It remains to show soundness and completeness for the parallel semantics when ap
 \begin{proof}
 Let $\defprogram \satisfies \boundedqlibra$.
 From \reflemma*{qlibra-validation}, we have that $\outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\boundedqlibra))$.
-Thus, from the Galois connections in \refthm*{output-parallel-galois-connection}, we have that $\parallelabstraction(\outputsemantics) \subseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
-From \refdef*{parallel-abstraction-semantics}, we can conclude that $\parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
+Thus, from the Galois connections in \refthm{output-parallel-galois-connection}, we have that $\parallelabstraction(\outputsemantics) \subseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
+From \refdef{parallel-abstraction-semantics}, we can conclude that $\parallelsemantics \parallelsubseteq \parallelabstraction(\outputabstraction(\dependencyabstraction(\boundedqlibra)))$.
 \end{proof}
 
 
@@ -1600,7 +1597,7 @@ The next result shows that the abstract implementation $\parallelqlibra$ is a so
 Therefore, it can be used to validate the $\boundedqlibrage$ property with the $\ge$ operator.
 
 \begin{theorem}
-  Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\lowerbound, \upperbound$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
+  Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\tune = \langle \upperbound, \lowerbound, \maxupperbound, \minlowerbound\rangle$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
   \begin{align*}
     \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRAGE
   \end{align*}

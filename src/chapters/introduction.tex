@@ -189,6 +189,9 @@ A quantitative analysis would have revealed that the impact of Norway's economic
 
 \subsection{Quantitative Verification of Extensional Properties}[Extensional Properties]
 
+\marginnote{\refch{quantitative-input-data-usage} and \refch{showcase} in \arefpart{extensional} are based on the work published at NASA Formal Methods
+Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
+\marginnote{\formatmargincitation{Mazzucato2024b}}
 
 In this thesis, we study formal reasoning techniques to detect input data misuse.
 We propose semantics-based static analysis techniques to quantify the impact of input variables on program computation.
@@ -201,9 +204,6 @@ We introduce a backward static analysis based on abstract interpretation, parame
 The analysis computes the input states leading to output buckets, applying a computable implementation of the impact on the backward reachability analysis result.
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
 
-\marginnote[*-10]{\refch{quantitative-input-data-usage} and \refch{showcase} in \arefpart{extensional} are based on the work published at NASA Formal Methods
-Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
-\marginnote[*-6.7]{\formatmargincitation{Mazzucato2024b}}
 
 \refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, against six use cases.
 

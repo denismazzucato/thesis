@@ -1101,7 +1101,7 @@ Notably, the major consequence is that $\boundedqused$ is neither subset- nor su
 \begin{example}\labexample{qused-not-monotonic}
 In this example, we show that the $\qusedname$ impact quantifier is neither monotonic nor anti-monotonic in the amount of traces.
 Specifically, we consider two input variables with boolean values $\{\true, \false\}$, the \refprog{id2} returns the second component of the input without any modification.
-\begin{marginlisting}
+\begin{marginlisting}[*-2]
   \caption{Identity function on the second component.}
   \labprog{id2}
   \vspace{25pt}
@@ -1123,7 +1123,7 @@ The trace semantics of \refprog{id2} is:
     \end{array}
     \right\}
 \end{align*}
-\begin{marginfigure}
+\begin{marginfigure}[*-4]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
     \node (lend) at (-0.9,0) {$\loc{3}:$};
@@ -1906,6 +1906,7 @@ These intersections represent concrete input configurations where variations on 
 All the buckets of corresponding intersections are joined together.
 Thus, all but the output variables (\cf{} $\abstractdomainproject[\inputvariables \setminus \defoutputvariables]$) are projected away to find the maximum range of the extreme values of the buckets.
 
+\siderefbox{def}{range}
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
   Let $\defoutputvariables$ be the output variables of interest.
