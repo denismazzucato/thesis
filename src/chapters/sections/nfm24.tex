@@ -2259,22 +2259,25 @@ However, it holds that:
 \end{align*}
 In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
 
-\section{Related Work--In Progress}[Related Work]
+\section{Related Work}
 \labsec{nfm24-related-work}
 
 \newcommand*{\entropypartitions}[1][\defprogram]{\Pi(#1)}
 \newcommand*{\exampleinput}{\textsc{Input}_\defprogram}
 
-Given the connection between \emph{qualitative} input usage and information flow analyses \sidecite{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to use \emph{quantitative} information flow \sidecite{Denning1982,Gray1991}.
+As quantitative input data usage arises from the qualitative counterpart, this chapter has been inspired by the work on abstract non-interference \sidecite{Giacobazzi2004,Giacobazzi2018,Mastroeni2013, Mastroeni2023}. In particular, \textcite{Giacobazzi2004} ...
+
+Given the connection between \emph{qualitative} input usage and information flow analysis \sidecite[][{Chapters 8, 9, and 10}]{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to look into \emph{quantitative} information flow, formerly introduced by \sidetextcite{Denning1982,Gray1991}.
 %formerly introduced by the pioneering work of \sidetextcite{Denning1982} and \sidetextcite{Gray1991}.
 Such analyses measure information leakage about a secret through the concept of entropy, based on observations of the program's output values.
 %
 Remarkably, this similarity between entropy and our notion of impact is even more evident
 in the work proposed by \sidetextcite{K_opf2013} which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
 % In particular, \textcolor{red}{we focus on the work proposed by \sidetextcite{K_opf2013}} \marginpar{\textcolor{red}{why this work and not others? we should justify}} which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
-For example, the equivalence classes of the program \landingprogram{} are $\entropypartitions[\landingprogram]=\setdef{\setdef{\tuple{x}{y}}{\landingprogram(x, y)=\defoutput}}{\defoutput\in\{0, 1, 2, 3\}}
+For example, the equivalence classes of the \refprog*{landing-alarm-system}, referred to as program $\landingprogram$, are $\entropypartitions[\landingprogram]=\setdef{\setdef{\tuple{x}{y}}{\landingprogram(x, y)=\defoutput}}{\defoutput\in\{0, 1, 2, 3\}}
 =\{\{\tuple{1}{1}\}, \{\tuple{1}{2}\}, \{\tuple{1}{3}\}, \{\tuple{-4}{1}, \tuple{-4}{2}, \tuple{-4}{3}\}\}$.
-We developed our impact definitions by adapting entropy measures to our needs in three successive attempts.
+Next, we show how our impact quantifiers arose from the adaptation of entropy measures to our needs in three successive attempts.
+
 
 % Various static analyses \sidecite{Clark2007,Malacaria2007} derived from information theory. Entropy measures, such as \textit{Shannon}- or \textit{min}-entropy, are employed to define average or worst-case bounds on the level of difficulty faced by an attacker in discovering a secret.
 % These measures are commonly utilized to defend against security threats, \eg, side-channel attacks~\cite{Malacaria2018}.
@@ -2308,7 +2311,7 @@ Indeed, when the risk level is 3, the potential values of input variables are ${
 %
 Unfortunately, min-entropy lacks granularity and measures the uncertainty of the input variables collectively. Instead, our aim is to quantify the individual contributions.
 
-To address the previous issue, as a second attempt we exploit low and high labels for input variables, where the former are considered as public, available to the attacker, and the latter as secret.
+To address the previous issue, as a second attempt we exploit low and high labels for input variables, where the former are considered as public, available to the attacker, and the latter as secret \sidecite{K_opf2010}.
 To assess the impact of each input variable, we prioritize one high variable at a time, considering all others as low variables.
 Subsequently, we compute the min-entropy of the labelled program to quantify the extent of the impact.
 %
@@ -2334,7 +2337,7 @@ Indeed, $\outcomesentropy(\defprogram^\definputvariables)=\outcomes(\defprogram)
 % Effectively, this is the first notion of impact capable of discriminating the contribution of each input variable on the program computation, exploiting the number of reachable outcomes from variations of the value of the input variable under consideration.
 
 
-Overall, entropy measures and the approach proposed by \sidetextcite{K_opf2013} can be adapted to our needs. Nevertheless, their analysis grows exponentially with the number of low variables, which in our adaptation corresponds to the number of inputs, minus one. To address this limitation, we leverage an over-approximation of input-output observations of the program, focusing solely on the low variables. By doing so, we obtain the set of input configurations that lead to the same output value by variation on the value of high variables.
+Overall, entropy measures and the approach proposed by \sidetextcite{K_opf2013,K_opf2010} can be adapted to our needs. Nevertheless, their analysis grows exponentially with the number of low variables, which in our adaptation corresponds to the number of inputs, minus one. To address this limitation, we leverage an over-approximation of input-output observations of the program, focusing solely on the low variables. By doing so, we obtain the set of input configurations that lead to the same output value by variation on the value of high variables.
 As a result, our approach performs the backward analysis only one time per output bucket, independently of the number of low variables.
 A similar technique could also be used to mitigate such explosion in their work.
 
@@ -2385,7 +2388,7 @@ A similar technique could also be used to mitigate such explosion in their work.
 % While the qualitative property provides insights into the usage or not of program inputs, our work offers more flexibility providing a quantification of such a usage.
 % Conversely, our quantitative framework is derived from the qualitative input data usage property, which bears similarities with information flow properties, we drew inspiration from this field to construct our framework.
 
-Other works include \sidetextcite{Chothia2014}, which proposed a statistical approach to quantify information leakage for Java programs. \sidetextcite{Phan2012} and \sidetextcite{Saha2023} employed symbolic execution techniques and model counting to obtain sound bounds on the entropy of programs.
+In quantitative information flow, other works include \sidetextcite{Chothia2014}, which proposed a statistical approach to quantify information leakage for Java programs. \sidetextcite{Phan2012,Phan2014,Saha2023} employed symbolic execution techniques and model counting to obtain sound bounds on the entropy of programs.
 Other static analyses, \eg, \sidetextcite{Assaf2017} and \sidetextcite{Clark2007}, are based on abstract interpretation.
 %
 % A series of papers~\cite{Clark2005a,Clark2005b,Clark2007,Malacaria2007} proposed static analyses to verify quantitative interference using Shannon's information theory and semantics of looping constructors, refining information-theoretic models.
@@ -2405,7 +2408,7 @@ Instead, we present a more fine-grained analysis, which discovers the impact of 
 
 Qualitative input data usage and non-interference relates also with \textit{Data Leakage}~\sidecite[][Chapter~4]{Brownlee2020}.
 This property holds relevance for data science software, particularly in addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
-The series of papers developed by \sidetextcite{Drobnjaković2022,Subotić2021,Subotić2022} focuses on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, bringing new challenges in the topic of formal verification.
+The series of papers developed by \sidetextcite{Drobnjakovic2024,Subotic2022a,Subotic2022b} focuses on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, bringing new challenges in the topic of formal verification.
 We could incorporate an adaptation of their work to encompass a notion of quantitative data leakage.
 Further development of this concept could be of particular interest.
 
