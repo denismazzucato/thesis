@@ -8,12 +8,18 @@
 \chapter{Introduction}
 \labch{introduction}
 
-
-Recent advances and evolution in software development have led to increasingly complex software systems.
+\marginemptybox{4cm}
+In today's world, software rules safety critical systems such as nuclear power plants \sidecite{Krasner2021},
+car engines \sidecite{Finch2009},
+airplane control systems
+\sidecite{Briere1993},
+and medical devices \sidecite{Leveson1993}.
 The reliability of these systems is based on their correctness.
-Any failure or vulnerability in software poses significant risks, potentially threatening human safety or causing financial losses.
+Any failure or vulnerability in safety critical software poses significant risks, potentially threatening human safety or causing financial losses.
+Recent advances in software development have led to increasingly complex software systems.
 As software grows in complexity, the likelihood of bugs also increases.
 The effort and cost of fixing these bugs escalate with late detection, as illustrated in \reftab{effort-to-fix} \sidecite{White2017}, which shows the relative costs of fixing bugs at different development stages.
+For safety critical systems, detecting and addressing bugs before deployment is mandatory to ensure safety.
 
 \begin{margintable}
   \caption{Cost of fixing bugs at different development stages \cite{White2017}.}
@@ -35,12 +41,6 @@ The effort and cost of fixing these bugs escalate with late detection, as illust
 \end{margintable}
 
 
-In today's world, software rules safety-critical systems such as nuclear power plants \sidecite{Krasner2021},
-car engines \sidecite{Finch2009},
-airplane control systems
-\sidecite{Briere1993},
-and medical devices \sidecite{Leveson1993}.
-For these systems, detecting and addressing bugs before deployment is mandatory to ensure safety.
 
 Beyond traditional software, the rise of machine learning software has introduced new challenges.
 Machine learning is increasingly impacting society by assisting or even automating decision-making in fields such as social welfare \sidecite{Larson2016}, criminal justice \sidecite{Buolamwini2018}, and healthcare \sidecite{Obermeyer2019}.
@@ -49,23 +49,23 @@ In response to the rise of machine learning software based software, and thus th
 Detecting bugs and bias in machine learning software is crucial to ensure that the software behaves as intended and does not harm users.
 
 
-Even more recently, the last advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications.
-Agents like OpenAI's ChatGPT\sidenote{\rurl{chatgpt.com}} and Google's Gemini\sidenote{\rurl{gemini.google.com}} are gaining widespread use.
-Specifically designed for coding, GitHub Copilot\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}.
-Despite their benefits, AI-generated code can introduce bugs as human-written code \sidecite{Asare2023}, making it crucial to use techniques that detect software errors or certify intended behaviors.
+% Even more recently, the last advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications.
+% Agents like OpenAI's ChatGPT\sidenote{\rurl{chatgpt.com}} and Google's Gemini\sidenote{\rurl{gemini.google.com}} are gaining widespread use.
+% Specifically designed for coding, GitHub Copilot\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}.
+% Despite their benefits, AI-generated code can introduce bugs as human-written code \sidecite{Asare2023}, making it crucial to use techniques that detect software errors or certify intended behaviors.
 
-Detecting software errors is mandatory across various contexts, from more traditional safety-critical systems to the latest AI-generated applications, to ensure a correct software behavior.
+Therefore, from more traditional to the latest machine learning-based software, detecting errors in safety critical or high-stakes contexts is mandatory to ensure a correct software behavior.
 
 \section{Software Quality}
 
 Software quality measures how well software meets its requirements.
 The most common method to ensure software quality is \emph{testing}.
 The correct behavior of software is tested empirically for a finite number of inputs against a set of assertions specifying the functional requirements of the code.
-However, testing has inherent limitations.
-It can only verify a program against functional requirements, which may be poorly defined and ambiguous, leading to inadequate testing.
-Exhaustive testing is impractical, and constraints on time and budget can further impact the process.
+However, testing has inherent limitations. For instance,
+% It can only verify a program against functional requirements, which may be poorly defined and ambiguous, leading to inadequate testing.
+exhaustive testing is impractical, and constraints on time and budget can further impact the process.
 Mostly, testing cannot guarantee the absence of bugs\sidenote{``Program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- \textcite{Dijkstra1976}} \sidecite{Dijkstra1976}.
-While in some cases deploying software with bugs and relying on patches to fix it is acceptable, \cf{} \reftab{effort-to-fix}, ensuring that software is free of bugs before deployment is necessary to avoid catastrophic consequences in safety-critical systems.
+While in some cases deploying software with bugs and relying on patches to fix it is acceptable, \cf{} \reftab{effort-to-fix}, ensuring that software is free of bugs before deployment is necessary to avoid catastrophic consequences in safety critical systems.
 
 In contrast to testing, \emph{formal methods} provide rigorous mathematical guarantees about software correctness.
 The idea of formally verifying software dates back to the late 1960s with program proofs and invariants from \sidetextcite{Floyd1967} and \sidetextcite{Hoare1969}.
@@ -117,8 +117,9 @@ User interaction is ultimately required to guide the proof search in both the in
 Theorem provers are complete and sound but not fully automated.
 
 Formal methods based on model checking \sidecite{Clarke1981,Queille1982} automatically explore the state space of a program's model to verify whether undesirable states are reachable.
+However, modern software model checker trades termination for automation and completeness, as state-of-the-art software model checkers may not terminate.
+In such cases, the software model checker halts on a timeout, returning an \emph{unknown} result, which indicates that the verification process was inconclusive.
 \sidetextcite{Clarke2004} applied model checking to prove the correctness of ANSI-C programs.
-However, modern model checker trades termination for automation and completeness, as state-of-the-art model checkers may not terminate.
 
 Static analysis verifies the program source code at some level of abstraction without user interaction.
 This abstraction is sound but incomplete, meaning the analysis may report \emph{false alarms}, \ie, warnings that a correct program may be incorrect.
@@ -129,7 +130,7 @@ Abstract Interpretation \sidecite{Cousot1977} is a general theory for approximat
 Their framework is based on the observation that not all computational details are necessary to reason about program properties.
 Instead, the program's semantics can be approximated by a simpler, more abstract model that facilitates automatic reasoning.
 
-Over the past decade, abstract interpretation-based static analyses became part of the software development lifecycle of safety-critical systems.
+Over the past decade, abstract interpretation-based static analyses became part of the software development lifecycle of safety critical systems.
 For instance, the \emph{Astrée} static analyzer \sidecite{Blanchet2003} is routinely used to ensure the absence of runtime errors in embedded synchronous C programs for the Airbus A340 and A380.
 
 We provide a formal introduction to abstract interpretation in \refch{abstract-interpretation}.
@@ -147,7 +148,7 @@ This article was heavily cited to justify austerity measures worldwide in the fo
 However, in 2013, \sidetextcite{Herndon2014} discovered that the authors had made a mistake in their Excel spreadsheet, leading to the erroneous conclusion.
 One of the errors was the incorrect usage of the input value relative to Norway's economic growth in 1964, with an excessive weight in the average growth rate computation.
 
-In data science applications, where software involves long pipelines that filter, merge, and manipulate data, programming errors causing input variables to have more or less influence than expected are even more likely to occur.
+In data science and machine learning applications, where software involves long pipelines that filter, merge, and manipulate data, programming errors causing input variables to have more or less influence than expected are even more likely to occur.
 Hence, it is essential to employ techniques that enhance confidence in the usage of input variables for data-driven applications.
 
 
@@ -193,19 +194,18 @@ A quantitative analysis would have revealed that the impact of Norway's economic
 Symposium (NFM) 2024 \cite{Mazzucato2024b}.}
 \marginnote{\formatmargincitation{Mazzucato2024b}}
 
-In this thesis, we study formal reasoning techniques to detect input data misuse.
-We propose semantics-based static analysis techniques to quantify the impact of input variables on program computation.
+In the first part of this thesis, we propose semantics-based static analysis techniques to quantify the impact of input variables on program computation.
 In \refch{quantitative-input-data-usage}, we introduce a new formal framework based on abstract interpretation for reasoning about quantitative input data usage properties.
 This framework can identify variables with disproportionate impact, certifying intended behavior or revealing potential flaws by matching developers' expectations with actual results.
 We characterize the impact of an input variable with a notion of dependency between variables and program outcomes.
 Our framework is parametric in the impact definition of choice.
 %
 We introduce a backward static analysis based on abstract interpretation, parametric in the impact definition, which infers a sound over-approximation of the impact of input variables.
-The analysis computes the input states leading to output buckets, applying a computable implementation of the impact on the backward reachability analysis result.
+% The analysis computes the input-output relations of a given program, then applies a computable implementation of the impact on the backward reachability analysis result.
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
 
 
-\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, against six use cases.
+\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, on six use cases.
 
 \marginnote{\refch{quantitative-fairness} and \refch{evaluation-on-neural-networks} in \arefpart{extensional} are based on the work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
 \marginnote{\formatmargincitation{Mazzucato2021}}
@@ -219,7 +219,7 @@ The forward pass reduces the backward analysis's combinatorial explosion, partit
 
 
 \paragraph{Contributions}
-The followings are the contributions of \arefpart{extensional}, containing \cref{ch:quantitative-input-data-usage,ch:showcase,ch:quantitative-fairness,ch:evaluation-on-neural-networks}:
+The followings are the contributions of \arefpart{extensional}, consisting of \cref{ch:quantitative-input-data-usage,ch:showcase,ch:quantitative-fairness,ch:evaluation-on-neural-networks}:
 
 \begin{itemize}
   \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact quantifiers.
@@ -246,10 +246,10 @@ For instance, unexpected input impacts on runtime could reveal sensitive informa
 Even cryptographic programs are vulnerable to timing attacks, depending on implementation choices.
 \sidetextcite{Kocher1996} demonstrated that public key cryptographic algorithms, like RSA, are susceptible to timing attacks, potentially leaking secret keys.
 
-Knowing the timing behavior of a program can certify intended behavior or reveal latent flaws by matching developers' expectations with actual program behavior.
+% Knowing the timing behavior of a program can certify intended behavior or reveal latent flaws by matching developers' expectations with actual program behavior.
 For performance optimization, identifying input variables that significantly affect loop iterations helps developers focus on critical code segments \sidecite{Omar2017}.
 Consequently, understanding the impact of input variables on runtime is paramount.
-In this thesis, we focus on quantifying input variables' impact on loop iterations as an indicator of runtime behavior.
+In this second part of the thesis, we focus on quantifying input variables' impact on loop iterations as an indicator of runtime behavior.
 
 We leverage global loop bound analysis to derive an over-approximation of the global loop bound, encoding the quantification of input variables' impact as a linear programming problem.
 Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite[][Section 10]{Urban2018} for scalability.
@@ -272,4 +272,4 @@ The followings are the contributions of \arefpart{intensional}:
 \frenchdiv
 
 Related works are discussed at the end of each chapter, providing a comprehensive overview of the literature.
-At the end of the thesis, in \arefpart{conclusion}, we conclude the thesis with a summary and future work.
+At the end of the thesis, in \arefpart{conclusion}, we conclude the thesis with a summary and perspectives on future work.

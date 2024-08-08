@@ -79,3 +79,15 @@
 
 
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+
+\newcommand{\marginemptybox}[2][\textwidth]{%
+  \marginnote{\emptybox[#1]{#2}}
+}
+\newcommand{\emptybox}[2][\textwidth]{%
+  \begingroup
+  % \setlength{\fboxsep}{-\fboxrule}%
+  \setlength{\fboxrule}{0pt}
+  \noindent\framebox[#1]{\rule{0pt}{#2}}%
+  \endgroup
+}
