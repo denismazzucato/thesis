@@ -17,19 +17,19 @@ As each impact result must be interpreted with respect to what the program compu
 The impact quantifiers considered in this chapter are \outcomesname{} and \rangename{}.
 The \qusedname{} quantifier has not been considered in the evaluation since we consider a continuous input space in most of the use cases: in such instance $\qusedname$ would either return $+\infty$ or $0$ for each variable as it would discover that either are missing an infinite amount of input values or none at all.
 
-An artifact of \impatto, including the source code and the six use cases is available in Zenodo\sidenote{\impattozenodo}.
+An artifact of \impatto, including the source code and the six use cases is available on Zenodo\sidenote{\impattozenodo}.
 This chapter is based on the evaluation section of the work published at NASA Formal Methods Symposium (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. In the next chapters, we will apply our quantitative framework in the context of neural networks.
 
 
 \frenchdiv
 
-\emph{Dans ce chapitre, nous démontrons les applications potentielles de notre analyse d'utilisation des données d'entrée quantitatives, en évaluant un outil de preuve de concept automatique de notre analyse statique, appelé \impatto\sidenotemark[\ref{impatto}], sur six programmes démonstratifs différents :
+\emph{Dans ce chapitre, nous démontrons les applications potentielles de notre analyse d'utilisation des données d'entrée quantitatives, en évaluant un outil de preuve de concept automatique de notre analyse statique, appelé \impatto\sidenotemark[\label{impatto}], sur six programmes démonstratifs différents :
 un programme simplifié de l'article de Reinhart et Rogoff (\cf{} \refsec{rr}),
 un programme extrait d'une présentation récente d'OpenAI (\cf{} \refsec{gpt-4-turbo}),
 deux programmes du concours de vérification logicielle SV-Comp (\cf{} \refsec{termination-analysis-A} et \refsec{app:termination-analysis-B}),
 un programme calculant une expression linéaire via des additions répétées (\cf{} \refsec{linear-loops}),
 et \refprog{landing-alarm-system} calculant le coefficient de risque d'atterrissage pour un système d'alarme (\cf{} \refsec{landing-risk}).
-L'outil \impatto{} est implémenté en Python 3 et utilise l'interpréteur abstrait \interproc\sidenotemark[\ref{interproc}] pour effectuer l'analyse rétrograde.
+L'outil \impatto{} est implémenté en Python 3 et utilise l'interpréteur abstrait \interproc\sidenotemark[\label{interproc}] pour effectuer l'analyse rétrograde.
 Nous exploitons cet outil pour dériver automatiquement une quantification solide de l'utilisation des données d'entrée de chaque cas d'utilisation.
 Comme chaque résultat d'impact doit être interprété par rapport à ce que le programme calcule, nous analysons chaque cas d'utilisation séparément.
 }

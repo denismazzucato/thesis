@@ -373,7 +373,7 @@ Column $|\textsc{m}|$ refers to the analyzed neural network by the number of its
 % However, \sidecite{Urban2020} demonstrates the approach for networks with over than $1000$ nodes.}
 % Indeed, these networks sizes are on par with the fairness verification literature, e.g., see \sidecite{Manisha2020,Yurochkin2020}.
 % \todo{let's be careful here; the nets in the literature are slightly larger, having hundreds of nodes; we should say it as in the rebuttal}
-We configured the pre-analysis with lower bound $\lowerbound = 0.5$ and upper bound $\upperbound = 5$. Each column shows the chosen abstract domain. We show here the results for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (i.e., \reducedproduct in the \reftab{models}), which is the most precise of all possible reduced products.
+We configured the pre-analysis with lower bound $\lowerbound = 0.5$ and upper bound $\upperbound = 5$. Each column shows the chosen abstract domain. We show here the results for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (\ie, \reducedproduct in the \reftab{models}), which is the most precise of all possible reduced products.
 %
 % reftabs~\reftab{models1-ext} and~\reftab{models2-ext} in Appendix~\ref{apx:evaluation} show the results for all domain choices, including all possible reduced products.
 %
@@ -440,16 +440,16 @@ The \textsc{time} rows show the average running time.
   }
 \end{table}
 
-For all neural networks, \reducedproduct{} achieves the highest input-space coverage, an improvement of up to $12.49\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra{} \sidecite{Urban2020} (i.e., with respect to the \deeppoly{} domain for $|\textsc{m}| = 40$). Interestingly, such an improvement comes at the cost of a very modest increase in running time (i.e., just over $1$ minute).
+For all neural networks, \reducedproduct{} achieves the highest input-space coverage, an improvement of up to $12.49\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra{} \sidecite{Urban2020} (\ie, with respect to the \deeppoly{} domain for $|\textsc{m}| = 40$). Interestingly, such an improvement comes at the cost of a very modest increase in running time (\ie, just over $1$ minute).
 % More often, the running time even decreases.
 Indeed, using a more precise abstract domain for the pre-analysis generally results in fewer input space partitions being passed to the backward analysis and, in turn, this reduces the overall running time.
 
-For the smallest neural networks (i.e., $|\textsc{m}| \in \{10, 12, 20\}$), the \symbolic abstract domain is the second-best choice in terms of input-space coverage. This is likely due to the convex \relu{} approximations of \deeppoly{} and \neurify{} which in some case produce a negative lower bound (\cf{} \reffig{deeppoly} and \reffig{neurify}),
+For the smallest neural networks (\ie, $|\textsc{m}| \in \{10, 12, 20\}$), the \symbolic abstract domain is the second-best choice in terms of input-space coverage. This is likely due to the convex \relu{} approximations of \deeppoly{} and \neurify{} which in some case produce a negative lower bound (\cf{} \reffig{deeppoly} and \reffig{neurify}),
 %in \ref{subsec:domains}),
 while \symbolic{} always sets the lower bound to zero (\cf{} \reffig{naive}).
 %in \ref{subsec:domains}).
 
-Finally, for the largest neural networks (i.e., $|\textsc{m}| \in \{40, 45\}$), it is the structure of the network (rather than its number of \relu{} activations) that impacts the precision and scalability of the analysis: for the deep but narrow network (i.e., $|\textsc{m}| = 45$), \libra{} achieves a higher input-space coverage in a shorter running time than for the shallow but wide network (i.e., $|\textsc{m}| = 40$). \\
+Finally, for the largest neural networks (\ie, $|\textsc{m}| \in \{40, 45\}$), it is the structure of the network (rather than its number of \relu{} activations) that impacts the precision and scalability of the analysis: for the deep but narrow network (\ie, $|\textsc{m}| = 45$), \libra{} achieves a higher input-space coverage in a shorter running time than for the shallow but wide network (\ie, $|\textsc{m}| = 40$). \\
 %
 
 \subsection{Precision-vs-Scalability Tradeoff.}
@@ -457,7 +457,7 @@ The configuration of \libra{}'s pre-analysis allows trading-off between precisio
 \reftab{configurations} shows the average results of running \libra{} on the neural network with $20$ \relu{}s
 with different lower and upper bound configurations, and different choices for the abstract domain used by the pre-analysis.
 %
-Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper bounds. We tried $\lowerbound \in \{0.5, 0.25\}$ and $\upperbound \in \{3, 5\}$. We again show the results for the \boxes, \symbolic, \deeppoly, \neurify{} abstract domains, and the most precise reduced product domain \textsc{deeppoly+neurify+symbolic} (i.e., \reducedproduct{} in \reftab{configurations}).
+Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper bounds. We tried $\lowerbound \in \{0.5, 0.25\}$ and $\upperbound \in \{3, 5\}$. We again show the results for the \boxes, \symbolic, \deeppoly, \neurify{} abstract domains, and the most precise reduced product domain \textsc{deeppoly+neurify+symbolic} (\ie, \reducedproduct{} in \reftab{configurations}).
 % , while \reftab{configurations-ext} in Appendix~\ref{apx:evaluation} shows the results for all domain choices.
 %
 %The differences between the results shown for the same neural network in \reftab{models} and \reftab{configurations} with $\lowerbound = 0.5$ and $\upperbound = 5$ are due to random choices that happen during the analysis. Indeed, to take account of this randomness, we show average results over $5$ executions. However, these differences concerning the input space coverage are always within a range of $\pm 0.05\%$ (maximum difference obtained with \deeppoly).
@@ -510,7 +510,7 @@ Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper boun
 }
 \end{table}
 
-As expected, decreasing the lower bound $\lowerbound$ or increasing the upper bound $\upperbound$ improves the input-space coverage (\textsc{input} rows) and increases the running time (\textsc{time} rows). We obtain an improvement of up to $12.44\%$ by increasing $\upperbound$ from $3$ to $5$ (with $\lowerbound = 0.25$ and $\boxes$), and up to $42.05\%$ by decreasing $\lowerbound$ from $0.5$ to $0.25$ (with $\upperbound = 5$ and $\boxes$). The smaller is $\lowerbound$ and the larger is $\upperbound$, the higher is the impact on the running time. Once again, for all lower and upper bound configurations, \textsc{deeppoly+neurify+symbolic} achieves the highest input-space coverage, improving up to $12.08\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra{} (i.e., with respect to \deeppoly{} with $\lowerbound = 0.5$ and $\upperbound = 5$). The improvement is more important for configurations with larger lower bounds.
+As expected, decreasing the lower bound $\lowerbound$ or increasing the upper bound $\upperbound$ improves the input-space coverage (\textsc{input} rows) and increases the running time (\textsc{time} rows). We obtain an improvement of up to $12.44\%$ by increasing $\upperbound$ from $3$ to $5$ (with $\lowerbound = 0.25$ and $\boxes$), and up to $42.05\%$ by decreasing $\lowerbound$ from $0.5$ to $0.25$ (with $\upperbound = 5$ and $\boxes$). The smaller is $\lowerbound$ and the larger is $\upperbound$, the higher is the impact on the running time. Once again, for all lower and upper bound configurations, \textsc{deeppoly+neurify+symbolic} achieves the highest input-space coverage, improving up to $12.08\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra{} (\ie, with respect to \deeppoly{} with $\lowerbound = 0.5$ and $\upperbound = 5$). The improvement is more important for configurations with larger lower bounds.
 
 Notably, \reftab{configurations} shows that \emph{none among the \symbolic, \deeppoly, and \neurify{} abstract domains is always more precise than the others}. There are cases where even \symbolic{} (implemented by \sidecite{Wang2018b}) outperforms \neurify{} (implemented by \sidecite{Wang2018a} which is the successor of \cite{Wang2018b} and is believed to be strictly superior to its predecessor), e.g., configuration $\lowerbound=0.5$ and $\upperbound=5$. We thus argue
 for using reduced products of abstract domains also in other contexts beyond fairness certification, e.g., verifying local robustness~\sidecite{Li2019,Singh2019} or verifying functional properties of neural networks~\sidecite{Katz2017}.
@@ -520,7 +520,7 @@ for using reduced products of abstract domains also in other contexts beyond fai
 \subsection{Leveraging Multiple CPUs.}
 The optimal pre-analysis configuration in terms of precision or scalability depends on the analyzed neural network.
 %
-In order to push \libra{} to its limits and obtain $100\%$ input-space coverage on the neural network with 20 \relu{}s, we used the new configuration auto-tuning mechanism starting with $\lowerbound = 1$ and $\upperbound = 0$ (i.e., the most restrictive lower and upper bound configuration) and setting $\minlowerbound = 0$ and $\maxupperbound = 20$ (i.e., the most permissive configuration).
+In order to push \libra{} to its limits and obtain $100\%$ input-space coverage on the neural network with 20 \relu{}s, we used the new configuration auto-tuning mechanism starting with $\lowerbound = 1$ and $\upperbound = 0$ (\ie, the most restrictive lower and upper bound configuration) and setting $\minlowerbound = 0$ and $\maxupperbound = 20$ (\ie, the most permissive configuration).
 % (in practice, analyzing the entire input space is not necessarily needed).
 For all choices of abstract domains, the pre-analysis eventually stabilizes with lower bound $\lowerbound = 0.015625$ and upper bound $\upperbound = 6$.
 
@@ -591,10 +591,10 @@ For all choices of abstract domains, the pre-analysis eventually stabilizes with
   \labfig{cpus}
   \end{figure}
 
-\reffig{cpus} compares the average running times for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (i.e., \reducedproduct) as a function of the number of available CPUs.
+\reffig{cpus} compares the average running times for \boxes, \symbolic, \deeppoly, \neurify, and the reduced product \textsc{deeppoly+neurify+symbolic} (\ie, \reducedproduct) as a function of the number of available CPUs.
 %
 %
-With \reducedproduct{} we obtained a running time improvement of $14.39\%$ over \symbolic, i.e., the fastest domain available in the preliminary version of \libra{} (a minimum improvement of $11.54\%$ with $16$ CPUs, and a maximum improvement of $18.24\%$ with $64$ vCPUs).
+With \reducedproduct{} we obtained a running time improvement of $14.39\%$ over \symbolic, \ie, the fastest domain available in the preliminary version of \libra{} (a minimum improvement of $11.54\%$ with $16$ CPUs, and a maximum improvement of $18.24\%$ with $64$ vCPUs).
 %
 As expected, adding more CPUs always improves \libra{} running time. The most limited improvement in running time that occurs between $32$ CPUs and $64$ vCPUs is likely due to the use of hyperthreading as context switches between processes running intense numeric computations produce more overhead.
 %
@@ -684,10 +684,10 @@ As expected, adding more CPUs always improves \libra{} running time. The most li
 }
 \end{table}
 
-\reftab{cpus} additionally shows the estimated percentage of bias detected with each abstract domain, i.e., \libra{} is able to certify fairness for about $95\%$ of the neural network input space. Note that, the bias estimate depends on the partitioning of the input space computed by the pre-analysis, \cf{} \refsec{parallel-implementation-qlibra}. This explains the different percentages found even by runs with the same abstract domain. Within the same column, the difference is at most $0.14\%$ on average.
+\reftab{cpus} additionally shows the estimated percentage of bias detected with each abstract domain, \ie, \libra{} is able to certify fairness for about $95\%$ of the neural network input space. Note that, the bias estimate depends on the partitioning of the input space computed by the pre-analysis, \cf{} \refsec{parallel-implementation-qlibra}. This explains the different percentages found even by runs with the same abstract domain. Within the same column, the difference is at most $0.14\%$ on average.
 
 Finally, we remark that \emph{the new auto-tuning mechanisms is essential for scalability}. We tried repeating this experiment by directly
-running \libra{} with the configuration at which auto-tuning stabilizes, i.e., $\lowerbound = 0.015625$ and $\upperbound = 6$. After six days it still had not completed and we had to interrupt it.
+running \libra{} with the configuration at which auto-tuning stabilizes, \ie, $\lowerbound = 0.015625$ and $\upperbound = 6$. After six days it still had not completed and we had to interrupt it.
 
 \section{Summary}
 

@@ -1377,16 +1377,23 @@ For each output bucket $\bucket\in\abstractdomain$, where $1 \le j \le n$, our a
 Our static analysis is parametrized by an underlying backward abstract family\sidenote[][*-2]{A family of semantics is a set of program semantics parametrized by an initialization.}
 of semantics $\backwardsemanticsnoparam\in\backwardtype$ which computes the backward semantics $\backwardsemanticsnoparam(\bucket)$ from a given output bucket $\bucket\in\abstractdomain$.
 For instance, we could use the backward semantics of \refdef*{backward-semantics} to compute $\backwardsemanticsnoparam(\bucket)$.
-The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain $\abstractdomainconcretization$ to restore all possible dependencies from input states to output values, formally:
-\[
-  \backwardconcretization(\backwardsemanticsnoparam)\bucket \DefeQ
+The concretization function $\backwardconcretization\in(\backwardtype)\to\abstractdomain\to\outputtype$ employs the concretization of the abstract domain $\abstractdomainconcretization$ to restore all possible dependencies from input states to output values.
+
+\begin{definition}[Concretization $\backwardconcretization$]\labdef{backward-concretization}
+  Given a backward semantics $\backwardsemanticsnoparam\in\backwardtype$ and $\numberofbuckets$ output buckets $\buckets$, the \emph{concretization} $\backwardconcretization$ is defined as:
+  \begin{align*}
+  \backwardconcretization&\IN(\backwardtype)\to\abstractdomain\to\outputtype \\
+  \backwardconcretization(\backwardsemanticsnoparam)\bucket &\DefeQ
   \setof{\setdef{
     \inputoutputtuple{\defstate}
   }{
     \retrieveinput{\defstate}\in\abstractdomainconcretization(\backwardsemanticsnoparam(\bucket))\land\retrieveoutput{\defstate}\in\abstractdomainconcretization(\bucket)
     }
   }
-  \]
+  \end{align*}
+
+\end{definition}
+
 In words, $\backwardconcretization$ collects all the input-output dependencies from the application of the backward semantics to each output bucket $\bucket$.
 Since the abstract semantics may discover more dependencies than the concrete ones, the concretization returns all possible subsets of dependencies.
 In such a way, we ensure that the (restriction of the) output-abstraction semantics is a subset of the abstract one.
@@ -1516,16 +1523,17 @@ Before defining the concretization, we show an example where not all subsets of 
     \draw[->] (TT) -> (T);
     \draw[->] (TF) -> (F);
     \draw[->] (FT) -> (T);
+    \draw[->] (FT) -> (F);
     \draw[->] (FF) -> (F);
-    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=0pt] (-0.8,2.2) -- (-0.8,-0.2) node [black,midway,xshift=-0.6cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{id2}}$};
+    \draw[decorate,decoration={brace,amplitude=8pt,mirror,raise=4pt},yshift=0pt,xshift=0pt] (-0.8,2.2) -- (-0.8,-0.2) node [black,midway,xshift=-0.6cm,rotate=90] {$\tracesemanticsnoparam\semanticsof{\texttt{mix2}}$};
 \end{tikzpicture}
 }
 \begin{example}
   We assume we are interested in the validation of the property $\boundedqusedge$, where the impact quantifier is $\qusedname$ and the comparison operator for quantity bounds is $\ge$.
-  We consider the trace semantics of the program \refprog{id2}, \ie, $\tracesemanticsnoparam\semanticsof{\texttt{id2}}$, depicted on the side.
-  Consider an abstract semantics $\multisemanticsnoparam\semanticsof{\texttt{id2}}$ that concretize to the following sets of dependencies:
+  We consider the trace semantics of the program \refprog*{mix2}, \ie, $\tracesemanticsnoparam\semanticsof{\texttt{mix2}}$, depicted on the side.
+  Consider an abstract semantics $\multisemanticsnoparam\semanticsof{\texttt{mix2}}$ that concretize to the following sets of dependencies:
   \begin{align*}
-    \multiconcretization(\multisemanticsnoparam\semanticsof{\texttt{id2}})\buckets \spacearound{=}
+    \multiconcretization(\multisemanticsnoparam\semanticsof{\texttt{mix2}})\buckets \spacearound{=}
     \setof*{\left\{
     \begin{array}{l}
       \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
@@ -1535,12 +1543,12 @@ Before defining the concretization, we show an example where not all subsets of 
     \end{array}
     \right\}}
   \end{align*}
-  where the dependency $\tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}$ is the result of the over-approximation.
+  % where the dependency $\tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}$ is the result of the over-approximation.
   As noted in \refexample{qused-not-monotonic}, the $\qusedname_{\{\texttt{x}\}}$ applied to the biggest set of the concretized dependencies above is 1.
-  If we assume the abstract impact returns the bound 1, \ie, $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets) = 1$, then $\boundconcretization$ should filter from $\multiconcretization(\multisemantics)\buckets$ the sets of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqused$ employs the $\ge$ operator.
+  If we assume the abstract impact returns the bound 1, \ie, $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{mix2}}, \buckets) = 1$, then $\boundconcretization$ should filter from $\multiconcretization(\multisemantics)\buckets$ the sets of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqusedge$ employs the $\ge$ operator in this example.
   In particular, the following set of dependencies is removed:
   \begin{align*}
-    \tracesemanticsnoparam\semanticsof{\texttt{id2}} \spacearound{=}
+    \defsetoftraces \spacearound{=}
     \left\{
     \begin{array}{l}
       \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
@@ -1550,9 +1558,9 @@ Before defining the concretization, we show an example where not all subsets of 
     \end{array}
     \right\}
   \end{align*}
-  as $\qusedname_{\{\texttt{x}\}}(\tracesemanticsnoparam\semanticsof{\texttt{id2}})$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
-  Note that, there is a contradiction here, as the abstract impact $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{id2}}, \buckets)$ is assumed to be $1$ and should be smaller that the concrete one, which is $0$.
-  In fact, to be sound, the abstract impact should return a number not greater than $0$, and the concretization $\boundconcretization$ should not filter any set of dependencies.
+  as $\qusedname_{\{\texttt{x}\}}(\defsetoftraces)$ is 0 in such case (\cf{} \refexample{qused-not-monotonic}).
+  % Note that, there is a contradiction here, as the abstract impact $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{mix2}}, \buckets)$ is assumed to be $1$ and should be smaller that the concrete one, which is $0$.
+  % In fact, to be sound, the abstract impact should return a number not greater than $0$, and the concretization $\boundconcretization$ should not filter any set of dependencies.
 \end{example}
 
 \begin{definition}[Concretization of the Measured Quantity]\labdef{concretization-quantitative}
@@ -1584,7 +1592,7 @@ Before defining the concretization, we show an example where not all subsets of 
 %   The proof follows directly from the definition of the concretization $\boundconcretization$. By increasing the bound $\defbound'$, the set of traces in $\leconcretization(\defbound')$ can only increase as we weaken the condition. On the other hand, $\geconcretization(\defbound')$ can only decrease as we strengthen the condition.
 % \end{proof}
 
-The concretization $\boundconcretization$ maintains the set of traces concretized, in turns, by $\multiconcretization$, $\outputconcretization$ (\cf{} \refdef*{concretization-dependency-semantics}), and $\dependencyconcretization$ (\cf{} \refdef*{concretization-output-abstraction-semantics}) that yield an impact lower than the bound computed in the abstract, \cf, $\impactinstance(\multisemantics\buckets, \buckets)$.
+The concretization $\boundconcretization$ maintains the set of traces concretized by $\multiconcretization$, $\outputconcretization$ (\cf{} \refdef*{concretization-dependency-semantics}), and $\dependencyconcretization$ (\cf{} \refdef*{concretization-output-abstraction-semantics}) that yield an impact lower, respectively higher, than the bound computed in the abstract, \cf, $\impactinstance(\multisemantics\buckets, \buckets)$.
 
 \begin{remark}
   Based on the impact quantifier $\impactwrappername$, the $\defbound$-bounded impact property $\genbounded$ can be subset-closed, meaning that whenever a set of traces satisfies the property, all its subsets also satisfy the property.
@@ -1725,7 +1733,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
     \backwardsemanticsnoparam(\bucket[\textup{mid\-/high}]) \spacearound{&=} \prefrombucket[\textup{mid\-/high}] \spacearound{=} \langle \texttt{angle} \mapsto 1, \texttt{speed} \mapsto [2, 3] \rangle \\
     \backwardsemanticsnoparam(\bucket[\textup{high}]) \spacearound{&=} \prefrombucket[\textup{high}] \spacearound{=} \langle \texttt{angle} \mapsto -4, \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
-  Indeed, the backward analysis over-approximates the concrete semantics as, for example, the input configuration $\texttt{angle} = 1$ and $\texttt{speed} = 3$ does not lead to a low risk of approach.
+  Note that, the backward analysis over-approximates the concrete semantics as, for example, the input configuration $\texttt{angle} = 1$ and $\texttt{speed} = 3$ does not lead to a low risk of approach.
   We are interested in the input variable \texttt{angle}, thus the projections are:
   \begin{align*}
     \abstractdomainproject[{\{\texttt{angle}\}}](\prefrombucket[\textup{low}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
@@ -1733,7 +1741,7 @@ All together, the abstract implementation $\abstractoutcomes$ returns the value 
     \abstractdomainproject[{\{\texttt{angle}\}}](\prefrombucket[\textup{mid\-/high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [2, 3] \rangle \\
     \abstractdomainproject[{\{\texttt{angle}\}}](\prefrombucket[\textup{high}]) \spacearound{&=} \langle \texttt{speed} \mapsto [1, 3] \rangle \\
   \end{align*}
-  It is easy to notice that the abstract elements resulting from the projection intersect between each other. Therefore, we obtain that the set of indices of buckets that intersect is:
+  It is easy to see that the abstract elements resulting from the projection intersect between each other. Therefore, we obtain that the set of indices of buckets that intersect is:
   \begin{eqnarray*}
   \lefteqn{\intersectallfunction((\abstractdomainproject[{\{\texttt{angle}\}}](\prefrombucket[\textup{low}]), \dots, \abstractdomainproject[{\{\texttt{angle}\}}](\prefrombucket[\textup{high}]))) ={}} \\
 & \setof{\{\textup{low}, \textup{mid\-/low}, \textup{mid\-/high}, \textup{high}\}}
@@ -1837,7 +1845,7 @@ Hence, the next result shows that the abstract impact $\abstractoutcomes$ is a s
 \end{proof}
 
 \begin{example}
-  We show that the result of the abstract implementation $\abstractoutcomes$ in \refexample{abstract-outcomes} is a sound over-approximation of the concrete implementation $\outcomes$.
+  Regarding the \refprog*{landing-alarm-system}[*-8], we show that the result of the abstract implementation $\abstractoutcomes$ in \refexample{abstract-outcomes} is a sound over-approximation of the concrete implementation $\outcomes$.
   \marginnote{
     \[
   \outputobs(\defstate) \DefeQ \left\{\begin{array}{l}
@@ -2022,7 +2030,7 @@ Hence, the next result shows that the abstract impact $\abstractrangename$ is a 
 
 \begin{example}
   Let \texttt{risk} be the output variable of interest.
-  The quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$.
+  Regarding the program \refprog*{landing-alarm-system}[*-3], we show that the quantities computed by the abstract implementation $\abstractrange$ in \refexample{abstract-range} are sound over-approximations of the concrete implementation $\range$.
   \begin{align*}
     & \rangename_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\textup{landing-alarm-system}}) = 3 \\
     &\qquad\LE \abstractrangename_{\{\texttt{angle}\}}(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets) = 3
@@ -2211,7 +2219,7 @@ Hence, the next result shows that the abstract impact $\abstractqusedname$ is a 
 
 
 \begin{example}
-  The quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
+  Regarding the program \refprog*{landing-alarm-system}, we show that the quantities computed by the abstract implementation $\abstractqused$ in \refexample{abstract-qused} are sound over-approximations of the concrete implementation $\qused$:
   \begin{align*}
     & \qusedname_{\{\texttt{angle}\}}(\tracesemanticsnoparam\semanticsof{\landingprogram}) = 3 \\
     &\qquad\GE \abstractqusedname_{\{\texttt{angle}\}}(\presfrombuckets, \buckets) = 3

@@ -43,13 +43,16 @@ Note that, for the models we consider in this thesis, we have that the output of
 
 \subsection{Classification Task}
 
-In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, i.e., $\argmax_{j} \node[\lastlayerindex][j]$.
+In this thesis, we focus on feed-forward neural networks used for classification tasks. Given an input vector, the network classifies it into one of the target classes, each represented by a node in the output layer. The network classifies an input vector by computing the values of the nodes in the output layer and then selecting the class associated with the node having the highest value, \ie, $\argmax_{j} \node[\lastlayerindex][j]$.
 
-In the quantitative framework of \nrefch{quantitative-input-data-usage}, the classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the output values of the network to the target classes. The output observer returns $1$ if the given node (\ie, a variable of the neural network) corresponds to the target class with the highest value, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+Building on the quantitative framework of \nrefch{quantitative-input-data-usage}, the classification task is formalized using the output observer $\outputobs$ (\refdef*{output-observer}), which maps the output values of the network to the target classes. The output observer returns $1$ if the given node (\ie, a variable of the neural network) corresponds to the target class (\ie, nodes in the output layer) with the highest value, and $0$ otherwise. Thus, when the output state of a trace from the network computation is observed by $\outputobs$, the only non-zero value corresponds to the target class. Formally, the output observer is defined as:
+\marginnote{
+  $\networknodesinlayer\outputlayer$ denotes the set of nodes in the output layer of a neural network.
+}
 \begin{align*}
 \outputobs(\defstate) \DefeQ \lambda \texttt{y}.\spacer
 \begin{cases}
-1 & \text{if } \argmax_{\node \in\networknodesinlayer\outputlayer} \defstate(\node) = \texttt{y} \\
+1 & \text{if } \texttt{y} \spacearound{=} \argmax_{\node \in\networknodesinlayer\outputlayer} \defstate(\node) \\
 0 & \text{otherwise}
 \end{cases}
 \end{align*}
@@ -118,14 +121,14 @@ Backward%${}_{\defmodel,\abstractdomain, \defabstractactivationpattern}$%(%$\def
       %$\defabstractvalue$% = %$\abstractdomainbackwardaffine\semanticsof{\node}\defabstractvalue$%
   return %$\defabstractvalue$%
 \end{lstlisting}
+\end{marginalgorithm}
 \marginnote{
   Similarly to the notes of the forward analysis, in the algorithm above (\cf{} $\abstractdomainbackward_{\defmodel, \abstractdomain}$), $\lastlayerindex$ is the number of layers of the neural network $\defmodel$, $\cardinalitynospaces{\hiddenlayer{i}}$ is the number of nodes in layer $i$, and $\node$ is the $j$-th node in layer $i$.
   Even though not explicitly written, the backward handler for affine and activation functions (respectively, $\abstractdomainbackwardaffine$ and $\abstractdomainbackwardrelu$) employs the abstract domain $\abstractdomain$.
 }
-\end{marginalgorithm}
 
 Conversely, a backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the target classes.
-\refalg{backward-neural-networks} depicts the backward analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the result $\defabstractvalue$ of the analysis of the
+\refalg{backward-neural-networks} shows the backward analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the result $\defabstractvalue$ of the analysis of the
 backward affine transformation performed on a given node, and $\abstractdomainbackwardrelu$ manages the \relu{} activation function given the node's activation status $\defabstractactivationpattern$.
 
 
@@ -133,7 +136,7 @@ backward affine transformation performed on a given node, and $\abstractdomainba
 
 Both analyses are sound, meaning they over-approximate the possible states the network may reach.
 Before formally showing the soundness of the forward and backward analyses, we introduce the forward concretization $\forwardconcretization$.
-Similar to the backward concretization $\backwardconcretization$, it is defined as:
+Similar to the backward concretization $\backwardconcretization$, \cf{} \refdef*{backward-concretization}, it is defined as:
 \[
   \forwardconcretization(\forwardsemanticsnoparam)\defabstractvalue \DefeQ
   \setof{\setdef{
@@ -287,7 +290,7 @@ The \symbolic{} domain \sidecite{Wang2018b} combines \boxes{} with symbolic cons
 
 The \deeppoly{} domain \sidecite{Singh2019} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
 %
-The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (i.e., the approximation shown on the left when $u \leq -l$, and the approximation shown on the right otherwise).
+The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (\ie, above when $u \leq -l$, and below otherwise).
 
 \begin{marginfigure}
   \centering
@@ -326,7 +329,7 @@ The concrete bounds are computed by back-substitution of the symbolic bounds up 
 
 The \neurify{} domain \sidecite{Wang2018a} similarly maintains symbolic lower and upper bounds $low$ and $up$ for each neuron $x$ of neural network. Unlike \deeppoly, concrete lower and upper bounds are computed for \emph{each} symbolic bound: $l_{low}$ and $u_{low}$ for the symbolic lower bound, and $l_{up}$ and $u_{up}$ for the symbolic upper bound.
 %
-The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, i.e., for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
+The over-approximation of non-fixed \relu{} nodes is done \emph{independently} for each symbolic bound, \ie, for the $low$ bound if $l_{low} < 0 < u_{low}$, and for the $up$ bound if $l_{up} < 0 < u_{up}$.
 %
 \reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
 
@@ -352,7 +355,7 @@ Namely, we introduce the \changesname{} and \qlibraname{} impact quantifiers, wh
 The \changesname{} impact quantifier is designed to overcome the limitations of the impact quantifiers defined in the previous chapter when applied in the context of neural networks.
 Indeed, for neural networks, all possible input variations typically lead to all possible outcomes (\ie, classifications).
 Therefore, the impact quantifiers defined in the previous chapter would not be useful as they measure the impact of input variables based on the number (\eg, \outcomesname{}) or the magnitude (\eg, \rangename{}) of the output values; even \qusedname{} would be meaningless in this setting as all the classification targets are often reachable by all the input values.
-Therefore, these metrics would not provide any meaningful information about how the input variables influence the network's outcome.
+% Therefore, these metrics would not provide any meaningful information about how the input variables influence the network's outcome.
 
 \begin{example}
   \begin{marginfigure}
@@ -635,7 +638,7 @@ In words, a set of input variables $\definputvariables$ has a high impact on the
 \end{definition}
 The auxiliary set $Q_{\definputvariables, \definput, \defoutput}$ contains the set of stable regions leading to an output value different from $\defoutput$.
 Additionally, $\changes$ requires the set of traces $\defsetoftraces$ to be deterministic, that is, that there is only one output value for each input configuration. Such a requirement is necessary to ensure that segments are well-defined.
-Therefore, the \changesname{} impact quantifier would potentially be meaningless in such a setting.
+Otherwise, the \changesname{} impact quantifier would potentially be meaningless in such a setting.
 Nevertheless, since we consider neural networks for classification tasks in this chapter, the output value is deterministic for each input configuration, and thus the set of traces $\defsetoftraces$ is deterministic.
 
 \begin{marginfigure}
@@ -763,14 +766,14 @@ denoted $\boundedchanges$.
 
 The second quantifier introduced in this section is the \qlibraname{} impact quantifier, which stands for \underline{q}uantitative \underline{a}bstract \underline{u}nused.
 Notably, this quantifier is designed to quantify the amount of neural network's input space that \emph{does not use} a given set of input features.
-In the context of neural networks, the \qlibraname{} impact quantifier is particularly relevant as it induces a quantification of the fair space of a model.
+In the context of neural networks, the \qlibraname{} impact quantifier can be used to induce a quantification of the fair space of a model.
 A network is fair whenever the classification determined by a model does not depend on the ``sensitive'' input variables.
 In our setting, the sensitive input variables are represented by the set of input variables $\definputvariables$ and measuring the inability of the input variables $\definputvariables$ to affect the network outcome is equivalent to quantifying the amount of fair space.
 To this end, we define the \qlibraname{} impact quantifier as the volume of input space that is not able to change the model classification by perturbation of the input variables $\definputvariables$.
 The higher the volume the higher the fairness of the model, and thus the lower the amount of space that is prone to bias.
 
 In practice, we collect the input space (without the input variables $\definputvariables$ to account for any possible permutations of their input values) where the variables $\definputvariables$ do not influence the network outcome.
-To do so, we employ the $\unusediowrapper$ predicate to check whether a subset of the given set of traces $\defsetoftraces$ is not able to change the network outcome.
+To do so, we employ the $\unusediowrapper$ predicate, \cf{} \refdef*{abstract-unused}, to check whether a subset of the given set of traces $\defsetoftraces$ is not able to change the network outcome.
 % Among all the possible subsets, we consider the maximal one, that is, the one that cannot be extended without changing the network outcome.
 % To do so, we retrieve the input values of traces that do not change the network outcome when the input variables $\definputvariables$ are modified, similarly to the $\unusediowrapper$ predicate.
 We determine the volume of this set of points by applying the standard volume operation inherent to metric spaces.
@@ -962,20 +965,20 @@ First, we describe the implementation, followed by the validation of the $\defbo
 % In this case, whenever the over-approximation overlaps the result of the abstract backward analysis coming from different output buckets, in the concrete, this would be like having non-deterministic set of traces.
 % To address this issue, we need an abstract domain that is exact for our property and underlying network model.
 
-As previously noted, the $\changesname$ impact quantifier suffers from the case in which the input is a non-deterministic set of traces, rendering it ineffective.
+As previously noted, the $\changesname$ impact quantifier is ineffective when the input is a non-deterministic set of traces.
 The backward analysis, starting from the output buckets, computes an over-approximation of the set of traces leading to the same output bucket.
-In cases this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it would correspond to a non-deterministic set of traces when concretized.
+If this over-approximation overlaps with the results of the abstract backward analysis from different output buckets, it concretizes to a non-deterministic set of traces.
 To address this issue, we require the backward analysis to be exact for our property and underlying network model.
 
-The core idea of the $\changesname$ impact quantifier is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{numerical-abstract-domains}), are inadequate for representing multiple distinct stable regions because they also include the intermediate points. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
+The core idea of the $\changesname$ impact quantifier is to group together abstract elements representing distinct stable regions. Convex abstract domains, such as polyhedra, octagons, or intervals (introduced in \refsec{numerical-abstract-domains}), are inadequate for representing multiple disjoint stable regions because they also include the points in between. Therefore, the abstract domain $\abstractdomain$ used in the backward analysis $\backwardsemanticsnoparam$ needs to employ disjunctive sets, which allow for the representation of distinct stable regions.
 %
 We leverage the \textit{disjunctive polyhedra abstract domain} $\disjunctivepolyabstractdomain$, defined as
 $
   \langle \disjunctivepolyabstractdomaintype, \disjunctivepolyabstractdomainsubseteq \rangle
 $, where $\polyabstractdomain$ represents the \textit{convex polyhedra abstract domain}~\sidecite{Cousot1978} and $\disjunctivepolyabstractdomaintype$ is the set of all finite subset of $\polyabstractdomain$.
-From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ computes the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973} to project away the input variables $\definputvariables$.
-Specifically, $\abstractdomainproject$ takes as input a set of variables $\definputvariables$ and a polyhedron in $d$-dimensions where $d \ge \cardinalitynospaces{\definputvariables}$, returning a polyhedron in $(d-\cardinalitynospaces{\definputvariables})$-dimensions, removing the variable $\definputvariables$.
-Importantly, this domain is exact for the property of interest, as it allows us to represent multiple distinct stable regions, when applied to feed-forward \relu-activated neural networks.
+From the polyhedra domain $\polyabstractdomain$, the function $\abstractdomainproject$ uses the Fourier-Motzkin elimination algorithm~\sidecite{Dantzig1973} to project away the input variables $\definputvariables$.
+Specifically, $\abstractdomainproject$ takes as input a set of variables $\definputvariables$ and a polyhedron in $d$-dimensions where $d \ge \cardinalitynospaces{\definputvariables}$, returning a polyhedron in $(d-\cardinalitynospaces{\definputvariables})$-dimensions, removing the variables in $\definputvariables$.
+This domain is exact for the property of interest when applied to feed-forward \relu-activated neural networks.
 
 The function $\abstractchanges$ takes as input the variables of interest $\definputvariables$, $\numberofbuckets$ output buckets $\buckets\in\vectorbuckets$, and $\numberofbuckets$ disjunctions of polyhedra $\prefrombucket\in\disjunctivepolyabstractdomaintype^\numberofbuckets$ obtained from the backward analysis.
 For clarity, we access each polyhedron and disjunctions of polyhedra via indexing as in a matrix-based structure, that is, $\prefrombucket=\{\{P_{1,1}\vee \dots\vee P_{1,p}\},\dots,\{P_{n,1}\vee \dots\vee P_{n,q}\}\}$ where $p = \cardinalitynospaces{\prefrombucket[1]}$ and $q = \cardinalitynospaces{\prefrombucket[n]}$. For instance, $\prefrombucket[j]$ refers to the disjunction of polyhedra $\{P_{j,1}\vee \dots\vee P_{j,k}\vee \dots\}$, for $j\le n$, and $\prefrombucket[{j, k}]$ refers to the polyhedron $P_{j,k}\in\polyabstractdomain$.
@@ -1110,8 +1113,8 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
   \reflemma{abstractchanges-is-sound} shows that $\abstractchanges$ is a sound implementation of $\changes$, the proof follows directly by application of the \refthm{soundness} instantiated with the abstract implementation $\abstractchanges$ and comparison operator $\le$.
 \end{proof}
 
-While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires to explore all the possible paths of the network.
-In the next section, we introduce the \qlibraname{} impact quantifier, which--in a sense--still requires an exact backward analysis, but is more scalable and efficient thanks to the use or parallelization.
+While this result shows that an exact backward analysis is required to ensure a sound implementation of $\changes$, it also presents scalability challenges as the backward analysis is computationally expensive and requires exploring all the possible paths of the network.
+In the next section, we introduce the \qlibraname{} impact quantifier, which is more scalable and efficient thanks to the use or parallelization.
 
 \subsection{Abstract Implementation \texorpdfstring{$\abstractqlibra$}{Abstract QLibra}}[Abstract \texorpdfstring{$\abstractqlibra$}{QLibra}]
 \labsec{abstract-qlibra}
@@ -1196,7 +1199,8 @@ In the next section, we introduce the \qlibraname{} impact quantifier, which--in
 
 
 In this section, we present $\abstractqlibra$ as a sound implementation of $\qlibra$, computing an over-approximation of the volume of input space that may contain bias. Conversely, $\abstractqlibra$ computes an under-approximation of the fair input space.
-As introduced at the beginning of this chapter, this analysis is too na\"ive to be practical, it is still useful for building upon later in the next section.
+We first present the implementation of $\abstractqlibra$, which is too na\"ive to be practical, but it is still useful for building upon in the parallel implementation $\parallelqlibra$ later in this chapter.
+
 
 % \begin{marginalgorithm}
 %   \caption{Abstract Implementation $\abstractqlibra$}
@@ -1229,7 +1233,7 @@ In this way, both covering (\refdef{covering}) and compatibility (\refdef{compat
 The analysis proceeds backwards from each output bucket $\bucket$ via the backward semantics $\backwardsemanticsnoparam$ in order to determine an over-approximation of the initial states $\prefrombucket$.
 $\abstractqlibra$ projects away the input variables $\definputvariables$ from the abstract states $\prefrombucket$ to account for any possible permutations of their input values.
 Then, it computes the pairwise intersections among the projected abstract states to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
-The complement of such a volume is an over-approximation of the biased input space, hence an under-approximation of the fair input space.
+The volume of this input space is an over-approximation of the biased space, hence its complement is an under-approximation of the fair input space.
 The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is always lower than the concrete $\qlibra$.
 
 \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
@@ -1238,7 +1242,7 @@ The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is a
   \begin{enumerate}[label=(\roman*)]
     \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
     \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \reflemma{sound-over-approximation}, and
+    \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \refdef{sound-over-approximation}, and
     \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
   \end{enumerate}
   then, $\abstractqlibra$ is a sound implementation of $\qlibra$ \wrt{} the $\ge$ operator:
@@ -1269,7 +1273,7 @@ We show \nrefthm{soundness} instantiated with the abstract implementation $\abst
 \end{proof}
 
 Although sound, the abstract implementation $\abstractqlibra$ does not work well in presence of imprecision from the abstract domain employed during the backward analysis.
-In fact, the abstract implementation $\abstractqlibra$ applied directly to the backward analysis represents the so called \emph{na\"ive casual-fairness analysis}~\sidecite{Urban2020}.
+In fact, the abstract implementation $\abstractqlibra$ applied directly to the backward analysis yields the so called \emph{na\"ive casual-fairness analysis}~\sidecite{Urban2020}.
 Such analysis suffers from the choice of existing abstract domains, which are rather fast but too imprecise to handle non-linear constraints, such as those arising from the activation functions in neural networks.
 Indeed, even using the polyhedra domain for the backward analysis, handling the \relu{} activation function would over-approximate what effectively is a conditional branch, leading to a loss of precision that is reflected for each node of the neural network.
 On the other hand, one could use a disjunctive completion of the polyhedra domain~\sidecite{Cousot1979a}, which would retain a separate polyhedron each condition.
@@ -1508,11 +1512,13 @@ The abstract implementation $\parallelqlibra$ is defined as the sum of the volum
 The forward analysis (\cf{} \refalg{forward-neural-networks}) uses an abstract domain $\abstractdomain$ and builds partition $\definputpartitions$ of the input space, while the backward analysis (\cf{} \refalg{backward-neural-networks}) employs the disjunction of polyhedra abstract domain $\disjunctivepolyabstractdomain$.
 Then, we perform the quantification of the biased space.
 
-
-
+\marginnote{
+  The symbol $\reducedstate$ represents the set of input states, \ie, let $\inputvariables$ the set of input variables:
+  \[\reducedstate \DefeQ \setdef{\defstate(\inputvariables)}{\defstate\in\state}\]
+}
 More specifically, the forward analysis bounds the number of paths that the backward analysis has to explore.
-We represent each path by an activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model.}.
-The analysis receives a \emph{budget} parameter, called $\tune$ in \refline{parameters}, providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie, the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
+We represent each path by an abstract activation pattern\sidenote{The activation pattern determines the activation status of every \relu{} operation in the network model. The abstract activation pattern is a partial activation pattern where some activation status may be unknown.}.
+The analysis receives a \emph{budget} parameter, called $\tune$ in \refline{parameters}, providing an upper bound $\upperbound$ on the number of tolerated \relu{} nodes with an unknown activation status for each element $\definputpartition\in\definputpartitions$, \ie, an upper bound on the number of paths that are to be explored by the backward analysis in each partition $\definputpartition$.
 The forward analysis starts with the trivial partition of the whole input space, \ie, $\definputpartitions = \{\reducedstate\}$ in \refline{initial-partition}.
 Then, it proceeds forward for each element $\definputpartition\in\definputpartitions$ by computing the abstract activation patterns that are compatible with the input partition $\definputpartition$ (\cf{} \refline{forward}), starting from the empty set of activation patterns. If $\definputpartition$ leads to a unique outcome (\cf{} \refline{unique}), then the partition is already fair without further analysis.
 Therefore, we add the partition $\definputpartition$ to the set of \emph{completed} partitions $\completedpartitions$, (\cf{} \refline{completed}).
@@ -1566,11 +1572,23 @@ QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$
 \end{lstlisting}
 \end{marginalgorithm}
 
-The budget configuration of the pre-analysis (i.e., choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic} $\heuristic$ (\cf{} \refline{tuning}). By default, whenever an input partition exceeds the current configuration (\cf{} \refline{previously-excluded}), the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.). To guarantee the termination of the whole analysis, the search heuristic should return $(\maxupperbound, \minlowerbound)$ after a finite number of iterations.
+The budget configuration of the pre-analysis (\ie, choices of an abstract domain, lower bound $\lowerbound$, and upper bound $\upperbound$) allows trading-off between precision and scalability of the approach. Ultimately however, the optimal configuration largely depends on the analyzed neural network. For this reason, a \emph{configuration auto-tuning mechanism} dynamically updates the lower bound and upper bound configuration according to a chosen \emph{search heuristic} $\heuristic$ (\cf{} \refline{tuning}). By default, whenever an input partition exceeds the current configuration (\cf{} \refline{previously-excluded}), the pre-analysis alternates between increasing the upper bound by one, up to a maximum upper bound $\maxupperbound$, and halving the lower bound, down to a minimum lower bound $\minlowerbound$. Other bound update patterns are configurable (e.g., by updating both bounds at the same time, or performing multiple increments to the upper bound before halving the lower bound, etc.). To guarantee the termination of the whole analysis, the search heuristic should return $(\maxupperbound, \minlowerbound)$ after a finite number of iterations.
 
 
-Then, the analysis proceeds backwards, independently for each abstract activation pattern $\defabstractactivationpattern$ and input partition $\definputpartition$ in $\feasiblepartitions$ (\cf{} \refline{independent}).
-By exploiting the knowledge of the activation pattern, the backward analysis does not need to explore all the possible paths in the network model, but only the paths that have an unknown activation status. For each input partition, the analysis computes the abstract domain representing the biased input space (\cf{} \refline{sum}). Specifically, the function \textup{Check}, \cf{} \refalg{check}, performs the pair-wise intersection among the abstract values coming from different output buckets (\ie, different network classifications) and returns the set of abstract values that intersect, representing the biased input space.
+Then, the analysis proceeds backwards, independently for each abstract
+activation pattern $\defabstractactivationpattern$ and input partition
+$\definputpartition$ in $\feasiblepartitions$ (\cf{} \refline{independent}). By
+exploiting the knowledge of the activation pattern, the backward analysis does
+not need to explore all the possible paths in the network model, but only those
+with an unknown activation status. Specifically, the backward analysis only
+needs to split the abstract invariant only when a node has an unknown activation
+status, as otherwise it is handled as either the identity of the constant
+function. For each input partition, the analysis computes the abstract domain
+representing the biased input space (\cf{} \refline{sum}). Specifically, the
+function \textup{Check}, \cf{} \refalg{check}, performs the pair-wise
+intersection among the abstract values coming from different output buckets
+(\ie, different network classifications) and returns the set of abstract values
+that intersect, representing the biased input space.
 
 \begin{marginalgorithm}
   \caption{Bias check.}
