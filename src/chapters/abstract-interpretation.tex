@@ -11,6 +11,9 @@
 \chapter{Abstract Interpretation}
 \labch{abstract-interpretation}
 
+
+\marginemptybox{15cm}
+
 In this chapter, we introduce the concepts that are the foundation of this work.
 We assume basic knowledge of mathematics, we summarize the necessary background in set theory and logic.
 We present an overview of Abstract Interpretation and define the notations and concepts that will be used in the rest of the thesis.
@@ -23,7 +26,7 @@ Here, we briefly revisit well-known concepts to establish the logical and mathem
 
 We write $p \defeq P$ to define the mathematical object $p$ to be equal to the object $P$.
 Let $\B \defeq \{\true, \false\}$ be the set of Boolean values, where $\true$ represents true and $\false$ represents false.
-We can state properties by logical predicates, for instance, $x \le x + 1$ is a basic logical predicate.
+We can state properties by logical predicates\sidenote{For instance, $x \le x + 1$ is a basic logical predicate}.
 We combine predicates using logical connectives: $\land$ for conjunction, $\lor$ for disjunction, $\neg$ for negation, $\implies$ for implication (respectively, $\Leftarrow$ for reverse implication), and $\iff$ for if and only if, as well as $\forall$ for universal and $\exists$ for existential quantification.
 In the logical predicate $P \implies Q$, $P$ is called the premise and $Q$ the conclusion.
 We call $P$ the \emph{sufficient} condition for $Q$ to hold and, conversely, $Q$ the \emph{necessary} condition for $P$ to hold.
@@ -92,7 +95,7 @@ The following are some important properties which may hold for a binary relation
     \item[Totality]: $\forall x, y \in S : \tuple{x}{y} \in R \vee \tuple{x}{y} \in R$
 \end{description}
 
-An equivalence relation is a binary relation which is reflexive, symmetric, and transitive. A binary relation which is reflexive (resp. irreflexive), anti-symmetric, and transitive is called a partial order (resp. strict partial order). A preorder is reflexive and transitive, but not necessarily anti-symmetric. A (strict) total order is a (strict) partial order which is total.
+An \emph{equivalence} relation is a binary relation which is reflexive, symmetric, and transitive. A binary relation which is reflexive (resp. irreflexive), anti-symmetric, and transitive is called a \emph{partial order} (resp. \emph{strict partial order}). A \emph{preorder} is reflexive and transitive, but not necessarily anti-symmetric. A (strict) \emph{total order} is a (strict) partial order which is total.
 
 
 
@@ -100,51 +103,227 @@ An equivalence relation is a binary relation which is reflexive, symmetric, and 
 \subsection{Ordered Sets}
 \labsec{ordered-sets}
 
+A partially ordered set (poset in short) is defined as sets equipped with a partial order relation.
 
-% A partially ordered set or poset (resp. preordered set) $\langle D, \leq \rangle$ is a set $D$ equipped with a partial order (resp. preorder) $\leq$. A finite partially ordered set $\langle D, \leq \rangle$ can be represented by a Hasse diagram such as the one in Figure~\ref{fig:hasse_diagram}: each element $x \in D$ is uniquely represented by a node of the diagram, and there is an edge from a node $x \in D$ to a node $y \in D$ if $y$ covers $x$, that is, $x \leq y$ and there exists no $z \in D$ such that $x \leq z \leq y$. Hasse diagrams are usually drawn placing the elements higher than the elements they cover.
+\begin{definition}[Partially Ordered Set]\labdef{poset}
+  A \emph{partially ordered set} (poset) $\langle X, \sqsubseteq \rangle$ is a set $X$ equipped with a partial order relation $\sqsubseteq\in\setof{X\times X}$.
+\end{definition}
 
-% \begin{figure}[h]
-% \centering
-% \begin{tikzpicture}[scale=0.8]
-%   \node (a) at (0,0) {$\emptyset$};
-%   \node (b) at (-2,2) {$\{a\}$};
-%   \node (c) at (0,2) {$\{b\}$};
-%   \node (d) at (2,2) {$\{c\}$};
-%   \node (e) at (-2,4) {$\{a,b\}$};
-%   \node (f) at (0,4) {$\{a,c\}$};
-%   \node (g) at (2,4) {$\{b,c\}$};
-%   \node (h) at (0,6) {$\{a,b,c\}$};
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}[scale=0.8]
+    \node (a) at (0,0) {$\emptyset$};
+    \node (b) at (-2,2) {$\{a\}$};
+    \node (c) at (0,2) {$\{b\}$};
+    \node (d) at (2,2) {$\{c\}$};
+    \node (e) at (-2,4) {$\{a,b\}$};
+    \node (f) at (0,4) {$\{a,c\}$};
+    \node (g) at (2,4) {$\{b,c\}$};
+    \node (h) at (0,6) {$\{a,b,c\}$};
 
-%   \draw (a) -- (b);
-%   \draw (a) -- (c);
-%   \draw (a) -- (d);
-%   \draw (b) -- (e);
-%   \draw (b) -- (f);
-%   \draw (c) -- (e);
-%   \draw (c) -- (g);
-%   \draw (d) -- (f);
-%   \draw (d) -- (g);
-%   \draw (e) -- (h);
-%   \draw (f) -- (h);
-%   \draw (g) -- (h);
-% \end{tikzpicture}
-% \caption{Hasse diagram for the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$.}
-% \label{fig:hasse_diagram}
-% \end{figure}
+    \draw (a) -- (b);
+    \draw (a) -- (c);
+    \draw (a) -- (d);
+    \draw (b) -- (e);
+    \draw (b) -- (f);
+    \draw (c) -- (e);
+    \draw (c) -- (g);
+    \draw (d) -- (f);
+    \draw (d) -- (g);
+    \draw (e) -- (h);
+    \draw (f) -- (h);
+    \draw (g) -- (h);
+  \end{tikzpicture}
+  \caption{Hasse diagram for the partially ordered set $\langle \setof{\{a, b, c\}}, \subseteq \rangle$.}
+  \labfig{hasse_diagram}
+  \end{marginfigure}
+
+A finite partially ordered set $\langle D, \sqsubseteq \rangle$ can be represented by a Hasse diagram such as the one in~\reffig{hasse_diagram}: each element $x \in X$ is uniquely represented by a node of the diagram, and there is an edge from a node $x \in X$ to a node $y \in X$ if $y$ covers $x$, that is, $x \sqsubseteq y$ and there exists no $z \in X$ such that $x \sqsubseteq z \sqsubseteq y$. Hasse diagrams are usually drawn placing the elements higher than the elements they cover.
+
+\begin{remark}
+  Note that, for \emph{any} set of elements $X$, $\langle X, \subseteq \rangle$ is a poset ordered by set inclusion $\subseteq$.
+\end{remark}
+
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}
+    \node (a) at (-1,0) {$a$};
+    \node (b) at (-2,2) {$b$};
+    \node (c) at (0,2) {$c$};
+
+    \draw (a) -- (b);
+    \draw (a) -- (c);
+  \end{tikzpicture}
+  \caption{Hasse diagram for the poset $\langle \setof{a, b, c}, \{(a, b), (a, c)\}\rangle$.}
+  \labfig{posetA}
+  \end{marginfigure}
+
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}
+    \node (a) at (0,0) {$a$};
+    \node (b) at (0,2) {$b$};
+    \node (c) at (2,0) {$c$};
+    \node (d) at (2,2) {$d$};
+
+    \draw (a) -- (b);
+    \draw (c) -- (d);
+  \end{tikzpicture}
+  \caption{Hasse diagram for the poset $\langle \setof{a, b, c, d}, \{(a, b), (c, d)\}\rangle$.}
+  \labfig{posetB}
+  \end{marginfigure}
+
+\begin{example}
+  To draw a few examples: \reffig{posetA} represents the poset $\langle \setof{a, b, c}, \{(a, b), (a, c)\}\rangle$; and \reffig{posetB} represents the poset $\langle \setof{a, b, c, d}, \{(a, b), (c, d)\}\rangle$.
+\end{example}
+
+Next we introduce some important concepts related to partially ordered sets.
+Let $\langle X, \sqsubseteq \rangle$ be a partially ordered set and $X'$ be a subset of $X$.
+\begin{description}
+  \item[Greatest Element] When it exists, the greatest element of $X$ (or top) is denoted by $\top$: $\forall x \in X.\spacer x \sqsubseteq \top$.
+  \marginnote{Note that, any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element.}
+  \item[Least Element] When it exists, the least element of $X$ (or bottom) is denoted by $\bot$: $\forall x \in X.\spacer \bot \sqsubseteq x$.
+  \item[Maximal Element] An element $x \in X$ is maximal in $X$ if, $\forall y \in X.\spacer x \sqsubseteq y$ implies $x = y$.
+  \item[Maximum] A maximal element $x \in X$ is a maximum of $X$ if it is unique.
+  \item[Minimal Element] Dually, an element $x \in X$ is minimal in $X$ if, $\forall y \in X.\spacer y \sqsubseteq x$ implies $x = y$.
+  \item[Minimum] A minimal element $x \in X$ is a minimum of $X$ if it is unique.
+  \item[Upper Bound] An element $x \in X$ is an upper bound of $X'$ if, $\forall y \in X'.\spacer y \sqsubseteq x$.
+  \item[Lower Bound] Dually, an element $x \in X$ is a lower bound of $X'$ if, $\forall y \in X'.\spacer x \sqsubseteq y$.
+  \item[Least Upper Bound] When it exists, the least upper bound (lub) of $X'$ is denoted by $\join X'$: it is an upper bound $x \in X$ of $X'$ such that, for every upper bound $x' \in X$ of $X'$, $x \sqsubseteq x'$.
+  \item[Greatest Lower Bound] When it exists, the greatest lower bound (glb) of $X'$ is denoted by $\meet X'$: it is a lower bound $x \in X$ of $X'$ such that, for every lower bound $x' \in X$ of $X'$, $x' \sqsubseteq x$.
+\end{description}
 
 % Let $\langle D, \leq \rangle$ be a partially ordered set. The least element of the poset, when it exists, is denoted by $\bot$: $\forall d \in D : \bot \leq d$. Similarly, the greatest element of the poset, when it exists, is denoted by $\top$: $\forall d \in D : d \leq \top$. Note that any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element. Let $X \subseteq D$. A maximal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $x \leq d$. When $X$ has a unique maximal element, it is called maximum and it is denoted by $\max X$. Dually, a minimal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $d \leq x$. When $X$ has a unique minimal element, it is called minimum and it is denoted by $\min X$. An upper bound of $X$ is an element $d \in D$ (not necessarily belonging to $X$) such that, for each $x \in X$, $x \leq d$. The least upper bound (or lub, or supremum) of $X$ is an upper bound $d \in D$ of $X$ and such that, for every upper bound $d' \in D$ of $X$, $d \leq d'$. When it exists, it is unique and denoted by $\bigvee X$ (or $\sup X$). Dually, a lower bound of $X$ is an element $d \in D$ such that, for each $x \in X$, $d \leq x$. The greatest lower bound (or glb, or infimum) of $X$ is a lower bound $d \in D$ of $X$ such that, for every lower bound $d' \in D$ of $X$, $d' \leq d$. When it exists, it is unique and denoted by $\bigwedge X$ (or $\inf X$). Note that the notion of maximal element, maximum, and least upper bound (resp. minimal element, minimum, and greatest lower bound) are different, as illustrated by the following example.
 
 % \begin{example}
-% Let us consider the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$ represented in Figure~\ref{fig:hasse_diagram} and the subset $X \triangleq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$. The maximal elements of $X$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$. Thus, the maximum $\max X$ of $X$ does not exist, while its least upper bound is $\sup X = \{a, b, c\}$. Similarly, the minimal elements of $X$ are $\{a\}$, $\{b\}$, and $\{c\}$. Thus, the minimum $\min X$ of $X$ does not exist, while its greatest lower bound is $\inf X = \emptyset$.
+% Let us consider the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$ represented in \reffig{hasse_diagram} and the subset $X' \defeq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$, . The maximal elements of $X$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$. Thus, the maximum $\max X$ of $X$ does not exist, while its least upper bound is $\sup X = \{a, b, c\}$. Similarly, the minimal elements of $X$ are $\{a\}$, $\{b\}$, and $\{c\}$. Thus, the minimum $\min X$ of $X$ does not exist, while its greatest lower bound is $\inf X = \emptyset$.
 % \end{example}
+
+
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}[scale=0.8]
+    \node (a) at (0,0) {$\emptyset$};
+    \node (b) at (-2,2) {$\{a\}$};
+    \node (c) at (0,2) {$\{b\}$};
+    \node (d) at (2,2) {$\{c\}$};
+    \node (e) at (-2,4) {$\{a,b\}$};
+    \node (f) at (0,4) {$\{a,c\}$};
+    \node (g) at (2,4) {$\{b,c\}$};
+    \node (h) at (0,6) {$\{a,b,c\}$};
+
+    \draw (a) -- (b);
+    \draw (a) -- (c);
+    \draw (a) -- (d);
+    \draw (b) -- (e);
+    \draw (b) -- (f);
+    \draw (c) -- (e);
+    \draw (c) -- (g);
+    \draw (d) -- (f);
+    \draw (d) -- (g);
+    \draw (e) -- (h);
+    \draw (f) -- (h);
+    \draw (g) -- (h);
+
+    % subset X'
+    \draw[seabornBlue, thick, dashed, rounded corners] (-2.9, .7) rectangle (2.9, 5.3);
+    \node[seabornBlue] at (3.3, 4.2) {$X'$};
+
+    % maximals of X'
+    \draw[seabornGreen, thick, dashed, rounded corners] (-2.7, 3.5) rectangle (2.7, 4.5);
+    \node[seabornGreen, fill=white] at (1.8, 4.9) {Maximals};
+
+    % minimals of X'
+    \draw[seabornRed, thick, dashed, rounded corners] (-2.7, 1.5) rectangle (2.7, 2.5);
+    \node[seabornRed, fill=white] at (-1.8, 1.1) {Minimals};
+
+    % lub of X'
+    \draw[seabornYellow, thick, dashed, rounded corners] (-0.4, -0.5) rectangle (0.4, .5);
+    \node[seabornYellow, fill=white] at (1, 0) {Lub};
+
+    % glb of X'
+    \draw[seabornOrange, thick, dashed, rounded corners] (-0.9, 5.5) rectangle (0.9, 6.5);
+    \node[seabornOrange, fill=white] at (1.4, 6) {Glb};
+  \end{tikzpicture}
+  \caption{Maximal and minimal elements of the subset $X'$, as well as its least upper and greatest lower bounds.}
+  \labfig{elements}
+  \end{marginfigure}
+
+\begin{example}
+  Let us consider the partially ordered set $\langle \setof{\{a, b, c\}}, \subseteq \rangle$ and the subset $X' \defeq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$, represented in blue in \reffig{elements}.
+  The maximal elements of $X'$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$, labelled ``Maximals'' in green. As we notice, the maximum of $X'$ does not exist, while its least upper bound is $\join X' = \{a, b, c\}$, labelled ``Lub'' in yellow.
+  The minimal elements of $X'$ are $\{a\}$, $\{b\}$, and $\{c\}$, labelled ``Minimals'' in red. As we notice, the minimum of $X'$ does not exist, while its greatest lower bound is $\meet X' = \emptyset$, labelled ``Glb'' in orange.
+\end{example}
+
+
+
 
 
 \subsection{Lattices}
 \labsec{lattices}
 
-\begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
-  An \emph{upper closure operator} on a poset $\defposet$ is an operator $\rho\in\defposet\to\defposet$ which is monotone, idempotent, and extensive ($\foralldef{\defposetelem \in \defposet}{\defposetelem \le P \rho(\defposetelem)}$).
+Lattices are posets that require every nonempty finite subset to have both a least upper bound and a greatest lower bound.
+
+\marginnote{Any totally ordered set is a lattice.}
+\begin{definition}[Lattice]\labdef{lattice}
+  A \emph{lattice} $\langle X, \sqsubseteq, \join, meet \rangle$ is a poset where $\forall x, x'\in X$ the least upper bound $\join\{x, x'\}$ and the greatest lower bound $\meet\{x, x'\}$ exist.
 \end{definition}
+
+Complete lattices are lattices that additionally require every (possibly infinite) subset to have both a least upper bound and a greatest lower bound.
+
+\begin{definition}[Complete Lattice]\labdef{complete-lattice}
+  A \emph{complete lattice} $\langle X, \sqsubseteq, \join, \meet, \bot, \top \rangle$ is a lattice where $\forall X' \subseteq X$ the least upper bound $\join X'$ and the greatest lower bound $\meet X'$ exist.
+  Complete lattices have both a least element $\bot \defeq \meet X$ and a greatest element $\top \defeq \join X$.
+\end{definition}
+
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}
+    \node (0) at (0,0) {$0$};
+    \node (1) at (0,1) {$1$};
+    \node (2) at (0,2) {$2$};
+    \node (rest) at (0,3) {$\vdots$};
+
+    \draw (0) -- (1);
+    \draw (1) -- (2);
+    \draw (2) -- (rest);
+  \end{tikzpicture}
+  \caption{Hasse diagram for the lattice $\langle \N, \le, \max, \min \rangle$.}
+  \labfig{N}
+  \end{marginfigure}
+
+\begin{marginfigure}
+  \centering
+  \begin{tikzpicture}
+    \node (0) at (0,0) {$0$};
+    \node (1) at (0,1) {$1$};
+    \node (2) at (0,2) {$2$};
+    \node (rest) at (0,3) {$\vdots$};
+    \node (inf) at (0,4) {$+\infty$};
+
+    \draw (0) -- (1);
+    \draw (1) -- (2);
+    \draw (2) -- (rest);
+    \draw (rest) -- (inf);
+  \end{tikzpicture}
+  \caption{Hasse diagram for the complete lattice $\langle \Nplus, \le, \max, \min, 0, +\infty \rangle$.}
+  \labfig{Nplus}
+  \end{marginfigure}
+
+
+\begin{example}
+  The posets of \reffig{posetA} and \reffig{posetB} are not lattices, as they do not have a least upper bound for every pair of elements, \eg, $\join\{a, b\}$ does not exist in \reffig{posetA} and $\join\{a, c\}$ does not exist in \reffig{posetB}.
+%
+  \reffig{hasse_diagram} represents a complete lattice with a finite number of elements.
+  The poset $\langle \N, \le \rangle$ is a lattice, as every pair of natural numbers has a least upper bound and a greatest lower bound, but it is not a complete lattice, as $\join \N$ does not exist.
+  Lastly, the poset $\langle \Nplus, \le \rangle$ where $+\infty$ is greater than any natural number is indeed a complete lattice.
+  \reffig{N} shows the Hasse diagram for $\langle \Nplus, \le \rangle$ and \reffig{Nplus} the one for $\langle \Nplus, \le \rangle$.
+\end{example}
+
+\begin{remark}
+  Given any set of elements $X$, the power set $\langle \setof{X}, \subseteq, \setjoin, \setmeet, \emptyset, X \rangle$ is a complete lattice.
+\end{remark}
+
 
 \subsection{Functions}
 \labsec{functions}
@@ -233,6 +412,10 @@ An equivalence relation is a binary relation which is reflexive, symmetric, and 
 
 % In the following, the partial order between the fixpoint iterates is called computational order, in order to distinguish it from the approximation order defined in the next Section 2.2.2.
 
+
+\begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
+  An \emph{upper closure operator} on a poset $\defposet$ is an operator $\rho\in\defposet\to\defposet$ which is monotone, idempotent, and extensive ($\foralldef{\defposetelem \in \defposet}{\defposetelem \le P \rho(\defposetelem)}$).
+\end{definition}
 
 \section{Notations of Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
