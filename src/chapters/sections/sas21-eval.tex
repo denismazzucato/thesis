@@ -55,16 +55,18 @@ Given two analyses $F, F'$ (\eg, \impatto{} and baseline), the heuristic (\mcpl)
 The heuristic then returns the corresponding indices of the sorted results.
 Formally, it computes $I=\argsort_\definputvariable F(\defmodel, \definputvariable)$ and $J=\argsort_\definputvariable F'(\defmodel, \definputvariable)$ for the two analyses respectively, where $\argsort$ returns the corresponding indices of the sorted list (by decreasing order), \eg, $\argsort \langle 30, 65, 2, 60 \rangle = \langle 2,4,1,3\rangle$.
 Afterwards, (\mcpl) retrieves the length of the maximal common prefix between $I$ and $J$:
-\[
+\begin{align}\labeq{mcpl}
   \mcpl(I, J) \DefeQ
   \begin{cases}
     1+\mcpl(\langle i_2, \dots, i_m \rangle, \langle j_2, \dots, j_m \rangle) \\ \quad \text{if } I = \langle i_1, \dots, i_m \rangle \land  J = \langle i_1, \dots, j_m \rangle\\
     0 \\ \quad \text{otherwise}
   \end{cases}
-\]
+\end{align}
 For instance, assuming $I=\langle 4,1,2,3,5 \rangle$ and $J=\langle 4,1,2,5,3 \rangle$, $\mcpl(I, J)= 3$ since the maximum common prefix is $\langle 4,1,2\rangle$ of length 3. The relaxed variation (\rmcpl) allows a 10\% of overlap among quantity values, \eg, given $\vecdef{F(\defmodel, \definputvariable)}{\definputvariable} = \langle 0.4, 0.95, 0.6, 1 \rangle$ and $\vecdef{F'(\defmodel, \definputvariable)}{\definputvariable} = \langle 30, 65, 2, 60 \rangle$, we obtain $I=\argsort \langle 0.4, 0.95, 0.6, 1 \rangle = \langle 4, 2, 3, 1 \rangle $ and $J=\argsort \langle 30, 65, 2, 60 \rangle = \langle 2, 4, 1, 3 \rangle$, hence $\mcpl(I, J)$ would return 0. However, a 10\% of margin of error permits to swap the indices of values 0.95 and 1 in the first list obtaining $\langle 2, 4, 3, 1 \rangle$, we say that $I$ is equivalent to $\langle 2, 4, 3, 1 \rangle$ (written $I\simeq\langle 2, 4, 3, 1 \rangle$), hence $\mcpl(\langle 2, 4, 3, 1 \rangle, J)=2$. Formally,
 we define \rmcpl{} as the maximum of \mcpl{} of all the possible equivalences:
-\[\rmcpl(I, J) \DefeQ \max \setdef{\mcpl(I', J')}{{I' \simeq I \land J' \simeq J}}\]
+\begin{align}\labeq{rmcpl}
+  \rmcpl(I, J) \DefeQ \max \setdef{\mcpl(I', J')}{{I' \simeq I \land J' \simeq J}}
+\end{align}
 The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k - J_k)^2}$, and the Manhattan distance as $\manhattan(I, J) \defeq \sum_k \cardinality{I_k - J_k}$.
 
 \subsection{Quantifying Usage of Input Features}
@@ -203,7 +205,7 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
 
 We first verify whether \impatto{} produces a similar impact quantification with respect to $\changesname$.
 To this end, we demonstrate \impatto{} in comparison to baseline.
-This experiment uses the \diabetes{} dataset (full evaluation with all the databases in \refsec{full-experimental-overview}).
+This experiment uses the \diabetes{} dataset, full evaluation with all the datasets in later in \refsec{full-overview}.
 The evaluation, depicted in \reffig{diabetes-baseline-qlibra}, considers all the four heuristics.
 
 The results confirm the similarity between \impatto{} and baseline.
@@ -327,7 +329,7 @@ Specifically, we compare to:
 % To this end, \impatto{} approximates a precisely formalized impact definition.
 % Unlike stochastic techniques that often rely on hardcoded impact definitions within their methods, limiting the flexibility and adaptability of their approach.
 
-This experiment uses the \diabetes{} dataset (full evaluation with all the datasets in \refsec{full-experimental-overview}).
+As before, we first employ the \diabetes{} dataset, then \refsec{full-overview} presents the evaluation on all the datasets.
 \reffig{diabetes-baseline-all} demonstrates the comparison of baseline with, permutation feature importance (\pfi), retraining feature importance (\rfe), and \impatto, respectively \reffig{diabetes-relaxedcommon-baseline-permutation}, \reffig{diabetes-relaxedcommon-baseline-retraining}, and \reffig{diabetes-relaxedcommon-baseline-qlibra-2}.
 In this evaluation, we focus on the relaxed maximum common prefix length (\rmcpl) heuristic.
 Like the (\mcpl) approach, it highlights the most impactful features.
@@ -337,26 +339,29 @@ In summary, we notice that our static analyzer \impatto{} always achieves a high
 
 In conclusion, our evaluation demonstrates the effectiveness of the prototype of our static analysis in quantifying the impact of input features with respect to a formally defined impact property.
 Through comparison with stochastic metrics, we consistently observe a higher degree of similarity between the results produced by \impatto{} and the baseline.
-The experiments conducted on the \diabetes{} dataset illustrate this similarity across various heuristics and distance measures. \refsec{full-experimental-overview} contains the full overview of our experiments, we obtained similar results to the ones presented in this section.
-Notably, our approach stands out as the only one capable of addressing a formally defined impact property, providing a flexible framework that surpasses the hardcoded intuitions of the other two methods.
+The experiments conducted on the \diabetes{} dataset illustrate this similarity across various heuristics and distance measures.
+Notably, our approach stands out as the only one capable of addressing a formally defined impact property, providing a flexible framework that surpasses the hard-coded intuitions of the other two methods.
 Overall, these findings highlight the reliability and strength of \impatto{} in assessing the significance of input features.
 
-This section contains the full overview of our experiment.
-All the figures are organized in a 4 rows by 3 columns setup, we dedicated one page for the experiments of each dataset.
-Figure~\ref{fig:diabetes} refers to \diabetes{} dataset, \ref{fig:wine} to \wine, \ref{fig:rain} to \rain, and \ref{fig:princess} to \princess.
+\subsection{Overview on all Datasets}
+\labsec{full-overview}
+
+This section contains the (full) overview of the experiments on all datasets.
+All the figures are organized in a 4 rows by 3 columns setup, we dedicated one page for each dataset.
+Figure~\reffig{diabetes} refers to \diabetes{} dataset, \reffig{wine} to \wine, \reffig{rain} to \rain, and \reffig{princess} to \princess.
 Each column corresponds to a different comparison: from left to right, we show the comparison between \impatto{} vs \pfi, \impatto{} vs \rfe, and \pfi{} vs \rfe.
 
 The row refers to a different similarity metric, namely, from top to bottom, maximum common prefix length (\mcpl, already defined in~\refeq{mcpl}), relaxed maximum common prefix length (\rmcpl), Euclidean distance (\euclidean), and Manhattan distance (\manhattan).
+Similarly to the sections above, the x-axis represents the length of the longest prefix, while the y-axis represents the frequency of test cases with a prefix of \textit{exactly} the length of the x-axis.
 %
-Given two analyses $F, F'$ (\eg, \impatto{} and \pfi), any similarity metric (\eg, \mcpl) first sorts the result of the analyses $F, F'$ applied to all the input features, by decreasing order.
-Formally, it computes $I=\argsort F(\defmodel)$ and $J=\argsort F'(\defmodel)$ for the two analyses respectively, where $\defmodel$ is the neural network under consideration and $\argsort$ returns the corresponding indices of the sorted list (by decreasing order), \eg, $\argsort \langle 30, 65, 2, 60 \rangle = \langle 3,1,4,2\rangle$.
-Afterwards, (\mcpl) retrieves the length of the maximal common prefix between $I$ and $J$, as shown in~\refeq{mcpl}.
-For instance, assuming $I=\langle 4,1,2,3,5 \rangle$ and $J=\langle 4,1,2,5,3 \rangle$, $\mcpl(I, J)= 3$ since the maximum common prefix is $\langle 4,1,2\rangle$ of length 3. The relaxed variation (\rmcpl) allows a 10\% of overlap among quantity values, \eg, given $\vecdef{F(\defmodel)}{\definputvariable\in\inputvariables} = \langle 0.4, 0.95, 0.6, 1 \rangle$ and $\vecdef{F'(\defmodel)}{\definputvariable\in\inputvariables} = \langle 30, 65, 2, 60 \rangle$, we obtain $I=\argsort \langle 0.4, 0.95, 0.6, 1 \rangle = \langle 4, 2, 3, 1 \rangle $ and $J=\argsort \langle 30, 65, 2, 60 \rangle = \langle 2, 4, 1, 3 \rangle$, hence $\mcpl(I, J)$ would return 0. However, a 10\% of margin of error permits to swap the indices of values 0.95 and 1 in the first list obtaining $\langle 2, 4, 3, 1 \rangle$, we say that $I$ is equivalent to $\langle 2, 4, 3, 1 \rangle$ (written $I\simeq\langle 2, 4, 3, 1 \rangle$), hence $\mcpl(\langle 2, 4, 3, 1 \rangle, J)=2$. Formally,
-we define \rmcpl{} as the maximum of \mcpl{} of all the possible equivalences:
-\[\rmcpl(I, J) \DefeQ \max \setdef{\mcpl(I', J')}{{I' \simeq I \land J' \simeq J}}\]
-The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k - J_k)^2}$, and the Manhattan distance as $\manhattan(I, J) \defeq \sum_k \cardinality{I_k - J_k}$.
+% Given two analyses $F, F'$ (\eg, \impatto{} and \pfi), any similarity metric (\eg, \mcpl) first sorts the result of the analyses $F, F'$ applied to all the input features, by decreasing order.
+% Formally, it computes $I=\argsort F(\defmodel)$ and $J=\argsort F'(\defmodel)$ for the two analyses respectively, where $\defmodel$ is the neural network under consideration and $\argsort$ returns the corresponding indices of the sorted list (by decreasing order), \eg, $\argsort \langle 30, 65, 2, 60 \rangle = \langle 3,1,4,2\rangle$.
+% Afterwards, (\mcpl) retrieves the length of the maximal common prefix between $I$ and $J$, as shown in~\refeq{mcpl}.
+% For instance, assuming $I=\langle 4,1,2,3,5 \rangle$ and $J=\langle 4,1,2,5,3 \rangle$, $\mcpl(I, J)= 3$ since the maximum common prefix is $\langle 4,1,2\rangle$ of length 3. The relaxed variation (\rmcpl) allows a 10\% of overlap among quantity values, \eg, given $\vecdef{F(\defmodel)}{\definputvariable\in\inputvariables} = \langle 0.4, 0.95, 0.6, 1 \rangle$ and $\vecdef{F'(\defmodel)}{\definputvariable\in\inputvariables} = \langle 30, 65, 2, 60 \rangle$, we obtain $I=\argsort \langle 0.4, 0.95, 0.6, 1 \rangle = \langle 4, 2, 3, 1 \rangle $ and $J=\argsort \langle 30, 65, 2, 60 \rangle = \langle 2, 4, 1, 3 \rangle$, hence $\mcpl(I, J)$ would return 0. However, a 10\% of margin of error permits to swap the indices of values 0.95 and 1 in the first list obtaining $\langle 2, 4, 3, 1 \rangle$, we say that $I$ is equivalent to $\langle 2, 4, 3, 1 \rangle$ (written $I\simeq\langle 2, 4, 3, 1 \rangle$), hence $\mcpl(\langle 2, 4, 3, 1 \rangle, J)=2$. Formally,
+% we define \rmcpl{} as the maximum of \mcpl{} of all the possible equivalences:
+% \[\rmcpl(I, J) \DefeQ \max \setdef{\mcpl(I', J')}{{I' \simeq I \land J' \simeq J}}\]
+% The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k - J_k)^2}$, and the Manhattan distance as $\manhattan(I, J) \defeq \sum_k \cardinality{I_k - J_k}$.
 
-Similarly to the evaluation section, the x-axis represents the length of the longest prefix, while the y-axis represents the frequency of test cases with a prefix of \textit{exactly} the length of the x-axis.
 
 
 \newlength{\mymultiinner}
@@ -424,7 +429,7 @@ Similarly to the evaluation section, the x-axis represents the length of the lon
     \begin{subfigure}{\mymultiouter}
         \centering
         % \frame{
-          \includegraphics[width=\mymultiinner]{figures/new/eucledian-diabetes-permutation-retraining}
+          \includegraphics[width=\mymultiinner+4pt]{figures/new/eucledian-diabetes-permutation-retraining}
         % }
       \end{subfigure}
   \end{subfigure}
@@ -453,6 +458,35 @@ Similarly to the evaluation section, the x-axis represents the length of the lon
     \caption{Experimental overview regarding the \diabetes{} dataset.}
     \labfig{diabetes}
 \end{figure}
+
+
+% \begin{figure}[p]
+%     \centering
+%     % First row
+%     \begin{tabular}{c c c c}
+%         \parbox[m]{1em}{\centering \rotatebox{90}{Label 1}}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/abs_common-diabetes-qlibra-permutation}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/abs_common-diabetes-qlibra-retraining}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/abs_common-diabetes-permutation-retraining} \\
+%         \parbox[c]{1em}{\centering \rotatebox{90}{Label 1}}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/relaxed_common-diabetes-qlibra-permutation}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/relaxed_common-diabetes-qlibra-retraining}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/relaxed_common-diabetes-permutation-retraining} \\
+%         \parbox[c]{1em}{\centering \rotatebox{90}{Label 1}}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/eucledian-diabetes-qlibra-permutation}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/eucledian-diabetes-qlibra-retraining}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/eucledian-diabetes-permutation-retraining} \\
+%         \parbox[c]{1em}{\centering \rotatebox{90}{Label 1}}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/manhattan-diabetes-qlibra-permutation}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/manhattan-diabetes-qlibra-retraining}
+%           & \includegraphics[width=0.3\textwidth]{figures/new/manhattan-diabetes-permutation-retraining} \\
+%         & Label A & Label B & Label C \\
+%     \end{tabular}
+%     \caption{Your overall caption here.}
+% \end{figure}
+
+
+
 
 
 
@@ -860,7 +894,7 @@ Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper boun
 %
 %As before, column \textsc{input} shows the input-space coverage, column $|\textsc{c}|$ shows the total number of analyzed input space partitions, column $|\textsc{f}|$ shows the number of activation patterns (left) and feasible input partitions (right) passed to the backward analysis. Finally, column \textsc{time} shows the running time.
 
-\begin{table}[t]
+\begin{table}[b]
   \caption{Comparison on how the fair input space discovered by \libra{} is affected by different lower and upper bound configurations.}
   \labtab{configurations}
   \centering
@@ -906,7 +940,7 @@ Columns $\lowerbound$ and $\upperbound$ show the configured lower and upper boun
 }
 \end{table}
 
-As expected, decreasing the lower bound $\lowerbound$ or increasing the upper bound $\upperbound$ improves the input-space coverage (\textsc{input} rows) and increases the running time (\textsc{time} rows). We obtain an improvement of up to $12.44\%$ by increasing $\upperbound$ from $3$ to $5$ (with $\lowerbound = 0.25$ and $\boxes$), and up to $42.05\%$ by decreasing $\lowerbound$ from $0.5$ to $0.25$ (with $\upperbound = 5$ and $\boxes$). The smaller is $\lowerbound$ and the larger is $\upperbound$, the higher is the impact on the running time. Once again, for all lower and upper bound configurations, \textsc{deeppoly+neurify+symbolic} achieves the highest input-space coverage, improving up to $12.08\%$ over the best coverage obtained with only the abstract domains available in the preliminary version of \libra{} (\ie, with respect to \deeppoly{} with $\lowerbound = 0.5$ and $\upperbound = 5$). The improvement is more important for configurations with larger lower bounds.
+As expected, decreasing the lower bound $\lowerbound$ or increasing the upper bound $\upperbound$ improves the input-space coverage (\textsc{input} rows) and increases the running time (\textsc{time} rows). We obtain an improvement of up to $12.44\%$ by increasing $\upperbound$ from $3$ to $5$ (with $\lowerbound = 0.25$ and $\boxes$), and up to $42.05\%$ by decreasing $\lowerbound$ from $0.5$ to $0.25$ (with $\upperbound = 5$ and $\boxes$). The smaller is $\lowerbound$ and the larger is $\upperbound$, the higher is the impact on the running time. Once again, for all lower and upper bound configurations, \textsc{deeppoly+neurify+symbolic} achieves the highest input-space coverage, improving up to $12.08\%$ with respect to \deeppoly{} with $\lowerbound = 0.5$ and $\upperbound = 5$. The improvement is more important for configurations with larger lower bounds.
 
 Notably, \reftab{configurations} shows that \emph{none among the \symbolic, \deeppoly, and \neurify{} abstract domains is always more precise than the others}. There are cases where even \symbolic{} (implemented by \sidecite{Wang2018b}) outperforms \neurify{} (implemented by \sidecite{Wang2018a} which is the successor of \cite{Wang2018b} and is believed to be strictly superior to its predecessor), e.g., configuration $\lowerbound=0.5$ and $\upperbound=5$. We thus argue
 for using reduced products of abstract domains also in other contexts beyond fairness certification, e.g., verifying local robustness~\sidecite{Li2019,Singh2019} or verifying functional properties of neural networks~\sidecite{Katz2017}.
