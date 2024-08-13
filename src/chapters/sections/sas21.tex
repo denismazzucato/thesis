@@ -67,6 +67,7 @@ Given, for instance, the neural network state $\defstate=\langle 0, 1, 0, 1 \ran
 Note that the output observer always maps the values of neural network nodes that do not belong to the output layer to zero.
 
 \subsection{Neural Network Abstract Analysis}
+\labsec{neural-network-abstract-analysis}
 
 Abstract interpretation of a neural network model involves propagating an abstract element through each neuron of the network, over-approximating the possible states the model may reach. The analysis can be performed in two directions: forward, from the input layer to the output layer, or backward, from the output layer to the input layer.
 The networks considered in this thesis are acyclic, meaning that the abstract iterator always reaches the fixpoint after a finite number of iterations, without the need to traverse the same node multiple times.

@@ -3,9 +3,9 @@
 \chapter{Experimental Evaluation}
 \labch{sas24-eval}
 
-This chapter presents \timesec\sidenotemark[\ref{sas24-eval:timesecurl}], written in about 3000 lines of Python code.
+This chapter presents \timesec\sidenotemark[\ref{sas24-eval:timesecurl}], written in about 3000 lines of \python{} code.
 The global loop bound analysis is based on the numerical library \apron{} \cite{Jeannet2009}, we instrumented the analysis with widening and narrowing operators after 2 fixpoint iterations.
-For the linear programming encoding, we used the Python library \scipy\sidenotemark[\ref{sas24-eval:scipy}].
+For the linear programming encoding, we used the \python{} library \scipy\sidenotemark[\ref{sas24-eval:scipy}].
 In this chapter, we discuss some implementation features that make the analysis scalable, precise, and able to handle real-world programs.
 We evaluate \timesec{} on the \bignum{} library, a collection of arithmetic routines designed for cryptographic applications, and on the \svcomp{} benchmarks.
 An artifact of \timesec, including the source code, the benchmarks, and the evaluation results, is available on Zenodo\sidenotemark[\ref{sas24-eval:timeseczenodo}].
@@ -14,7 +14,7 @@ This chapter is based on the work presented at the 31st Static Analysis Symposiu
 
 \frenchdiv
 
-\emph{Ce chapitre présente \timesec\sidenote{\label{sas24-eval:timesecurl}\timesecurl}, en environ 3000 lignes de code Python. L'analyse des bornes globales des boucles est basée sur la bibliothèque numérique \apron{} \sidecite{Jeannet2009}. Nous avons instrumenté l'analyse avec des opérateurs de large et d'étroitement après 2 itérations du point fixe. Pour l'encodage en programmation linéaire, nous avons utilisé la bibliothèque Python \scipy\sidenote{\label{sas24-eval:scipy}\rurl{scipy.org}}. Dans ce chapitre, nous discutons de certaines fonctionnalités de mise en œuvre qui rendent l'analyse évolutive, précise et capable de gérer des programmes réels. Nous évaluons \timesec{} sur la bibliothèque \bignum{}, une collection de routines arithmétiques conçues pour des applications cryptographiques, ainsi que sur les benchmarks \svcomp{}. Un artefact de \timesec, comprenant le code source, les benchmarks et les résultats de l'évaluation, est disponible sur Zenodo\sidenote{\label{sas24-eval:timeseczenodo}\timeseczenodo}. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
+\emph{Ce chapitre présente \timesec\sidenote{\label{sas24-eval:timesecurl}\timesecurl}, en environ 3000 lignes de code \python{}. L'analyse des bornes globales des boucles est basée sur la bibliothèque numérique \apron{} \sidecite{Jeannet2009}. Nous avons instrumenté l'analyse avec des opérateurs de large et d'étroitement après 2 itérations du point fixe. Pour l'encodage en programmation linéaire, nous avons utilisé la bibliothèque \python{} \scipy\sidenote{\label{sas24-eval:scipy}\rurl{scipy.org}}. Dans ce chapitre, nous discutons de certaines fonctionnalités de mise en œuvre qui rendent l'analyse évolutive, précise et capable de gérer des programmes réels. Nous évaluons \timesec{} sur la bibliothèque \bignum{}, une collection de routines arithmétiques conçues pour des applications cryptographiques, ainsi que sur les benchmarks \svcomp{}. Un artefact de \timesec, comprenant le code source, les benchmarks et les résultats de l'évaluation, est disponible sur Zenodo\sidenote{\label{sas24-eval:timeseczenodo}\timeseczenodo}. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}.}
 
 \section{Implementation Discussion}
 \labsec{implementation}
