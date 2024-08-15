@@ -34,7 +34,7 @@ In $P \iff Q$, $P$ is a necessary and sufficient condition for $Q$ to hold, and 
 $P \implies Q$ holds \emph{vacuously} when $P$ is false or when $Q$ is true.
 We write $P \defiff Q$ to denote that $P$ is defined to hold whenever $Q$ holds.
 
-\subsection{Set Theory}
+\subsection{Sets}
 
 
 A set $X$ is an unordered collection of distinct elements. We use $x \in X$ (respectively, $x \notin X$) to indicate that $x$ is (respectively, is not) an element of the set $X$. A set is expressed in extension when it is uniquely determined by its elements: \eg, $\{x, y\}$ represents the set containing elements $x$ and $y$. The empty set is denoted by $\emptyset$ and no element belong to it, \ie, $\foralldef{x}{x \notin \emptyset}$.
@@ -90,12 +90,12 @@ The following are some important properties which may hold for a binary relation
     \item[Reflexivity]: $\forall x \in S : \tuple{x}{x} \in R$
     \item[Irreflexivity]: $\forall x \in S : \tuple{x}{x} \notin R$
     \item[Symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \implies \tuple{x}{y} \in R$
-    \item[Anti-symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \wedge \tuple{x}{y} \in R \implies x = y$
+    \item[Antisymmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \wedge \tuple{x}{y} \in R \implies x = y$
     \item[Transitivity]: $\forall x, y, z \in S : \tuple{x}{y} \in R \wedge \tuple{y}{z} \in R \implies \tuple{x}{z} \in R$
     \item[Totality]: $\forall x, y \in S : \tuple{x}{y} \in R \vee \tuple{x}{y} \in R$
 \end{description}
 
-An \emph{equivalence} relation is a binary relation which is reflexive, symmetric, and transitive. A binary relation which is reflexive (resp. irreflexive), anti-symmetric, and transitive is called a \emph{partial order} (resp. \emph{strict partial order}). A \emph{preorder} is reflexive and transitive, but not necessarily anti-symmetric. A (strict) \emph{total order} is a (strict) partial order which is total.
+An \emph{equivalence} relation is a binary relation which is reflexive, symmetric, and transitive. A binary relation which is reflexive (resp. irreflexive), antisymmetric, and transitive is called a \emph{partial order} (resp. \emph{strict partial order}). A \emph{preorder} is reflexive and transitive, but not necessarily antisymmetric. A \emph{total order} is a (strict) partial order which is total, \ie, any two elements of the given set are comparable (\cf{} totality).
 
 
 
@@ -106,7 +106,7 @@ An \emph{equivalence} relation is a binary relation which is reflexive, symmetri
 A partially ordered set (poset in short) is defined as sets equipped with a partial order relation.
 
 \begin{definition}[Partially Ordered Set]\labdef{poset}
-  A \emph{partially ordered set} (poset) $\langle X, \sqsubseteq \rangle$ is a set $X$ equipped with a partial order relation $\sqsubseteq\in\setof{X\times X}$.
+  A \emph{partially ordered set} (poset) $\langle X, \sqsubseteq \rangle$ is a set $X$ equipped with a partial order relation $\sqsubseteq\in\setof{X\times X}$, that is reflexive ($\forall x \in X.\spacer x \sqsubseteq x$), transitive ($\forall x, y, z \in X.\spacer x \sqsubseteq y \land y \sqsubseteq z \implies x \sqsubseteq z$), and antisymmetric ($\forall x, y \in X.\spacer x \sqsubseteq y \land y \sqsubseteq x \implies x = y$).
 \end{definition}
 
 \begin{marginfigure}
@@ -257,7 +257,23 @@ Let $\langle X, \sqsubseteq \rangle$ be a partially ordered set and $X'$ be a su
 
 
 
+A set equipped with a total order is a \emph{totally ordered set}. A \emph{chain} is a totally ordered subset $Y$ of a poset $\langle X, \sqsubseteq \rangle$. A chain is \emph{ascending} if the sequence of elements is increasing, \ie, $\forall i \in \{1, \ldots, n-1\}.\spacer y_i \sqsubseteq y_{i+1}$, and \emph{descending} if the sequence of elements is decreasing, \ie, $\forall i \in \{1, \ldots, n-1\}.\spacer y_{i+1} \sqsubseteq y_i$. A partially ordered set $\langle X, \sqsubseteq \rangle$ satisfies the \emph{ascending chain condition} if  and only if any infinite ascending chain $y_1 \sqsubseteq y_2 \sqsubseteq \ldots$ has an upper bound in $X$. Dually, it satisfies the \emph{descending chain condition} if and only if any infinite descending chain $y_1 \sqsupseteq y_2 \sqsupseteq \ldots$ has a lower bound in $X$.
+A partially ordered set $\langle X, \sqsubseteq \rangle$ is \emph{well-founded} if and only if there are no infinite descending chains without a lower bound in $X$.
 
+\begin{example}
+  Let $x!$ be the factorial of $x$, defined as $x! = x \times (x-1) \times \ldots \times 1$ for $x\in\N$.
+  The sequence $(x!)_{x\in\N}$ is an infinite ascending chain in the poset $\langle \N, \le \rangle$:
+  \[ 1 \le 2 \le 6 \le 24 \le 120 \le \ldots \]
+  Hence, the poset $\langle \N, \le \rangle$ does not satisfy the ascending chain condition.
+  On the other hand, any possible decreasing chain in $\langle \N, \le \rangle$ has a lower bound, at least $0$, hence it satisfies the descending chain condition and is well-founded.
+\end{example}
+
+\marginnote{Note that, since the empty set is a chain, a complete partial order has a least element, \ie, $\bot = \join \emptyset$.}
+\begin{definition}[Complete Partial Order]\labdef{cpo}
+  A \emph{complete partial order} (CPO) is a partially ordered set $\langle X, \subseteq \rangle$ such that every chain $Y$ has a least upper bound $\join Y$ in $X$.
+\end{definition}
+
+As a consequence, any partial ordered set that satisfies the ascending chain condition and is equipped with a least element is a complete partial order.
 
 \subsection{Lattices}
 \labsec{lattices}
@@ -316,7 +332,7 @@ Complete lattices are lattices that additionally require every (possibly infinit
 %
   \reffig{hasse_diagram} represents a complete lattice with a finite number of elements.
   The poset $\langle \N, \le \rangle$ is a lattice, as every pair of natural numbers has a least upper bound and a greatest lower bound, but it is not a complete lattice, as $\join \N$ does not exist.
-  Lastly, the poset $\langle \Nplus, \le \rangle$ where $+\infty$ is greater than any natural number is indeed a complete lattice.
+  Lastly, $\langle \Nplus, \le, \max, \min, 0, +\infty \rangle$ where $+\infty$ is greater than any natural number is indeed a complete lattice.
   \reffig{N} shows the Hasse diagram for $\langle \Nplus, \le \rangle$ and \reffig{Nplus} the one for $\langle \Nplus, \le \rangle$.
 \end{example}
 
@@ -366,78 +382,227 @@ Complete lattices are lattices that additionally require every (possibly infinit
 % \end{aligned}
 % \]
 
+A \emph{function} is a relation $f\in\setof{X \times Y}$ between two sets $X$ and $Y$ such that each element $x \in X$ is in relation with at most one element $y \in Y$, \ie, $\forall x \in X.\spacer \exists! y \in Y.\spacer (x, y) \in f$. We write $f \in X \to Y$ to denote that $f$ is a function from $X$ to $Y$, and $f(x) = y$ if and only if $\langle x, y \rangle \in f$.
+We sometimes denote functions using the \emph{lambda notation} $\lambda x \in X.\spacer f(x)$, or more concisely $\lambda x.\spacer f(x)$ when the domain is clear from the context.
+The \emph{domain} of a function $f$ is the set of elements $x \in X$ such that $f(x)$ is defined, \ie, $\dom(f) \defeq \setof{x \in X \mid \exists y \in Y.\spacer f(x) = y}$. Dually, the \emph{codomain} of a function $f$ is the set of elements $y \in Y$ such that there exists $x \in X$ such that $f(x) = y$, \ie, $\codom(f) \defeq \setof{y \in Y \mid \exists x \in X.\spacer f(x) = y}$. A function $f$ is \emph{total} when $\dom(f) = X$, otherwise \emph{partial} when $\dom(f) \subseteq X$.
+A function $f\in X \to X$ is called an \emph{operator} when the domain and codomain coincide.
+
+The {composition} of two functions $f \in X \to Y$ and $g \in Y \to Z$ is the function $g \circ f \in X \to Z \defeq \lambda x.\spacer g(f(x))$.
+The {iterates} of an operator $f \in X \to X$ are defined as $f^0 \defeq \identity$ and $f^{n+1} \defeq f \circ f^n$ for $n \in \N$.
+We define the {identity} function $\identity\in X \to X$ as $\identity \defeq \lambda x.\spacer x$.
+Let $f \in X \to Y$ be a function, the following properties may hold for $f$:
+\begin{description}
+  \item[Injectivity] $\forall x, y \in X.\spacer f(x) = f(y) \implies x = y$.
+  \item[Surjectivity] $\forall y \in Y.\spacer \exists x \in X.\spacer f(x) = y$.
+  \item[Bijectivity] A function that is both injective and surjective is called bijective, or isomorphism.
+\end{description}
+Two sets $X$ and $Y$ are \emph{isomorphic} if there exists a bijective function $f \in X \to Y$.
+%
+Next, we introduce some properties of functions that are relevant in the context of partially ordered sets.
+
+\begin{definition}[Monotonicity]\labdef{monotonicity}
+  Let $f\in X \to Y$ be a function, $\langle X, \sqsubseteq_X \rangle$ and $\langle Y, \sqsubseteq_Y \rangle$ be two partially ordered sets.
+  The function $f$ is \emph{monotonic} whenever, for all $x, x' \in X$, it holds that $x \sqsubseteq_X x' \implies f(x) \sqsubseteq_Y f(x')$.
+\end{definition}
+
+Sometimes we refer to a function as \emph{increasing} monotone when it is monotonic and \emph{decreasing} monotone when it is monotonic and the inequality is reversed, \ie, $x \sqsubseteq_X x' \implies f(x') \sqsupseteq_Y f(x)$. Note that, a decreasing monotone function is (increasing) monotone over $\langle X, \sqsubseteq_Y \rangle$ and $\langle Y, \sqsupseteq_Y \rangle$.
+
+\begin{definition}[Continuity]\labdef{continuity}
+  Let $f\in X \to Y$ be a function, $\langle X, \sqsubseteq_X, \join_X, \meet_X \rangle$ and $\langle Y, \sqsubseteq_Y, \join_Y, \meet_Y \rangle$ be two partially ordered sets.
+  The function $f$ is \emph{continuous} (or \emph{Scot-continuous}) whenever, for all chains $C \subseteq X$, if $\join_X C$ exists then the limit coincide, \ie, $f(\join_X C) = \join_Y \setof{f(x) \mid x \in C}$.
+\end{definition}
+
+Dually, a function is \emph{co-continuous} whenever, for all chains $C \subseteq X$, if $\meet_X C$ exists then the limit coincide, \ie, $f(\meet_X C) = \meet_Y \setof{f(x) \mid x \in C}$. A \emph{complete $\join$-morphism} (resp. \emph{complete $\meet$-morphism}) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
+
+% The upper closure of a subset $Y\subseteq X$ in a poset $\langle X, \sqsubseteq\rangle$ is the set of all elements in $X$ that are greater than or equal to some element of $Y$.
+% We write $\uparrow Y \defeq \setdef{x \in X}{\exists y \in Y.\spacer y \sqsubseteq x}$ for the upper closure of $Y$. Dually, the lower closure of a subset $Y\subseteq X$ in a poset $\langle X, \sqsubseteq\rangle$ is the set of all elements in $X$ that are smaller than or equal to some element of $Y$, and is denoted by $\downarrow Y \defeq \setdef{x \in X}{\exists y \in Y.\spacer x \sqsubseteq y}$.
+
+An operator is \emph{idempotent} when $f(f(x)) = f(x)$ for all $x \in X$, and \emph{extensive} when $x \sqsubseteq f(x)$ for all $x \in X$.
+
+\begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
+  An \emph{upper closure operator} on a partially ordered set $\langle X, \subseteq \rangle$ is an operator $\rho\in X \to X$ which is monotone, idempotent, and extensive.
+\end{definition}
+
+A \emph{family} $F \in \Delta \to X$ of elements of $X$ indexed by a set $\Delta$ (called the \emph{domain} or \emph{indexed set} of $F$, which may be infinite) is a function from $\Delta$ to $X$. Such family defines a set $\setdef{F(i)}{i \in \Delta}$ (where $F(i)$ is often denoted as $F_i$ with an index $i\in\Delta$) of elements of $X$ indexed by $\Delta$.
+It also defines the sequence $(F_i)_{i\in\Delta}$ of elements of $X$ indexed by $\Delta$.
+
+\begin{example}
+  Let $\textsc{fib}(n)$ be the $n$-th Fibonacci number, defined as:
+  \begin{align*}
+    \textsc{fib}(n) \defeq \begin{cases}
+      n & \text{if } n \le 1 \\
+      \textsc{fib}(n-1) + \textsc{fib}(n-2) & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  The sequence $(\textsc{fib}(n))_{n\in\N}$ is a family of elements of $\N$ indexed by $\N$:
+  \[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots \]
+\end{example}
+
+\subsection{Properties}
+\labsec{properties}
+
+Properties (\eg, ``to be an even natural number'' or ``to be a number of the sequence of Fibonacci'') by extension are the sets of elements that satisfy the property (\eg, $2\N \defeq \setdef{x \in \N}{\exists k \in \N.\spacer x = 2k}$ or $B \defeq \setdef{\textsc{fib}(n)}{n\in\N}$). Therefore, if $Q$ is a property, then $x \in Q$ means that $x$ satisfies the property $Q$ (\eg, $2 \in 2\N$ or $12 \notin B$).
+
+By considering properties as sets, we have that logical implication is subset inclusion. For instance, the property ``to be an even natural number'' implies ``to be a multiple of $4$'', that is $2\N \subseteq 4\N$, where $4\N \defeq \setdef{x \in \N}{\exists k \in \N.\spacer x = 4k}$.
+Whenever $P$ implies $Q$ ($P \subseteq Q$), we say that $P$ is \emph{stronger} than $Q$ and $Q$ is \emph{weaker} than $P$.
+Stronger properties are satisfied by less elements, whether weaker properties are satisfied by more.
+The strongest property is $\emptyset$ satisfied by no element, and the weakest property is the set containing all elements, \eg, $\N$ is the weakest property of natural numbers.
+
+
 \subsection{Fixpoints}
 \labsec{fixpoints}
 
-% Given a partially ordered set $\langle D, \leq \rangle$ and a function $f : D \to D$, a fixpoint of $f$ is an element $x \in D$ such that $f(x) = x$. An element $x \in D$ such that $x \leq f(x)$ is called a pre-fixpoint while, dually, a post-fixpoint is an element $x \in D$ such that $f(x) \leq x$. The least fixpoint of $f$, written $\text{lfp} \, f$, is a fixpoint of $f$ such that, for every fixpoint $x \in D$ of $f$, $\text{lfp} \, f \leq x$. We write $\text{lfp}_d f$ for the least fixpoint of $f$ which is greater than or equal to an element $d \in D$. Dually, we define the greatest fixpoint of $f$, denoted by $\text{gfp} \, f$, and the greatest fixpoint of $f$ smaller than or equal to $d \in D$, denoted by $\text{gfp}_d f$. When the order $\leq$ is not clear from the context, we explicitly write $\text{lfp}_{\leq} f$ and $\text{gfp}_{\leq} f$.
+Fixpoints are elements of a poset that are invariant under a function.
+As of fundamental importance to formally reason about program behaviors, we introduce the concept of fixpoints in partially ordered sets.
+In the following, let $\langle X, \subseteq \rangle$ be a partially ordered set and $f : X \to X$ be an operator on $X$.
 
-% We now recall a fundamental theorem due to Alfred Tarski:
+\begin{description}
+  \item[Fixpoint] An element $x \in X$ is a \emph{fixpoint} of $f$ whenever $f(x) = x$.
+  \item[Prefixpoint] An element $x \in X$ is a \emph{prefixpoint} of $f$ whenever $x \sqsubseteq f(x)$.
+  \item[Postfixpoint] An element $x \in X$ is a \emph{postfixpoint} of $f$ whenever $f(x) \sqsubseteq x$.
+  \item[Set of Fixpoints] The set of fixpoints of $f$ is denoted by $\fixpoints(f) \defeq \setdef{x \in X}{f(x) = x}$.
+  \item[Least Fixpoint] The \emph{least fixpoint} of $f$ is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $\lfp f \sqsubseteq x$. We write $\lfp_{x_0} f$ for the least fixpoint of $f$ which is greater than or equal to $x_0 \in X$.
+  \item[Greatest Fixpoint] The \emph{greatest fixpoint} of $f$ is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $x \sqsubseteq \gfp f$. We write $\gfp_{x_0} f$ for the greatest fixpoint of $f$ which is smaller than or equal to $x_0 \in X$.
+\end{description}
 
-% \begin{theorem}[Tarski's Fixpoint Theorem]
-% The set of fixpoints of a monotonic function $f : D \to D$ over a complete lattice is also a complete lattice.
-% \end{theorem}
-% \begin{proof}
-% See \cite{Tarski1955}.
-% \end{proof}
+When the order $\sqsubseteq$ is not clear from the context, we explicitly write $\lfp^{\sqsubseteq} f$ and $\gfp^{\sqsubseteq} f$. Note that, in general, a function may have no fixpoint at all or multiple ones.
 
-% In particular, the theorem guarantees that $f$ has a least fixpoint $\text{lfp} \, f = \bigwedge \{x \in D \mid f(x) \leq x\}$ and a greatest fixpoint $\text{gfp} \, f = \bigvee \{x \in D \mid x \leq f(x)\}$.
+\begin{marginfigure}
+% simple plot x-y axis for the fibonacci function
+% grid system showing the fixpoints
+\begin{tikzpicture}[scale=0.65]
+  \begin{axis}[
+    grid=both,
+    major grid style = {dashed, lightgray},  % Style for major grid lines
+    minor grid style = {dashed, gray!25},    % Style for minor grid lines
+    xtick = {0, 1, 2, 3, 4, 5, 6},% x-axis ticks
+    ytick = {0, 1, 2, 3, 5, 8},  % y-axis ticks (Fibonacci numbers)
+    xmin = 0, xmax = 6.5,
+    ymin = 0, ymax = 8.5]
+    \addplot[samples at={0,1,...,6},only marks, seabornBlue] {( ((1+sqrt(5))/(2))^\x - cos(deg(\x * pi)) * ((1+sqrt(5))/(2))^(-\x) )/sqrt(5) };
+    \addplot[domain=0:6.5, seabornRed, thick] {x};
+  \end{axis}
 
-% However, such fixpoint characterizations are not constructive. An alternative constructive characterization is often attributed to Stephen Cole Kleene:
+  \draw[seabornYellow, thick, dashed, rounded corners] (-0.4, -0.5) -- (0.2, -0.5) -- (4, 3) -- cycle;
+  % \node[seabornYellow, fill=white] at (1, 0) {Lub};
+\end{tikzpicture}
+\caption{Fixpoints of the fibonacci function.}
+\labfig{fixpoints}
+\end{marginfigure}
 
-% \begin{theorem}[Kleene's Fixpoint Theorem]
-% Let $\langle D, \leq \rangle$ be a complete partial order and let $f : D \to D$ be a Scott-continuous function. Then, $f$ has a least fixpoint which is the least upper bound of the increasing chain
-% \[
-% \bot \leq f(\bot) \leq f(f(\bot)) \leq f(f(f(\bot))) \leq \cdots
-% \]
-% \ie, $\text{lfp} \, f = \bigvee \{f^n(\bot) \mid n \in \mathbb{N}\}$.
-% \end{theorem}
+\begin{example}
+  Let us consider again the fibonacci function $\textsc{fib} \in \N \to \N$. The fixpoints are shown in \reffig{fixpoints}, the set of fixpoints is $\fixpoints(\textsc{fib}) = \setof{0, 1, 5}$, the elements $2$, $3$, and $4$ are prefixpoints are their values are smaller than the values of their images, and the elements greater than or equal to $6$ are postfixpoints.
+  The least fixpoint of $\textsc{fib}$ is $\lfp \textsc{fib} = 0$, as $0$ is the smallest element of $\fixpoints(\textsc{fib})$.
+  On the other hand, the greatest fixpoint of $\textsc{fib}$ is $\gfp \textsc{fib} = 5$.
 
-% In case of monotonic but not continuous functions, a theorem by Patrick Cousot and Radhia Cousot expresses fixpoints as limits of possibly transfinite iteration sequences:
+  Instead, if we consider another operator, for example the $\textsc{cons}(x) \defeq x + 1$ operator, then there is no fixpoint, as $\textsc{cons}(x) \neq x$ for all $x \in \N$.
+\end{example}
 
-% \begin{theorem}
-% Let $f : D \to D$ be a monotonic function over a complete partial order and let $d \in D$ be a pre-fixpoint. Then, the iteration sequence:
-% \[
-% f^\alpha \triangleq
-% \begin{cases}
-% d & \alpha = 0 \\
-% f(f^\beta) & \alpha = \beta + 1 \\
-% \bigvee \{f^\beta \mid \beta < \alpha\} & \text{otherwise}
-% \end{cases}
-% \]
-% converges towards the least fixpoint $\text{lfp}_d f$.
-% \end{theorem}
-% \begin{proof}
-% See \cite{Cousot1979}.
-% \end{proof}
+Next, we recall a fundamental theorem of Alfred Tarski \sidecite{Tarsky1955} that characterizes fixpoints of monotonic functions over complete lattices.
 
-% In the following, the partial order between the fixpoint iterates is called computational order, in order to distinguish it from the approximation order defined in the next Section 2.2.2.
+\begin{theorem}[Tarski's Fixpoint Theorem]\labthm{tarski}
+  Let $\langle X, \sqsubseteq, \join, \meet, \bot, \top \rangle$ be a complete lattice and $f \in X \to X$ be a monotonic function. The set of fixpoints $\fixpoints(f)$ is a non-empty complete lattice.
+\end{theorem}
+\begin{proof}
+  See \textcite{Tarsky1955}.
+\end{proof}
+\refthm{tarski} guarantees that $f$ has a least fixpoint $\lfp f = \meet \setdef{x \in X}{f(x) \sqsubseteq x}$ and a greatest fixpoint $\gfp f = \join \setdef{x \in X}{x \sqsubseteq f(x)}$ as $fixpoints(f)$ is a non-empty complete lattice.
+
+However, such characterization is not constructive, an alternative that expresses the least fixpoint of a function as the limit of iterates is Kleene's Fixpoint Theorem \sidecite{Kleene1952}.
 
 
-\begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
-  An \emph{upper closure operator} on a poset $\defposet$ is an operator $\rho\in\defposet\to\defposet$ which is monotone, idempotent, and extensive ($\foralldef{\defposetelem \in \defposet}{\defposetelem \le P \rho(\defposetelem)}$).
-\end{definition}
+\marginnote{
+  In case of monotonic but not continuous functions, a theorem by Patrick and Radhia Cousot \cite{Cousot1979b} expresses fixpoints as the limit of possibly transfinite iterations.
+}\phantomcite{Cousot1979b}
+\begin{theorem}[Kleene's Fixpoint Theorem]\labthm{kleene}
+  Let $\langle X, \sqsubseteq \rangle$ be a complete partial order and $f \in X \to X$ be a Scott-continuous function. The least fixpoint $\lfp f$ exists and is the least upper bound of the iterates $f^n$ starting from $\bot$:
+  \[ \lfp f = \join \setdef{f^n(\bot)}{n \in \N} \]
+\end{theorem}
+
+In the following, the partial order between the fixpoint iterates is called the \emph{computational order}, in order to distinguish it from the \emph{approximation order} defined in the next section.
 
 \section{Notations of Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
 
+\emph{Abstract Interpretation} \sidecite{Cousot1977,Cousot1978} is a general theory for approximating the semantics of programs as a unifying framework for static program analysis, co-invented in the late 1970s by Patrick and Radhia Cousot.
+In the following, we introduce the notations, main definitions, and results that will be used throughout the rest of this thesis.
+
 \subsection{Transition System}
 \labsec{transition-system}
 
-\begin{definition}[State]\labdef{state}
-  \begin{align*}
-    \state \IN \variables \to \values
-  \end{align*}
+The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data.
+In order to be independent of a particular choice of programming language, we consider programs as transition systems, where the behavior of a program is described by a set of states and a set of transitions between states.
+In the next section, we instantiate the transition system model for a small imperative language.
+
+\begin{definition}[Transition System]\labdef{transition-system}
+  A \emph{transition system} is a pair $\transitionsystem$ where $\state$ is a (potentially infinite) set of states and $\transitionrelation \in \transitionrelationtype$ is the transition relation.
 \end{definition}
+
+This model allows expressing programs with (possibly unbounded) non-determinism.
+In the following, we write $\defstate \rightarrow \defstate'$ to denote that there is a transition from state $\defstate$ to state $\defstate'$, \ie, $\tuple{\defstate}{\defstate'} \in \transitionrelation$.
+The set $\finalstates \defeq \setdef{\defstate \in \state}{\forall \defstate' \in \state.\spacer \tuple{\defstate}{\defstate'} \notin \transitionrelation}$ represents the \emph{final states} (or blocking states) of the transition system.
+
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
 
+The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data. We formally define this notion for a transition system below.
+
+\paragraph{Sequences.}
+Given a set of elements $X$, the set of all sequences of exactly $n$ elements of $X$ is denoted by $X^n\defeq\setdef{\defstate_0 \dots \defstate_{n-1}}{\forall i < n.\spacer s_i \in X}$.
+The symbol $\emptysequence$ denotes the empty sequence, hence $X^0 = \{\emptysequence\}$.
+
+We define:
+\begin{description}
+  \item[Finite Sequences $\retrievefiniteoremptytraces{X}$:] The set of all finite sequences of elements of $X$ is defined as $\retrievefiniteoremptytraces{X} \defeq \bigsetjoin_{n \in \N} X^n$.
+  \item[Non-Empty Finite Sequences $\retrievefinitetraces{X}$:] The set of all non-empty finite sequences of elements of $X$ is $\retrievefinitetraces{X} \defeq \retrievefiniteoremptytraces{X} \setminus X^0 = \bigsetjoin_{n \in \Nposstrict} X^n$.
+  \item[Infinite Sequences $\retrieveinfinitetraces{X}$:] The set of all infinite sequences of elements of $X$ is defined as  $\retrieveinfinitetraces{X} \defeq \setdef{\defstate_0 \dots}{\forall i \in \N.\spacer \defstate_i \in X}$.
+  \item[Non-Empty Finite or Infinite Sequences $\retrievefiniteinfinitetraces{X}$:] The set of all non-empty finite or infinite sequences of elements of $X$ is $\retrievefiniteinfinitetraces{X} \defeq \retrievefinitetraces{X} \cup \retrieveinfinitetraces{X}$.
+  \item[Finite or Infinite Sequences $\retrievefiniteoremptyinfinitetraces{X}$:] The set of all finite or infinite sequences of elements of $X$ is $\retrievefiniteoremptyinfinitetraces{X} \defeq \retrievefiniteoremptytraces{X} \cup \retrieveinfinitetraces{X}$.
+\end{description}
+
+Let $\defstate\in X$ be an element, we often refer to just $\defstate$ as the sequence of length $1$ containing only $\defstate$, \ie, $\{\defstate\} \in X^1$.
+To \emph{concatenate} two sequences $\defseq, \defseq' \in \retrievefiniteinfinitetraces{X}$, we write $\concat{\defseq}{\defseq'}$ for the sequence obtained by appending $\defseq'$ to $\defseq$. It holds that $\concat{\defseq}{\emptysequence} = \concat{\emptysequence}{\defseq} = \defseq$ and $\concat{\defseq}{\defseq'} = \defseq$ whenever $\defseq \in \retrieveinfinitetraces{X}$. To \emph{merge} two set of sequences $Y \subseteq \retrievefinitetraces{X}$ and $Y' \subseteq \retrievefiniteinfinitetraces{X}$, we write $\mergesequences{Y}{Y'} \defeq \setdef{\concat{\defseq}{\concat{\defstate}{\defseq'}}}{\defstate \in X \land \concat{\defseq}{\defstate} \in Y \land \concat{\defstate}{\defseq'} \in Y'}$ when a finite sequence in $Y$ ends with the initial state of a sequence in $Y'$.
+
+\paragraph{Traces.}
+
+Given a transition system $\transitionsystem$, a \emph{trace} is a non-empty sequence of program states $\state$ that respects the transition relation $\transitionrelation$. That is, for every pair of consecutive states $\defstate, \defstate' \in \state$, it holds that $\tuple{\defstate}{\defstate'} \in \transitionrelation$.
+
+\paragraph{Maximal Trace Semantics}
+
+The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ of a transition system $\transitionsystem$ is the set of all traces that are terminating in the final states $\finalstates$ (\ie, of finite length) and all non-terminating traces (\ie, of infinite length) generated by $\transitionsystem$.
+
+
 \begin{definition}[Maximal Trace Semantics]\labdef{maximal-trace-semantics}
+  Let $\transitionsystem$ be a transition system. The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ generated by $\transitionsystem$ is defined as:
   \begin{align*}
-    \tracesemanticsnoparam &\DefeQ \lfp \tracetransformer \\
-    \tracetransformer(\defsetoftraces) &\DefeQ \finalstates \setjoin (\mergesequences{\transitionrelation}{\defsetoftraces})
+    \tracesemanticsnoparam \DefeQ &\bigsetjoin_{n\in\Nposstrict} \setdef{s_0\dots s_{n-1}\in\finitetontraces}{\foralldef{i < n-1}{\tuple{s_i}{s_{i+1}}\in\transitionrelation \land s_{n-1}\in \finalstates}} \\
+    &\setjoin \setdef{s_0\dots{}\in\infinitesequences}{\foralldef{i\in\N}{\tuple{s_i}{s_{i+1}}\in\transitionrelation}}
   \end{align*}
 \end{definition}
+
+\begin{example}
+  Let us consider the transition system $\transitionsystem$ with states $\state = \{x, y\}$, transitions $\transitionrelation = \{\tuple{x}{x}, \tuple{x, y}\}$ with final states $\finalstates = \{y\}$. The maximal trace semantics $\tracesemanticsnoparam$ is the set of all traces that are terminating in the final state $y$ and all non-terminating traces from the transition $\tuple{x}{x}$.
+  That is, $\tracesemanticsnoparam = \retrieveinfinitetraces{x} \setjoin {\retrievefiniteoremptytraces{x}}{y}$.
+  Note that, the maximal trace semantics does not represent partial computations that are not terminating in the final states, such as the trace $\{x\spacer x\spacer x\}$.
+\end{example}
+
+\begin{remark}
+  Observe that not all program semantics can be generated by a transition system. For instance, in case the program semantics is the set of traces $\retrievefiniteoremptytraces{x}y$ where $y$ is eventually reached, the transition relation $\transitionrelation = \{\tuple{x}{x}, \tuple{x}{y}\}$ generates also infinite sequences of $x$ that are not part of the semantics.
+\end{remark}
+
+The following result provides a (least) fixpoint characterization of the maximal trace semantics over the complete lattice $\tracecompletelattice$.
+The \emph{computation order} of the maximal trace semantics is defined as $\defsetoftraces \tracesubseteq \defsetoftraces' \defiff \retrievefinitetraces{\defsetoftraces} \subseteq \retrievefinitetraces{\defsetoftraces'} \land \retrieveinfinitetraces{\defsetoftraces} \supseteq \retrieveinfinitetraces{\defsetoftraces'}$.
+
+\begin{theorem}[Maximal Trace Semantics]\labthm{maximal-trace-semantics}
+  The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ generated by the transition system $\transitionsystem$ can be expressed as a least fixpoint in the complete lattice $\tracecompletelattice$ as follows:
+  \begin{align*}
+    \tracesemanticsnoparam = \lfp^{\tracesubseteq} \lambda \defsetoftraces.\spacer \finalstates \setjoin (\mergesequences{\transitionrelation}{\defsetoftraces})
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  See \textcite{Cousot2002}.
+\end{proof}
 
 \subsection{Collecting Semantics}
 \labsec{collecting-semantics}
@@ -491,6 +656,13 @@ Complete lattices are lattices that additionally require every (possibly infinit
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
+
+
+\begin{definition}[State]\labdef{state}
+  \begin{align*}
+    \state \IN \variables \to \values
+  \end{align*}
+\end{definition}
 
 \subsection{Numerical Abstract Domains}
 \labsec{numerical-abstract-domains}
