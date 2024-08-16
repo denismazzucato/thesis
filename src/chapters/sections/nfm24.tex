@@ -2405,6 +2405,7 @@ A similar technique could also be used to mitigate such explosion in their work.
 
 In quantitative information flow, other works include \sidetextcite{Chothia2014}, which proposed a statistical approach to quantify information leakage for Java programs. \sidetextcite{Phan2012,Phan2014,Saha2023} employed symbolic execution techniques and model counting to obtain sound bounds on the entropy of programs.
 Other static analyses, \eg, \sidetextcite{Assaf2017} and \sidetextcite{Clark2007}, are based on abstract interpretation.
+\sidetextcite{Girol2024} put forward a quantitative version of non-explotability, called robust reachability, to measure the difficulty of triggering bugs via symbolic execution and a variant of model counting.
 %
 % A series of papers~\cite{Clark2005a,Clark2005b,Clark2007,Malacaria2007} proposed static analyses to verify quantitative interference using Shannon's information theory and semantics of looping constructors, refining information-theoretic models.
 % However,~\cite{Smith2009} argued against the extent of the Shannon entropy measure, proposing min-entropy as more accurate to measure the probability that an attacker guesses private data correctly in the first attempt.
@@ -2446,6 +2447,7 @@ Recent work \sidecite{Stefanakos2021,Stefanakos2023} synthesized a Markov-chain 
 Similarly, \sidetextcite{Todoran2022} translates concurrent programs into corresponding probabilistic models that capture the behavior of programs and that can be verified using probabilistic model checking.
 Applied to our work, probabilistic programming could be used to model the uncertainty in the input data and the program's behavior.
 The development of quantifiers based on probabilistic programs could provide statistical guarantees on the impact of input variables on the program's output.
+\denis{Maybe something like this: While this specific model counting problem has been studied in AI research fields such as Bayesian networks, knowledge representation and probabilistic planning, its use within the context of formal verification presents a new set of challenges.}
 
 % Recent developments \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 
