@@ -76,4 +76,7 @@ cp ./src/main.tex.bak ./src/main.tex
 rm ./src/main.tex.bak
 echo "Restored main.tex"
 
+cp pdf/thesis.pdf thesis.pdf
+echo "Copied thesis.pdf to root directory"
+
 echo "Done"

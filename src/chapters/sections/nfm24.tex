@@ -2075,7 +2075,7 @@ To compute the number of missing (total) input configurations, we multiply the n
 This number of possible values of the other input variables is computed by projecting away all the variables but one from the abstract element (\cf{} $\abstractdomainproject[\inputvariables \setminus \{\defvariable\}]$) and then applying the abstract counting operator $\abstractdomaincount$ from the whole input space $\abstractdomaintop\in\abstractdomain$.
 The result is a measure of the influence of the input variables on the output of the program, \ie, the number of input configurations that \emph{may} lead to different outcomes.
 \marginnote{
-  The symbol $\abstractdomaintop$ refers to ``top'', \ie, the abstract element representing the whole space.
+  The symbol $\abstractdomaintop$ refers to ``top,'' \ie, the abstract element representing the whole space.
 }
 \begin{definition}[\texorpdfstring{$\abstractqused$}{Abstract QUsed}]\labdef{abstract-qused}
   Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
@@ -2271,13 +2271,17 @@ In words, whenever the abstract implementation $\abstractqused$ returns a strict
 \section{Related Work}
 \labsec{nfm24-related-work}
 
+The work presented in this chapter stems from \sidetextcite{Urban2018}, proposing a unifying view on existing information flow analyses based on abstract interpretation. In this section, we compare our work with the existing literature on non-interference as the foundational property for information flow analysis, entropy measures of quantitative information flow, and probabilistic programming languages.
+
 \newcommand*{\entropypartitions}[1][\defprogram]{\Pi(#1)}
 \newcommand*{\exampleinput}{\textsc{Input}_\defprogram}
 
+\paragraph{Abstract Non-Interference.}
 As quantitative input data usage arises from the qualitative counterpart, this chapter has been inspired by the work on abstract non-interference \sidecite{Giacobazzi2018}. In particular, \textcite{Giacobazzi2004} introduced a domain-theoretic characterization of the most precise attacker which cannot violate abstract non-interference.
 Later on, \sidetextcite{Mastroeni2013} instantiated various policies obtaining the different notions of abstract non-interference for language-based security.
 Such work pavemented the way for the development of the unifying framework for weakening the non-interference property, into abstract non-interference \cite{Giacobazzi2018}. More recently, \sidetextcite{Mastroeni2023} explored the connection between domain completeness and narrow abstract non-interference, where domain transformers can be characterized using monotonicity, in the weak framework of abstract interpretation. Notably, abstract non-interference
 
+\paragraph{Quantitative Information Flow.}
 Given the connection between \emph{qualitative} input usage and information flow analysis \sidecite[][{Chapters 8, 9, and 10}]{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to look into \emph{quantitative} information flow, formerly introduced by \sidetextcite{Denning1982,Gray1991}.
 %formerly introduced by the pioneering work of \sidetextcite{Denning1982} and \sidetextcite{Gray1991}.
 Such analyses measure information leakage about a secret through the concept of entropy, based on observations of the program's output values.
@@ -2394,7 +2398,7 @@ A similar technique could also be used to mitigate such explosion in their work.
 %   \item[\cite{Henzinger2023}]generalized the hierarchy of safety and liveness properties to quantitative safety and liveness studying relations among these new classes of properties.
 % \end{description}
 
-% Our framework draws inspiration by the works of \sidetextcite{Urban2018}, who introduces a backward analysis for  the qualitative property of ``input data usage'', and of \sidetextcite{Barowy2014}, which explores the data usage with a stochastic approach for debugging spreadsheet applications.
+% Our framework draws inspiration by the works of \sidetextcite{Urban2018}, who introduces a backward analysis for  the qualitative property of ``input data usage,'' and of \sidetextcite{Barowy2014}, which explores the data usage with a stochastic approach for debugging spreadsheet applications.
 % Here, we further advance by considering quantitative properties of input data usage.
 % While the qualitative property provides insights into the usage or not of program inputs, our work offers more flexibility providing a quantification of such a usage.
 % Conversely, our quantitative framework is derived from the qualitative input data usage property, which bears similarities with information flow properties, we drew inspiration from this field to construct our framework.
@@ -2423,10 +2427,27 @@ The series of papers developed by \sidetextcite{Drobnjakovic2024,Subotic2022a,Su
 We could incorporate an adaptation of their work to encompass a notion of quantitative data leakage.
 Further development of this concept could be of particular interest.
 
+\paragraph{Hyperproperties.}
 
-Moreover, we recognize that quantitative analyses are usually tightly coupled with probabilistic programming. \denis{...}
+\sidetextcite{Clarkson2010} defined properties of (the semantics of) programs as ``hyperproperties.''
+Hyperproperties relate different set of executions of a program, and are able to express security policies, or input data usage properties as in this thesis.
+In \textcite{Clarkson2010}, there is a categorization of hyperproperties into safety and liveness, respectively hypersafety and hyperliveness. The $k$-hypersafety properties are those that need sets of $k$ traces to be disproved, this category can be verified with traditional techniques for safety properties by $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}.
+Note that, direct approaches through self-composition can be computationally expensive \sidecite{Antonopoulos2017}.
+In our work, we avoid categorizing the properties of programs as hyperproperties as we do not a different abstract interpretation theory to verify them \sidecite{Cousot2019}. The classical approach \sidecite{Cousot1977} is sufficient. However, observe that the $\defbound$-bounded impact property can be seen as a hyperproperty. Specifically, when applied to the \outcomesname{} quantifier, $\boundedoutcomes$ is a $(k+1)$-hypersafety properties, as they require $k+1$ traces to be disproved, \ie, showing that an impact is greater than $\defbound$. While, when applied to the \rangename{} quantifier, $\boundedrange$ is a 2-hypersafety property, as it requires 2 traces to be disproved, \ie, only two traces holding extreme values for the output variable are sufficient to disprove the property. Finally, the $\boundedqused$ property is a hyperliveness property, thus generally harder to verify than hypersafety properties.
 
-% Recent developments, \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
+
+\paragraph{Probabilistic Programming.}
+Moreover, we recognize that quantitative analyses are usually tightly coupled with probabilistic programming \sidecite{Gordon2014, Meent2018}.
+Probabilistic programs are in the form of usual imperative (or functional) programs with additional constructs to model random variables and probabilistic choices.
+The problem of computing an explicit representation of the probability distribution specified by a probabilistic program is called probabilistic inference, probabilistic programming aims to decouple modelling from inference.
+Probabilistic programs are a natural fit for quantitative analyses, as they model uncertainty in the input data and the program's behavior.
+% For instance, Gorinova's work \sidecite{Gorinova2019,Gorinova2022} focuses on static analysis for probabilistic programs, in such setting, analyzing the dependencies between variables in a probabilistic program improving the robustness and reliability of the inference algorithm.
+Recent work \sidecite{Stefanakos2021,Stefanakos2023} synthesized a Markov-chain model of a program via probabilistic model checking, computing a quantitative model of the probability of program transitions. Notably, their approach can predict how well the code would react to changes such as different hardware specifications and profile usage.
+Similarly, \sidetextcite{Todoran2022} translates concurrent programs into corresponding probabilistic models that capture the behavior of programs and that can be verified using probabilistic model checking.
+Applied to our work, probabilistic programming could be used to model the uncertainty in the input data and the program's behavior.
+The development of quantifiers based on probabilistic programs could provide statistical guarantees on the impact of input variables on the program's output.
+
+% Recent developments \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 
 \section{Summary}
 \labsec{quantitative-input-data-usage-summary}

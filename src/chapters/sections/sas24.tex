@@ -239,6 +239,8 @@ We define the $\defbound$-impact property, which quantifies the impact of input 
 To compute the impact of input variables on the global number of iterations of a program, we need to instantiate the $\defbound$-bounded impact property with an impact quantifier.
 As a design choice, we choose the \rangename{} quantifier among the quantifiers defined in \nrefsec{k-bounded-impact-property}.
 The range quantifier instrumented with the global loop counter $\counter$ as output variables and the identity function as output observer $\outputobs$ is defined as follows:
+\begin{definition}[\rangename{} with $\counter$]\labdef{range-nit}
+  Given the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the impact quantifier $\range\in\tracetype\to\Rposplus$ instrumented with the global loop counter $\counter$ is defined as
 \begin{align*}
   \range(\defsetoftraces) &\DefeQ \sup_{\definput\in\reducedstate}
     \distance(\setdef{
@@ -247,6 +249,7 @@ The range quantifier instrumented with the global loop counter $\counter$ as out
       \defseq \in \defsetoftraces \land \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
     })
 \end{align*}
+\end{definition}
 
 Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact quantifier. Formally:
 \begin{align*}
@@ -709,8 +712,8 @@ The next result shows that $\counterrange$ is a sound implementation of the impa
 That is, the abstract quantity is always higher than the concrete counterpart.
 % Note that, we relax the constraint about the output buckets, as this linear programming encoding does not need to concretize each possible concrete value for $\counter$ before performing the backward semantics.
 % To some extent, the output buckets are handled symbolically.
-\begin{lemma}[Sound Implementation of \rangename]
-  \lablemma{sound-implementation}
+\begin{lemma}[$\counterrange$ is a Sound Implementation of $\range$]
+  \lablemma{counterrange-is-sound}
   For any program $\defprogram$,
   the following holds:
   \begin{equation*}
@@ -718,23 +721,37 @@ That is, the abstract quantity is always higher than the concrete counterpart.
   \end{equation*}
 \end{lemma}
   \begin{proof}
-%     We show that $\range(\backwardconcretization(\counterbackwardsemantics)) \le \counterrange(\counterbackwardsemantics)$ by contradiction.
-%     Let us assume that $\range(\backwardconcretization(\counterbackwardsemantics)) > \counterrange(\counterbackwardsemantics)$ and $\counterrange(\counterbackwardsemantics) = \defbound$.
-%     Then, by definition of $\range$, \cf{} \refeq{range}, there exists two concrete states, differing only in the value of $\definputvariables$, such that the difference in the value of the global loop counter $\counter$ is greater than $\defbound$.
-%     As a consequence, in the abstract implementation $\counterrange$, the distance between $\counterup$ and $\counterdown$ should maximize at a value greater than $\defbound$. This contradicts the assumption that $\defbound = \counterrange(\counterbackwardsemantics)$.
-% %
-%     From \refthm{candidate-backward} and the fact that $\range$ is monotonic, \cf{} \refeq{monotonic}, we conclude that:
-%     \begin{math}
-%       \labeq{p}
-%       \range(\counterdependencysemantics) \LE \range(\backwardconcretization(\counterbackwardsemantics)) \LE \counterrange(\counterbackwardsemantics)
-%     \end{math}.
-\denis{Todo.}
+    We show that $\range(\countertracesemanticsnoparam) \le \counterrange(\counterbackwardsemanticsnoparam)$ by contradiction.
+    Let us assume that $\range(\countertracesemanticsnoparam) > \counterrange(\counterbackwardsemanticsnoparam)$ and $\counterrange(\counterbackwardsemanticsnoparam) = \defbound$.
+    Then, by definition of $\range$, \cf{} \refdef*{range-nit}, there exists two concrete states, differing only in the value of $\definputvariables$, such that the difference in the value of the global loop counter $\counter$ is greater than $\defbound$.
+    As a consequence, in the abstract implementation $\counterrange$, \cf{} \refdef*{counterrange} the distance between $\counterup$ and $\counterdown$ should maximize at a value greater than $\defbound$. This contradicts the assumption that $\defbound = \counterrange(\counterbackwardsemanticsnoparam)$.
+%
+    From \reflemma{candidate-backward}, and the fact that $\range$ is monotonic, \cf{} \reflemma{range-monotonic}, we conclude that:
+    \begin{math}
+      \range(\countertracesemanticsnoparam) \LE \counterrange(\counterbackwardsemanticsnoparam)
+    \end{math}.
   \end{proof}
 %
-Thus, by \refthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrangele$.
+% Thus, by \refthm*{soundness} it holds that our static analysis is sound when employed to verify the property $\boundedrangele$.
 
 
-\section{Related Work--In Progress}[Related Work]
+Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\counterrange$ and the comparison operator $\le$.
+
+
+
+\begin{theorem}[Soundness of $\boundedrangele$]
+  Let $\boundedrangele$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Whenever, $\counterbackwardsemanticsnoparam$ is sound, \cf{} \refeq{sound-abstract-dependency-semantics},
+  the following implication holds:
+  \begin{align*}
+    \counterrange(\counterbackwardsemantics) = \defbound' \land \defbound' \le \defbound \ImplieS \defprogram \satisfies \BOUNDEDRANGELE
+  \end{align*}
+\end{theorem}
+\begin{proof}
+  \reflemma{counterrange-is-sound} shows that $\counterrange$ is a sound implementation of $\range$, the proof follows directly by application of the \refthm*{soundness} instantiated with the abstract implementation $\counterrange$ and comparison operator $\le$.
+\end{proof}
+
+\section{Related Work}
 \labsec{sas24-related-work}
 
 
@@ -748,19 +765,43 @@ Our work is orthogonal to the existing literature on WCET and loop bound analysi
 Instead, we focus on quantifying the impact on the global number of loop iterations of each input variable individually.
 However, we leverage an underlying global loop bound analysis to understand the input-output relationship involving the global loop counter.
 
+\paragraph{Termination Analysis.}
+
+
+The program termination problem can be defined as whether a program always finish running within a finite time frame, or could execute indefinitely.
+It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem\sidenote{In English: ``decision problem.''}. Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
+Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \sidetextcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
+From the unifying point of view of existing approaches proposed by \sidetextcite{Cousot2012b},
+Caterina Urban and Antoine Min{\'{e}} advanced the field in a series of works \sidecite{Urban2013,Urban2014a,Urban2014b,Urban2015a,Urban2017} by proving termination through the synthesis of ranking functions across all program paths simultaneously, without relying on counterexample-guided analysis or the need for explicit checks on the well-foundedness of the termination argument.
+Their approach is implemented in the tool \textsc{FuncTion} \sidecite{Urban2015b} and handles arbitrary control flow structures, contrary to the limitations of earlier methods \sidecite{Podelski2004,Bradley2005}.
+Similarly, \sidetextcite{Tsitovich2011} adopts loop summarization to address termination; \sidetextcite{Courant2017} further refines \textsc{FuncTion}'s scalability and precision through fine-tuning and new heuristics for the widening.
+Many methods (such as \sidecite{Alias2010, Brockschmidt2013,Larraz2013}) leverage indirectly transition invariants. Among many, \textcite{Alias2010} explores the synthesis of ranking functions via linear programming, which is complete only for rational-value based programs.
+\sidetextcite{Chatterjee2021} proposed a simple but effective approach by synthesizing invariants through syntactic program reversal, handling programs with non-determinism and integer values.
+Additionally, the inference of preconditions for termination has been explored, with \sidetextcite{Cook2008} focusing on the generation of necessary preconditions, while \sidetextcite{Ganty2013,Mass_e2014} derive these by complementing over-approximations of non-terminating states.
+The work presented in this chapter, on the other hand, does not aim to prove termination, nevertheless, it could greatly benefit from the termination analysis to infer termination-aware quantities for the global loop counter.
+By leveraging the knowledge of which input data leads to terminating executions, we could refine the impact quantification as, at the current stage, an input variable that influences the program termination but not the number of iterations would be declared unused.
+
+
 \paragraph{Side-Channels Analysis.}
 Side-channel attacks exploit vulnerabilities in cryptographic system implementations rather than directly targeting computational complexity \sidecite{Kocher1996}.
 These attacks, including those based on power consumption \sidecite{Kocher1999} and speculative executions \sidecite{Kocher2019,Lipp2018}, can leak sensitive information without physical tampering \sidecite{Wong2005}.
 Various methods have been proposed to quantify the information leaked through side-channels.
 The quantitative analysis of side-channel attacks, initially introduced by \sidetextcite{K_opf2007}, utilizes model counting and a greedy algorithm to mitigate the exponential growth of potential paths that must be examined.
 \sidetextcite{Phan2017,Phan2012} and \sidetextcite{Saha2023} apply symbolic execution to enumerate the equivalence classes of program's output values, and utilizes entropy measures to quantify the information leakage.
+Building on these works, \sidetextcite{Malacaria2018} handles symbolic inputs that are interpreted probabilistically, producing provably under- and -over-approximating bounds on the leakage (\wrt{} Shannon and min-entropy).
 Other static analyses, \eg, \sidetextcite{Assaf2017} and~\sidetextcite{Clark2007}, are instead based on abstract interpretation.
+Based on string analysis, \sidetextcite{Bang2016} presented an efficient technique for segmented oracles, in which an attacker is able to explore each segment of a secret data.
+\sidetextcite{Pasareanu2016} quantifies the information that is leaked to an attacker who makes multiple side-channel measurements.
 However, our work differs by quantifying the impact of each input variable separately, rather than providing a comprehensive quantification for all input variables.
 This fine-grained analysis is essential for identifying specific variables that significantly influence program behavior.
-While quantitative analyses theoretically could infer similar information, their entropy measures are not designed for this purpose (\cf{} \refsec{sec:nfm24-related-work}), and they usually require $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}, which is computationally expensive \sidecite{Antonopoulos2017}.
+While quantitative analyses theoretically could infer similar information, their entropy measures are not designed for this purpose (\cf{} \refsec{nfm24-related-work}), and they usually require $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}, which is computationally expensive \sidecite{Antonopoulos2017}.
 Instead, our approach only requires a single abstract analysis and leverages variable projections to separate the contributions of each input variable \sidecite{Urban2020,Mazzucato2021}.
 
-
+Moving forward, the advent of attacks exploiting microarchitectural features, such as out-of-order and speculative execution, makes constant-time verification as it exists today far less useful.
+Indeed, constant-time code may leak information on processors with microarchitectural vulnerabilities \sidecite{Cauligi2020}.
+Recently, OpenSSL updated their security model to explicitly exlude physical system side-channels \sidenote{(Last Accessed: 16th August 2024) \rurl{www.openssl.org/policies/secpolicy.html}}.
+Related work \sidecite{Guarnieri2020,Bard2024} proposed approaches to take into consideration the microarchitectural features in the analysis of timing side-channel attacks.
+Our approach could be extended to consider the impact of input variables also in the presence of out-of-order and speculative execution.
 
 
 \section{Summary}

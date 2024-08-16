@@ -1,0 +1,11 @@
+\begin{gather*}
+  \range(\defsetoftraces) \DefeQ \sup_{\definput\in\reducedstate} \\
+      \distance\left(\setdef*{
+      \retrieveinput{\defseq}(\counter)
+      }{
+        \defseq \in \defsetoftraces \land{}
+        \!\!\!\!  \\
+        \retrieveinput{\defseq} \stateeq{\inputvariableswithoutw} \definput
+        \!\!\!\!
+      }\right)
+\end{gather*}

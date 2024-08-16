@@ -1,0 +1,8 @@
+\begin{align*}
+  & \counterrange(\defabstractvalue) \DefeQ \\
+  & \quad \text{maximize} \spacer\spacer \defbound \\
+  & \quad \text{subject to} \spacer\spacer \\
+  & \quad \quad \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterup}(\defabstractvalue)) \spacer \land \\
+  & \quad \quad \abstractdomainproject(\abstractdomainsubstitute{\counter}{\counterdown}(\defabstractvalue)) \spacer \land \\
+  & \quad \quad 0 \le \defbound \le \counterup - \counterdown
+\end{align*}

@@ -25,13 +25,13 @@ In particular we instrument \impatto{} to use \abstractchangesname{} starting fr
 
 
 For our evaluation, we used public datasets from the online community platform Kaggle\sidenote{\rurl{www.kaggle.com}} to train several neural network models.
-We focused on four datasets: \wine~\sidecite{Cortez2009}, \diabetes~\sidecite{Smith1988}, \rain~\sidecite{Young2019}, and \princess~\sidecite{Unmoved2023}.
-We pre-processed the \rain{} database and removed non-continuous input features, as we do not support discrete input features yet.
+We focused on four datasets: ``\wine''~\sidecite{Cortez2009}, ``\diabetes''~\sidecite{Smith1988}, ``\rain''~\sidecite{Young2019}, and ``\princess''~\sidecite{Unmoved2023}.
+We pre-processed the ``\rain'' database and removed non-continuous input features, as we do not support discrete input features yet.
 To preserve data consistency, since the majority of daily weather observations were collected in Canberra, we eliminated the observations from other stations.
 As a result of this pre-processing step, we retained approximately 2000 entries, aligning with the sizes of other datasets.
 We trained about 700 networks per database by permuting the network structure and number of input features to obtain a uniform benchmark.
 The number of input features ranges from at least 3, to the number of attribute of the databases (after pre-processing),
-respectively, 10 attributes for \wine, 8 for \diabetes, 17 for \rain, and 13 for \princess.
+respectively, 10 attributes for ``\wine,'' 8 for ``\diabetes'', 17 for ``\rain'', and 13 for ``\princess''.
 The model size ranges from 2 to 6 hidden layers, each with 3 to 6 nodes, for a total of 6 to 36 nodes for each network model.
 This relatively small network size is chosen as a proof-of-concept evaluation to study \changesname{} without the need for extensive computational resources.
 All models were trained with Keras\sidenote{\rurl{github.com/keras-team/keras}}, using the Adam optimizer~\sidecite{Kingma2014} with the default learning rate, and binary crossentropy as the loss function. Each model was trained for 150 iterations.
@@ -198,14 +198,14 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
     \caption{Manhattan distance}
     \labfig{diabetes-manhattan-baseline-qlibra}
   \end{subfigure}
-  \caption{\diabetes{} database, comparison between baseline and \impatto.}
+  \caption{``\diabetes{}'' database, comparison between baseline and \impatto.}
   \labfig{diabetes-baseline-qlibra}
 \end{figure}
 }
 
 We first verify whether \impatto{} produces a similar impact quantification with respect to $\changesname$.
 To this end, we demonstrate \impatto{} in comparison to baseline.
-This experiment uses the \diabetes{} dataset, full evaluation with all the datasets in later in \refsec{full-overview}.
+This experiment uses the ``\diabetes{}'' dataset, full evaluation with all the datasets in later in \refsec{full-overview}.
 The evaluation, depicted in \reffig{diabetes-baseline-qlibra}, considers all the four heuristics.
 
 The results confirm the similarity between \impatto{} and baseline.
@@ -303,7 +303,7 @@ Note that, the Euclidean distance (\euclidean) returns a real number as distance
       \caption{Baseline vs \impatto.}
       \labfig{diabetes-relaxedcommon-baseline-qlibra-2}
     \end{subfigure}%
-    \caption{\diabetes{} database, comparison between baseline and (left to right) permutation feature importance, retraining feature importance, and \impatto.}
+    \caption{``\diabetes{}'' database, comparison between baseline and (left to right) permutation feature importance, retraining feature importance, and \impatto.}
     \labfig{diabetes-baseline-all}
   \end{figure}
 
@@ -329,7 +329,7 @@ Specifically, we compare to:
 % To this end, \impatto{} approximates a precisely formalized impact definition.
 % Unlike stochastic techniques that often rely on hardcoded impact definitions within their methods, limiting the flexibility and adaptability of their approach.
 
-As before, we first employ the \diabetes{} dataset, then \refsec{full-overview} presents the evaluation on all the datasets.
+As before, we first employ the ``\diabetes{}'' dataset, then \refsec{full-overview} presents the evaluation on all the datasets.
 \reffig{diabetes-baseline-all} demonstrates the comparison of baseline with, permutation feature importance (\pfi), retraining feature importance (\rfe), and \impatto, respectively \reffig{diabetes-relaxedcommon-baseline-permutation}, \reffig{diabetes-relaxedcommon-baseline-retraining}, and \reffig{diabetes-relaxedcommon-baseline-qlibra-2}.
 In this evaluation, we focus on the relaxed maximum common prefix length (\rmcpl) heuristic.
 Like the (\mcpl) approach, it highlights the most impactful features.
@@ -339,7 +339,7 @@ In summary, we notice that our static analyzer \impatto{} always achieves a high
 
 In conclusion, our evaluation demonstrates the effectiveness of the prototype of our static analysis in quantifying the impact of input features with respect to a formally defined impact property.
 Through comparison with stochastic metrics, we consistently observe a higher degree of similarity between the results produced by \impatto{} and the baseline.
-The experiments conducted on the \diabetes{} dataset illustrate this similarity across various heuristics and distance measures.
+The experiments conducted on the ``\diabetes{}'' dataset illustrate this similarity across various heuristics and distance measures.
 Notably, our approach stands out as the only one capable of addressing a formally defined impact property, providing a flexible framework that surpasses the hard-coded intuitions of the other two methods.
 Overall, these findings highlight the reliability and strength of \impatto{} in assessing the significance of input features.
 
@@ -348,7 +348,7 @@ Overall, these findings highlight the reliability and strength of \impatto{} in 
 
 This section contains the (full) overview of the experiments on all datasets.
 All the figures are organized in a 4 rows by 3 columns setup, we dedicated one page for each dataset.
-Figure~\reffig{diabetes} refers to \diabetes{} dataset, \reffig{wine} to \wine, \reffig{rain} to \rain, and \reffig{princess} to \princess.
+Figure~\reffig{diabetes} refers to ``\diabetes{}'' dataset, \reffig{wine} to ``\wine,'' \reffig{rain} to ``\rain,'' and \reffig{princess} to ``\princess.''
 Each column corresponds to a different comparison: from left to right, we show the comparison between \impatto{} vs \pfi, \impatto{} vs \rfe, and \pfi{} vs \rfe.
 
 The row refers to a different similarity metric, namely, from top to bottom, maximum common prefix length (\mcpl, already defined in~\refeq{mcpl}), relaxed maximum common prefix length (\rmcpl), Euclidean distance (\euclidean), and Manhattan distance (\manhattan).
@@ -576,7 +576,7 @@ Similarly to the sections above, the x-axis represents the length of the longest
         % }
       \end{subfigure}
   \end{subfigure}
-    \caption{Experimental overview regarding the \wine{} dataset.}
+    \caption{Experimental overview regarding the ``\wine{}'' dataset.}
     \labfig{wine}
 \end{figure}
 
@@ -668,7 +668,7 @@ Similarly to the sections above, the x-axis represents the length of the longest
         % }
       \end{subfigure}
   \end{subfigure}
-    \caption{Experimental overview regarding the \rain{} dataset.}
+    \caption{Experimental overview regarding the ``\rain{}'' dataset.}
     \labfig{rain}
 \end{figure}
 
@@ -760,7 +760,7 @@ Similarly to the sections above, the x-axis represents the length of the longest
         % }
       \end{subfigure}
   \end{subfigure}
-    \caption{Experimental overview regarding the \princess{} dataset.}
+    \caption{Experimental overview regarding the ``\princess{}'' dataset.}
     \labfig{princess}
 \end{figure}
 
