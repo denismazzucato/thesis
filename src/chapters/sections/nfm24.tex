@@ -2277,9 +2277,9 @@ The work presented in this chapter stems from \sidetextcite{Urban2018}, proposin
 \newcommand*{\exampleinput}{\textsc{Input}_\defprogram}
 
 \paragraph{Abstract Non-Interference.}
-As quantitative input data usage arises from the qualitative counterpart, this chapter has been inspired by the work on abstract non-interference \sidecite{Giacobazzi2018}. In particular, \textcite{Giacobazzi2004} introduced a domain-theoretic characterization of the most precise attacker which cannot violate abstract non-interference.
+As quantitative input data usage arises from the qualitative counterpart, this chapter has also been inspired by the work on abstract non-interference \sidecite{Giacobazzi2018}. In particular, \sidetextcite{Giacobazzi2004} introduced a domain-theoretic characterization of the most precise attacker which cannot violate abstract non-interference.
 Later on, \sidetextcite{Mastroeni2013} instantiated various policies obtaining the different notions of abstract non-interference for language-based security.
-Such work pavemented the way for the development of the unifying framework for weakening the non-interference property, into abstract non-interference \cite{Giacobazzi2018}. More recently, \sidetextcite{Mastroeni2023} explored the connection between domain completeness and narrow abstract non-interference, where domain transformers can be characterized using monotonicity, in the weak framework of abstract interpretation. Notably, abstract non-interference
+Such work pavemented the way for the development of the unifying framework for weakening the non-interference property, into abstract non-interference \cite{Giacobazzi2018}. More recently, \sidetextcite{Mastroeni2023} explored the connection between domain completeness and narrow abstract non-interference, where domain transformers can be characterized using monotonicity, in the weak framework of abstract interpretation. Notably, in our work, from the abstraction of non-interference to abstract non-interference we adopted the concept of state abstractions, \cf{} \nrefdef{output-observer}.
 
 \paragraph{Quantitative Information Flow.}
 Given the connection between \emph{qualitative} input usage and information flow analysis \sidecite[][{Chapters 8, 9, and 10}]{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to look into \emph{quantitative} information flow, formerly introduced by \sidetextcite{Denning1982,Gray1991}.
@@ -2420,7 +2420,7 @@ The key difference among our framework and their work is the information we meas
 For example, \sidetextcite{Assaf2017} counts how many bits of information of input variables are used to compute the result; \sidetextcite{Smith2009} computes the probability of guessing the value of a private variable from the value of input variables; and \sidetextcite{McCamant2008} retrieves the channel capability, which is the worst-case possible for information leakages. Most of these approaches are based on the concept of entropy measures, which are orthogonal to our approach.
 Recent developments, \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness.
 Instead, we present a more fine-grained analysis, which discovers the impact of each input variable separately.
-
+Recent developments \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 
 Qualitative input data usage and non-interference relates also with \textit{Data Leakage}~\sidecite[][Chapter~4]{Brownlee2020}.
 This property holds relevance for data science software, particularly in addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
@@ -2438,20 +2438,25 @@ In our work, we avoid categorizing the properties of programs as hyperproperties
 
 
 \paragraph{Probabilistic Programming.}
-Moreover, we recognize that quantitative analyses are usually tightly coupled with probabilistic programming \sidecite{Gordon2014, Meent2018}.
-Probabilistic programs are in the form of usual imperative (or functional) programs with additional constructs to model random variables and probabilistic choices.
+Moreover, we recognize that quantitative analyses are usually tightly coupled with probabilistic programming.
+Probabilistic programs \sidecite{Gordon2014, Meent2018} are in the form of usual imperative (or functional) programs with additional constructs to model random variables and probabilistic choices.
 The problem of computing an explicit representation of the probability distribution specified by a probabilistic program is called probabilistic inference, probabilistic programming aims to decouple modelling from inference.
 Probabilistic programs are a natural fit for quantitative analyses, as they model uncertainty in the input data and the program's behavior.
 % For instance, Gorinova's work \sidecite{Gorinova2019,Gorinova2022} focuses on static analysis for probabilistic programs, in such setting, analyzing the dependencies between variables in a probabilistic program improving the robustness and reliability of the inference algorithm.
-Recent work \sidecite{Stefanakos2021,Stefanakos2023} synthesized a Markov-chain model of a program via probabilistic model checking, computing a quantitative model of the probability of program transitions. Notably, their approach can predict how well the code would react to changes such as different hardware specifications and profile usage.
-Similarly, \sidetextcite{Todoran2022} translates concurrent programs into corresponding probabilistic models that capture the behavior of programs and that can be verified using probabilistic model checking.
-Applied to our work, probabilistic programming could be used to model the uncertainty in the input data and the program's behavior.
-The development of quantifiers based on probabilistic programs could provide statistical guarantees on the impact of input variables on the program's output.
-\denis{Maybe something like this: While this specific model counting problem has been studied in AI research fields such as Bayesian networks, knowledge representation and probabilistic planning, its use within the context of formal verification presents a new set of challenges.}
+% Recent work \sidecite{Stefanakos2021,Stefanakos2023} synthesized a Markov-chain model of a program via probabilistic model checking, computing a quantitative model of the probability of program transitions. Notably, their approach can predict how well the code would react to changes such as different hardware specifications and profile usage.
+% Similarly, \sidetextcite{Todoran2022} translates concurrent programs into corresponding probabilistic models that capture the behavior of programs and that can be verified using probabilistic model checking.
+% Applied to our work, probabilistic programming could be used to model the uncertainty in the input data and the program's behavior.
+% The development of quantifiers based on probabilistic programs could provide statistical guarantees on the impact of input variables on the program's output.
+% \denis{Maybe something like this: While this specific model counting problem has been studied in AI research fields such as Bayesian networks, knowledge representation and probabilistic planning, its use within the context of formal verification presents a new set of challenges.}
+% \denis{cite Cousot Probabilistic Abstract Interpretation}
+%
+Recently, the verification of probabilistic programs made significant advancements.
+Martingale theory certificates have been instrumental in automating the proof of quantitative termination and safety in probabilistic programs \sidecite{Chatterjee2017,Chatterjee2022,Takisaka2021,Wang2024}.
+Probabilistic programs have also been studied with cost analyses \sidecite{Chatterjee2024,Wang2021}.
+Other approaches involve the weakest pre-expectation calculus \sidecite{Kaminski2016}, a probabilistic extension of the classical weakest precondition calculus. This method, while highly expressive, requires user-provided invariants.
+Symbolic execution techniques have been adapted for probabilistic programs, enabling a detailed exploration of program paths under various stochastic scenarios \sidecite{Sankaranarayanan2013,Beutner2022}.
+In our settings, we assume non-determinism to be uniformly distributed, which is a simplification from probabilistic programs. However, by applying probabilistic semantics \sidecite{Cousot2012a}, we could extend our quantifiers to probabilistic measures, providing statistical bounds on the impact of input variables on the probabilistic program's output.
 
-\denis{cite Cousot Probabilistic Abstract Interpretation}
-
-% Recent developments \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 
 \section{Summary}
 \labsec{quantitative-input-data-usage-summary}

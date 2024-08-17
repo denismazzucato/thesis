@@ -767,22 +767,6 @@ Our work is orthogonal to the existing literature on WCET and loop bound analysi
 Instead, we focus on quantifying the impact on the global number of loop iterations of each input variable individually.
 However, we leverage an underlying global loop bound analysis to understand the input-output relationship involving the global loop counter.
 
-\paragraph{Termination Analysis.}
-
-
-The program termination problem can be defined as whether a program always finish running within a finite time frame, or could execute indefinitely.
-It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem.\sidenote{In English: ``decision problem.''} Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
-Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \sidetextcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
-From the unifying point of view of existing approaches proposed by \sidetextcite{Cousot2012b},
-Caterina Urban and Antoine Min{\'{e}} advanced the field in a series of works \sidecite{Urban2013,Urban2014a,Urban2014b,Urban2015a,Urban2017} by proving termination through the synthesis of ranking functions across all program paths simultaneously, without relying on counterexample-guided analysis or the need for explicit checks on the well-foundedness of the termination argument.
-Their approach is implemented in the tool \textsc{FuncTion} \sidecite{Urban2015b} and handles arbitrary control flow structures, contrary to the limitations of earlier methods \sidecite{Podelski2004,Bradley2005}.
-Similarly, \sidetextcite{Tsitovich2011} adopts loop summarization to address termination; \sidetextcite{Courant2017} further refines \textsc{FuncTion}'s scalability and precision through fine-tuning and new heuristics for the widening.
-Many methods (such as \sidecite{Alias2010, Brockschmidt2013,Larraz2013}) leverage indirectly transition invariants. Among many, \textcite{Alias2010} explores the synthesis of ranking functions via linear programming, which is complete only for rational-value based programs.
-\sidetextcite{Chatterjee2021} proposed a simple but effective approach by synthesizing invariants through syntactic program reversal, handling programs with non-determinism and integer values.
-Additionally, the inference of preconditions for termination has been explored, with \sidetextcite{Cook2008} focusing on the generation of necessary preconditions, while \sidetextcite{Ganty2013,Mass_e2014} derive these by complementing over-approximations of non-terminating states.
-The work presented in this chapter, on the other hand, does not aim to prove termination, nevertheless, it could greatly benefit from the termination analysis to infer termination-aware quantities for the global loop counter.
-By leveraging the knowledge of which input data leads to terminating executions, we could refine the impact quantification as, at the current stage, an input variable that influences the program termination but not the number of iterations would be declared unused.
-
 
 \paragraph{Side-Channels Analysis.}
 Side-channel attacks exploit vulnerabilities in cryptographic system implementations rather than directly targeting computational complexity \sidecite{Kocher1996}.
@@ -804,6 +788,31 @@ Indeed, constant-time code may leak information on processors with microarchitec
 Recently, OpenSSL updated their security model to explicitly exclude physical system side-channels.\sidenote{(Last Accessed: 16th August 2024) \rurl{www.openssl.org/policies/secpolicy.html}}
 Related work \sidecite{Guarnieri2020,Bard2024} proposed approaches to take into consideration the microarchitectural features in the analysis of timing side-channel attacks.
 Our approach could be extended to consider the impact of input variables also in the presence of out-of-order and speculative execution.
+
+\paragraph{Termination Analysis.}
+
+
+The program termination problem can be defined as whether a program always finish running within a finite time frame, or could execute indefinitely.
+It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem.\sidenote{In English: ``decision problem.''} Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
+Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \sidetextcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
+From the unifying point of view of existing approaches proposed by \sidetextcite{Cousot2012b},
+Caterina Urban and Antoine Min{\'{e}} advanced the field in a series of works \sidecite{Urban2013,Urban2014a,Urban2014b,Urban2015a,Urban2017} by proving termination through the synthesis of ranking functions across all program paths within the framework of abstract interpretation.
+Compared to other works \sidecite{Berdine2007,Heizmann2013}, they do not rely on counterexample-guided analysis or perform explicit checks on the well-foundedness of the termination argument.
+Their approach is implemented in the tool \textsc{FuncTion} \sidecite{Urban2015b} and handles arbitrary control flow structures, contrary to the limitations of earlier methods \sidecite{Podelski2004,Bradley2005}.
+Similarly, \sidetextcite{Tsitovich2011} adopts loop summarization to address termination; and \sidetextcite{Courant2017} further refines \textsc{FuncTion}'s scalability and precision through fine-tuning and new heuristics for the widening.
+Many methods (such as \sidecite{Alias2010, Brockschmidt2013,Larraz2013}) leverage indirectly transition invariants. Among many, \textcite{Alias2010} explores the synthesis of ranking functions via linear programming, which is complete only for rational-value based programs.
+\sidetextcite{Chatterjee2021} proposed a simple but effective approach to over-approximate program states that do not terminate by synthesizing invariants through syntactic program reversal, handling programs with non-determinism and integer values.
+Additionally, the inference of preconditions for termination has been explored, with \sidetextcite{Cook2008} focusing on the generation of necessary preconditions, while \sidetextcite{Ganty2013,Mass_e2014} derive these by complementing over-approximations of non-terminating states.
+Nowadays, state-of-the-art tools are \textsc{VeryMax} \sidecite{Borralleras2017}, \textsc{AProVE} \sidecite{Giesl2017}, \textsc{Ultimate} \sidecite{Leike2018, Chen2018}, and \textsc{LoAT} \sidecite{Frohn2019}.
+Specifically, \textsc{VeryMax} \cite{Borralleras2017} searches for non-termination witnesses using quasi-invariants but lacks relative completeness guarantees \cite{Larraz2013}.
+\textsc{AProVE} \cite{Giesl2017} uses recurrence sets to prove non-termination in Java programs with non-determinism, but it has limitations with nested loops \sidetextcite{Brockschmidt2011}.
+The method in \sidetextcite{Urban2016} attempts to prove either termination or non-termination in programs with non-determinism by incrementally refining termination arguments and using a safety prover to identify non-terminating traces.
+Other approaches, like those in \textsc{Ultimate} \cite{Leike2018, Chen2018}, use geometric series and constraint solving to handle deterministic programs.
+Major challenges for termination provers are computational efficiency and non-determinism; see \sidetextcite{Shi2022} for a comparison on termination provers.
+On another perspective, under weaker guarantees, (non-)termination has been recently tackled also by graph neural networks \sidecite{Alon2022}.
+The work presented in this chapter, on the other hand, does not aim to prove termination, nevertheless, it could greatly benefit from the termination analysis to infer termination-aware quantities for the global loop counter.
+By leveraging the knowledge of which input data leads to terminating executions, we could refine the impact quantification as, at the current stage, an input variable that influences the program termination but not the number of iterations would be declared unused.
+
 
 
 \section{Summary}

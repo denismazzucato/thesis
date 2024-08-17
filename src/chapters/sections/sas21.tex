@@ -1627,8 +1627,21 @@ Therefore, it can be used to validate the $\boundedqlibrage$ property with the $
 
 } % end of the scope of the newcommand
 
-\section{Related Work--In Progress}[Related Work]
+\section{Related Work}
 \labsec{sas21-related-work}
+
+In this section, we discuss related work on verification of neural networks, and in particular, the quantification of properties on neural networks.
+
+\paragraph{Verification of Neural Networks.}
+
+\paragraph{Quantitative Verification of Neural Networks.}
+
+Aside from the verification of neural networks, there is a growing interest in the quantification of properties on neural networks, most of the work in the literature offers statistical guarantees.
+While not handling probabilistic properties, in our thesis, we provide formal guarantees on the quantification of impact properties.
+The work of \sidetextcite{Tran2023} quantifies the probability of safety violations by propagating Gaussian-distributed inputs through the networks.
+Similarly, Baluta et al. \sidecite{Baluta2019,Baluta2021} estimate the portion of input space that satisfies a given property, such as robustness, fairness, or security, by sampling. They provide statistical guarantees that the estimates are within a certain confidence interval. The framework of \sidetextcite{Zhang2021,Zhang2023} quantifies adversarial robustness in binarized neurla networks through model counting of adversarial examples. Another statistical approach \sidecite{Webb2019} estimates the likelihood of property violations using Monte Carlo methods, offering robustness metrics.
+These work may be seen as quantification of the \outcomesname{} quantifier for fairness checks in a weaker (statistical) sense.
+
 
 \section{Summary}
 
