@@ -751,6 +751,8 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
   \reflemma{counterrange-is-sound} shows that $\counterrange$ is a sound implementation of $\range$, the proof follows directly by application of the \refthm*{soundness} instantiated with the abstract implementation $\counterrange$ and comparison operator $\le$.
 \end{proof}
 
+\marginnote{\denis{Check double references on the side}}
+
 \section{Related Work}
 \labsec{sas24-related-work}
 
@@ -769,7 +771,7 @@ However, we leverage an underlying global loop bound analysis to understand the 
 
 
 The program termination problem can be defined as whether a program always finish running within a finite time frame, or could execute indefinitely.
-It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem\sidenote{In English: ``decision problem.''}. Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
+It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem.\sidenote{In English: ``decision problem.''} Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
 Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \sidetextcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
 From the unifying point of view of existing approaches proposed by \sidetextcite{Cousot2012b},
 Caterina Urban and Antoine Min{\'{e}} advanced the field in a series of works \sidecite{Urban2013,Urban2014a,Urban2014b,Urban2015a,Urban2017} by proving termination through the synthesis of ranking functions across all program paths simultaneously, without relying on counterexample-guided analysis or the need for explicit checks on the well-foundedness of the termination argument.
@@ -799,7 +801,7 @@ Instead, our approach only requires a single abstract analysis and leverages var
 
 Moving forward, the advent of attacks exploiting microarchitectural features, such as out-of-order and speculative execution, makes constant-time verification as it exists today far less useful.
 Indeed, constant-time code may leak information on processors with microarchitectural vulnerabilities \sidecite{Cauligi2020}.
-Recently, OpenSSL updated their security model to explicitly exlude physical system side-channels \sidenote{(Last Accessed: 16th August 2024) \rurl{www.openssl.org/policies/secpolicy.html}}.
+Recently, OpenSSL updated their security model to explicitly exclude physical system side-channels.\sidenote{(Last Accessed: 16th August 2024) \rurl{www.openssl.org/policies/secpolicy.html}}
 Related work \sidecite{Guarnieri2020,Bard2024} proposed approaches to take into consideration the microarchitectural features in the analysis of timing side-channel attacks.
 Our approach could be extended to consider the impact of input variables also in the presence of out-of-order and speculative execution.
 

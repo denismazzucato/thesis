@@ -6,7 +6,7 @@
 
 
 The goal of this section is to highlight the potential of our static analysis for quantitative input data usage.
-We implemented a proof-of-concept tool, called \impatto\sidenote{\rurl{github.com/denismazzucato/impatto}}, in \python{} 3 that employs the \interproc\sidenote{\rurl{github.com/jogiet/interproc}} abstract interpreter to perform the backward analysis.
+We implemented a proof-of-concept tool, called \impatto,\sidenote{\rurl{github.com/denismazzucato/impatto}} in \python{} 3 that employs the \interproc\sidenote{\rurl{github.com/jogiet/interproc}} abstract interpreter to perform the backward analysis.
 Then, we exploited this tool to automatically derive a sound input data usage of six different use cases.
 As each impact result must be interpreted with respect to what the program computes, we analyze each use case separately.
 
@@ -19,7 +19,7 @@ and %. As a consequence, the article
 was heavily cited to justify austerity measures around the world. %Notably,
 One of the several errors discovered in the article is the incorrect usage of the input value relative to Norway's economic growth in 1964.
 The data used in the article is publicly available but not the spreadsheet file. We reconstructed this simplified example based on
-the technical critique by \sidetextcite{Herndon2014}, and an online discussion\sidenote{\rurl{economics.stackexchange.com/q/18553}}.
+the technical critique by \sidetextcite{Herndon2014}, and an online discussion.\sidenote{\rurl{economics.stackexchange.com/q/18553}}
 The~\refprog{rr}
 computes the cross-country mean growth for the public debt-to-GDP $60-90\%$ category, key point to the article's conclusions.
 The input data is the average growth rate for each country within this public dept-to-GDP category. The problem with this computation is that Norway has only one observation in such category, which alone could disrupt the mean computation among all the countries. Indeed, the year that Norway appears in the $60-90\%$ category achieved a growth rate of $10.2\%$, while the average growth rate for the other countries is $2.7\%$.
@@ -80,7 +80,7 @@ However, such methodological error is less evident when dealing with a higher nu
 \subsection{GPT-4 Turbo}
 \labsec{gpt-4-turbo}
 
-The second use case we present is drawn from Sam Altman's OpenAI keynote in September 2023\sidenote{\rurl{www.youtube.com/live/U9mJuUkhUzk?si=HOzuH3-gr_kTdhCt&t=2330}}, where he presented the GPT-4 Turbo.
+The second use case we present is drawn from Sam Altman's OpenAI keynote in September 2023,\sidenote{\rurl{www.youtube.com/live/U9mJuUkhUzk?si=HOzuH3-gr_kTdhCt&t=2330}} where he presented the GPT-4 Turbo.
 This new version of the GPT-4 language model brings the ability to write and interpret code directly without the need of human interaction.
 Hence, as showcased in the keynote, the user could prompt multiple information to the model, such as related to the organization of a holiday trip with friends in Paris, and the model automatically generates the code to compute the share of the total cost of the trip and run it in background.
 In this environment, users are unable to directly view the code unless they access the backend console.
@@ -153,7 +153,7 @@ These results confirm the user expectations about the proposed program from Chat
 \end{lstlisting}
 \end{marginlisting}
 
-\refprog{timing-analysis} is adapted from the termination category of the software verification competition \textsc{sv-comp}\sidenote{\rurl{sv-comp.sosy-lab.org/}}.
+\refprog{timing-analysis} is adapted from the termination category of the software verification competition \textsc{sv-comp}.\sidenote{\rurl{sv-comp.sosy-lab.org/}}
 Assuming both input positives, $\texttt{x},\texttt{y} \ge 0$, this program terminates in $\texttt{x}+1$ iterations if $\texttt{y} >50$, otherwise it terminates in $\texttt{x} - 2\texttt{y} + 103$ iterations.
 We define $\texttt{counter}$ as the output variable, with output buckets defined as $\setdef{10k \le \texttt{counter} < 10(k+1)}{0 \le k < 50}$ and $\{\texttt{counter}\ge 500\}$. These output buckets represent cumulative ranges of iterations required for termination.
 The analysis results are illustrated in~\reftab{termination-analysis}, they show that the input variable $\texttt{x}$ has the biggest impact.
@@ -183,7 +183,7 @@ The given results can be interpreted as follows: the speed of termination of thi
 \subsection{Termination Analysis (B)}
 \labsec{app:termination-analysis-B}
 
-This use case comes from the software verification competition SV-Comp\sidenote{\rurl{sv-comp.sosy-lab.org/}}, where the goal is to verify the termination of a program. \refprog{termination-a} and~\refprog{termination-b} have originally been proposed by \sidetextcite{Chen2012}, respectively these are Example (2.16) and Example (2.21) of such work.
+This use case comes from the software verification competition SV-Comp,\sidenote{\rurl{sv-comp.sosy-lab.org/}} where the goal is to verify the termination of a program. \refprog{termination-a} and~\refprog{termination-b} have originally been proposed by \sidetextcite{Chen2012}, respectively these are Example (2.16) and Example (2.21) of such work.
 
 \begin{marginlisting}
   \caption{Program Ex2.16 from software verification competition SV-Comp.}

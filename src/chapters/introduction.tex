@@ -51,7 +51,7 @@ Detecting bugs and bias in machine learning software is crucial to ensure that t
 
 % Even more recently, the last advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications.
 % Agents like OpenAI's ChatGPT\sidenote{\rurl{chatgpt.com}} and Google's Gemini\sidenote{\rurl{gemini.google.com}} are gaining widespread use.
-% Specifically designed for coding, GitHub Copilot\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}.
+% Specifically designed for coding, GitHub Copilot.\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}
 % Despite their benefits, AI-generated code can introduce bugs as human-written code \sidecite{Asare2023}, making it crucial to use techniques that detect software errors or certify intended behaviors.
 
 Therefore, from more traditional to the latest machine learning-based software, detecting errors in safety critical or high-stakes contexts is mandatory to ensure a correct software behavior.
@@ -64,7 +64,7 @@ The correct behavior of software is tested empirically for a finite number of in
 However, testing has inherent limitations. For instance,
 % It can only verify a program against functional requirements, which may be poorly defined and ambiguous, leading to inadequate testing.
 exhaustive testing is impractical, and constraints on time and budget can further impact the process.
-Mostly, testing cannot guarantee the absence of bugs\sidenote{``Program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- \textcite{Dijkstra1976}} \sidecite{Dijkstra1976}.
+Mostly, testing cannot guarantee the absence of bugs.\sidenote{``Program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- \textcite{Dijkstra1976}} \sidecite{Dijkstra1976}
 While in some cases deploying software with bugs and relying on patches to fix it is acceptable, \cf{} \reftab{effort-to-fix}, ensuring that software is free of bugs before deployment is necessary to avoid catastrophic consequences in safety critical systems.
 
 In contrast to testing, \emph{formal methods} provide rigorous mathematical guarantees about software correctness.
@@ -79,10 +79,10 @@ According to software engineering practices, formal methods should be introduced
 To answer this question, consider the following examples where testing failed:
 
 \begin{itemize}
-\item The Ariane 5 rocket failure in 1996, caused by an integer overflow bug, resulted in a loss of \$370 million\sidenote{\rurl{esamultimedia.esa.int/docs/esa-x-1819eng.pdf}}.
+\item The Ariane 5 rocket failure in 1996, caused by an integer overflow bug, resulted in a loss of \$370 million.\sidenote{\rurl{esamultimedia.esa.int/docs/esa-x-1819eng.pdf}}
 \item The Therac-25 radiation therapy machine malfunctioned due to software bugs, resulting in patient deaths and serious injuries \sidecite{Leveson1993}.
-\item The Toyota unintended acceleration case, where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion\sidenote{\rurl{www.embeddedrelated.com/showarticle/1574.php}}.
-\item A round-off error in the Patriot missile system caused the death of 28 people during the Gulf War\sidenote{\rurl{www.ima.umn.edu/~arnold/disasters/patriot.html}}.
+\item The Toyota unintended acceleration case, where a stack overflow resulted in the death of 89 people and a lawsuit of \$1.2 billion.\sidenote{\rurl{www.embeddedrelated.com/showarticle/1574.php}}
+\item A round-off error in the Patriot missile system caused the death of 28 people during the Gulf War.\sidenote{\rurl{www.ima.umn.edu/~arnold/disasters/patriot.html}}
 \end{itemize}
 
 These cases could have been avoided with formal methods.
@@ -205,7 +205,7 @@ We introduce a backward static analysis based on abstract interpretation, parame
 This approach allows end-users to choose the impact that fits their needs, ensuring a targeted and customizable analysis.
 
 
-\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto\sidenote{\label{intro:impatto}\impattourl}, on six use cases.
+\refch{showcase} demonstrates the quantitative framework's potential applications by evaluating our static analysis tool, \impatto,\sidenote{\label{intro:impatto}\impattourl} on six use cases.
 
 \marginnote{\refch{quantitative-fairness} and \refch{evaluation-on-neural-networks} in \arefpart{extensional} are based on the work published at the 28th Static Analysis Symposium (SAS) 2021 \cite{Mazzucato2021}.}
 \marginnote{\formatmargincitation{Mazzucato2021}}
@@ -225,11 +225,11 @@ The followings are the contributions of \arefpart{extensional}, consisting of \c
   \item In \refch{quantitative-input-data-usage}, we develop a theoretical framework by abstract interpretation to quantify the impact of input variables by considering three novel impact quantifiers.
   \item In \refch{quantitative-input-data-usage}, we present our static analysis and a possible abstract implementation of the impact instances.
   \item In \refch{showcase} our tool called \impatto{} showcases our approach against a set of six demonstrative programs.
-  \item An artifact of \impatto{} comprehensive of \impatto's source code, documentation, and evaluation benchmarks is available on Zenodo\sidenote{\impattozenodo}.
+  \item An artifact of \impatto{} comprehensive of \impatto's source code, documentation, and evaluation benchmarks is available on Zenodo.\sidenote{\impattozenodo}
   \item In \refch{quantitative-fairness}, we present two novel impact quantifiers for neural networks.
   \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
   \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
-  \item An artifact extending \libra{} with the quantitative evaluation of fairness is available on Zenodo\sidenote{\librazenodo}.
+  \item An artifact extending \libra{} with the quantitative evaluation of fairness is available on Zenodo.\sidenote{\librazenodo}
 \end{itemize}
 
 \subsection{Quantitative Verification of Intensional Properties}[Intensional Properties]
@@ -254,7 +254,7 @@ In this second part of the thesis, we focus on quantifying input variables' impa
 We leverage global loop bound analysis to derive an over-approximation of the global loop bound, encoding the quantification of input variables' impact as a linear programming problem.
 Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite[][Section 10]{Urban2018} for scalability.
 
-In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis.
+In \refch{sas24-eval}, we present \timesec,\sidenote{\timesecurl} a tool implementing our quantitative timing analysis.
 We demonstrate its effectiveness in a real-world cryptographic library, certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
 Additionally, we evaluate \timesec{} against programs from \svcomp.
 
@@ -265,8 +265,8 @@ The followings are the contributions of \arefpart{intensional}:
 
 \begin{itemize}
   \item In \refch{quantitative-static-timing-analysis}, we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
-  \item In \refch{sas24-eval}, we present \timesec\sidenote{\timesecurl}, a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp \sidenote{\svcompurl}.
-  \item An artifact of \timesec{} comprehensive of \timesec's source code and evaluation benchmarks is available on Zenodo\sidenote{\timeseczenodo}.
+  \item In \refch{sas24-eval}, we present \timesec,\sidenote{\timesecurl} a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp.\sidenote{\svcompurl}
+  \item An artifact of \timesec{} comprehensive of \timesec's source code and evaluation benchmarks is available on Zenodo.\sidenote{\timeseczenodo}
 \end{itemize}
 
 \frenchdiv

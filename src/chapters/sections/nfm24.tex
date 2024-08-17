@@ -729,7 +729,7 @@ The output semantics $\outputsemanticsnoparam$ is sound and complete for validat
 \end{proof}
 
 \reflemma{range-monotonic} and \reflemma{range-validation} show that the $\rangename$ impact quantifier can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
-Otherwise, similarly to $\rangename$, the input variable may have an impact on the program computation even if not used\sidenote{See \refexample{outcomes-nondeterminism} for a similar discussion of the \outcomesname{} impact quantifier when applied to programs containing nondeterministic statements.}.
+Otherwise, similarly to $\rangename$, the input variable may have an impact on the program computation even if not used.\sidenote{See \refexample{outcomes-nondeterminism} for a similar discussion of the \outcomesname{} impact quantifier when applied to programs containing nondeterministic statements.}
 
 Notably, the property $\boundedrangele$ (with the operator $\le$) is subset-closed, \ie, if a program semantics satisfies the property, then all its subsets also satisfy the property.
 
@@ -2266,7 +2266,7 @@ However, it holds that:
   \abstractqused \neq 0 &\ImplieS \neg\synunused \\
   \synunused &\ImplieS \abstractqused = 0
 \end{align*}
-In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
+In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used.\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used} Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
 
 \section{Related Work}
 \labsec{nfm24-related-work}
@@ -2448,6 +2448,8 @@ Similarly, \sidetextcite{Todoran2022} translates concurrent programs into corres
 Applied to our work, probabilistic programming could be used to model the uncertainty in the input data and the program's behavior.
 The development of quantifiers based on probabilistic programs could provide statistical guarantees on the impact of input variables on the program's output.
 \denis{Maybe something like this: While this specific model counting problem has been studied in AI research fields such as Bayesian networks, knowledge representation and probabilistic planning, its use within the context of formal verification presents a new set of challenges.}
+
+\denis{cite Cousot Probabilistic Abstract Interpretation}
 
 % Recent developments \sidetextcite{Zhang2022} developed a calculus based on strongest-postcondition-style allowing quantitative reasoning of information flow, and \sidetextcite{Henzinger2023} generalized the hierarchy of safety and liveness properties to quantitative safety and liveness. In contrast, our quantitative framework, inspired by the qualitative input data usage property, diverges in the information measured. Our analysis focuses on numerical aspects, assessing the impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that count bits or probabilities.
 

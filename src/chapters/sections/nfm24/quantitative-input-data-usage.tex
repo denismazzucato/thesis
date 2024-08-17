@@ -15,7 +15,7 @@ We introduce the notion of impact, denoted by the function $\impactwrapper\in\se
 
 We implicitly assume the use of an \textit{output descriptor} $\outputdesc$ to determine the desired output of a program by observations on program states.
 %
-Specifically, $\reader\in \stateandbottom \to \valuesinf$ selects the output of interest from a given state and returns its corresponding value\sidenote{The option of returning $\pm\infty$ from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}.
+Specifically, $\reader\in \stateandbottom \to \valuesinf$ selects the output of interest from a given state and returns its corresponding value.\sidenote{The option of returning $\pm\infty$ from the output descriptor is to deal with infinite traces, which do not have a final state ($\retrieveoutput\defseq = \statebottom$ for any $\defseq \in \infinitesequences$).}
 Additionally, $\filter\subseteq\valuesinf$ filters output states and selectively engages a subset of the potential outcomes.
 Through this filtering mechanism, undesired outcomes are directly excluded, and a numerical value is ensured.
 

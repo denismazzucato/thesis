@@ -686,7 +686,7 @@ As a drawback, we lose the input abstraction: the tread-off allows non-determini
 The reason is that to take into account non-determinism, for any value of the input variables $\definputvariables$, we need to consider all possible traces that start from a different initial value.
 Such low-level detail cannot be captured by the input abstraction employed in the definition of abstract non-interference.
 
-The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function\sidenote{The identity function returns its parameter without any modification, \ie, $\identity(x) = x$.}.
+The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function.\sidenote{The identity function returns its parameter without any modification, \ie, $\identity(x) = x$.}
 \begin{proposition}[Unused Equivalence]\labprop{unused-predicate-equivalence}
   \marginnote{
     Note that, $\unusedwrapper$ is the unused predicate, \cf{} \nrefdef{unused-predicate}, and $\unusediowrapper$ is the abstract unused predicate, \cf{} \nrefdef{abstract-unused}.
@@ -790,7 +790,7 @@ We formally show that abstract non-interference matches the abstract unused pred
   We assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, otherwise the implication is vacuously true.
   We need to show that there exists a trace $\deftrace'\in\tracesemantics$ such that: $(i)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(ii)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $(iii)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
   The proof proceeds by absurd: we assume that for all traces $\deftrace'$ it holds that $\neg(i) \lor \neg(ii) \lor \neg(iii)$.
-  By definition of the logical implication\sidenote{$\neg A \lor B \equiv A \implies B$.}, we have that $\neg(\neg(i) \lor \neg(ii)) \implies \neg(iii)$, thus $(i) \land (ii) \implies \neg(iii)$.
+  By definition of the logical implication,\sidenote{$\neg A \lor B \equiv A \implies B$.} we have that $\neg(\neg(i) \lor \neg(ii)) \implies \neg(iii)$, thus $(i) \land (ii) \implies \neg(iii)$.
   Hence, for all traces $\deftrace'\in\tracesemantics$ we assume $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, respectively $(i)$ and $(ii)$.
   As a consequence, to conclude ($\implies$) we need to show an absurd based on the hypothesis that the output abstraction does not match, \ie, $\aniobserver(\retrieveoutput\deftrace) \neq \aniobserver(\retrieveoutput{\deftrace'})$.
   Clearly, from $\aniwrapper$ applied to $(ii)$ we have that the outputs match, contradicting the hypothesis. Thus, $\unusediowrapper$ holds\sidenote{

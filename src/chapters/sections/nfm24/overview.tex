@@ -138,7 +138,7 @@ In particular, the first quantity tells us which variation in the values of inpu
 %
 The first impact definition that we consider is
  $\outcomes(\defprogram)$, %(derived from $\outcomesentropy$),
-where $\definputvariable$ is the input variable of interest and $\defprogram$ the program under analysis. Intuitively\sidenote{the formal definition is given in \refsec{quantitative-input-data-usage}}, $\outcomes$ returns the maximum number of outputs that are reachable from value variations of the input variable $\definputvariable$.
+where $\definputvariable$ is the input variable of interest and $\defprogram$ the program under analysis. Intuitively,\sidenote{the formal definition is given in \refsec{quantitative-input-data-usage}} $\outcomes$ returns the maximum number of outputs that are reachable from value variations of the input variable $\definputvariable$.
 For the program
 $\landingprogram$, the result is shown in column $\outcomesname(\landingprogram)$~of \reftab{overview}:
 we obtain $\outcomesname_\x(\landingprogram)=2$ and $\outcomesname_\y(\landingprogram)=3$.
@@ -258,4 +258,4 @@ Indeed, the choice of the starting output buckets is critical.
 For instance, with $b_0=\{0\}$, $b_1=\{1\}$, $b_2=\{2\}$, and $b_3=\{3\}$ one would recover maximum precision and obtain a useful analysis quantification.
 
 In conclusion, the sound upper bound discovered by our analysis is always higher than the concrete one by construction of the theoretical framework.
-The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis \sidenote{as outlined by the use cases shown in~\refsec{nfm24:experimental-results}.}
+The precision of our analysis is mostly affected by the choice of output buckets and the approximation induced by the backward analysis .\sidenote{as outlined by the use cases shown in~\refsec{nfm24:experimental-results}}
