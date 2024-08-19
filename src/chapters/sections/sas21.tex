@@ -1630,9 +1630,20 @@ Therefore, it can be used to validate the $\boundedqlibrage$ property with the $
 \section{Related Work}
 \labsec{sas21-related-work}
 
-In this section, we discuss related work on verification of neural networks, and in particular, the quantification of properties on neural networks.
+In this section, we discuss related work on the verification of neural networks and the quantification of input usage in machine learning models.
 
 \paragraph{Verification of Neural Networks.}
+
+The interest in the verification of neural networks has been surging in the last decade, see Albarghouthi's tutorial \sidecite{Albarghouthi2021} for an introduction to the topic.
+The most common approach is to verify robustness \sidecite{Goodfellow2016} of neural networks against minimal input perturbations.
+This research area is highly diverse and includes a variety of techniques, such as SMT-based methods \sidecite{Katz2017,Katz2019,Pulina2011a,Pulina2011b,Pulina2012}, mixed-integer programming \sidecite{Botoeva2020,Lomuscio2017,Tjeng2019}, branch-and-bound \sidecite{Bunel2018,Palma2021,Ehlers2017,Wang2018b}, over-approximation of the non-linear activation function \sidecite{Ehlers2017,Singh2019,Weng2018,Zhang2018b}, and symbolic propagation \sidecite{Botoeva2020,Henriksen2020,Wang2018b,Wang2021b}.
+See \sidetextcite{K_onig2024} and \sidetextcite{Huang2020} for a comprehensive survey of the field of verification of neural networks. Notably, there is no single best algorithm dominates performance across all verification problem instances.
+
+The literature also focuses on fairness and bias in machine learning models.
+Statistical approaches include \sidetextcite{Galhotra2017}, which propose a method for efficient fairness testing, \sidetextcite{Udeshi2018} generates discriminatory inputs for machine learning models, and \sidetextcite{Tram_er2017} introduced the unwarranted-associations framework.
+On the other hand, \sidetextcite{Bastani2019} provides probabilistic guarantees on the fairness of machine learning models, \sidetextcite{Urban2020} verifies fairness properties on neural networks by abstract interpretation providing formal guarantees, and \sidetextcite{Albarghouthi2017b} encoded the fairness problem as a probabilistic program property and verified fairness by an SMT solver.
+The work of \sidetextcite{Albarghouthi2019} proposed a technique to repair the bias of neural networks.
+
 
 \paragraph{Quantitative Verification of Neural Networks.}
 
@@ -1641,6 +1652,8 @@ While not handling probabilistic properties, in our thesis, we provide formal gu
 The work of \sidetextcite{Tran2023} quantifies the probability of safety violations by propagating Gaussian-distributed inputs through the networks.
 Similarly, Baluta et al. \sidecite{Baluta2019,Baluta2021} estimate the portion of input space that satisfies a given property, such as robustness, fairness, or security, by sampling. They provide statistical guarantees that the estimates are within a certain confidence interval. The framework of \sidetextcite{Zhang2021,Zhang2023} quantifies adversarial robustness in binarized neurla networks through model counting of adversarial examples. Another statistical approach \sidecite{Webb2019} estimates the likelihood of property violations using Monte Carlo methods, offering robustness metrics.
 These work may be seen as quantification of the \outcomesname{} quantifier for fairness checks in a weaker (statistical) sense.
+Recent formal developments~\sidecite{Ranzato2020,Ranzato2021,Pal2022} are currently targeting other machine learning models, such as decision trees and support vector machines, developing formal methods to discover the usage of input variables.
+Quantitative analyses have the potential to enhance these techniques by leveraging a broader spectrum of possible results.
 
 
 \section{Summary}

@@ -770,7 +770,7 @@ However, we leverage an underlying global loop bound analysis to understand the 
 
 \paragraph{Side-Channels Analysis.}
 Side-channel attacks exploit vulnerabilities in cryptographic system implementations rather than directly targeting computational complexity \sidecite{Kocher1996}.
-These attacks, including those based on power consumption \sidecite{Kocher1999} and speculative executions \sidecite{Kocher2019,Lipp2018}, can leak sensitive information without physical tampering \sidecite{Wong2005}.
+These attacks, including those based on power consumption \sidecite{Kocher1999} and speculative executions \sidecite{Kocher2019,Lipp2020}, can leak sensitive information without physical tampering \sidecite{Wong2005}.
 Various methods have been proposed to quantify the information leaked through side-channels.
 The quantitative analysis of side-channel attacks, initially introduced by \sidetextcite{K_opf2007}, utilizes model counting and a greedy algorithm to mitigate the exponential growth of potential paths that must be examined.
 \sidetextcite{Phan2017,Phan2012} and \sidetextcite{Saha2023} apply symbolic execution to enumerate the equivalence classes of program's output values, and utilizes entropy measures to quantify the information leakage.

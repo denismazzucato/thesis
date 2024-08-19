@@ -2271,7 +2271,11 @@ In words, whenever the abstract implementation $\abstractqused$ returns a strict
 \section{Related Work}
 \labsec{nfm24-related-work}
 
-The work presented in this chapter stems from \sidetextcite{Urban2018}, proposing a unifying view on existing information flow analyses based on abstract interpretation. In this section, we compare our work with the existing literature on non-interference as the foundational property for information flow analysis, entropy measures of quantitative information flow, and probabilistic programming languages.
+
+This chapter draws inspiration from~\sidetextcite{Barowy2014} where an empirical analysis explores the usage of data for debugging spreadsheet applications through stochastic sampling.
+\sidetextcite{Urban2018} proposed a unifying view on existing information flow analyses based on abstract interpretation.
+Their work establishes the theoretical foundations for understanding the usage of input variable.
+In this section, we compare our work with the existing literature on non-interference as the foundational property for information flow analysis, entropy measures of quantitative information flow, and probabilistic programming languages.
 
 \newcommand*{\entropypartitions}[1][\defprogram]{\Pi(#1)}
 \newcommand*{\exampleinput}{\textsc{Input}_\defprogram}
@@ -2434,7 +2438,7 @@ Further development of this concept could be of particular interest.
 Hyperproperties relate different set of executions of a program, and are able to express security policies, or input data usage properties as in this thesis.
 In \textcite{Clarkson2010}, there is a categorization of hyperproperties into safety and liveness, respectively hypersafety and hyperliveness. The $k$-hypersafety properties are those that need sets of $k$ traces to be disproved, this category can be verified with traditional techniques for safety properties by $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}.
 Note that, direct approaches through self-composition can be computationally expensive \sidecite{Antonopoulos2017}.
-In our work, we avoid categorizing the properties of programs as hyperproperties as we do not a different abstract interpretation theory to verify them \sidecite{Cousot2019}. The classical approach \sidecite{Cousot1977} is sufficient. However, observe that the $\defbound$-bounded impact property can be seen as a hyperproperty. Specifically, when applied to the \outcomesname{} quantifier, $\boundedoutcomes$ is a $(k+1)$-hypersafety properties, as they require $k+1$ traces to be disproved, \ie, showing that an impact is greater than $\defbound$. While, when applied to the \rangename{} quantifier, $\boundedrange$ is a 2-hypersafety property, as it requires 2 traces to be disproved, \ie, only two traces holding extreme values for the output variable are sufficient to disprove the property. Finally, the $\boundedqused$ property is a hyperliveness property, thus generally harder to verify than hypersafety properties.
+In our work, we avoid categorizing the properties of programs as hyperproperties as we do not a different abstract interpretation theory to verify them \sidecite{Cousot2019}. The classical approach \sidecite{Cousot1977} is sufficient. However, observe that the $\defbound$-bounded impact property can be seen as a hyperproperty. For instance, when applied to the \rangename{} quantifier, $\boundedrange$ is a 2-hypersafety property, as it requires 2 traces to be disproved, \ie, only two traces holding extreme values for the output variable are sufficient to disprove the property. However, when applied to the \outcomesname{} quantifier, $\boundedoutcomes$ is a $(k+1)$-hypersafety properties, as they require $k+1$ traces to be disproved, \ie, showing that an impact is greater than $\defbound$.
 
 
 \paragraph{Probabilistic Programming.}
@@ -2452,7 +2456,7 @@ Probabilistic programs are a natural fit for quantitative analyses, as they mode
 %
 Recently, the verification of probabilistic programs made significant advancements.
 Martingale theory certificates have been instrumental in automating the proof of quantitative termination and safety in probabilistic programs \sidecite{Chatterjee2017,Chatterjee2022,Takisaka2021,Wang2024}.
-Probabilistic programs have also been studied with cost analyses \sidecite{Chatterjee2024,Wang2021}.
+Probabilistic programs have also been studied with cost analyses \sidecite{Chatterjee2024,Wang2021a}.
 Other approaches involve the weakest pre-expectation calculus \sidecite{Kaminski2016}, a probabilistic extension of the classical weakest precondition calculus. This method, while highly expressive, requires user-provided invariants.
 Symbolic execution techniques have been adapted for probabilistic programs, enabling a detailed exploration of program paths under various stochastic scenarios \sidecite{Sankaranarayanan2013,Beutner2022}.
 In our settings, we assume non-determinism to be uniformly distributed, which is a simplification from probabilistic programs. However, by applying probabilistic semantics \sidecite{Cousot2012a}, we could extend our quantifiers to probabilistic measures, providing statistical bounds on the impact of input variables on the probabilistic program's output.

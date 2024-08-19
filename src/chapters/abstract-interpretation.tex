@@ -498,13 +498,13 @@ When the order $\sqsubseteq$ is not clear from the context, we explicitly write 
   Instead, if we consider another operator, for example the $\textsc{cons}(x) \defeq x + 1$ operator, then there is no fixpoint, as $\textsc{cons}(x) \neq x$ for all $x \in \N$.
 \end{example}
 
-Next, we recall a fundamental theorem of Alfred Tarski \sidecite{Tarsky1955} that characterizes fixpoints of monotonic functions over complete lattices.
+Next, we recall a fundamental theorem of Alfred Tarski \sidecite{Tarski1955} that characterizes fixpoints of monotonic functions over complete lattices.
 
 \begin{theorem}[Tarski's Fixpoint Theorem]\labthm{tarski}
   Let $\langle X, \sqsubseteq, \join, \meet, \bot, \top \rangle$ be a complete lattice and $f \in X \to X$ be a monotonic function. The set of fixpoints $\fixpoints(f)$ is a non-empty complete lattice.
 \end{theorem}
 \begin{proof}
-  See \textcite{Tarsky1955}.
+  See \textcite{Tarski1955}.
 \end{proof}
 \refthm{tarski} guarantees that $f$ has a least fixpoint $\lfp f = \meet \setdef{x \in X}{f(x) \sqsubseteq x}$ and a greatest fixpoint $\gfp f = \join \setdef{x \in X}{x \sqsubseteq f(x)}$ as $fixpoints(f)$ is a non-empty complete lattice.
 
