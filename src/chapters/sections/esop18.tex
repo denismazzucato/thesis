@@ -973,7 +973,7 @@ In this section, we state the \emph{unused property} as a property of programs.
 Whenever a program does not use the input variables $\definputvariables$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
 \marginnote{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
 \siderefbox{def}{abstract-unused}
-\begin{definition}[Unused Property]\labdef{unused}
+\begin{definition}[\unusedwrappername Property]\labdef{unused}
   Given a program $\defprogram$, and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
   \begin{align*}
     \unused\DefeQ&
