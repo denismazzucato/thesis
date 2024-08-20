@@ -8,17 +8,20 @@
 \chapter{Quantitative Static Timing Analysis}
 \labch{quantitative-static-timing-analysis}
 
+
+\marginemptybox{6.5cm}
+
 This chapter presents a static analysis for quantifying the impact of input variables on the number of iterations of a program.
 The analysis employs a semantic global loop bound analysis to derive an over-approximation of the impact quantity.
 First, we introduce the maximal trace semantics augmented with a global loop counter to model the number of iterations of all the loops of a program.
 Then, we show an abstract global loop bound analysis, followed by the impact quantification, which is employed to verify the corresponding $\defbound$-impact property.
-This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\cite{Mazzucato2024c}.
+This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\sidecite{Mazzucato2024c}.
 \refch{sas24-eval} will discuss some implementation details and optimizations, as well as the evaluation of the analysis presented on this chapter.
 
 
 \frenchdiv
 
-\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse utilise une analyse sémantique des bornes globales des boucles pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur global de boucles pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous montrons une analyse abstraite des bornes globales des boucles, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact correspondante $\defbound$. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\sidecite{Mazzucato2024c}. \refch{sas24-eval} discutera de certains détails de mise en œuvre et optimisations, ainsi que de l'évaluation de l'analyse présentée dans ce chapitre.}
+\emph{Ce chapitre présente une analyse statique pour quantifier l'impact des variables d'entrée sur le nombre d'itérations d'un programme. L'analyse utilise une analyse sémantique des bornes globales des boucles pour dériver une sur-approximation de la quantité d'impact. Tout d'abord, nous introduisons la sémantique de trace maximale augmentée d'un compteur global de boucles pour modéliser le nombre d'itérations de toutes les boucles d'un programme. Ensuite, nous montrons une analyse abstraite des bornes globales des boucles, suivie de la quantification de l'impact, qui est utilisée pour vérifier la propriété d'impact correspondante $\defbound$. Ce chapitre est basé sur le travail présenté au 31ème Symposium sur l'Analyse Statique (SAS 2024)~\cite{Mazzucato2024c}. \refch{sas24-eval} discutera de certains détails de mise en œuvre et optimisations, ainsi que de l'évaluation de l'analyse présentée dans ce chapitre.}
 
 
 
@@ -298,11 +301,11 @@ We retrieve the collecting semantics $\countercollectingsemanticsnoparam \defeq 
 Regarding \refexample{add}, the left and right columns of \reftab{add-trace} contain, in fact, the input-output dependencies with the additional variable for the global loop counter $\counter$.
 
 
-Next, we show that the dependency semantics $\dependencysemanticsnoparam$ is sound and complete for validating $\boundedrange$.
+Next, we show that the dependency semantics $\counterdependencysemanticsnoparam$ is sound and complete for validating $\boundedrange$.
 \siderefbox{def}{dependency-semantics}
 \begin{lemma}\lablemma{counter-range-validation}
   \begin{align*}
-    \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \dependencysemantics \subseteq \dependencyabstraction(\BOUNDEDRANGE)
+    \countercollectingsemantics \subseteq \BOUNDEDRANGE \IfF \counterdependencysemantics \subseteq \dependencyabstraction(\BOUNDEDRANGE)
   \end{align*}
 \end{lemma}
 \begin{proof}
@@ -355,33 +358,33 @@ The two adjoints $\tuple{\backwardreachabilityabstraction}{\backwardreachability
   Hence, by monotonicity of $\backwardreachabilityabstraction$, we obtain $\backwardreachabilityabstraction(\defsetofsetofdependencies)\subseteq \backwardreachabilityabstraction(\backwardreachabilityconcretization(\defsetofsetofstates)) = \defsetofsetofstates$.
 \end{proof}
 
-We now derive the \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam$ as an abstraction of the dependency semantics.
+We now derive the \emph{backward co-reachability semantics} $\counterbackwardreachabilitysemanticsnoparam$ as an abstraction of the dependency semantics.
 
 \begin{definition}[Backward Co-Reachability Semantics]\labdef{backwardreachability-semantics}
-  The \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
+  The \emph{backward co-reachability semantics} $\counterbackwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
   \begin{align*}
-    \backwardreachabilitysemanticsnoparam\DefeQ \backwardreachabilityabstraction(\dependencysemanticsnoparam)
+    \counterbackwardreachabilitysemanticsnoparam\DefeQ \backwardreachabilityabstraction(\counterdependencysemanticsnoparam)
     % \spacearound{=}& \backwardreachabilityabstraction(\{\spacearound{\tracesemanticsnoparam}\}) \\
     % \spacearound{=}& \setdef{\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\defsetoftraces}}{\defsetoftraces\in\{\spacearound{\tracesemanticsnoparam}\}} \\
     \spacearound{=} \{\spacearound{\setdef{\retrieveinput{\deftrace}}{\deftrace \in \countertracesemanticsnoparam}}\}
   \end{align*}
 \end{definition}
 
-The next result shows that the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam$ allows a sound and complete verification of $\boundedrange$.
+The next result shows that the backward co-reachability semantics $\counterbackwardreachabilitysemanticsnoparam$ allows a sound and complete verification of $\boundedrange$.
 
 \begin{lemma}\lablemma{backwardreachability-validation}
 \begin{align*}
-  \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \backwardreachabilitysemantics \subseteq \backwardreachabilityabstraction(\dependencyabstraction(\BOUNDEDRANGE))
+  \countercollectingsemantics \subseteq \BOUNDEDRANGE \IfF \counterbackwardreachabilitysemantics \subseteq \backwardreachabilityabstraction(\dependencyabstraction(\BOUNDEDRANGE))
 \end{align*}
 \end{lemma}
 \begin{proof}
-  The implication $(\implies)$ follows from the monotonicity of $\backwardreachabilityabstraction$, as an implication from the fact that the two adjoints $\tuple\backwardreachabilityabstraction\backwardreachabilityconcretization$ form a Galois connection (\cf{} \refthm{collecting-backwardreachability-galois-connection}), and \refdef{backwardreachability-semantics} of $\backwardreachabilitysemanticsnoparam$.
+  The implication $(\implies)$ follows from the monotonicity of $\backwardreachabilityabstraction$, as an implication from the fact that the two adjoints $\tuple\backwardreachabilityabstraction\backwardreachabilityconcretization$ form a Galois connection (\cf{} \refthm{collecting-backwardreachability-galois-connection}), and \refdef{backwardreachability-semantics} of $\counterbackwardreachabilitysemanticsnoparam$.
   Obtaining
   $
-    \collectingsemanticsnoparam \subseteq \unused \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \backwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused)
+    \collectingsemanticsnoparam \subseteq \unused \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \counterbackwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused)
   $.
 %
-  Regarding the other implication $(\Leftarrow)$, from \refdef{backwardreachability-semantics} of $\backwardreachabilitysemanticsnoparam$ and the property of \refthm{collecting-backwardreachability-galois-connection}, we obtain $\backwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused) \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \collectingsemanticsnoparam \subseteq \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$, which can be written as $\tracesemanticsnoparam \in \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$ by the definition of $\collectingsemanticsnoparam$.
+  Regarding the other implication $(\Leftarrow)$, from \refdef{backwardreachability-semantics} of $\counterbackwardreachabilitysemanticsnoparam$ and the property of \refthm{collecting-backwardreachability-galois-connection}, we obtain $\counterbackwardreachabilitysemanticsnoparam \subseteq \backwardreachabilityabstraction(\unused) \implies \backwardreachabilityabstraction(\collectingsemanticsnoparam) \subseteq \backwardreachabilityabstraction(\unused)\implies \collectingsemanticsnoparam \subseteq \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$, which can be written as $\tracesemanticsnoparam \in \backwardreachabilityconcretization(\backwardreachabilityabstraction(\unused))$ by the definition of $\collectingsemanticsnoparam$.
   By \refdef{right-left-adjoints-for-the-backwardreachability-semantics} of $\backwardreachabilityconcretization$ it follows that $\setdef{\inputoutputtuple{\deftrace}}{\deftrace\in\tracesemanticsnoparam}\in\backwardreachabilityabstraction(\unused)$.
   Finally, by application of \refdef{right-left-adjoints-for-the-backwardreachability-semantics} of $\backwardreachabilityabstraction$ we obtain $\tracesemanticsnoparam\in\unused$.
   The conclusion $\collectingsemanticsnoparam \subseteq \unused$ trivially follows from the definition of the subset inclusion $(\subseteq)$.
@@ -446,7 +449,7 @@ Its goal is to preserve the relations between input values and the global loop c
 % Nevertheless, these additional dependencies are irrelevant for the quantification of the impact.
 Formally:
 \begin{align}
-  \labeq{backward-concretization}
+  \labeq{counter-backward-concretization}
   \backwardconcretization(\counterbackwardsemantics) \DefeQ \setof{\abstractdomainconcretization(\counterbackwardsemantics)}
 \end{align}
 The concretization $\backwardconcretization$ restores all possible input states that satisfy the relations between the input variables and the global loop counter $\counter$.
@@ -459,11 +462,11 @@ The concretization $\backwardconcretization$ restores all possible input states 
 % To some extent, $\counter=0$ could be seen as a single output bucket, which intuitively is compatible and covers all the possible output states.
 %
 % The soundness of the abstract semantics is adjusted accordingly, to handle the absence of the output buckets.
-For the backward semantics $\counterbackwardsemanticsnoparam$ to be sound, we require the concretization $\backwardconcretization$ to over-approximate the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam$.
+For the backward semantics $\counterbackwardsemanticsnoparam$ to be sound, we require the concretization $\backwardconcretization$ to over-approximate the backward co-reachability semantics $\counterbackwardreachabilitysemanticsnoparam$.
 Formally, for all programs $\defprogram$, it should hold that:
 \begin{equation}
   \labeq{sound-abstract-dependency-semantics}
-  \backwardreachabilitysemantics\SubseteQ\backwardconcretization(\counterbackwardsemantics)
+  \counterbackwardreachabilitysemantics\SubseteQ\backwardconcretization(\counterbackwardsemantics)
 \end{equation}
 %
 The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\boundedrange$.
@@ -518,18 +521,19 @@ The following result states the soundness of the backward semantics defined in \
 %
 
 \begin{lemma}[Soundness of $\counterbackwardsemanticsnoparam$]\lablemma{candidate-backward}
-  For all programs $\defprogram$, the semantics $\counterbackwardsemantics\in\counterbackwardtype$ defined in~\reffig{backward-semantics} is a \textup{sound over-approximation} of the backward co-reachability semantics $\backwardreachabilitysemantics$:
+  For all programs $\defprogram$, the semantics $\counterbackwardsemantics\in\counterbackwardtype$ defined in~\reffig{backward-semantics} is a \textup{sound over-approximation} of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$:
   \begin{equation*}
-    \backwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)
+    \counterbackwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)
   \end{equation*}
 \end{lemma}
 \begin{proof}[Proof]
-  We prove by induction on the syntax of the program that the global loop bound semantics $\counterbackwardsemantics$, \cf{} \reffig{backward-semantics}, is a sound over-approximation of the backward co-reachability semantics $\backwardreachabilitysemantics$, \cf{} \refdef*{backwardreachability-semantics}. Regarding the base cases, we have:
+  We prove by induction on the syntax of the program that the global loop bound semantics $\counterbackwardsemantics$, \cf{} \reffig{backward-semantics}, is a sound over-approximation of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$, \cf{} \refdef*{backwardreachability-semantics}. Regarding the base cases, we have:
   % \begin{figure*}
+  \siderefbox{def}{counter-semantics}
   \begin{align*}
     &(\skipstmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\skipstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\skipstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\skipstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
     &\quad
@@ -541,7 +545,7 @@ The following result states the soundness of the backward semantics defined in \
     &\quad
       =\{\setdef{\defstate}{\defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by set definition} \\
     &\quad
-      =\{\abstractdomainconcretization(\defabstractvalue)\} && \tag{by \refeqshort{backward-concretization}} \\
+      =\{\abstractdomainconcretization(\defabstractvalue)\} && \tag{by \refeqshort{counter-backward-concretization}} \\
     &\quad
       \subseteq \setof{\abstractdomainconcretization(\defabstractvalue)} && \tag{by \refeqshort{sound-abstract-dependency-semantics}} \\
     &\quad
@@ -555,7 +559,7 @@ The following result states the soundness of the backward semantics defined in \
   \begin{align*}
     &(\assignstmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\assignstmt} \abstractdomainconcretization(\defabstractvalue) \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\assignstmt} \abstractdomainconcretization(\defabstractvalue) \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\assignstmt} \abstractdomainconcretization(\defabstractvalue)}\} \tag{by \refdefshort{counter-semantics}} \\
     &\quad
@@ -573,10 +577,14 @@ The following result states the soundness of the backward semantics defined in \
   \end{align*}
 % \end{figure*}
 % \begin{figure*}
+\siderefbox{eq}{counter-backward-concretization}
+\siderefbox{eq}{sound-abstract-dependency-semantics}
+\siderefbox{def}{backwardreachability-semantics}
+\siderefbox{def}{counter-semantics}
   \begin{align*}
     &(\assertstmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
     &\quad
@@ -597,7 +605,7 @@ The following result states the soundness of the backward semantics defined in \
   \begin{align*}
   &(\progstmt) \\
   &\quad
-    \backwardreachabilitysemanticsnoparam \semanticsof{\progstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    \counterbackwardreachabilitysemanticsnoparam \semanticsof{\progstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
   &\quad
     =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\progstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
   &\quad
@@ -613,12 +621,12 @@ The following result states the soundness of the backward semantics defined in \
   \end{align*}
 
 \begin{samepage}
-  Regarding the inductive cases, we assume the following inductive hypothesis: $\backwardreachabilitysemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \subseteq \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)$.
-  Note that, the inductive hypothesis implies that $\countertracesemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \in \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)}$ by \refdef{backwardreachability-semantics} and \refeq{backward-concretization}. Therefore, we have:
+  Regarding the inductive cases, we assume the following inductive hypothesis: $\counterbackwardreachabilitysemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \subseteq \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)$.
+  Note that, the inductive hypothesis implies that $\countertracesemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \in \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)}$ by \refdef{backwardreachability-semantics} and \refeq{counter-backward-concretization}. Therefore, we have:
   \begin{align*}
     &(\compstmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\compstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\compstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\compstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
     &\quad
@@ -630,19 +638,23 @@ The following result states the soundness of the backward semantics defined in \
     &\quad
       \subseteq\setof{\setdef{\defstate}{\defstate\in \abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by set definition} \\
     &\quad
-      = \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue))} && \tag{by \refeqshort{backward-concretization}} \\
+      = \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue))} && \tag{by \refeqshort{counter-backward-concretization}} \\
     &\quad
       = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)) && \tag{by \reffigshort{backward-semantics}} \\
     &\quad
       = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\compstmt} \defabstractvalue)
   \end{align*}
 \end{samepage}
+\siderefbox{eq}{counter-backward-concretization}
+\siderefbox{eq}{sound-abstract-dependency-semantics}
+\siderefbox{def}{backwardreachability-semantics}
+\siderefbox{def}{counter-semantics}
 % \end{figure*}
 % \begin{figure*}
   \begin{align*}
     &(\ifstmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
     &\quad
@@ -662,7 +674,7 @@ The following result states the soundness of the backward semantics defined in \
       \abstractdomainconcretization(\abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) } && \tag{by $\abstractdomainjoin$} \\
     &\quad
       \subseteq\setof*{ \abstractdomainconcretization \left(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \spacearound\abstractdomainjoin
-      \abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \right)} && \tag{by \refeqshort{backward-concretization}} \\
+      \abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \right)} && \tag{by \refeqshort{counter-backward-concretization}} \\
     &\quad
       = \backwardconcretization(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \spacearound\abstractdomainjoin
       \abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) && \tag{by \reffigshort{backward-semantics}} \\
@@ -672,7 +684,7 @@ The following result states the soundness of the backward semantics defined in \
   \begin{align*}
     &(\whilestmt) \\
     &\quad
-      \backwardreachabilitysemanticsnoparam \semanticsof{\whilestmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\whilestmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
     &\quad
       =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\whilestmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
       &\quad
@@ -682,13 +694,13 @@ The following result states the soundness of the backward semantics defined in \
     &\quad
       =\setof{\setdef{\defstate}{\defstate\in\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)}} && \tag{by set definition} \\
     &\quad
-      =\setof{\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)} && \tag{by \refeqshort{backward-concretization}} \\
+      =\setof{\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)} && \tag{by \refeqshort{counter-backward-concretization}} \\
     &\quad
       =\backwardconcretization(\lim_{n} \abstractdomainfixpoint_n) && \tag{by \reffigshort{backward-semantics}} \\
     &\quad
       =\backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\whilestmt} \defabstractvalue)
   \end{align*}
-  As a consequence, the backward semantics $\counterbackwardsemantics$ is a sound over-approximation of the backward co-reachability semantics $\backwardreachabilitysemantics$, \ie, $\backwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)$.
+  As a consequence, the backward semantics $\counterbackwardsemantics$ is a sound over-approximation of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$, \ie, $\counterbackwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)$.
 \end{proof}
 
 % &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
@@ -736,13 +748,13 @@ We employ the $\rangename$ impact quantifier, instrumented with $\counter$ as ou
     (\texttt{p} = \counter)
   \]
   % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  Then, from \refdef*{concretization-of-conjunctions-of-linear-constraints}, the concretization of the abstract element $\texttt{p} = \counter$ is:
+  Then, from \refdef*{concretization-of-conjunctions-of-linear-constraints}[*-15], the concretization of the abstract element $\texttt{p} = \counter$ is:
   \begin{align*}
     \abstractdomainconcretization(\texttt{p} = \counter) \spacearound= \setdef{\langle p, m, n, p\rangle}{p, m, n\in\values}
 \end{align*}
 where $\langle p, m, n, p\rangle$ is the concrete state in which the input variable \texttt{p} (first $p$ in the tuple) is equal to the loop counter $\counter$ (last $p$ in the tuple).
-The goal of the concretization $\backwardconcretization$ is to over-approximate the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam\semanticsof\add$.
-By concretizing any subset of $\abstractdomainconcretization(\texttt{p} = \counter)$ we obtain all the possible input states such that the input variable \texttt{p} is equal to the value of the global loop counter $\counter$, including the backward co-reachability semantics $\backwardreachabilitysemanticsnoparam\semanticsof\add$.
+The goal of the concretization $\backwardconcretization$ is to over-approximate the backward co-reachability semantics $\counterbackwardreachabilitysemanticsnoparam\semanticsof\add$.
+By concretizing any subset of $\abstractdomainconcretization(\texttt{p} = \counter)$ we obtain all the possible input states such that the input variable \texttt{p} is equal to the value of the global loop counter $\counter$, including the backward co-reachability semantics $\counterbackwardreachabilitysemanticsnoparam\semanticsof\add$.
 \end{example}
 
 
@@ -959,8 +971,6 @@ Next, we show \nrefthm{soundness} instantiated with the abstract implementation 
 \begin{proof}
   \reflemma{counterrange-is-sound} shows that $\counterrange$ is a sound implementation of $\range$, the proof follows directly by application of the \refthm*{soundness} instantiated with the abstract implementation $\counterrange$ and comparison operator $\le$.
 \end{proof}
-
-\marginnote{\denis{Check double references on the side}}
 
 \section{Related Work}
 \labsec{sas24-related-work}

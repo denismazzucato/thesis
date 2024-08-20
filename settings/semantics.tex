@@ -54,6 +54,9 @@
 \newsemantics{backwardreachability}
 \renewcommand*{\backwardreachabilitysubseteq}{\subseteq}
 
+\newcommand*{\counterbackwardreachabilitysemanticsnoparam}{\resize{\semanticsletter}{\counter}[\backwardreachabilitysym]}
+\newcommand*{\counterbackwardreachabilitysemantics}{\counterbackwardreachabilitysemanticsnoparam \semanticsof\defprogram}
+
 %% output
 \newcommand*{\outputobs}{\aniobserver}
 \newcommand*{\outputsym}{\aniobserver}

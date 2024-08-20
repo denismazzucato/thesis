@@ -1,0 +1,35 @@
+\resizebox{\textwidth}{!}{
+  \begin{minipage}{\textwidth}
+\begin{align*}
+  % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
+  &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ \\
+  &\quad \setdef{\concat{\defstate \defstate}{\deftrace}}{\defstate \in \state \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ \\
+  % \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
+  &\quad \setdef*{\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \\ {} \land \deftrace\in \finiteoremptyinfinitesequences \\ {} \land \concat{\updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace} \in \defsetoftraces}
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\assertstmt}\defsetoftraces \DefeQ \\
+  % \bexpsemantics\defsetoftraces
+  &\quad \setdef*{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \\ \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  \\
+  &\quad
+  % \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces)
+  % \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  \setdef*{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \\ {} \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
+  &\quad \setdef*{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \\ {} \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces}
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
+  \lfp{}\fixpointfunction
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  \\
+  &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ \\
+  % \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0})
+  &\quad \countertracesemanticsnoparam \semanticsof{\defstmt}\setdef*{\concat{\updatemem{\defstate}{\counter}{0}}{\deftrace}}{\defstate \in \state \\ {} \land \deftrace \in \finiteoremptyinfinitesequences \\ {} \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+\end{align*}
+\end{minipage}
+}
