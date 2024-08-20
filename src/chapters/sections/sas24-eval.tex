@@ -165,7 +165,7 @@ The \bignum{} library is free of timing side-channels, whenever for any program 
 \begin{table}[p]
   \rowcolors{3}{white}{\customrowcolor}
   \centering
-  \caption{Input composition of the \bignum{} library. The variables \textsc{Safe} $\nominalvariables$ are \seabornGreen{highlighted in green}, while the variables \textsc{Numerical} $\numericalvariables$ \seabornRed{in red}. No numerical variable should be \textsc{Maybe Dangerous}.}
+  \caption{Input composition of the \bignum{} library. The variables \textsc{Safe} $\nominalvariables$ are \green{highlighted in green}, while the variables \textsc{Numerical} $\numericalvariables$ \red{in red}. No numerical variable should be \textsc{Maybe Dangerous}.}
   \labtab{bignum-inputs}
   \renewcommand{\arraystretch}{1}
   \begin{adjustbox}{max width=\textwidth}
@@ -173,78 +173,78 @@ The \bignum{} library is free of timing side-channels, whenever for any program 
     \multirow{2}{*}{\textsc{Program}}  & \multicolumn{2}{c||}{\textsc{Input Variables} $\inputspace$} & \textsc{Maybe} & \textsc{Zero} \\
     & \spacearound{\textsc{Safe} $\nominalvariables$} & \spacearound{\textsc{Numerical} $\numericalvariables$} & \spacearound{\textsc{Dangerous}} & \spacearound{\textsc{Impact}} \\[2pt]
     \hline\hline
-    \texttt{Add} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ & $ \seabornGreen{s_1}$ & $ \seabornGreen{s_3}, \seabornGreen{s_5},  \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ \\
-    \texttt{Amontifier} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Amontmul} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Amontredc} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_6}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_6}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Amontsqr} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Bitfield} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Bitsize} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Cdiv} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Cdiv\_exact} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornGreen{s_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Cld} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Clz} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Cmadd} & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ \\
-    \texttt{Cmnegadd} & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ \\
-    \texttt{Cmod} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Cmul} & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_4}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_5}$ \\
-    \texttt{Coprime} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Copy} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Copy\_row\_from\_table} & $ \seabornGreen{s_3}, \seabornGreen{s_4}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_5}$ & $ \seabornGreen{s_3}, \seabornGreen{s_4}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_5}$ \\
-    \texttt{Copy\_row\_from\_table\_16\_neon} & $ \seabornGreen{s_3}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_3}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Copy\_row\_from\_table\_32\_neon} & $ \seabornGreen{s_3}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_3}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Copy\_row\_from\_table\_8n\_neon} & $ \seabornGreen{s_3}, \seabornGreen{s_4}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_5}$ & $ \seabornGreen{s_3}, \seabornGreen{s_4}$ & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_5}$ \\
-    \texttt{Ctd} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Ctz} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Demont} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Digit} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Digitsize} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Divmod10} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Emontredc} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Eq} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Even} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ $ & $ \seabornGreen{s_1}, \seabornRed{n_2}$ \\
-    \texttt{Ge} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Gt} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Iszero} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Le} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Lt} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Madd} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ \\
-    \texttt{Modadd} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Moddouble} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Modifier} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Modinv} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Modoptneg} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Modsub} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Montifier} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Montmul} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Montredc} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_6}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_6}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Montsqr} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Mul} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ \\
-    \texttt{Muladd10} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Mux} & $ \seabornGreen{s_2}$ & $ \seabornRed{n_1}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_2}$ & $ \seabornRed{n_1}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Mux16} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Negmodinv} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Nonzero} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Normalize} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ \\
-    \texttt{Odd} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}$ & $ $ & $ \seabornGreen{s_1}, \seabornRed{n_2}$ \\
-    \texttt{Of\_word} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Optadd} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Optneg} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Optsub} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Optsubadd} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Pow2} & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ & $ \seabornGreen{s_1}$ & $ \seabornRed{n_2}, \seabornRed{n_3}$ \\
-    \texttt{Shl\_small} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Shr\_small} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ & $ \seabornGreen{s_1}$ & $ \seabornGreen{s_3}, \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_5}$ \\
-    \texttt{Sqr} & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ & $ \seabornGreen{s_1}, \seabornGreen{s_3}$ & $ \seabornRed{n_2}, \seabornRed{n_4}$ \\
-    \texttt{Sub} & $ \seabornGreen{s_1}, \seabornGreen{s_3}, \seabornGreen{s_5}$ & $ \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ & $ \seabornGreen{s_1}$ & $ \seabornGreen{s_3}, \seabornGreen{s_5}, \seabornRed{n_2}, \seabornRed{n_4}, \seabornRed{n_6}$ \\
-    \texttt{Word\_bytereverse} & & $ \seabornRed{n_1}$ & & $ \seabornRed{n_1}$ \\
-    \texttt{Word\_clz} & & $ \seabornRed{n_1}$ & & $ \seabornRed{n_1}$ \\
-    \texttt{Word\_ctz} & & $ \seabornRed{n_1}$ & & $ \seabornRed{n_1}$ \\
-    \texttt{Word\_divstep59} & & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ & & $ \seabornRed{n_1}, \seabornRed{n_2}, \seabornRed{n_3}, \seabornRed{n_4}$ \\
-    \texttt{Word\_max} & & $ \seabornRed{n_1}, \seabornRed{n_2}$ & & $ \seabornRed{n_1}, \seabornRed{n_2}$ \\
-    \texttt{Word\_min} & & $ \seabornRed{n_1}, \seabornRed{n_2}$ & & $ \seabornRed{n_1}, \seabornRed{n_2}$ \\
-    \texttt{Word\_negmodinv} & & $ \seabornRed{n_1}$ & & $ \seabornRed{n_1}$ \\
-    \texttt{Word\_recip} & & $ \seabornRed{n_1}$ & & $ \seabornRed{n_1}$ \\
+    \texttt{Add} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}$ & $ \green{s_3}, \green{s_5},  \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Amontifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Amontmul} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Amontredc} & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Amontsqr} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Bitfield} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Bitsize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Cdiv} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Cdiv\_exact} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \green{s_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Cld} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Clz} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Cmadd} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Cmnegadd} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Cmod} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Cmul} & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ & $ \green{s_1}, \green{s_4}$ & $ \red{n_2}, \red{n_3}, \red{n_5}$ \\
+    \texttt{Coprime} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Copy} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table} & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ \\
+    \texttt{Copy\_row\_from\_table\_16\_neon} & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table\_32\_neon} & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ & $ \green{s_3}$ & $ \red{n_1}, \red{n_2}, \red{n_4}$ \\
+    \texttt{Copy\_row\_from\_table\_8n\_neon} & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ & $ \green{s_3}, \green{s_4}$ & $ \red{n_1}, \red{n_2}, \red{n_5}$ \\
+    \texttt{Ctd} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Ctz} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Demont} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Digit} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Digitsize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Divmod10} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Emontredc} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Eq} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Even} & $ \green{s_1}$ & $ \red{n_2}$ & $ $ & $ \green{s_1}, \red{n_2}$ \\
+    \texttt{Ge} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Gt} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Iszero} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Le} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Lt} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Madd} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Modadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Moddouble} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Modifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Modinv} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Modoptneg} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Modsub} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montifier} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Montmul} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montredc} & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}, \green{s_6}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Montsqr} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Mul} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Muladd10} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Mux} & $ \green{s_2}$ & $ \red{n_1}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_2}$ & $ \red{n_1}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Mux16} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Negmodinv} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Nonzero} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Normalize} & $ \green{s_1}$ & $ \red{n_2}$ & $ \green{s_1}$ & $ \red{n_2}$ \\
+    \texttt{Odd} & $ \green{s_1}$ & $ \red{n_2}$ & $ $ & $ \green{s_1}, \red{n_2}$ \\
+    \texttt{Of\_word} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Optadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Optneg} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Optsub} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Optsubadd} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Pow2} & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ & $ \green{s_1}$ & $ \red{n_2}, \red{n_3}$ \\
+    \texttt{Shl\_small} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Shr\_small} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}, \red{n_5}$ & $ \green{s_1}$ & $ \green{s_3}, \red{n_2}, \red{n_4}, \red{n_5}$ \\
+    \texttt{Sqr} & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ & $ \green{s_1}, \green{s_3}$ & $ \red{n_2}, \red{n_4}$ \\
+    \texttt{Sub} & $ \green{s_1}, \green{s_3}, \green{s_5}$ & $ \red{n_2}, \red{n_4}, \red{n_6}$ & $ \green{s_1}$ & $ \green{s_3}, \green{s_5}, \red{n_2}, \red{n_4}, \red{n_6}$ \\
+    \texttt{Word\_bytereverse} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_clz} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_ctz} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_divstep59} & & $ \red{n_1}, \red{n_2}, \red{n_3}, \red{n_4}$ & & $ \red{n_1}, \red{n_2}, \red{n_3}, \red{n_4}$ \\
+    \texttt{Word\_max} & & $ \red{n_1}, \red{n_2}$ & & $ \red{n_1}, \red{n_2}$ \\
+    \texttt{Word\_min} & & $ \red{n_1}, \red{n_2}$ & & $ \red{n_1}, \red{n_2}$ \\
+    \texttt{Word\_negmodinv} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
+    \texttt{Word\_recip} & & $ \red{n_1}$ & & $ \red{n_1}$ \\
     \hline \hline & & & & \\
     \rowcolor{white} \textsc{Total Variables:} &  93 &  179 &  85 &  187
     %  & & & & & \\
@@ -269,7 +269,7 @@ The property $\mathscr{B}\scalerel*{\vphantom{}^{{\scaleto{\le}{5pt}0}}_{\definp
 % The quantification of the impact further reduce the number of input variables that influence the global number of iterations to 85 (31\%).
 Overall, we soundly verified that 187 (69\%) of the input variables do not influence the global number of iterations, while 85 (31\%) are maybe dangerous and maybe susceptible to timing side-channel attacks.
 %
-Column \textsc{Safe} $\nominalvariables$ reports the nominal size variables (called \seabornGreen{$s_i$}), column \textsc{Numerical} $\numericalvariables$ reports the numerical variables (called \seabornRed{$n_i$}, where $i$ is the index of the variable as they appear in the function signature).
+Column \textsc{Safe} $\nominalvariables$ reports the nominal size variables (called \green{$s_i$}), column \textsc{Numerical} $\numericalvariables$ reports the numerical variables (called \red{$n_i$}, where $i$ is the index of the variable as they appear in the function signature).
 \reftab{bignum-inputs} shows that no numerical variable is identified as potentially dangerous, indeed $\textsc{Maybe Dangerous} \setmeet \numericalvariables = \emptyset$ in all rows.
 We conclude that the \bignum{} library is \emph{free of timing side-channels}.
 

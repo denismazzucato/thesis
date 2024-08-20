@@ -10,77 +10,79 @@
 \chapter{Conclusion and Future Directions}
 \labch{conclusion}
 
+\section*{Contributions}
+
 
 The aim of this thesis is to develop static analyses based on abstract interpretation to soundly quantify the impact of input data.
-We proposed a formal quantitative framework to reason about the impact of input data, parametrized in the notion of impact quantifier to satisfy different needs.
-The static analyses we developed are \emph{automatic} and \emph{sound}, meaning that they are guaranteed to provide an upper bound on the impact of input data automatically without any user intervention.
-We focused on two main applications: the first one is to quantify the impact of input features on the classification of neural networks, and the second one is to quantify the impact of input data on the execution time of programs.
-Our experiments show evidence that our analyses are effective in practice.
+We proposed a formal quantitative framework to reason about the impact of input data, parametrized by an impact quantifier to meet various needs.
+The static analyses we developed are \emph{automatic} and \emph{sound}, meaning they guarantee an upper (or lower depending on the property comparison operator) bound on the impact of input data without requiring user intervention.
+We applied our approach to two primary areas: quantify the impact of input features on neural network classification task, and assessing the impact of input data on the execution time of programs.
+Our experiments demonstrate the practical effectiveness of these analyses.
 
-\paragraph{Quantitaitve Input Usage.} Our first contribution is the design of a novel quantitative framework to reason about the impact of input data according to a given impact quantifier of interest. We presented three different impact quantifiers: \outcomesname{}, \rangename{}, and \qusedname{}. Each of these quantifiers differently characterizes the impact of the input variables: \outcomesname{} counts the number of different outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values that are \emph{not} used to produce the outcomes.
-We defined a static analysis to automatically compute an upper bound on the impact of input data according to a sound implementation of the impact quantifier of interest. The results are guaranteed to be sound, meaning that the computed quantities are formally guaranteed to be an upper bound on the actual impact of input data.
-A prototype implementation of our framework, called \impatto,\sidenote{\impattourl} initially demonstrated the feasibility of our approach on a set of demonstrative programs.
+\paragraph{Quantitaitve Input Usage.} Our first contribution is the design of a novel quantitative framework to quantify the impact of input data based on a chosen impact quantifier.
+We introduced three different quantifiers: \outcomesname{}, \rangename{}, and \qusedname{}, each providing a unique perspective on the impact of input variables.
+\outcomesname{} counts distinct outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values not used to produce outcomes.
+We developed a static analysis to automatically compute a sound bound on the impact according to an abstract implementation of the given quantifier.
+These results are guaranteed to be sound by abstract interpretation, formally ensuring that the computed bounds are sound \wrt{} the actual impact.
+A prototype implementation, \impatto,\sidenote{\impattourl} demonstrated the feasibility of our approach on a set of sample programs.
 
-\paragraph{Impact of Input Features.} Our second contribution is the application of our quantitative framework in the context of neural networks.
-As we noticed that the \outcomesname{}, \rangename{}, and \qusedname{} quantifiers are unable to capture the impact of input features on the classification of neural networks, we introduced two new impact quantifiers: \changesname{} and \qlibraname{}.
-These quantifiers are specifically designed to tackle the non-linear behavior of the input space of neural networks.
-For the evaluation of our proposed method, we extended two tools: \impatto{} and \libra{}.\sidenote{\libraurl}
-We demonstrated that our two quantifiers are capable of capturing the impact of input features on the classification of neural networks.
-
-\paragraph{Impact on Execution Time.} Our final contribution is the application of our quantitative framework to quantify the impact of input data on the number of iterations of loops in programs. This information can be used to estimate the impact of input variables on the execution time of programs.
-We implemented in a tool called \timesec\sidenote{\timesecurl} a static analysis to automatically compute an upper bound on the impact of input data on the number of iterations of loops in programs.
-Notably, we certified that the \bignum{} library\sidenote{\bignumurl} is free of timing side-channel vulnerabilities.
-To the best of our knowledge, our approach provides strictly stronger guarantees than previous empirical results.
+\paragraph{Impact of Input Features.} Our second contribution extends the quantitative framework to neural networks.
+Recognizing that \outcomesname{}, \rangename{}, and \qusedname{} do not meaningfully capture the impact of input features on neural network classification, we introduced two new quantifiers: \changesname{} and \qlibraname{}. These quantifiers are specifically designed to address the non-linear behavior inherent from the input space of neural networks.
+We evaluated our method by extending two tools, \impatto{} and \libra{}.\sidenote{\libraurl}
+Our experiments confirmed that these quantifiers effectively capture the impact of input features on neural network classifications.
 
 
-\frenchdiv
+\paragraph{Impact on Execution Time.} Our final contribution applies the quantitative framework to discover the impact related to the number of loop iterations in programs, which can estimate the effect of input variables on program execution time. We implemented this analysis in a tool called \timesec,\sidenote{\timesecurl} which automatically computes an upper bound on the impact of input data on loop iterations. Notably, we certified that the \bignum{} library\sidenote{\bignumurl} is free from timing side-channel vulnerabilities, providing stronger guarantees than previous empirical results.
+
+% \frenchdiv
+
+\section*{Future Research Directions}
 
 We conclude with some perspectives on future research directions we would like to study.
 
 \paragraph{Abstract Domains.}
 
-throughout this thesis, we used a multitude of abstract domains to engine our static analyses. For instance, in \refch{quantitative-input-data-usage}, the backward analysis was parametrized by convex numerical abstract domain, such as interval domain~\sidecite{Cousot1978}, octagon domain~\sidecite{Min_e2006a}, or the polyhedra domain~\cite{Cousot1978}. In \refch{quantitative-fairness}, the forward pre-analysis employed the \symbolic{} \cite{Wang2018b}, \deeppoly{} \cite{Singh2019}, and \neurify{} \cite{Wang2018a} abstract domains for neural network analysis. In the future, the development of new relational abstract domains to discover specific non-linear variable relations could drastically improve the analysis precision.
-In fact, it is often improbable to find tight quantification bounds when the abstract domain is not expressive enough to capture the program behavior precisely enough during the abstract analysis.
-
-The development of new abstract domains is a challenging task.
-However, as each impact quantifier is designed to answer a specific question, the development of new abstract domains could be guided by the programs on which the quantifiers are applied.
-By restricting to the programs of interest, the abstract domain could be tailored to capture the specific behavior of that set of programs.
-The quantification of the impact would automatically benefit from the increased precision of the abstract domain.
+Throughout this thesis, we utilized various abstract domains to drive our static analyses.
+For instance, in \nrefch{quantitative-input-data-usage}, the backward analysis was parameterized by convex numerical abstract domains such as the interval domain~\sidecite{Cousot1978}, the octagon domain~\sidecite{Min_e2006a}, and the polyhedra domain~\cite{Cousot1978}.
+In \nrefch{quantitative-fairness}, the forward pre-analysis employed the \symbolic{} \cite{Wang2018b}, \deeppoly{} \cite{Singh2019}, and \neurify{} \cite{Wang2018a} abstract domains for neural network analysis.
+Future work could involve developing new \emph{relational} abstract domains to capture non-linear variable relations more precisely, thereby improving analysis accuracy.
+At the current stage, the quantification of the impact heavily relies on the precision of the abstract analysis.
+To achieve a tight quantification, we noticed that we need strong invariants on a small subset of variables, \cf{} \refch{sas24-eval}.
+Tailoring abstract domains to specific program behaviors could enhance the precision of the impact quantification.
 
 \paragraph{Non-Termination and Non-Determinism.}
-
-An interesting direction for future work is to extend our approach to address non-termination and non-determinism.
-A possible solution to integrate non-termination in the quantitative framework would be to run a termination analysis \sidecite{Chatterjee2021,Gonnord2015,Urban2015b}, alongside the backward analysis, to add -- as an output value -- the potential non-termination state.
-With such information, we could refine our quantitative analysis to discover termination-aware impact quantities.
+Extending our approach to handle non-termination and non-determinism presents an interesting research direction.
+A potential solution could involve integrating termination analysis~\sidecite{Chatterjee2021,Gonnord2015,Urban2015b} with backward analysis to account for potential non-termination states, refining our quantitative analysis with termination-aware impact quantities.
 Indeed, by knowing that some executions do not terminate after a certain loop could improve the precision of the quantitative bound as we avoid considering all the successive iterations as potential executions.
-
-To address non-determinism we could consider the sequence of all possible non-deterministic choices as a parameter of the semantics~\sidecite{Cousot2012a,Parolini2024}.
-On an orthogonal direction, the development of quantiative properties that natively handle non-determinism at the property reasoning level could raise the need of ad-hoc semantics. For instance, the unused property (\cf{} \refdef*{unused-predicate}) and the $\defbound$-bounded impact property \wrt{} the \qusedname{} quantifier (\cf{} \refdef*{qused}) handle natively the non-determinism and do not require any specific semantics.
+To address non-determinism, we could consider the sequence of all possible non-deterministic choices as a parameter in the semantics~\sidecite{Cousot2012a,Parolini2024}.
+In such way, the non-deterministic behavior of the program could be determinized with an oracle that provides the sequence of choices during an execution.
+On an orthogonal direction, the development of quantitative properties that natively handle non-determinism at the property reasoning level could erase the need of ad-hoc semantics.
+For instance, the unused property (\cf{} \refdef*{unused-predicate}) and the $\defbound$-bounded impact property \wrt{} the \qusedname
+quantifier (\cf{} \refdef*{qused}) handle natively the non-determinism and do not require any specific semantics.
 
 \paragraph{Data Science Code.}
 
-A broader comparison of our quantitative input data usage with close related properties, such as quantitative data leakage, could resort in interesting discoveries.
-Exploring this direction in the future would involve addressing further verification challenges posed by data science code \sidecite{Negrini2023,Subotic2022b,Drobnjakovic2024}. Especially, by the dynamic nature of code notebooks, which makes them susceptible to programming errors that are less common in other development environments. Notebooks allow users to execute code out of order or modify variables on the fly, leading to errors and inconsistencies in the analysis process. Such issues can have significant consequences, particularly in fields where data-driven decisions play a crucial role.
-
-Furthermore, data science notebooks heavily rely on external libraries like NumPy or pandas for dataset analysis and manipulation. Quantifying the impact of programs utilizing these libraries is a major challenge due to their complex and low-level implementations. Although the source code is usually available, analyzing it is a demanding task and often impractical. Therefore, employing custom abstractions of these libraries can facilitate verification by abstracting unnecessary details and focusing on the high-level logic of the libraries.
+A broader comparison of our quantitative input data usage with related properties, such as quantitative data leakage, could yield valuable insights.
+Addressing verification challenges posed by data science code, particularly dynamic code notebooks, could also be an interesting verification direction \sidecite{Negrini2023,Drobnjakovic2024,Subotic2022b}.
+Especially, by the dynamic nature of code notebooks, which makes them susceptible to programming errors that are less common in other development environments.
+Notebooks allow users to execute code out of order or modify variables on the fly, leading to errors and inconsistencies in the analysis process.
+Such issues can have significant consequences, particularly in fields where data-driven decisions play a crucial role.
+Furthermore, data science notebooks heavily rely on external libraries like \textsc{NumPy} or \textsc{pandas} for dataset analysis and manipulation.
+Quantifying the impact of programs utilizing these libraries is a major challenge due to their complex and low-level implementations.
+Although the source code is usually available, analyzing it is a demanding task and often impractical.
+Therefore, employing custom abstractions of these libraries can facilitate verification by abstracting unnecessary details and focusing on the high-level logic of the libraries.
 
 \paragraph{Neural Network Verification.}
 
-It remains for future work to implement support for other activation functions than \relu s. It would also be straightforward to adapt \libra{} to support other fairness notions such as individual fairness \sidecite{Dwork2012}.
-%
-Moreover, we plan to design and equip \libra{} with a smarter reduced product between domains, able to also exchange symbolic bounds along with the concrete bounds.
-%
-Finally, we intend to extend our approach to other machine learning models, such as support vector machines \sidecite{Cristianini2010} or decision tree ensembles \sidecite{Breiman2001,Friedman2001}.
+Future work could involve supporting additional activation functions beyond \relu{} and adapting the quantifiers of \libra{} to accommodate other fairness notions, such as individual fairness~\sidecite{Dwork2012}.
+Additionally, equipping \libra{} with a smarter reduced product between domains, capable of exchanging symbolic and concrete bounds, would be beneficial.
+Extending our approach to other machine learning models, such as support vector machines~\sidecite{Cristianini2010} or decision tree ensembles~\sidecite{Breiman2001,Friedman2001}, is also a promising direction.
 
 
 \paragraph{Quantitative Properties.}
 
-Another promising direction is the exploration of new impact definitions for cyber-physical systems~\sidecite{Kwiatkowska2016}.
-It could also be interesting to exploit an impact definition to analyze the impact of abstract domains in static program analyzers, \eg, by using pre-metrics as defined in~\sidecite{Campion2022,Campion2023}.
+Exploring new impact definitions for cyber-physical systems~\sidecite{Kwiatkowska2016} represents another promising research direction. Additionally, analyzing the impact of abstract domains in static program analyzers using pre-metrics, as defined in~\sidecite{Campion2022,Campion2023}, could be valuable.
 
 \paragraph{Post-\textsc{Spectre} Era.}
 
-As discussed in \refch{quantitative-static-timing-analysis}, certifying that some sensitive input variables do not impact the execution time can prevent timing side-channel attacks.
-This implication may not be true anymore in the post-\textsc{Spectre} attack era \sidecite{Kocher2018,Lipp2020}.
-Microarchitectural features, as out-of-order and speculative execution, make constant-time programs still vulnerable to timing side-channel attacks \sidecite{Cauligi2020}.
-By incorporating microarchitectural features in the analysis of timing side-channel attacks, as done by \sidecite{Guarnieri2020,Bard2024}, our approach could be extended to consider the impact of input variables also in the presence of out-of-order and speculative execution.
+As discussed in \refch{quantitative-static-timing-analysis}, certifying that some sensitive input variables do not affect execution time is crucial to prevent timing side-channel attacks. However, this may no longer hold in the post-\textsc{Spectre} attack era~\sidecite{Kocher2018,Lipp2020}. Microarchitectural features, such as out-of-order and speculative execution, render constant-time programs vulnerable to timing side-channel attacks~\sidecite{Cauligi2020}. Incorporating these features into our analysis, as done by~\sidecite{Guarnieri2020,Bard2024}, could extend our approach to soundly quantify the impact of input variables even in the presence of out-of-order and speculative execution.
