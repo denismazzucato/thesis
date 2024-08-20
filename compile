@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-% printing tools versions
 echo "pdflatex version:"
 pdflatex --version
 echo "biber version:"
