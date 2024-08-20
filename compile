@@ -11,8 +11,8 @@ PACKAGES=settings/packages.tex
 # PSL_TEMPLATE=psl
 
 # Create the pdf directory if it doesn't exist
-if [ ! -d "$OUTPUT" ]; then
-  mkdir "$OUTPUT"
+if [ ! -d pdf ]; then
+  mkdir pdf
 fi
 # if [ ! -d "$PSL_TEMPLATE/$OUTPUT" ]; then
 #   mkdir "$PSL_TEMPLATE/$OUTPUT"
@@ -43,6 +43,8 @@ echo "Finished index"
 # Compile bibliography
 biber pdf/thesis
 echo "Finished bibliography"
+# print the file pdf/theis.bbl
+cat pdf/thesis.bbl
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished second compilation"
 # Compile glossary

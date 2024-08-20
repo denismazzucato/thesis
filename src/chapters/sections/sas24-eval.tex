@@ -37,7 +37,7 @@ We recall from \refsec{syntactic-dependency-analysis}, the syntactic dependency 
 %   \label{fig:add-full}
 %   \end{figure}
 
-Regarding the \refprog*{add}, the syntactic dependency analysis is able to discover that most of the variables are irrelevant for the global loop bound.
+Regarding the \refprog*{add}[*-7], the syntactic dependency analysis is able to discover that most of the variables are irrelevant for the global loop bound.
 Therefore, we are able to exclude most of the statements, including the bitwise operations regarding the remainder (\eg~\refline{bitwise}), the array indices (\eg~\refline{array}), the conditional for the padding at the end (\cf~\refline{padding}).
 %
 Overall, we excluded $33$ from the original $52$ lines of code (about the 60\%), and the analysis was able to handle the program with ease without any specific handling for the excluded statements.
@@ -59,6 +59,9 @@ Additionally, we employ a narrowing operator to refine the upper bound of the le
 
 
 \begin{marginlisting}
+  \caption{Simplified first loop of \refprog{add}.}
+  \labprog{while-simple}
+  \vspace{13pt}
   \begin{lstlisting}[
     language=customPython,
     style=mystyle,
@@ -70,7 +73,7 @@ while (r > 0):
 \end{marginlisting}
 \begin{example}
   Consider the first for-loop at~\refline{for1} of the \refprog{add}.
-  For simplicity, we reported it in the form of a while loop on the side.
+  For simplicity, we reported it in the form of a while loop in \refprog{while-simple}.
 Without a forward pre-analysis, the backward analysis would infer that the global number of iterations is always greater or equal to the initial value of \texttt{r}.
 The missing information is that the value of \texttt{r} is always non-negative at the beginning of the loop.
 %

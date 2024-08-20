@@ -794,7 +794,7 @@ Our approach could be extended to consider the impact of input variables also in
 
 The program termination problem can be defined as whether a program always finish running within a finite time frame, or could execute indefinitely.
 It is rooted in the early 20th century mathematical logic, particularly in the Hilbert's Entscheidungsproblem.\sidenote{In English: ``decision problem.''} Turing's proof of the undecidability of the termination problem via disjunctive arguments is a cornerstone in the field \sidecite{Turing1937,Turing1949}.
-Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \sidetextcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
+Recent advancements in termination analysis have a significant impact in the literature, particularly those grounded in transition invariants as introduced in \textcite{Podelski2004}. Notably, the \textsc{Terminator} analyzer \sidecite{Cook2006} constructs iteratively these invariants to prove termination.
 From the unifying point of view of existing approaches proposed by \sidetextcite{Cousot2012b},
 Caterina Urban and Antoine Min{\'{e}} advanced the field in a series of works \sidecite{Urban2013,Urban2014a,Urban2014b,Urban2015a,Urban2017} by proving termination through the synthesis of ranking functions across all program paths within the framework of abstract interpretation.
 Compared to other works \sidecite{Berdine2007,Heizmann2013}, they do not rely on counterexample-guided analysis or perform explicit checks on the well-foundedness of the termination argument.
