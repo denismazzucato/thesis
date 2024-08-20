@@ -25,8 +25,8 @@ This chapter is based on the work presented at the 31st Static Analysis Symposiu
 \section{Global Loop Bound Semantics}
 
 
-We present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
 \marginnote{We recall that the variables of the program are represented by the set $\variables$, where the finite set $\inputvariables\subseteq\variables$ contains the input variables.}
+We present a concrete semantics extended with the global loop counter for the simple imperative language of \refsec{a-small-imperative-language}, reported on the side for convenience.
 
 \marginnote{
   \begin{align*}
@@ -49,38 +49,45 @@ Consequently, we extend the program states to include the value of the global lo
 As a consequence, $\counter$ is not an input variable either, \ie, $\counter\notin\inputvariables$.
 We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the global loop counter as follows:
 
+\marginnote{For simplicity, we omit program locations in the maximal trace semantics of \refdef{counter-semantics}}
 \begin{definition}[Maximal Trace Semantics with the Global Loop Counter]\labdef{counter-semantics}
   The semantics $\countertracesemanticsnoparam\in\tracetype$ is defined as:
-  \denis{fix, now is reachability, not maximal trace}
 \begin{align*}
   % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
   &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
-  \defsetoftraces
+  \setdef{\concat{\defstate \defstate}{\deftrace}}{\defstate \in \state \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ
-  \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
+  &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ \\
+  % \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
+  &\quad \setdef{\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace} \in \defsetoftraces}
   \\
   &\countertracesemanticsnoparam \semanticsof{\assertstmt}\defsetoftraces \DefeQ
-  \bexpsemantics\defsetoftraces
+  % \bexpsemantics\defsetoftraces
+  \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
   \\
   &\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
   \\
-  &\qquad
-  \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces) \spacearound\setjoin
-  \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  &\quad
+  % \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces)
+  % \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+  \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
+  &\quad \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces}
   \\
   &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
   \lfp{}\fixpointfunction\\
-  &\qquad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \spacearound\setjoin  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
+  % &\quad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \SetjoiN  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
+  &\quad \fixpointfunction(X) \DefeQ
+  \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces} \SetjoiN {} \\
+  &\qquad   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics \defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X)}
   \\
   &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
   \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
   \\
-  &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ
-  \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0})
+  &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ \\
+  % \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0})
+  &\quad \countertracesemanticsnoparam \semanticsof{\defstmt}\setdef{\concat{\updatemem{\defstate}{\counter}{0}}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
 \end{align*}
 \end{definition}
-
 
 The semantics $\countertracesemanticsnoparam$ increments the value of the global loop counter $\counter$ at each iteration.
 Therefore, the global loop counter $\counter$ contains the number of iterations of all the loops in the program.
@@ -89,7 +96,7 @@ Therefore, the global loop counter $\counter$ contains the number of iterations 
 % The hierarchy of semantics applies accordingly from the maximal trace semantics.
 % Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 
-\begin{marginlisting}[*-18]
+\begin{marginlisting}[*-23]
   \caption{Program \add, computing the sum of two numbers \texttt{x} and \texttt{y} into \texttt{z}.}
   \labprog{add}
   \vspace{15pt}
@@ -152,7 +159,7 @@ def Add(p, z, m, x, n, y):
 \end{marginlisting}
 
 \begin{table}[b]
-  \caption{A few executions to show how many times the program \add{} iterates over the loops. The symbol \anyvalue denotes any possible value.}
+  \caption{A few executions to show how many times the program \add{} iterates over the loops. The symbol \anyvalue{} denotes any possible value.}
   \labtab{add-execution}
   \centering
   \begin{tabular}{cc cc cc C{1cm} c}
@@ -350,7 +357,7 @@ The two adjoints $\tuple{\backwardreachabilityabstraction}{\backwardreachability
 
 We now derive the \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam$ as an abstraction of the dependency semantics.
 
-\begin{definition}[Dependency Semantics]\labdef{backwardreachability-semantics}
+\begin{definition}[Backward Co-Reachability Semantics]\labdef{backwardreachability-semantics}
   The \emph{backward co-reachability semantics} $\backwardreachabilitysemanticsnoparam\in\backwardreachabilitytype$ is defined as:
   \begin{align*}
     \backwardreachabilitysemanticsnoparam\DefeQ \backwardreachabilityabstraction(\dependencysemanticsnoparam)
@@ -438,9 +445,10 @@ Its goal is to preserve the relations between input values and the global loop c
 % Potentially, $\backwardconcretization$ introduces dependencies that are not present in the concrete dependency semantics $\counterdependencysemanticsnoparam$.
 % Nevertheless, these additional dependencies are irrelevant for the quantification of the impact.
 Formally:
-\begin{align*}
+\begin{align}
+  \labeq{backward-concretization}
   \backwardconcretization(\counterbackwardsemantics) \DefeQ \setof{\abstractdomainconcretization(\counterbackwardsemantics)}
-\end{align*}
+\end{align}
 The concretization $\backwardconcretization$ restores all possible input states that satisfy the relations between the input variables and the global loop counter $\counter$.
 %
 %
@@ -515,19 +523,220 @@ The following result states the soundness of the backward semantics defined in \
     \backwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)
   \end{equation*}
 \end{lemma}
+\begin{proof}[Proof]
+  We prove by induction on the syntax of the program that the global loop bound semantics $\counterbackwardsemantics$, \cf{} \reffig{backward-semantics}, is a sound over-approximation of the backward co-reachability semantics $\backwardreachabilitysemantics$, \cf{} \refdef*{backwardreachability-semantics}. Regarding the base cases, we have:
+  % \begin{figure*}
+  \begin{align*}
+    &(\skipstmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\skipstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\skipstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\defstate \defstate)}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\deftrace = \emptysequence$} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\defstate \defstate)}}{\defstate \in \state \land \defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by set property} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\defstate \defstate)}}{\defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\retrieveinput{(\defstate \defstate)} = \defstate$} \\
+    &\quad
+      =\{\setdef{\defstate}{\defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by set definition} \\
+    &\quad
+      =\{\abstractdomainconcretization(\defabstractvalue)\} && \tag{by \refeqshort{backward-concretization}} \\
+    &\quad
+      \subseteq \setof{\abstractdomainconcretization(\defabstractvalue)} && \tag{by \refeqshort{sound-abstract-dependency-semantics}} \\
+    &\quad
+      =\backwardconcretization(\defabstractvalue) && \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      =\backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\skipstmt} \defabstractvalue)
+  \end{align*}
+%   \end{align*}
+% \end{figure*}
+% \begin{figure*}
+  \begin{align*}
+    &(\assignstmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\assignstmt} \abstractdomainconcretization(\defabstractvalue) \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\assignstmt} \abstractdomainconcretization(\defabstractvalue)}\} \tag{by \refdefshort{counter-semantics}} \\
+    &\quad
+      =\left\{\setdef*{\retrieveinput{(\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace})}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \deftrace\in \finiteoremptyinfinitesequences \land \\ \concat{\updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace} \in \abstractdomainconcretization(\defabstractvalue)}\right\} \tag{by $\deftrace = \emptysequence$} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace})}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \abstractdomainconcretization(\defabstractvalue)}\} \tag{by $\retrieveinput{(\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace})} = \defstate$} \\
+    &\quad
+      =\{\setdef{\defstate\in \state}{\defvalue \in \aexpsemantics \defstate \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \abstractdomainconcretization(\defabstractvalue)}\} \tag{by $\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue$} \\
+    &\quad
+      \subseteq \setof{\abstractdomainconcretization(\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue)} \tag{by \refeqshort{sound-abstract-dependency-semantics}} \\
+    &\quad
+      = \backwardconcretization(\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue) \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\assignstmt} \defabstractvalue)
+  \end{align*}
+% \end{figure*}
+% \begin{figure*}
+  \begin{align*}
+    &(\assertstmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\concat{\defstate}{\deftrace})}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\deftrace = \emptysequence$} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\defstate)}}{\defstate \in \state \land \bexpsemantics\defstate \land \defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by set property} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\defstate)}}{\defstate \in \abstractdomainconcretization(\defabstractvalue) \land \bexpsemantics\defstate}\} && \tag{by $\retrieveinput{(\defstate)} = \defstate$} \\
+    &\quad
+      =\{\setdef{\defstate\in\abstractdomainconcretization(\defabstractvalue)}{\bexpsemantics\defstate}\} && \tag{by \refdefshort{concretization-of-conjunctions-of-linear-constraints}} \\
+    &\quad
+      \subseteq \setof{\abstractdomainconcretization(\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue)} && \tag{by $\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue$} \\
+    &\quad
+      = \backwardconcretization(\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue) && \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\assertstmt} \defabstractvalue)
+  \end{align*}
+  \begin{align*}
+  &(\progstmt) \\
+  &\quad
+    \backwardreachabilitysemanticsnoparam \semanticsof{\progstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+  &\quad
+    =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\progstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+  &\quad
+    =\{\setdef{\retrieveinput{(\concat{\updatemem{\defstate}{\counter}{0}}{\deftrace})}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\deftrace = \emptysequence$} \\
+  &\quad
+    =\{\setdef{\updatemem{\defstate}{\counter}{0}}{\defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\abstractdomainsubstitute{\counter}{0}\defabstractvalue$} \\
+  &\quad
+    \subseteq \setof{\abstractdomainconcretization(\abstractdomainsubstitute{\counter}{0}\defabstractvalue)} && \tag{by \refeqshort{sound-abstract-dependency-semantics}} \\
+  &\quad
+    = \backwardconcretization(\abstractdomainsubstitute{\counter}{0}\defabstractvalue) && \tag{by \reffigshort{backward-semantics}} \\
+  &\quad
+    = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\progstmt} \defabstractvalue)
+  \end{align*}
+
+\begin{samepage}
+  Regarding the inductive cases, we assume the following inductive hypothesis: $\backwardreachabilitysemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \subseteq \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)$.
+  Note that, the inductive hypothesis implies that $\countertracesemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue) \in \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)}$ by \refdef{backwardreachability-semantics} and \refeq{backward-concretization}. Therefore, we have:
+  \begin{align*}
+    &(\compstmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\compstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\compstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\defstmt} (\countertracesemanticsnoparam \semanticsof{\defstmt'} \abstractdomainconcretization(\defabstractvalue))}\} && \tag{by inductive hypothesis} \\
+    &\quad
+      \subseteq\setof{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by inductive hypothesis} \\
+      &\quad
+        \subseteq\setof{\setdef{\retrieveinput\deftrace}{\deftrace\in \abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by $\deftrace = \defstate$} \\
+    &\quad
+      \subseteq\setof{\setdef{\defstate}{\defstate\in \abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by set definition} \\
+    &\quad
+      = \setof{\abstractdomainconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue))} && \tag{by \refeqshort{backward-concretization}} \\
+    &\quad
+      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)) && \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\compstmt} \defabstractvalue)
+  \end{align*}
+\end{samepage}
+% \end{figure*}
+% \begin{figure*}
+  \begin{align*}
+    &(\ifstmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput{(\concat\defstate\deftrace)}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt} \abstractdomainconcretization(\defabstractvalue)} \spacearound\cup \\
+    &\qquad \setdef{\retrieveinput{(\concat\defstate\deftrace)}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt'} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by inductive hypothesis} \\
+    &\quad
+      \subseteq\setof*{\setdef*{\retrieveinput{(\concat\defstate\deftrace)}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \\ \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\countertracesemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)}  \\
+      \spacearound\cup \setdef*{\retrieveinput{(\concat\defstate\deftrace)}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \\ \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\countertracesemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by $\deftrace = \emptysequence$} \\
+    &\quad
+      =\setof*{\setdef{\defstate\in\state}{\bexpsemantics\defstate \land \defstate \in \abstractdomainconcretization(\countertracesemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)} \spacearound\cup \\
+      \setdef{\defstate\in\state}{\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \defstate \in \abstractdomainconcretization(\countertracesemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by $\abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue$} \\
+    &\quad
+      \subseteq\setof*{ \abstractdomainconcretization(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) \spacearound\cup \\
+      \setdef{\defstate\in\state}{\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \defstate \in \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)}} && \tag{by $\abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue$} \\
+    &\quad
+      \subseteq\setof*{ \abstractdomainconcretization(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) \spacearound\cup \\
+      \abstractdomainconcretization(\abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) } && \tag{by $\abstractdomainjoin$} \\
+    &\quad
+      \subseteq\setof*{ \abstractdomainconcretization \left(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \spacearound\abstractdomainjoin
+      \abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \right)} && \tag{by \refeqshort{backward-concretization}} \\
+    &\quad
+      = \backwardconcretization(\abstractdomainfilter\semanticsof{\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \spacearound\abstractdomainjoin
+      \abstractdomainfilter\semanticsof{\neg\defbexp}(\counterbackwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue)) && \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\ifstmt} \defabstractvalue)
+  \end{align*}
+  \begin{align*}
+    &(\whilestmt) \\
+    &\quad
+      \backwardreachabilitysemanticsnoparam \semanticsof{\whilestmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
+    &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\whilestmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
+      &\quad
+      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\lfp{}\fixpointfunction}\} && \tag{by $\lim_{n} \spacer \abstractdomainfixpoint_n$} \\
+    &\quad
+      \subseteq\setof{\setdef{\retrieveinput\deftrace}{\deftrace\in\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)}} && \tag{by $\deftrace = \defstate$} \\
+    &\quad
+      =\setof{\setdef{\defstate}{\defstate\in\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)}} && \tag{by set definition} \\
+    &\quad
+      =\setof{\abstractdomainconcretization(\lim_{n} \abstractdomainfixpoint_n)} && \tag{by \refeqshort{backward-concretization}} \\
+    &\quad
+      =\backwardconcretization(\lim_{n} \abstractdomainfixpoint_n) && \tag{by \reffigshort{backward-semantics}} \\
+    &\quad
+      =\backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\whilestmt} \defabstractvalue)
+  \end{align*}
+  As a consequence, the backward semantics $\counterbackwardsemantics$ is a sound over-approximation of the backward co-reachability semantics $\backwardreachabilitysemantics$, \ie, $\backwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)$.
+\end{proof}
+
+% &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
+% \setdef{\concat{\defstate \defstate}{\deftrace}}{\defstate \in \state \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ \\
+% % \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
+% &\quad \setdef{\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\assertstmt}\defsetoftraces \DefeQ
+% % \bexpsemantics\defsetoftraces
+% \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+% \\
+% &\quad
+% % \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces)
+% % \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+% \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
+% &\quad \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces}
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
+% \lfp{}\fixpointfunction\\
+% % &\quad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \SetjoiN  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
+% &\quad \fixpointfunction(X) \DefeQ
+% \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces} \SetjoiN {} \\
+% &\qquad   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics \defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X)}
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+% \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
+% \\
+% &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ \\
+% % \countertracesemanticsnoparam \semanticsof{\defstmt}(\updatemem{\defsetoftraces}{\counter}{0})
+% &\quad \countertracesemanticsnoparam \semanticsof{\defstmt}\setdef{\concat{\updatemem{\defstate}{\counter}{0}}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
+% \end{align*}
 
 Next, we show how to quantify the impact of the input variables on the global loop counter $\counter$.
 We employ the $\rangename$ impact quantifier, instrumented with $\counter$ as output variable, and we design a linear programming encoding to compute the abstract implementation of the impact $\range$.
 
 \begin{example}
-  We consider the \refprog*{add}[*-6], where states $\state$ are tuples $\langle p, m, n, nit\rangle$, respectively for the variables \texttt{p}, \texttt{m}, \texttt{n}, and the global loop counter $\counter$.
+  We consider the \refprog*{add}, where states $\state$ are tuples $\langle p, m, n, nit\rangle$, respectively for the variables \texttt{p}, \texttt{m}, \texttt{n}, and the global loop counter $\counter$.
   Let us assume that the computation of the backward semantics on the program \add{} results in:
   \[
     \counterbackwardsemanticsnoparam\semanticsof{\add} \spacearound=
     (\texttt{p} = \counter)
   \]
   % For brevity, we consider states as $\state = \setdef{\langle p, m, n\rangle}{p, m, n\in[0, u]}$,
-  Then, from \refdef*{concretization-of-conjunctions-of-linear-constraints}[*-19], the concretization of the abstract element $\texttt{p} = \counter$ is:
+  Then, from \refdef*{concretization-of-conjunctions-of-linear-constraints}, the concretization of the abstract element $\texttt{p} = \counter$ is:
   \begin{align*}
     \abstractdomainconcretization(\texttt{p} = \counter) \spacearound= \setdef{\langle p, m, n, p\rangle}{p, m, n\in\values}
 \end{align*}

@@ -16,6 +16,8 @@
 % breaks url everywhere
 \makeatletter
 \g@addto@macro{\UrlBreaks}{\UrlOrds}
+\newcommand{\pushright}[1]{\ifmeasuring@#1\else\omit\hfill$\displaystyle#1$\fi\ignorespaces}
+\newcommand{\pushleft}[1]{\ifmeasuring@#1\else\omit$\displaystyle#1$\hfill\fi\ignorespaces}
 \makeatother
 % Define URL with default https://
 \newcommand\rurl[1]{%

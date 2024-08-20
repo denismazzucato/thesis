@@ -22,7 +22,7 @@
   \newcommand*{\false}{\textsc{f}}
 
 \newcommand*{\setof}[1]{\wp(#1)}
-\WithSuffix\newcommand\setof*[1]{\wp \left(#1\right)}
+\WithSuffix\newcommand\setof*[1]{\wp \left(\begin{array}{l} #1\end{array} \right)}
 \newcommand*{\finitesetof}[1]{\wp_{\text{finite}}(#1)}
 \newcommand*{\nonemptysetof}[1]{\wp_{+}(#1)}
 \WithSuffix\newcommand\nonemptysetof*[1]{\wp_{+}\left(#1\right)}
@@ -35,7 +35,7 @@
   \left\{
   \begin{array}{l}
   #1 \\
-  \quad\mid\spacer #2
+  \quad\left| \begin{array}{l} #2 \end{array} \hspace{-3pt}\right.
 \end{array}
 \right\}
 }
@@ -52,6 +52,7 @@
 \newcommand*{\tuple}[2]{\langle #1, #2 \rangle}
 \newcommand*{\pair}[2]{#1\times#2}
 \newcommand*{\setjoin}{\cup}
+\newcommand*{\SetjoiN}{\spacearound\cup}
 \newcommand*{\setmeet}{\cap}
 \newcommand*{\bigsetjoin}{\bigcup}
 \newcommand*{\bigsetmeet}{\bigcap}

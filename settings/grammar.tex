@@ -1,11 +1,11 @@
 
-\newcommand{\skipstmt}{\texttt{skip}}
+\newcommand{\skipstmt}{\textup{\texttt{skip}}}
 \newcommandx{\assignstmt}[2][1=\deflhs,2=\defaexp]{#1 := #2}
-\newcommandx{\assertstmt}[1][1=\defbexp]{\texttt{assert } #1}
-\newcommandx{\compstmt}[2][1=\defstmt,2=\defstmt]{#1;~#2}
-\newcommandx{\ifstmt}[3][1=\defstmt,2=\defstmt,3=\defbexp]{\texttt{if }  #3 \texttt{ then } #1 \texttt{ else } #2}
-\newcommandx{\whilestmt}[2][1=\defstmt,2=\defbexp]{\texttt{while }  #2 \texttt{ do } #1 \texttt{ done}}
-\newcommand{\progstmt}{\texttt{entry }\defstmt}
+\newcommandx{\assertstmt}[1][1=\defbexp]{\textup{\texttt{assert }} #1}
+\newcommandx{\compstmt}[2][1=\defstmt,2={\defstmt'}]{#1;~#2}
+\newcommandx{\ifstmt}[3][1=\defstmt,2={\defstmt'},3=\defbexp]{\textup{\texttt{if }}  #3 \textup{\texttt{ then }} #1 \textup{\texttt{ else }} #2}
+\newcommandx{\whilestmt}[2][1=\defstmt,2=\defbexp]{\textup{\texttt{while }}  #2 \textup{\texttt{ do }} #1 \textup{\texttt{ done}}}
+\newcommand{\progstmt}{\textup{\texttt{entry }} \defstmt}
 
 \newcommand{\grammardef}{\quad&{::=}\quad}
 \newcommand{\sep}{~|~}
