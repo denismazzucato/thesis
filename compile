@@ -1,6 +1,19 @@
 #!/bin/bash
 set -e
 
+% printing tools versions
+echo "pdflatex version:"
+pdflatex --version
+echo "biber version:"
+biber --version
+echo "makeindex version:"
+makeindex --version
+echo "makeglossaries version:"
+makeglossaries --version
+echo "pdftk version:"
+pdftk --version
+
+
 # Output directory
 OUTPUT=pdf
 # PDF name (without extension)
@@ -45,6 +58,7 @@ biber pdf/thesis
 echo "Finished bibliography"
 # print the file pdf/theis.bbl
 cat pdf/thesis.bbl
+echo "Printed bibliography"
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished second compilation"
 # Compile glossary
