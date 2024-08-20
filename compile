@@ -5,12 +5,6 @@ echo "pdflatex version:"
 pdflatex --version
 echo "biber version:"
 biber --version
-echo "makeindex version:"
-makeindex --version
-echo "makeglossaries version:"
-makeglossaries --version
-echo "pdftk version:"
-pdftk --version
 
 
 # Output directory
