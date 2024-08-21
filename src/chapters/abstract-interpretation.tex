@@ -778,22 +778,3 @@ The corespondence between the semantics in the hierarchy is established by Galoi
 \backwardsemanticsnoparam \semanticsof{\defstmt}( \backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
 \end{align*}
 \end{definition}
-
-\begin{marginlisting}
-  \caption{Landing alarm system}
-  \labprog{landing-alarm-system}
-  \vspace{\lineheight}
-\begin{lstlisting}[
-  language=customPython,
-  style=mystyle,]
-landing_coeff =
-  abs(angle) + speed
-if landing_coeff < 2:
-  risk = 0
-else if landing_coeff > 5:
-  risk = 3
-else:
-  risk =
-    floor(landing_coeff) - 2
-  \end{lstlisting}
-\end{marginlisting}
