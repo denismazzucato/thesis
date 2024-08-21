@@ -341,7 +341,6 @@ The reduction function consists in an exchange of concrete bounds between domain
 New abstract domains only need to implement the interface to share bounds information to enable their combination with other domains by the Product Builder.
 
 
-% \denis{Add lemmas showing that the forward and backward analyses are sound (maybe compared to the output semantics).}
 
 \section{Quantitative Impact Quantifiers}
 \labsec{quantitative-impact-quantifiers}
@@ -1090,8 +1089,9 @@ The next result shows that the abstract impact $\abstractchanges$ is a sound ove
     \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}
   \end{gather*}
   thus, we need to show that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} \le \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$.
-  By contradiction, we assume that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} > \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$, meaning that the number of stable regions leading to different output buckets is greater than the number of intersecting buckets in the abstract.
-  \denis{Finish.......}
+  % By contradiction, we assume that $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} > \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$, meaning that the number of stable regions leading to different output buckets is greater than the number of intersecting buckets in the abstract.
+  Provided that $\buckets$ is compatible with $\outputobs$ and covers the subset of potential outcomes, respectively \ref{tio1} and \ref{tio2}, an implication of the exactness assumption (\cf{} \ref{tio3}) of the backward analysis $\backwardsemanticsnoparam$ is any stable region intersecting after projecting away the variables $\definputvariables$ is represented in the abstract by two indices $j$ and $k$ in the connected components (from \ref{tio4}).
+  Hence, under these assumptions, the number of stable regions leading to different output buckets has to be lower the number of intersecting buckets in the abstract, \ie $\cardinality{Q_{\definputvariables, \overline{\definput}, \overline{\defoutput}}} \le \max_{j \le \numberofbuckets} \cardinalitynospaces{\setdef{l \in \overline{J}}{l \neq j}}$, proving that $\abstractchanges$ is a sound implementation of $\changes$.
 \end{proof}
 
 Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractchanges$ and the comparison operator $\le$.
@@ -1235,7 +1235,8 @@ The analysis proceeds backwards from each output bucket $\bucket$ via the backwa
 $\abstractqlibra$ projects away the input variables $\definputvariables$ from the abstract states $\prefrombucket$ to account for any possible permutations of their input values.
 Then, it computes the pairwise intersections among the projected abstract states to find the portion of input space leading to different output buckets only via variations of the input variables $\definputvariables$.
 The volume of this input space is an over-approximation of the biased space, hence its complement is an under-approximation of the fair input space.
-The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is always lower than the concrete $\qlibra$.
+We assume the classical soundness condition on the abstract operator $\abstractdomainvolume$ to ensure that the abstract volume is always bigger than the concrete one.
+The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is always lower than the concrete $\qlibra$, \cf{} \refdef*{qlibra}, as it measures the volume of the input space that contains bias.
 
 \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
@@ -1243,16 +1244,20 @@ The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is a
   \begin{enumerate}[label=(\roman*)]
     \item \label{nioa1} $\buckets$ covers the subset of potential outcomes, \cf{} \refdef*{covering}[*-2],
     \item \label{nioa2} $\buckets$ is compatible with $\outputobs$, \cf{} \refdef*{compatibility}[*4],
-    \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \refdef{sound-over-approximation}, and
-    \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8];
+    \item \label{nioa3} $\backwardsemanticsnoparam$ is a sound backward semantics, \cf{} \refdef{sound-over-approximation},
+    \item \label{nioa4} $\abstractdomainproject$ is sound, \cf{} \refdef*{soundness-project}[*8], and
+    \item \label{nioa5} $\abstractdomainvolume$ is sound;
   \end{enumerate}
   then, $\abstractqlibra$ is a sound implementation of $\qlibra$ \wrt{} the $\ge$ operator:
   \begin{align*}
     \qlibra(\tracesemanticsnoparam) \GE \abstractqlibra(\multiconcretization(\multisemanticsnoparam)\buckets, \buckets)
   \end{align*}
 \end{lemma}
-\begin{proof}
-  \denis{todo}
+\begin{proof}[Proof (Sketch)]
+  The soundness argument to prove this lemma is based on the soundness of the operators involved in the computation of $\abstractqlibra$, namely \ref{nioa3}, \ref{nioa4} and \ref{nioa5}, the fact that the buckets $\buckets$ cover the subset of potential outcomes \ref{nioa1} and are compatible with the output observations \ref{nioa2}.
+  The proof follows by showing that $\abstractqlibra$ is the complement of the volume of biased space, computed by first projecting away the input variables $\definputvariables$ from all the given abstract values resulting from the backward analysis, then collecting all the possible pairwise intersections among the projected abstract values to find the portion of input space leading to, at least, two different output buckets.
+  By the fact that all the operators involved are sound over-approximations (\cf{} \ref{nioa4} and \ref{nioa5}) as well as the backward analysis (\cf{} \ref{nioa3}), the proof follows directly.
+  As the volume computed in the abstract over-approximates the biased space, its complement under-approximates the fair input space.
 \end{proof}
 
 We show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqlibra$ and the comparison operator $\ge$.
@@ -1363,7 +1368,7 @@ We call this input partition \emph{fair}.
 Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can verify whether a program $\defprogram$ has an impact of $\defbound$ for each element $\definputpartition\in\definputpartitions$, \emph{independently}, and aggregate the results.
 
 \siderefbox{def}{qlibra}
-\begin{lemma}
+\begin{lemma}\lablemma{sum-qlibra}
   Given a fair input partition $\definputpartitions$, it holds that:
   \begin{align*}
     \defprogram \satisfies \BOUNDEDQLIBRA \IfF
@@ -1540,7 +1545,7 @@ Note that, the forward analysis does not need expressive and slow abstract domai
   ]
 QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$\tune$%):
   %$\upperbound$%, %$\lowerbound$%, %$\maxupperbound$%, %$\minlowerbound$%, %$\heuristic$% = %$\tune$%%\labline{parameters}%
-  %\F%, %\E%, %\C% = %$\emptyset$%, %$\emptyset$%, %$\emptyset$%
+  %\F%, %\E%, %\C% = %$\emptyset$%, %$\emptyset$%, %$\emptyset$%%\labline{A}%
   %$\definputpartitions$% = %$\{\reducedstate\}$%%\labline{initial-partition}%
   do
     while %$\definputpartitions \neq \emptyset$% do
@@ -1549,7 +1554,7 @@ QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$
       if %$\a$% is unique then%\labline{unique}%
         %\C% = %$\C \cup \{\tuple{\p }{ \I}\}$%%\labline{completed}%
       else if %$\cardinalitynospaces\defmodel - \cardinalitynospaces\p \le \upperbound$% then
-        %\F% = %$\F \cup \{\I\}$%%\labline{feasible}%
+        %\F% = %$\F \cup \{\I\}$%%\labline{feasible}%%\labline{B}%
       else if %$\cardinalitynospaces\I \le \lowerbound$% then%\labline{lower}%
         %\E% = %$\E \cup \{\I\}$%%\labline{excluded}%
       else
@@ -1562,7 +1567,7 @@ QAUnused%${}^\parallel_{\defmodel, \abstractdomain}$%(%$\definputvariables$%, %$
   for %$\tuple{\p}{ \definputpartitions}$% in %\F% do%\labline{independent}%
     %\O% = %$\emptyset$%
     for %\j% = 0 up to %$\cardinalitynospaces{\hiddenlayer{\lastlayerindex}}$% do
-      %$\a$% = Backward%${}_{\defmodel, \disjunctivepolyabstractdomain, \p}$%(%$\node[\hiddenlayer{\lastlayerindex}]$%)
+      %$\a$% = Backward%${}_{\defmodel, \disjunctivepolyabstractdomain, \p}$%(%$\node[\hiddenlayer{\lastlayerindex}]$%)%\labline{backward}%
       %\O% = %$\O \cup \{\tuple{\node[\hiddenlayer{\lastlayerindex}] }{ \a}\}$%
     for %\I% in %$\definputpartitions$% do
       %\O'% = %$\emptyset$%
@@ -1615,15 +1620,22 @@ The complement of the biased input space is an under-approximation of the fair i
 The next result shows that the abstract implementation $\parallelqlibra$ is a sound under-approximation of the concrete implementation $\qlibra$.
 Therefore, it can be used to validate the $\boundedqlibrage$ property with the $\ge$ operator.
 
+
 \begin{theorem}
-  Given the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$, an abstract domain $\abstractdomain$, and the budget $\tune = \langle \upperbound, \lowerbound, \maxupperbound, \minlowerbound\rangle$, the abstract implementation $\parallelqlibra$ is a sound over-approximation of the concrete implementation $\qlibra$:
+  Let $\boundedqlibrage$ be the property of interest we want to verify for the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$.
+  Given an abstract domain $\abstractdomain$, and the budget $\tune = \langle \upperbound, \lowerbound, \maxupperbound, \minlowerbound\rangle$, the following implication holds:
   \begin{align*}
-    \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defprogram \satisfies \BOUNDEDQLIBRAGE
+    \parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune) = \defbound' \land \defbound' \ge \defbound \ImplieS \defmodel \satisfies \BOUNDEDQLIBRAGE
   \end{align*}
 \end{theorem}
 \begin{proof}
-  \denis{todo}
+  $\parallelqlibra_{\defmodel, \abstractdomain}(\definputvariables, \tune)$ in \refalg{parallel-qlibra} first computes the abstract activation patterns that cover a fraction \C{} of the input space in which the analysis is feasible (\cf{} from \refline{A} to \refline{B}).
+  Then, it computes an over-approximation of the regions of \C{} that yield each target class $\node[\outputlayer]$ (\cf{} \refline{backward}).
+  Thus, it actually computes an over-approximation of the parallel semantics $\parallelsemantics$.
+  In \refline{sum}, the complement of the sum of the volumes, one for each fair partition (\cf{} \refdef{fair-input-partition}), is always greater than the volume of the fair input space. We conclude $\defmodel \satisfies \BOUNDEDQLIBRAGE$ by \reflemma*{sum-qlibra}.
 \end{proof}
+
+Notably, the parallel implementation $\parallelqlibra$ yields the so called \emph{perfectly parallel fairness analysis}~\sidecite{Urban2020}.
 
 } % end of the scope of the newcommand
 
@@ -1634,26 +1646,25 @@ In this section, we discuss related work on the verification of neural networks 
 
 \paragraph{Verification of Neural Networks.}
 
-The interest in the verification of neural networks has been surging in the last decade, see Albarghouthi's tutorial \sidecite{Albarghouthi2021} for an introduction to the topic.
-The most common approach is to verify robustness \sidecite{Goodfellow2016} of neural networks against minimal input perturbations.
-This research area is highly diverse and includes a variety of techniques, such as SMT-based methods \sidecite{Katz2017,Katz2019,Pulina2011a,Pulina2011b,Pulina2012}, mixed-integer programming \sidecite{Botoeva2020,Lomuscio2017,Tjeng2019}, branch-and-bound \sidecite{Bunel2018,Palma2021,Ehlers2017,Wang2018b}, over-approximation of the non-linear activation function \sidecite{Ehlers2017,Singh2019,Weng2018,Zhang2018b}, and symbolic propagation \sidecite{Botoeva2020,Henriksen2020,Wang2018b,Wang2021b}.
-See \sidetextcite{K_onig2024} and \sidetextcite{Huang2020} for a comprehensive survey of the field of verification of neural networks. Notably, there is no single best algorithm dominates performance across all verification problem instances.
+The interest in the verification of neural networks has significantly increased over the last decade. For an introduction to the topic, refer to Albarghouthi's tutorial \sidecite{Albarghouthi2021}.
+The most common approach in this domain is to verify the robustness of neural networks against minimal input perturbations \sidecite{Goodfellow2016}.
+This research area is highly diverse and includes a variety of techniques, including SMT-based methods \sidecite{Katz2017,Katz2019,Pulina2011a,Pulina2011b,Pulina2012}, mixed-integer programming \sidecite{Botoeva2020,Lomuscio2017,Tjeng2019}, branch-and-bound algorithms \sidecite{Bunel2018,Palma2021,Ehlers2017,Wang2018b}, over-approximation of non-linear activation functions \sidecite{Ehlers2017,Singh2019,Weng2018,Zhang2018b}, and symbolic propagation \sidecite{Botoeva2020,Henriksen2020,Wang2018b,Wang2021b}.
+For a comprehensive survey of the field, see \sidetextcite{K_onig2024} and \sidetextcite{Huang2020}.
+Notably, no single algorithm consistently outperforms others across all verification problem instances.
 
-The literature also focuses on fairness and bias in machine learning models.
-Statistical approaches include \sidetextcite{Galhotra2017}, which propose a method for efficient fairness testing, \sidetextcite{Udeshi2018} generates discriminatory inputs for machine learning models, and \sidetextcite{Tram_er2017} introduced the unwarranted-associations framework.
-On the other hand, \sidetextcite{Bastani2019} provides probabilistic guarantees on the fairness of machine learning models, \sidetextcite{Urban2020} verifies fairness properties on neural networks by abstract interpretation providing formal guarantees, and \sidetextcite{Albarghouthi2017b} encoded the fairness problem as a probabilistic program property and verified fairness by an SMT solver.
-The work of \sidetextcite{Albarghouthi2019} proposed a technique to repair the bias of neural networks.
+The literature also extensively addresses fairness and bias in machine learning models.
+For example, statistical approaches include \sidetextcite{Galhotra2017}, which proposes an efficient method for fairness testing, \sidetextcite{Udeshi2018}, which generates discriminatory inputs for machine learning models, and \sidetextcite{Tram_er2017}, which introduces the unwarranted-associations framework.
+On the other hand, \sidetextcite{Bastani2019} provides probabilistic guarantees on the fairness of machine learning models, while \sidetextcite{Urban2020} uses abstract interpretation to verify fairness properties in neural networks, offering formal guarantees.
+Additionally, \sidetextcite{Albarghouthi2017b} encodes the fairness problem as a probabilistic program property, verified using an SMT solver.
+Furthermore, \sidetextcite{Albarghouthi2019} proposes a technique to repair biases in neural networks.
+
+Recent formal developments~\sidecite{Ranzato2020,Ranzato2021,Pal2022} are expanding this research to other machine learning models, such as decision trees and support vector machines, by developing formal methods to analyze input variable usage. Quantitative analyses have the potential to enhance these techniques by leveraging a broader spectrum of possible results.
 
 
 \paragraph{Quantitative Verification of Neural Networks.}
 
-Aside from the verification of neural networks, there is a growing interest in the quantification of properties on neural networks, most of the work in the literature offers statistical guarantees.
-While not handling probabilistic properties, in our thesis, we provide formal guarantees on the quantification of impact properties.
-The work of \sidetextcite{Tran2023} quantifies the probability of safety violations by propagating Gaussian-distributed inputs through the networks.
-Similarly, Baluta et al. \sidecite{Baluta2019,Baluta2021} estimate the portion of input space that satisfies a given property, such as robustness, fairness, or security, by sampling. They provide statistical guarantees that the estimates are within a certain confidence interval. The framework of \sidetextcite{Zhang2021,Zhang2023} quantifies adversarial robustness in binarized neurla networks through model counting of adversarial examples. Another statistical approach \sidecite{Webb2019} estimates the likelihood of property violations using Monte Carlo methods, offering robustness metrics.
-These work may be seen as quantification of the \outcomesname{} quantifier for fairness checks in a weaker (statistical) sense.
-Recent formal developments~\sidecite{Ranzato2020,Ranzato2021,Pal2022} are currently targeting other machine learning models, such as decision trees and support vector machines, developing formal methods to discover the usage of input variables.
-Quantitative analyses have the potential to enhance these techniques by leveraging a broader spectrum of possible results.
+There is also a growing interest in the quantification of properties in the context of verification of neural networks, with most of the literature providing statistical guarantees.
+While our thesis does not address probabilistic properties, it offers formal guarantees regarding the quantification of impact properties. For example, \sidetextcite{Tran2023} quantifies the probability of safety violations by propagating Gaussian-distributed inputs through neural networks. Similarly, Baluta et al. \sidecite{Baluta2019,Baluta2021} estimate the portion of the input space that satisfies properties such as robustness, fairness, or security, through sampling. These estimates come with statistical guarantees of being within a specified confidence interval. The framework presented by \sidetextcite{Zhang2021,Zhang2023} quantifies adversarial robustness in binarized neural networks by model counting adversarial examples. Another statistical approach, \sidecite{Webb2019}, uses Monte Carlo methods to estimate the likelihood of property violations, thereby providing robustness metrics. These works can be viewed as quantifications of the \outcomesname{} quantifier for fairness checks in a weaker, statistical sense.
 
 
 \section{Summary}
