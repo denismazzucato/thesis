@@ -77,12 +77,137 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
 \setlength\figureheight{5cm}
 \setlength\figurewidth{6cm}
 
-\begin{figure}[t]
+% \begin{figure}[t]
+%   \centering
+%   \begin{subfigure}[b]{0.45\textwidth}
+%     \centering
+%     % \input{figures/diabetes-abs_common-baseline-qlibra.tikz}
+%     \begin{tikzpicture}[scale=0.85]
+%       \begin{axis}[
+%       height=\figureheight,
+%       tick align=outside,
+%       tick pos=left,
+%       width=\figurewidth,
+%       xmin=-0.74, xmax=6.74,
+%       ymin=0, ymax=37.8,
+%       ylabel={Frequency},
+%       xlabel={Length},
+%       ]
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.6,0) rectangle (axis cs:4.4,24);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:1.6,0) rectangle (axis cs:2.4,10);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:0.6,0) rectangle (axis cs:1.4,23);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.6,0) rectangle (axis cs:5.4,19);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:2.6,0) rectangle (axis cs:3.4,34);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:-0.4,0) rectangle (axis cs:0.4,36);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:5.6,0) rectangle (axis cs:6.4,7);
+%       \end{axis}
+%     \end{tikzpicture}
+%     \caption{Maximum common prefix length.}
+%     \labfig{diabetes-abscommon-baseline-qlibra}
+%   \end{subfigure}%
+%   \vspace{10pt}
+%   \hspace{0.05\textwidth}%
+%   \begin{subfigure}[b]{0.45\textwidth}
+%     \centering
+%     % \input{figures/diabetes-relaxed_common-baseline-qlibra.tikz}
+%     \begin{tikzpicture}[scale=0.85]
+%       \begin{axis}[
+%       height=\figureheight,
+%       tick align=outside,
+%       tick pos=left,
+%       width=\figurewidth,
+%       xmin=-0.74, xmax=6.74,
+%       ymin=0, ymax=31.5,
+%       xlabel={Length},
+%       ]
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.6,0) rectangle (axis cs:4.4,26);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:1.6,0) rectangle (axis cs:2.4,30);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.6,0) rectangle (axis cs:5.4,16);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:2.6,0) rectangle (axis cs:3.4,30);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:0.6,0) rectangle (axis cs:1.4,24);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:-0.4,0) rectangle (axis cs:0.4,19);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:5.6,0) rectangle (axis cs:6.4,8);
+%       \end{axis}
+%       \end{tikzpicture}
+%     \caption{Relaxed max. common prefix length.}
+%     \labfig{diabetes-relaxedcommon-baseline-qlibra}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.45\textwidth}
+%     \centering
+%     % \input{figures/diabetes-euclidean-baseline-qlibra.tikz}
+%     \begin{tikzpicture}[scale=0.85]
+%       \begin{axis}[
+%       height=\figureheight,
+%       tick align=outside,
+%       tick pos=left,
+%       width=\figurewidth,
+%       xmin=-0.887213595499958, xmax=9.83148550549912,
+%       ymin=0, ymax=86.1,
+%       xlabel={Distance},
+%       ylabel={Frequency},
+%       ]
+%       \draw[draw=none,fill=seabornBlue] (axis cs:-0.4,0) rectangle (axis cs:0.4,82);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:1.0142135623731,0) rectangle (axis cs:1.8142135623731,18);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.34165738677394,0) rectangle (axis cs:4.14165738677394,7);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:2.42842712474619,0) rectangle (axis cs:3.22842712474619,10);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.69901951359278,0) rectangle (axis cs:5.49901951359278,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.06410161513775,0) rectangle (axis cs:3.86410161513775,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:2.04948974278318,0) rectangle (axis cs:2.84948974278318,8);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.29041575982343,0) rectangle (axis cs:5.09041575982343,4);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.07213595499958,0) rectangle (axis cs:4.87213595499958,3);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:8.54427190999916,0) rectangle (axis cs:9.34427190999916,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:5.25685424949238,0) rectangle (axis cs:6.05685424949238,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:5.6,0) rectangle (axis cs:6.4,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.84264068711928,0) rectangle (axis cs:4.64264068711929,8);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:2.76227766016838,0) rectangle (axis cs:3.56227766016838,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:6.2332495807108,0) rectangle (axis cs:7.0332495807108,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:4.89150262212918,0) rectangle (axis cs:5.69150262212918,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:6.81110255092798,0) rectangle (axis cs:7.61110255092798,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:8.20232526704263,0) rectangle (axis cs:9.00232526704263,1);
+%       \end{axis}
+%       \end{tikzpicture}
+%     \caption{Euclidean distance}
+%     \labfig{diabetes-euclidean-baseline-qlibra}
+%   \end{subfigure}%
+%   \hspace{0.05\textwidth}%
+%   \begin{subfigure}[b]{0.45\textwidth}
+%     \centering
+%     % \input{figures/diabetes-manhattan-baseline-qlibra.tikz}
+%     \begin{tikzpicture}[scale=0.85]
+%       \begin{axis}[
+%       height=\figureheight,
+%       tick align=outside,
+%       tick pos=left,
+%       width=\figurewidth,
+%       xmin=-1.44, xmax=21.44,
+%       ymin=0, ymax=86.1,
+%       xlabel={Distance},
+%       ]
+%       \draw[draw=none,fill=seabornBlue] (axis cs:-0.4,0) rectangle (axis cs:0.4,82);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:1.6,0) rectangle (axis cs:2.4,18);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:5.6,0) rectangle (axis cs:6.4,19);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:3.6,0) rectangle (axis cs:4.4,18);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:7.6,0) rectangle (axis cs:8.4,8);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:19.6,0) rectangle (axis cs:20.4,1);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:11.6,0) rectangle (axis cs:12.4,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:13.6,0) rectangle (axis cs:14.4,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:9.6,0) rectangle (axis cs:10.4,2);
+%       \draw[draw=none,fill=seabornBlue] (axis cs:17.6,0) rectangle (axis cs:18.4,1);
+%       \end{axis}
+%       \end{tikzpicture}
+%     \caption{Manhattan distance}
+%     \labfig{diabetes-manhattan-baseline-qlibra}
+%   \end{subfigure}
+%   \caption{``\diabetes{}'' database, comparison between baseline and \impatto.}
+%   \labfig{diabetes-baseline-qlibra}
+% \end{figure}
+
+\begin{marginfigure}
   \centering
-  \begin{subfigure}[b]{0.45\textwidth}
+  \begin{subfigure}[b]{\textwidth}
     \centering
     % \input{figures/diabetes-abs_common-baseline-qlibra.tikz}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[scale=0.82]
       \begin{axis}[
       height=\figureheight,
       tick align=outside,
@@ -104,13 +229,13 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
     \end{tikzpicture}
     \caption{Maximum common prefix length.}
     \labfig{diabetes-abscommon-baseline-qlibra}
-  \end{subfigure}%
-  \vspace{10pt}
-  \hspace{0.05\textwidth}%
-  \begin{subfigure}[b]{0.45\textwidth}
+  \end{subfigure}\\%
+  % \vspace{10pt}
+  % \hspace{0.05\textwidth}%
+  \begin{subfigure}[b]{\textwidth}
     \centering
     % \input{figures/diabetes-relaxed_common-baseline-qlibra.tikz}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[scale=0.82]
       \begin{axis}[
       height=\figureheight,
       tick align=outside,
@@ -119,6 +244,7 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
       xmin=-0.74, xmax=6.74,
       ymin=0, ymax=31.5,
       xlabel={Length},
+      ylabel={Frequency},
       ]
       \draw[draw=none,fill=seabornBlue] (axis cs:3.6,0) rectangle (axis cs:4.4,26);
       \draw[draw=none,fill=seabornBlue] (axis cs:1.6,0) rectangle (axis cs:2.4,30);
@@ -129,13 +255,13 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
       \draw[draw=none,fill=seabornBlue] (axis cs:5.6,0) rectangle (axis cs:6.4,8);
       \end{axis}
       \end{tikzpicture}
-    \caption{Relaxed maximum common prefix length.}
+    \caption{Relaxed max. common prefix length.}
     \labfig{diabetes-relaxedcommon-baseline-qlibra}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.45\textwidth}
+  \end{subfigure}\\
+  \begin{subfigure}[b]{\textwidth}
     \centering
     % \input{figures/diabetes-euclidean-baseline-qlibra.tikz}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[scale=0.82]
       \begin{axis}[
       height=\figureheight,
       tick align=outside,
@@ -168,12 +294,12 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
       \end{tikzpicture}
     \caption{Euclidean distance}
     \labfig{diabetes-euclidean-baseline-qlibra}
-  \end{subfigure}%
-  \hspace{0.05\textwidth}%
-  \begin{subfigure}[b]{0.45\textwidth}
+  \end{subfigure}\\%
+  % \hspace{0.05\textwidth}%
+  \begin{subfigure}[b]{\textwidth}
     \centering
     % \input{figures/diabetes-manhattan-baseline-qlibra.tikz}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[scale=0.82]
       \begin{axis}[
       height=\figureheight,
       tick align=outside,
@@ -182,6 +308,7 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
       xmin=-1.44, xmax=21.44,
       ymin=0, ymax=86.1,
       xlabel={Distance},
+      ylabel={Frequency},
       ]
       \draw[draw=none,fill=seabornBlue] (axis cs:-0.4,0) rectangle (axis cs:0.4,82);
       \draw[draw=none,fill=seabornBlue] (axis cs:1.6,0) rectangle (axis cs:2.4,18);
@@ -200,7 +327,7 @@ The Euclidean distance is defined as $\euclidean(I, J) \defeq \sqrt{\sum_k (I_k 
   \end{subfigure}
   \caption{``\diabetes{}'' database, comparison between baseline and \impatto.}
   \labfig{diabetes-baseline-qlibra}
-\end{figure}
+\end{marginfigure}
 }
 
 We first verify whether \impatto{} produces a similar impact quantification with respect to $\changesname$.
@@ -222,12 +349,12 @@ Note that, the Euclidean distance (\euclidean) returns a real number as distance
 \setlength\figureheight{5cm}
 \setlength\figurewidth{5cm}
 
-  \begin{figure}[t]
+  \begin{marginfigure}
     \centering
-    \begin{subfigure}[b]{0.36\textwidth}
+    \begin{subfigure}[b]{\textwidth}
       \centering
       % \input{figures/diabetes-relaxed_common-baseline-permutation.tikz}
-      \begin{tikzpicture}
+      \begin{tikzpicture}[scale=0.9]
         \begin{axis}[
           xlabel={Length},
         height=\figureheight,
@@ -252,13 +379,14 @@ Note that, the Euclidean distance (\euclidean) returns a real number as distance
     \end{subfigure}%
     \hfill
     % \vspace{10pt}
-    % \hspace{0.05\textwidth}%
-    \begin{subfigure}[b]{0.31\textwidth}
+    % \hspace{\textwidth}%
+    \begin{subfigure}[b]{\textwidth}
       \centering
       % \input{figures/diabetes-relaxed_common-baseline-retraining.tikz}
-      \begin{tikzpicture}
+      \begin{tikzpicture}[scale=0.9]
         \begin{axis}[
           xlabel={Length},
+          ylabel={Frequency},
         height=\figureheight,
         tick align=outside,
         tick pos=left,
@@ -278,12 +406,13 @@ Note that, the Euclidean distance (\euclidean) returns a real number as distance
       \labfig{diabetes-relaxedcommon-baseline-retraining}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{\textwidth}
       \centering
       % \input{figures/diabetes-relaxed_common-baseline-qlibra.tikz}
-      \begin{tikzpicture}
+      \begin{tikzpicture}[scale=0.9]
         \begin{axis}[
           xlabel={Length},
+          ylabel={Frequency},
         height=\figureheight,
         tick align=outside,
         tick pos=left,
@@ -305,7 +434,7 @@ Note that, the Euclidean distance (\euclidean) returns a real number as distance
     \end{subfigure}%
     \caption{``\diabetes{}'' database, comparison between baseline and (left to right) permutation feature importance, retraining feature importance, and \impatto.}
     \labfig{diabetes-baseline-all}
-  \end{figure}
+  \end{marginfigure}
 
 \subsection{Comparison with Stochastic Methods}
 % In the field of interpretability and explainability, stochastic quantitative measures, known as feature importance metrics, are used to determine the influence of input features in machine learning models.
@@ -353,6 +482,8 @@ Each column corresponds to a different comparison: from left to right, we show t
 
 The row refers to a different similarity metric, namely, from top to bottom, maximum common prefix length (\mcpl, already defined in~\refeq{mcpl}), relaxed maximum common prefix length (\rmcpl), Euclidean distance (\euclidean), and Manhattan distance (\manhattan).
 Similarly to the sections above, the x-axis represents the length of the longest prefix, while the y-axis represents the frequency of test cases with a prefix of \textit{exactly} the length of the x-axis.
+
+Continue in the next pages.
 %
 % Given two analyses $F, F'$ (\eg, \impatto{} and \pfi), any similarity metric (\eg, \mcpl) first sorts the result of the analyses $F, F'$ applied to all the input features, by decreasing order.
 % Formally, it computes $I=\argsort F(\defmodel)$ and $J=\argsort F'(\defmodel)$ for the two analyses respectively, where $\defmodel$ is the neural network under consideration and $\argsort$ returns the corresponding indices of the sorted list (by decreasing order), \eg, $\argsort \langle 30, 65, 2, 60 \rangle = \langle 3,1,4,2\rangle$.
@@ -1116,8 +1247,48 @@ As expected, adding more CPUs always improves \libra{} running time. The most li
 
 \reftab{cpus} additionally shows the estimated percentage of bias detected with each abstract domain, \ie, \libra{} is able to certify fairness for about $95\%$ of the neural network input space. Note that, the bias estimate depends on the partitioning of the input space computed by the pre-analysis, \cf{} \refsec{parallel-implementation-qlibra}. This explains the different percentages found even by runs with the same abstract domain. Within the same column, the difference is at most $0.14\%$ on average.
 
+
+\begin{marginfigure}[*-5]
+  \centering
+  \includegraphics[width=\textwidth]{figures/old}
+  \caption{Former Task Scheduling}
+  \labfig{old}
+\end{marginfigure}
+
+\begin{marginfigure}[*16]
+  \centering
+  \includegraphics[width=\textwidth]{figures/new}
+  \caption{Current Task Scheduling}
+  \labfig{new}
+\end{marginfigure}
+
 Finally, we remark that \emph{the auto-tuning mechanisms is essential for scalability}. We tried repeating this experiment by directly
 running \libra{} with the configuration at which auto-tuning stabilizes, \ie, $\lowerbound = 0.015625$ and $\upperbound = 6$. After six days it still had not completed and we had to interrupt it.
+
+% \begin{marginfigure}
+%   \centering
+%   \begin{minipage}{0.45\textwidth}
+%       \centering
+%       \includegraphics[width=0.8\textwidth]{figures/old}
+%       \caption{Former Task Scheduling}\labfig{old}
+%   \end{minipage}
+%   \begin{minipage}{0.45\textwidth}
+%       \centering
+%       \includegraphics[width=0.8\textwidth]{figures/new}
+%       \caption{Current Task Scheduling}\labfig{new}
+%   \end{minipage}
+%   % }
+% \end{marginfigure}
+
+
+Note that, while implementing our quantitative extension to \libra, we also improved greatly the parallelization of the tool.
+In the original version of \libra (originally presented in \sidecite[*-16]{Urban2020}, without our quantitative extension), feasible partitions are first grouped by activation pattern, \ie, activation patterns that fix more \relu s are merged with those that fix fewer \relu s.
+This way, in principle, the amount of work that the backward analysis has to do is reduced: it only needs to run once for each activation pattern, and can then perform all the checks for bias on each feasible partition. In practice, the abstract domains used in the original implementation prevented the parallelization of all bias checks, which were thus run sequentially. This prevented \libra from exploiting multi-core architectures effectively. %\\
+% (cf. the task schedules shown in Figure~\ref{fig:old} and Figure~\ref{fig:new} in Appendix~\ref{apx:optimization}).\\
+%
+After our extension, we optimize the backward analysis in order to possibly repeat the analysis for the same activation pattern but allowing it to parallelize the bias checks.
+\reffig{old} and \reffig{new} compare the previous and current backward analysis task scheduling on the same analysis instance. Each row in the Gantt diagrams shows computations of the same thread. Blue bars stand for activation pattern computations, while red bars indicate bias check computations, these two bars alternate throughout the whole backward computation for each processor (if possible).
+As shown in \reffig{old}, the running time was determined almost completely by the task with the most associated bias checks, leaving all the other threads idle from the very beginning. The diagram in \reffig{new} is more compact, meaning that threads are always running jobs uniformly. Consequently, the backward analysis running time decreases from about $22$ to only $5$ minutes.
 
 \section{Summary}
 
