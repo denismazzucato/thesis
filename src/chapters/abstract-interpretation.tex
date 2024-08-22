@@ -12,11 +12,13 @@
 \labch{abstract-interpretation}
 
 
-\marginemptybox{16cm}
+\marginemptybox{14cm}
 
 In this chapter, we introduce the concepts that are the foundation of this work.
 We assume basic knowledge of mathematics, we summarize the necessary background in set theory and logic.
 We present an overview of Abstract Interpretation and define the notations and concepts that will be used in the rest of the thesis.
+
+\emph{Dans ce chapitre, nous introduisons les concepts qui constituent la base de ce travail. Nous supposons une connaissance de base en mathématiques, nous résumons les éléments nécessaires en théorie des ensembles et en logique. Nous présentons un aperçu de l'interprétation abstraite et définissons les notations et concepts qui seront utilisés dans le reste de la thèse.}
 
 \section{Set Theory}
 
@@ -282,7 +284,7 @@ Lattices are posets that require every nonempty finite subset to have both a lea
 
 \marginnote{Any totally ordered set is a lattice.}
 \begin{definition}[Lattice]\labdef{lattice}
-  A \emph{lattice} $\langle X, \sqsubseteq, \join, meet \rangle$ is a poset where $\forall x, x'\in X$ the least upper bound $\join\{x, x'\}$ and the greatest lower bound $\meet\{x, x'\}$ exist.
+  A \emph{lattice} $\langle X, \sqsubseteq, \join, \meet \rangle$ is a poset where $\forall x, x'\in X$ the least upper bound $\join\{x, x'\}$ and the greatest lower bound $\meet\{x, x'\}$ exist.
 \end{definition}
 
 Complete lattices are lattices that additionally require every (possibly infinite) subset to have both a least upper bound and a greatest lower bound.
@@ -419,6 +421,7 @@ Dually, a function is \emph{co-continuous} whenever, for all chains $C \subseteq
 
 An operator is \emph{idempotent} when $f(f(x)) = f(x)$ for all $x \in X$, and \emph{extensive} when $x \sqsubseteq f(x)$ for all $x \in X$.
 
+\marginnote{Dually, the \emph{lower closure operator} is monotone, idempotent, and \emph{reductive}, \ie, $f(x) \sqsubseteq x$ for all $x \in X$.}
 \begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
   An \emph{upper closure operator} on a partially ordered set $\langle X, \subseteq \rangle$ is an operator $\rho\in X \to X$ which is monotone, idempotent, and extensive.
 \end{definition}
@@ -628,6 +631,12 @@ At the limit, we obtain the maximal trace semantics.
 The maximal trace semantics is the most precise semantics and fully describes the behavior of programs. However, reasoning about a particular property of a program is often facilitated by the design of a semantics that abstracts away from irrelevant details about program computations.
 In the following, to facilitate reading, we call the maximal trace semantics simply the \emph{trace semantics}.
 
+\begin{remark}[Non-determinism]
+  We say that a program $\defprogram$ is \emph{non-deterministic} whenever there are multiple different traces that share the same prefix. Formally:
+  \begin{gather*}
+    \defprogram \text{ is non-deterministic} \\ \IfF \\ \exists \deftrace \in \finitesequences, \deftrace', \deftrace'' \in \finiteinfinitesequences.\spacer \deftrace' \neq \deftrace'' \land \concat{\deftrace}{\deftrace'} \in \tracesemantics \land \concat{\deftrace}{\deftrace''} \in \tracesemantics
+  \end{gather*}
+\end{remark}
 
 \subsection{Collecting Semantics}
 \labsec{collecting-semantics}
@@ -675,33 +684,87 @@ Abstract interpretation provides a systematic and uniform way to relate semantic
 These semantics are organized in a hierarchy, where the collecting semantics is the most precise semantics and all other semantics interrelate at different levels \sidecite{Cousot2002,Cousot2024b}.
 
 
+
 \subsection{Galois Connection}
 \labsec{galois-connection}
 
-The corespondence between the semantics in the hierarchy is established by Galois connections formalizing the abstraction relation between the semantics.
+Galois connections\sidecite{Schmidt1953} are a fundamental concept in abstract interpretation that relate two partially ordered sets.
+They formalize the correspondence between concrete and abstract properties, and provide a systematic way to derive abstract semantics from concrete semantics.
+
+\begin{definition}[Galois Connection]\labdef{galois-connection}
+  Let $\tuple{X}{\sqsubseteq_X}$ and $\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ be two partially ordered sets.
+  The pair $\tuple\abstraction\concretization$ of functions $\abstraction\in X \to {X^\natural}$ and $\concretization\in {X^\natural} \to X$ is a \emph{Galois connection} if and only if, for all $x\in X$ and ${x^\natural}\in {X^\natural}$, it holds that:
+  \begin{align*}
+    x \sqsubseteq_X \concretization({x^\natural}) &\IfF \abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}
+  \end{align*}
+  which we write as $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$.
+\end{definition}
+\marginnote{The definition of Galois connection can also be defined for preorders, most of the results presented hold for preorders as well.}
+
+The poset $\tuple{X}{\sqsubseteq_X}$ is called the \emph{concrete domain}, and $\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ is called the \emph{abstract domain}. The function $\abstraction$ is called the \emph{abstraction} and $\concretization$ is called the \emph{concretization} function, or right-left adjoints.
+The intuition behind Galois connections is that properties in a concrete domain $X$ are approximated by abstract properties in ${X^\natural}$.
+The concretization function $\concretization$ provides the concrete meaning $\concretization({x^\natural})$ of an abstract property ${x^\natural}\in {X^\natural}$, that is, $\concretization({x^\natural})$ is the least precise element of $X$ that is overapproximated by the abstract property ${x^\natural}$. As a consequence, any concrete property $x\in X$ below $\concretization({x^\natural})$, \ie, $x \sqsubseteq_X \concretization({x^\natural})$, is approximated by ${x^\natural}$.
+Whenever $x \sqsubseteq_X \concretization({x^\natural})$, we say that the abstract property ${x^\natural}$ is a \emph{sound} overapproximation of the concrete property $x$. That is, $x$ is a stronger property than $\concretization({x^\natural})$, the stronger the abstract property, the more precise is the abstraction.
+
+The implication $\abstraction(x) \sqsubseteq_{X^\natural} {x^\natural} \implies x \sqsubseteq_X \concretization({x^\natural})$ holds when ${x^\natural} = \abstraction(x)$ so that $x \sqsubseteq_X \concretization(\abstraction(x))$, meaning that $\abstraction(x)$ is a sound overapproximation of $x$.
+The other implication $x \sqsubseteq_X \concretization({x^\natural}) \implies \abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}$ means that for any sound overapproximation ${x^\natural}$ of $x$, $\abstraction(x)$ is more precise than ${x^\natural}$. It follows that $\abstraction(x)$ is the most precise sound overapproximation of $x$. We say that the abstraction of a concrete property is \emph{exact} whenever $\concretization(\abstraction(x)) = {x^\natural}$. In such case, the abstraction loses no information about the concrete property.
+
+We write $\tuple{X}{\sqsubseteq_X}\galoiS{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ when $\abstraction$ is surjective (called a \emph{Galois insertion}), $\tuple{X}{\sqsubseteq_X}\Galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ when $\concretization$ is surjective (called a \emph{Galois retraction}), and $\tuple{X}{\sqsubseteq_X}\GaloiS{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ for a bijection (called a \emph{Galois correspondence}).
+
+In Galois connections, the abstraction $\abstraction$ and concretization $\concretization$ are monotonic functions, that is, for all $x, x' \in X$ and ${x^\natural}_1, {x^\natural}_2 \in {X^\natural}$, it holds that $x \sqsubseteq_X x' \implies \abstraction(x) \sqsubseteq_{X^\natural} \abstraction(x')$ and ${x^\natural}_1 \sqsubseteq_{X^\natural} {x^\natural}_2 \implies \concretization({x^\natural}_1) \sqsubseteq_X \concretization({x^\natural}_2)$. The composition $\concretization \circ \abstraction \in X \to X$ is extensive, \ie, $x \sqsubseteq_X \concretization(\abstraction(x))$ for all $x \in X$, meaning that the loss of information in the abstraction is sound. The composition $\abstraction \circ \concretization\in {X^\natural} \to {X^\natural}$ is reductive, \ie, ${x^\natural} \sqsubseteq_{X^\natural} \abstraction(\concretization({x^\natural}))$ for all ${x^\natural} \in {X^\natural}$, meaning that the concretization introduces no loss of information. The abstraction $\abstraction$ preservers existing lubs, and the concretization $\concretization$ preservers existing glbs.
+
+\begin{remark}
+  In a Galois Connection, one adjoint uniquely determines the other:
+  \begin{align*}
+    \abstraction(x) &\DefeQ \bigjoin \setdef{{x^\natural} \in {X^\natural}}{x \sqsubseteq_X \concretization({x^\natural})} \\
+    \concretization({x^\natural}) &\DefeQ \bigmeet \setdef{x \in X}{\abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}}
+  \end{align*}
+\end{remark}
 
 
-\subsection{Reachable State Semantics}
-\labsec{reachable-state-semantics}
+It follows that if $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ and $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization'}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ are two Galois connections, then $\concretization = \concretization'$. If $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ and $\tuple{X}{\sqsubseteq_X}\galois{\abstraction'}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ are two Galois connections, then $\abstraction = \abstraction'$.\sidenote{It is important to note that the two Galois connections must have the same concrete and abstract partial orders $\sqsubseteq_X$ and $\sqsubseteq_{X^\natural}$, otherwise the abstractions or concretizations may no longer be equal.}
 
-\subsection{Fixpoint Transfer}
-\labsec{fixpoint-transfer}
+Galois connections are also important because they compose, that is, given two Galois connections $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{Y}{\sqsubseteq_Y}$ and $\tuple{Y}{\sqsubseteq_Y}\galois{\abstraction'}{\concretization'}\tuple{Z}{\sqsubseteq_Z}$, then $\tuple{X}{\sqsubseteq_X}\galois{\abstraction' \circ \abstraction}{\concretization \circ \concretization'}\tuple{Z}{\sqsubseteq_Z}$ is a Galois connection.
 
-\subsection{Fixpoint Approximation}
-\labsec{fixpoint-approximation}
+Based on Galois connections, abstract interpretation provides a \emph{constructive} way to derive program semantics by successive abstractions of the trace semantics.
 
-\subsection{Widening}
-\labsec{widening}
-
-\subsection{Narrowing}
-\labsec{narrowing}
+\begin{example}
+  \denis{Example showing the reachable state semantics as an abstraction of the maximal trace semantics.}
+\end{example}
 
 
 \section{A Small Imperative Language}
 \labsec{a-small-imperative-language}
 
+The formal treatment introduced in the previous section is language independent.
+Here, we consider a simple imperative programming language to instantiate the transition system model and define the semantics of programs.
+
 \subsection{Syntax}
 \labsec{syntax}
+
+Our programming language features the classic iterative constructs such as while loops and assignments, and the basic control flow constructs such as conditionals and compositions.
+To keep the language simple, we do not consider function calls, recursion, or pointers.
+The set $\variables$ is the finite set of (statically allocated) program variables, the data type is $\values \in \{\N, \Z, \R\}$ for arithmetic and $\B$ for boolean expressions.
+The set $\inputvariables \subseteq \variables$ contains the input variables.
+\reffig{syntax} shows the syntax of our small imperative language, where $\defvariable\in\variables$ is a variable, $\defvalue\in\values$ is a constant value, $\defaexp$ is an arithmetic expression, $\defbexp$ is a boolean expression, and $\defstmt$ is a program statement.
+
+\begin{marginfigure}
+  \begin{align*}
+    \defaexp \grammardef \defvalue  \sep \defvariable \sep \defaexp + \defaexp \sep \defaexp - \defaexp  \\
+    \defbexp \grammardef \defaexp \leq \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
+    \defstmt \grammardef \skipstmt
+    \sep \assignstmt
+    \sep \assertstmt\\
+    \linesep \ifstmt \\
+    \linesep \whilestmt \\
+    \linesep \compstmt \\
+    \defprogram \grammardef \progstmt
+  \end{align*}
+\caption{Syntax of the small imperative language.}
+\labfig{syntax}
+\end{marginfigure}
+
+A program $\defprogram$ consists of
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
@@ -731,28 +794,6 @@ The corespondence between the semantics in the hierarchy is established by Galoi
 \subsection{Backward Reachability State Semantics}
 \labsec{backward-reachability-state-semantics}
 
-\begin{definition}[Validation]
-  \labdef{validation}
-  \begin{align}
-    \labeq{validation}
-    \defprogram \satisfies \defproperty \iff \collectingsemantics \subseteq \defproperty
-  \end{align}
-\end{definition}
-
-\begin{definition}[Collecting Semantics]
-  \labdef{collecting-semantics}
-  \begin{align}
-    \labeq{collecting-semantics}
-    \collectingsemanticsnoparam \defeq \{ \dependencysemanticsnoparam \}
-  \end{align}
-\end{definition}
-
-\begin{definition}[Dependency Semantics]
-  \labdef{dependency-semantics}
-  \begin{align*}
-    \dependencysemanticsnoparam \DefeQ \setdef{\inputoutputtuple{\defseq}}{\defseq\in\tracesemanticsnoparam}
-  \end{align*}
-\end{definition}
 
 \begin{definition}[Backward Semantics]\labdef{backward-semantics}
 \begin{align*}

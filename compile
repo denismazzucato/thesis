@@ -62,7 +62,8 @@ cat pdf/thesis.bbl
 echo "Printed bibliography"
 
 # replace the first line of kaobook.tex with the citation key
-CITATION_KEY=$(./find_nth_cit.sh pdf/thesis.bbl 42)
+# CITATION_KEY=$(./find_nth_cit.sh pdf/thesis.bbl 42)
+CITATION_KEY='Urban2018'
 echo "Citation key: $CITATION_KEY"
 run_sed "1s/.*/\\\def\\\customcitkey{$CITATION_KEY}/" src/chapters/kaobook.tex
 echo "Updated kaobook.tex with \\\def\\\customcitkey{$CITATION_KEY} on the first line."

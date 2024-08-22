@@ -291,7 +291,7 @@ The \symbolic{} domain \sidecite{Wang2018b} combines \boxes{} with symbolic cons
 
 The \deeppoly{} domain \sidecite{Singh2019} associates to each neuron $x$ of a neural network concrete lower and upper bounds $l$ and $u$ as well as symbolic bounds expressed as linear combinations of neurons in the preceding layer of the network.
 %
-The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are over-approximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (\ie, above when $u \leq -l$, and below otherwise).
+The concrete bounds are computed by back-substitution of the symbolic bounds up to the input layer. Non-fixed \relu{} nodes are overapproximated by partially retaining dependencies with preceding neurons using the tighter convex approximation between those shown in \reffig{deeppoly} (\ie, above when $u \leq -l$, and below otherwise).
 
 \begin{marginfigure}
   \centering
