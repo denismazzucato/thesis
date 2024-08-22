@@ -2427,8 +2427,8 @@ Hyperproperties relate different sets of program executions and can express secu
 \textcite{Clarkson2010} categorized hyperproperties into safety and liveness, respectively termed hypersafety and hyperliveness.
 The $k$-hypersafety properties are those that require sets of $k$ traces to be disproved, a category verifiable with traditional safety property techniques by $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}.
 Note, however, that direct approaches using self-composition can be computationally expensive \sidecite{Antonopoulos2017}.
-In our work, we avoid categorizing program properties as hyperproperties because a different abstract interpretation theory is not needed to verify them \sidecite{Cousot2019},
-the classical approach \sidecite{Cousot1977} is sufficient.
+In our work, we prefer ``program properties`` to the term ``hyperproperties'' because a different abstract interpretation theory is not needed to verify them \sidecite{Cousot2019},
+the classical approach for trace properties \sidecite{Cousot1977} is sufficient.
 However, it is worth noting that the $\defbound$-bounded impact property is a hyperproperty.
 More specifically, when applied to the \rangename{} quantifier, $\boundedrange$ is a 2-hypersafety property, as it requires 2 traces to be disproved, \ie, two traces yielding extreme values for the output variable.
 Conversely, when applied to the \outcomesname{} quantifier, $\boundedoutcomes$ is a $(k+1)$-hypersafety property, as it requires $k+1$ traces to be disproved, \ie, where the $k+1$ trace all yield a different output value.
