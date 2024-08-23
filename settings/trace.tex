@@ -59,6 +59,10 @@
 \newcommand*{\tracearrow}{\rightarrow\dots\rightarrow}
 \newcommand*{\nonterminatingtracearrow}{\rightarrow\dots}
 \newcommandx{\tracetuple}[2]{(#1, #2)}
-\newcommand*{\loc}[1]{l_{#1}}
+\newcommand*{\loc}[1][0]{\blue{l_{#1}}}
 \newcommand*{\locinit}{\loc{0}}
 \newcommand*{\locend}{\loc{\omega}}
+
+\newcommand{\smallloc}{{}^{\loc[{}]}}
+\newcommand{\bigloc}{\loc[{}]}
+\newcommand{\locs}{\blue{\mathcal{L}}}

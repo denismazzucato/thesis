@@ -57,18 +57,18 @@ We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the gl
   The semantics $\countertracesemanticsnoparam\in\tracetype$ is defined as:
 \begin{align*}
   % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
-  &\countertracesemanticsnoparam \semanticsof{\skipstmt}\defsetoftraces \DefeQ
+  &\countertracesemanticsnoparam \semanticsof{\pskipstmt}\defsetoftraces \DefeQ
   \setdef{\concat{\defstate \defstate}{\deftrace}}{\defstate \in \state \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\assignstmt}\defsetoftraces \DefeQ \\
+  &\countertracesemanticsnoparam \semanticsof{\passignstmt}\defsetoftraces \DefeQ \\
   % \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
   &\quad \setdef{\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace} \in \defsetoftraces}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\assertstmt}\defsetoftraces \DefeQ
+  &\countertracesemanticsnoparam \semanticsof{\passertstmt}\defsetoftraces \DefeQ
   % \bexpsemantics\defsetoftraces
   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  &\countertracesemanticsnoparam \semanticsof{\pifstmt}\defsetoftraces \DefeQ
   \\
   &\quad
   % \bexpsemantics(\countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces)
@@ -76,14 +76,14 @@ We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the gl
   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
   &\quad \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\whilestmt}\defsetoftraces \DefeQ
+  &\countertracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetoftraces \DefeQ
   \lfp{}\fixpointfunction\\
   % &\quad \fixpointfunction(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg \defbexp} \defsetoftraces \SetjoiN  \bexpsemantics (\countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X))
   &\quad \fixpointfunction(X) \DefeQ
   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces} \SetjoiN {} \\
   &\qquad   \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics \defstate \land \concat{\defstate}{\deftrace} \in \countertracesemanticsnoparam \semanticsof{\defstmt} \bwddecr(X)}
   \\
-  &\countertracesemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defsetoftraces \DefeQ
+  &\countertracesemanticsnoparam \semanticsof{\pcompstmt}\defsetoftraces \DefeQ
   \countertracesemanticsnoparam \semanticsof{\defstmt}( \countertracesemanticsnoparam \semanticsof{\defstmt'}\defsetoftraces)
   \\
   &\countertracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ \\

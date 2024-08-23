@@ -2,8 +2,8 @@
 
 
 \pagelayout{margin} % Restore margins
-\chapter*{Kaobook Template Motivation}
-\addcontentsline{toc}{chapter}{Kaobook Template Motivation}
+\chapter*{A Template with a Wide Margin}
+\addcontentsline{toc}{chapter}{A Template with a Wide Margin}
 
 For this manuscript, we have selected the \textsc{Kaobook} class,\sidenote{\rurl{github.com/fmarotta/kaobook}} a template featuring a wide margin specifically designed for writing books and graduate-level theses, based on Ken Arroyo Ohori's doctoral thesis\sidenote{\rurl{3d.bk.tudelft.nl/ken/en/thesis}} and on the \textsc{Tufte}-\LaTeX{} class,\sidenote{\rurl{ctan.org/pkg/tufte-latex}} offering a layout that is both elegant and practical.
 
@@ -32,11 +32,12 @@ This layout lets the main narrative to take the spotlight while all the extra bi
 With over 200 references in this manuscript, the use of side references becomes a lifesaver.
 The hassle of digging back and forth through the bibliography to remember which citation matches \sidecite{\customcitkey} is a thing you will not endure in this thesis.
 Speaking of citations, as every computer scientist knows, ``42'' is the answer of Life, the Universe and Everything, according to Douglas Adams' \emph{The Hitchhiker's Guide to the Galaxy}.\sidenote{\rurl{en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker\%27s_Guide_to_the_Galaxy\#The_Answer_to_the_Ultimate_Question_of_Life,_the_Universe,_and_Everything_is_42}}
-But for this thesis, the 42nd citation holds even more weight--it is the foundational work, written by my supervisor Caterina Urban in 2018, for the property of input data usage, unifying existing literature on information flow analyses within the framework of abstract interpretation\cite{\absintkey}. In essence, \cite{\customcitkey} inspired my academic journey and the last four years of my life.
+Right on point, the 42nd citation (in citation order) is where this thesis began. Written by my supervisor Caterina Urban in 2018, \cite{Urban2018} is the foundational work for the property of input data usage, unifying existing literature on information flow analyses within the formal framework of abstract interpretation\cite{\absintkey}. In essence, \cite{\customcitkey} inspired my academic journey and the last four years of my life.
 
-The template also allows for brief restatements of definitions and theorems in the margins, linked to their original appearances.
-This means you will not flip through the pages up and down this manuscript--once a concept is introduced, it conveniently pops up in the margin whenever relevant again.
-Recalling what was \refdef*{complete-lattice} has never been easier, just a glance away.
+Note how multiple citations of the same work are automatically merged in the margin, for example, \cite{\customcitkey} in the paragraph above or \cite{\absintkey} within \reffig{denis-patrick}.
+Additionally, the template allows for brief restatements of definitions and theorems, linked to their original appearances.
+Readers will not flip through the pages up and down this manuscript--once a concept is introduced, it conveniently pops up in the margin whenever relevant again.
+Recalling what was \refdef*{complete-lattice} has never been easier, just a look in the margin.
 For the \textsc{pdf} version of this thesis, you can also click on the title of the margin definition to jump to its original appearance in the text.
 This keeps the discussion clear and accessible, which is especially valuable in a complex and detailed work like a PhD thesis. In short:
 \begin{center}\itshape

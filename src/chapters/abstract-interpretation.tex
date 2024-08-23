@@ -83,6 +83,7 @@ As we did not specify whether natural numbers include zero, this notation comes 
 For example, $\N_{\ge 0}^{+\infty}$ denotes the set of natural numbers including zero and $+\infty$, on the other hand, $\N_{> 0}$ denotes the set of strictly positive natural numbers.
 
 Given two bounds $l, u \in \values$, we define the interval $[l, u]$ as the set of numbers between $l$ and $u$, \ie, $[l, u] \defeq \setdef{n \in \values}{l \le n \le u}$. Hence, $[l, u] = \emptyset$ when $l > u$.
+For the sake of compactness, we may write both the logical predicate and the numerical type in the same notation, \eg, to define two natural numbers $x, y$ that are not equal, we could write $x \neq y \in \N$ instead of $x, y \in \N \land x \neq y$.
 
 
 \subsection{Relations}
@@ -528,6 +529,7 @@ In the following, the partial order between the fixpoint iterates is called the 
 \labsec{notations-of-abstract-interpretation}
 
 \emph{Abstract Interpretation} \sidecite{Cousot1977,Cousot1978} is a general theory for approximating the semantics of programs as a unifying framework for static program analysis, co-invented in the late 1970s by Patrick and Radhia Cousot.
+Various books are available for an in-depth study of the topic \sidecite{Cousot2021,Rival2020}.
 In the following, we introduce the notations, main definitions, and results that will be used throughout the rest of this thesis.
 
 \subsection{Transition System}
@@ -744,35 +746,62 @@ Here, we consider a simple imperative programming language to instantiate the tr
 
 Our programming language features the classic iterative constructs such as while loops and assignments, and the basic control flow constructs such as conditionals and compositions.
 To keep the language simple, we do not consider function calls, recursion, or pointers.
-The set $\variables$ is the finite set of (statically allocated) program variables, the data type is $\values \in \{\N, \Z, \R\}$ for arithmetic and $\B$ for boolean expressions.
+The set $\variables$ is the finite set of (statically allocated) program variables, the data type is $\values \in \{\N, \Z, \R\}$ for arithmetic and $\B$\marginnote{the set of boolean values is $\B \defeq \{\true,\false\}$ where $\true$ is true and $\false$ is false.} for boolean expressions.
 The set $\inputvariables \subseteq \variables$ contains the input variables.
-\reffig{syntax} shows the syntax of our small imperative language, where $\defvariable\in\variables$ is a variable, $\defvalue\in\values$ is a constant value, $\defaexp$ is an arithmetic expression, $\defbexp$ is a boolean expression, and $\defstmt$ is a program statement.
+\reffig{syntax} shows the syntax of our small imperative language, where $\defvariable\in\variables$ is a variable, $defvalue\in\values$ is a constant value, $\defaexp$ is an arithmetic expression, $\defbexp$ is a boolean expression, and $\defstmt$ is a program statement.
 
 \begin{marginfigure}
   \begin{align*}
-    \defaexp \grammardef \defvalue  \sep \defvariable \sep \defaexp + \defaexp \sep \defaexp - \defaexp  \\
-    \defbexp \grammardef \defaexp \leq \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
-    \defstmt \grammardef \skipstmt
-    \sep \assignstmt
-    \sep \assertstmt\\
-    \linesep \ifstmt \\
-    \linesep \whilestmt \\
-    \linesep \compstmt \\
-    \defprogram \grammardef \progstmt
+    \defaexp \grammardef \defvalue \\
+      \linesep \defvariable \\
+      \linesep \defaexp + \defaexp \\
+      \linesep \defaexp - \defaexp \\
+      \linesep \randval(l, u) \tag{$l\in\Zinf \land l < u$} \\
+    \defbexp \grammardef \defaexp \leq \defvalue \\
+      \linesep \defaexp = \defvalue \\
+      \linesep \defbexp \land \defbexp \\
+      \linesep \lnot \defbexp \\
+    \defstmt \grammardef \lskipstmt\\
+      \linesep \lassignstmt\\
+      \linesep \lassertstmt\\
+      \linesep \lifstmt \\
+      \linesep \lwhilestmt \\
+      \linesep \lcompstmt \\
+    \defprogram \grammardef \lprogstmt \tag{$\bigloc \in \locs$}
   \end{align*}
 \caption{Syntax of the small imperative language.}
 \labfig{syntax}
 \end{marginfigure}
 
-A program $\defprogram$ consists of
+The entry point of a program $\defprogram$ is a statement $\defstmt$, denoted by $\progstmt$, followed by a unique program location $\bigloc\in\locs$.
+Another unique program location appears within each statement.
+Since we rarely need to explicitly specify program locations, most of the time we do not report them to improve clarity.
+A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment statement $\assignstmt$, an assertion statement $\assertstmt$, a conditional statement $\pifstmt$, a while statement $\pwhilestmt$, or a composition statement $\pcompstmt$.
+
+Arithmetic expressions $\defaexp$ are either a variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$.\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.} The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or--generally--uncertainty in the program.
+%
+Boolean expressions $\defbexp$ are either a comparison between arithmetic values $\defaexp \leq \defvalue$ and $\defaexp = \defvalue$, a conjunction $\defbexp \land \defbexp$, or a negation $\lnot \defbexp$.
+
+\begin{remark}[{Syntactic Sugar}]
+  The syntax depicted in \reffig{syntax} is minimalistic. Through \emph{syntactic sugar}, we can extend the language with additional constructs that are not part of the core language but can be expressed in terms of the core constructs. For instance, we can define a shorthand version of the conditional statement as just $\shortifstmt$ without the else branch. Such syntactic sugar expands to $\ifstmt[\defstmt][\skipstmt]$.
+
+  Similarly, we can reconstruct boolean expressions as well: $\defbexp \lor \defbexp'$ is expanded to $\lnot(\lnot\defbexp \land \lnot\defbexp')$ by De Morgan's laws.
+\end{remark}
+
+We could have been ever more minimalistic, \eg, all arithmetic expressions could have been defined from $1$, $-$, and iteration, or all boolean expressions with $<$ and $\texttt{nand}$. The syntax in \reffig{syntax} is a trade-off between minimalism, simplicity, and expressiveness.
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
 
+Here, we instantiate the general definition of transition system and maximal trace semantics, \cf{} \refdef{maximal-trace-semantics}, for our small imperative language.
+
+The set $\state$ is a (potentially infinite) set of program states, mapping tuples of variables and locations to values.
+
 
 \begin{definition}[State]\labdef{state}
+  The set of \emph{program states} $\state$ is defined as:
   \begin{align*}
-    \state \IN \variables \to \values
+    \state \IN \pair\variables\locs \to \values
   \end{align*}
 \end{definition}
 

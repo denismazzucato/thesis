@@ -2,14 +2,36 @@
 \newcommand{\skipstmt}{\textup{\texttt{skip}}}
 \newcommandx{\assignstmt}[2][1=\deflhs,2=\defaexp]{#1 := #2}
 \newcommandx{\assertstmt}[1][1=\defbexp]{\textup{\texttt{assert }} #1}
-\newcommandx{\compstmt}[2][1=\defstmt,2={\defstmt'}]{#1;~#2}
-\newcommandx{\ifstmt}[3][1=\defstmt,2={\defstmt'},3=\defbexp]{\textup{\texttt{if }}  #3 \textup{\texttt{ then }} #1 \textup{\texttt{ else }} #2}
+\newcommandx{\compstmt}[2][1=\defstmt,2={\defstmt}]{#1;~#2}
+\newcommandx{\ifstmt}[3][1=\defstmt,2={\defstmt},3=\defbexp]{\textup{\texttt{if }}  #3 \textup{\texttt{ then }} #1 \textup{\texttt{ else }} #2}
+\newcommandx{\shortifstmt}[2][1=\defstmt,2=\defbexp]{\textup{\texttt{if }}  #2 \textup{\texttt{ then }} #1}
 \newcommandx{\whilestmt}[2][1=\defstmt,2=\defbexp]{\textup{\texttt{while }}  #2 \textup{\texttt{ do }} #1 \textup{\texttt{ done}}}
 \newcommand{\progstmt}{\textup{\texttt{entry }} \defstmt}
 
-\newcommand{\grammardef}{\quad&{::=}\quad}
+
+\newcommand{\pskipstmt}{\textup{\texttt{skip}}}
+\newcommandx{\passignstmt}[2][1=\deflhs,2=\defaexp]{#1 := #2}
+\newcommandx{\passertstmt}[1][1=\defbexp]{\textup{\texttt{assert }} #1}
+\newcommandx{\pcompstmt}[2][1=\defstmt,2={\defstmt'}]{#1;~#2}
+\newcommandx{\pifstmt}[3][1=\defstmt,2={\defstmt'},3=\defbexp]{\textup{\texttt{if }}  #3 \textup{\texttt{ then }} #1 \textup{\texttt{ else }} #2}
+\newcommandx{\pshortifstmt}[2][1=\defstmt,2=\defbexp]{\textup{\texttt{if }}  #2 \textup{\texttt{ then }} #1}
+\newcommandx{\pwhilestmt}[2][1=\defstmt,2=\defbexp]{\textup{\texttt{while }}  #2 \textup{\texttt{ do }} #1 \textup{\texttt{ done}}}
+\newcommand{\pprogstmt}{\textup{\texttt{entry }} \defstmt}
+
+\newcommand{\lskipstmt}{\smallloc\skipstmt}
+\newcommandx{\lassignstmt}[2][1=\deflhs,2=\defaexp]{\smallloc\assignstmt[#1][#2]}
+\newcommandx{\lassertstmt}[1][1=\defbexp]{\smallloc\assertstmt[#1]}
+\newcommandx{\lcompstmt}[2][1=\defstmt,2=\defstmt]{\compstmt[#1][#2]}
+\newcommandx{\lifstmt}[3][1=\defstmt,2=\defstmt,3=\defbexp]{\texttt{if } \smallloc #3 \texttt{ then }  #1  \texttt{ else }  #2 }
+\newcommand{\lifforwhilestmt}{\texttt{if } \smallloc \defbexp \texttt{ then }  \defstmt  \texttt{ else }  \counter := \counter + 1 }
+\newcommandx{\lwhilestmt}[2][1=\defstmt,2=\defbexp]{\texttt{while } \smallloc #2 \texttt{ do } #1 \texttt{ done} }
+\newcommand{\lprogstmt}{\progstmt\smallloc}
+
+\newcommand{\randval}{\texttt{rand}}
+
+\newcommand{\grammardef}{\spacer&{::=}\spacer}
 \newcommand{\sep}{~|~}
-\newcommand{\linesep}{\quad&\hphantom{::}|~\,\quad}
+\newcommand{\linesep}{\spacer&\hphantom{::}|~\,\spacer}
 \newcommand{\updatemem}[3]{#1[#2 \leftarrow #3]}
 \newcommand{\fixpointfunction}{\textup{F}}
 \newcommand{\incr}{\textup{\textsc{Incr}}_\counter}
