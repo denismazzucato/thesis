@@ -320,7 +320,7 @@ It is easy to note that a nonaligned angle of approach corresponds to a consider
   \centering
   \begin{tikzpicture}
     \node (linit) at (0,3) {$\locinit$};
-    \node (lend) at (2,3) {$\loc{10}$};
+    \node (lend) at (2,3) {$\loc[10]$};
     \draw[->] (linit) -- (lend);
 
     % Define the positions of the nodes
@@ -365,7 +365,7 @@ It is easy to note that a nonaligned angle of approach corresponds to a consider
     \centering
     \begin{tikzpicture}
       \node (linit) at (0,3) {$\locinit$};
-      \node (lend) at (2,3) {$\loc{10}$};
+      \node (lend) at (2,3) {$\loc[10]$};
       \draw[->] (linit) -- (lend);
 
       % Define the positions of the nodes
@@ -598,7 +598,7 @@ On the other hand, non-deterministic statements in the program may mislead $\out
   % \marginnote[*3]{
   %   \begin{tikzpicture}[scale=0.8]
   %     \node (linit) at (-0.9,2) {$\locinit:$};
-  %     \node (lend) at (-0.9,0) {$\loc{10}:$};
+  %     \node (lend) at (-0.9,0) {$\loc[10]:$};
   %     % Define the positions of the nodes
   %     \node (TT) at (0,2) {${\tuple\true\true}$};
   %     \node (TF) at (1,2) {${\tuple\true\false}$};
@@ -900,16 +900,16 @@ Formally, the $\qusedname$ impact quantifier is defined as follows:
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 0\rangle},\\
-        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 1\rangle},\\
-        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{3}}{\langle 2\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc[3]}{\langle 0\rangle},\\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc[3]}{\langle 1\rangle},\\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc[3]}{\langle 2\rangle}
       \end{array}
     \right\}
   \end{align*}
   \begin{marginfigure}[*-4]
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{3}:$};
+      \node (lend) at (-0.9,0) {$\loc[3]:$};
 
       % Define the positions of the nodes
       \node (0) at (0,2) {${\langle 0 \rangle}$};
@@ -951,9 +951,9 @@ random(x):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \anyvalue\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \anyvalue\rangle}
       \end{array}
     \right\}
   \end{align*}
@@ -961,7 +961,7 @@ random(x):
   \begin{marginfigure}[*-5]
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{3}:$};
+      \node (lend) at (-0.9,0) {$\loc[3]:$};
 
       % Define the positions of the nodes
       \node (0) at (0,2) {${\langle 0 \rangle}$};
@@ -1010,16 +1010,16 @@ mix1(x):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc{6}}{\langle 0\rangle}, \\
-        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}, \\
-        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc{6}}{\langle \anyvalue\rangle}
+        \tracetuple{\locinit}{\langle 0\rangle}\tracearrow\tracetuple{\loc[6]}{\langle 0\rangle}, \\
+        \tracetuple{\locinit}{\langle 1\rangle}\tracearrow\tracetuple{\loc[6]}{\langle \anyvalue\rangle}, \\
+        \tracetuple{\locinit}{\langle 2\rangle}\tracearrow\tracetuple{\loc[6]}{\langle \anyvalue\rangle}
       \end{array}
       \right\}
   \end{align*}
   \begin{marginfigure}[*-2]
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{6}:$};
+      \node (lend) at (-0.9,0) {$\loc[6]:$};
 
       % Define the positions of the nodes
       \node (0) at (0,2) {${\langle 0 \rangle}$};
@@ -1067,18 +1067,18 @@ mix2(x, y):
     =
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \true\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}, \\
-        \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{5}}{\langle \false\rangle}
+        \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc[5]}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc[5]}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[5]}{\langle \true\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[5]}{\langle \false\rangle}, \\
+        \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc[5]}{\langle \false\rangle}
       \end{array}
       \right\}
   \end{align*}
   \begin{marginfigure}
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{5}:$};
+      \node (lend) at (-0.9,0) {$\loc[5]:$};
 
       % Define the positions of the nodes
       \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -1182,17 +1182,17 @@ The trace semantics of \refprog{id2} is:
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
 \begin{marginfigure}[*-4]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{3}:$};
+    \node (lend) at (-0.9,0) {$\loc[3]:$};
 
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -1221,18 +1221,18 @@ Let us consider the bigger set of traces $\defsetoftraces \supseteq \tracesemant
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
 \begin{marginfigure}[*-8]
   \begin{tikzpicture}[scale=0.8]
     % \node (linit) at (-0.9,2) {$\locinit:$};
-    % \node (lend) at (-0.9,0) {$\loc{3}:$};
+    % \node (lend) at (-0.9,0) {$\loc[3]:$};
 
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -1264,19 +1264,19 @@ Lastly, let us enlarge again the set of traces to $\defsetoftraces' \supseteq \d
   =
   \left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \true\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}, \\
-      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc{3}}{\langle \false\rangle}
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \true, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \true\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \true\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}, \\
+      \tracetuple{\locinit}{\langle \false, \false\rangle}\tracearrow\tracetuple{\loc[3]}{\langle \false\rangle}
     \end{array}
     \right\}
 \end{align*}
 \begin{marginfigure}[*-6]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{6}:$};
+    \node (lend) at (-0.9,0) {$\loc[6]:$};
 
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -1577,7 +1577,7 @@ Before defining the concretization, we show an example where not all subsets of 
 \marginnote{
   \begin{tikzpicture}[scale=0.9]
     \node (linit) at (-0.7,2) {$\locinit:$};
-    \node (lend) at (-0.7,0) {$\loc{3}:$};
+    \node (lend) at (-0.7,0) {$\loc[3]:$};
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
     \node (TF) at (1,2) {${\tuple\true\false}$};
@@ -1602,14 +1602,14 @@ Before defining the concretization, we show an example where not all subsets of 
     \multiconcretization(\multisemanticsnoparam\semanticsof{\texttt{mix2}})\buckets \spacearound{=}
     \setof*{\left\{
     \begin{array}{l}
-      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \anyvalue\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}
+      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc[3]}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc[3]}{\langle \false\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc[3]}{\langle \anyvalue\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc[3]}{\langle \false\rangle}}
     \end{array}
     \right\}}
   \end{align*}
-  % where the dependency $\tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}$ is the result of the over-approximation.
+  % where the dependency $\tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc[3]}{\langle \false\rangle}}$ is the result of the over-approximation.
   As noted in \refexample{qused-not-monotonic}, the $\qusedname_{\{\texttt{x}\}}$ applied to the biggest set of the concretized dependencies above is 1.
   If we assume the abstract impact returns the bound 1, \ie, $\impactinstance(\multisemanticsnoparam\semanticsof{\texttt{mix2}}, \buckets) = 1$, then $\boundconcretization$ should filter from $\multiconcretization(\multisemantics)\buckets$ the sets of dependencies that yield an impact lower than the bound 1 as the validation of the property $\boundedqusedge$ employs the $\ge$ operator in this example.
   In particular, the following set of dependencies is removed:
@@ -1617,10 +1617,10 @@ Before defining the concretization, we show an example where not all subsets of 
     \defsetoftraces \spacearound{=}
     \left\{
     \begin{array}{l}
-      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc{3}}{\langle \true\rangle}}, \\
-      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc{3}}{\langle \false\rangle}}
+      \tuple{\tracetuple{\locinit}{\langle \true, \true\rangle}}{\tracetuple{\loc[3]}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \true, \false\rangle}}{\tracetuple{\loc[3]}{\langle \false\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \true\rangle}}{\tracetuple{\loc[3]}{\langle \true\rangle}}, \\
+      \tuple{\tracetuple{\locinit}{\langle \false, \false\rangle}}{\tracetuple{\loc[3]}{\langle \false\rangle}}
     \end{array}
     \right\}
   \end{align*}

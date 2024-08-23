@@ -13,9 +13,12 @@
 \newcommand*{\statebottom}{\bottom}
 \newcommand*{\statesym}{\state}
 \newcommand*{\finalstates}{\Omega}
+\newcommand*{\initialstates}{\mathcal{I}}
 \newcommand*{\retrieveinput}[1]{#1_0}
 \newcommand*{\retrieveoutput}[1]{#1_\omega}
 \newcommand*{\inputoutputtuple}[1]{\tuple{\retrieveinput{#1}}{\retrieveoutput{#1}}}
+
+\newcommand*{\env}{\mathbb{E}}
 
 \newcommand*{\concat}[2]{{#1}\cdot{#2}}
 \newcommand*{\mergesequences}[2]{{#1}~;~{#2}}
@@ -56,12 +59,13 @@
 \newcommand*{\inputvariableswithouti}{\inputvariables \setminus \{\definputvariable\}}
 \newcommand*{\inputvariableswithoutw}{\inputvariables \setminus \definputvariables}
 
+\newcommand*{\tracestep}[2]{{#1} \rightarrow {#2}}
 \newcommand*{\tracearrow}{\rightarrow\dots\rightarrow}
 \newcommand*{\nonterminatingtracearrow}{\rightarrow\dots}
 \newcommandx{\tracetuple}[2]{(#1, #2)}
 \newcommand*{\loc}[1][0]{\blue{l_{#1}}}
-\newcommand*{\locinit}{\loc{0}}
-\newcommand*{\locend}{\loc{\omega}}
+\newcommand*{\locinit}{\loc[0]}
+\newcommand*{\locend}{\loc[\omega]}
 
 \newcommand{\smallloc}{{}^{\loc[{}]}}
 \newcommand{\bigloc}{\loc[{}]}

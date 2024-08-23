@@ -78,7 +78,7 @@ Let $\N$, $\Z$, and $\R$ be the set of all naturals, integers, and reals, respec
 In general, whenever the precise numerical type is not known or required, we write $\values\in\{\N, \Z, \R\}$ denoting any possible set of numbers.
 We write $\valuesinf$ to denote $\values$ extended with the symbols $-\infty$ and $+\infty$.
 The set $\values_{\ge 0}$ denotes the set of non-negative numbers, \ie, $\values_{\ge 0} \defeq \setdef{n \in \values}{n \geq 0}$.
-Similarly, we can use this notation with other predicates, for instance, $\values_{\le m} \defeq \setdef{n \in \values}{n \leq m}$ denotes the set of numbers less than or equal to $m$.
+Similarly, we can use this notation with other predicates, for instance, $\values_{\le m} \defeq \setdef{n \in \values}{n \le m}$ denotes the set of numbers less than or equal to $m$.
 As we did not specify whether natural numbers include zero, this notation comes in handy as it permits us to be explicit about the inclusion of zero.
 For example, $\N_{\ge 0}^{+\infty}$ denotes the set of natural numbers including zero and $+\infty$, on the other hand, $\N_{> 0}$ denotes the set of strictly positive natural numbers.
 
@@ -196,7 +196,7 @@ Let $\langle X, \sqsubseteq \rangle$ be a partially ordered set and $X'$ be a su
   \item[Greatest Lower Bound] When it exists, the greatest lower bound (glb) of $X'$ is denoted by $\meet X'$: it is a lower bound $x \in X$ of $X'$ such that, for every lower bound $x' \in X$ of $X'$, $x' \sqsubseteq x$.
 \end{description}
 
-% Let $\langle D, \leq \rangle$ be a partially ordered set. The least element of the poset, when it exists, is denoted by $\bot$: $\forall d \in D : \bot \leq d$. Similarly, the greatest element of the poset, when it exists, is denoted by $\top$: $\forall d \in D : d \leq \top$. Note that any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element. Let $X \subseteq D$. A maximal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $x \leq d$. When $X$ has a unique maximal element, it is called maximum and it is denoted by $\max X$. Dually, a minimal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $d \leq x$. When $X$ has a unique minimal element, it is called minimum and it is denoted by $\min X$. An upper bound of $X$ is an element $d \in D$ (not necessarily belonging to $X$) such that, for each $x \in X$, $x \leq d$. The least upper bound (or lub, or supremum) of $X$ is an upper bound $d \in D$ of $X$ and such that, for every upper bound $d' \in D$ of $X$, $d \leq d'$. When it exists, it is unique and denoted by $\bigvee X$ (or $\sup X$). Dually, a lower bound of $X$ is an element $d \in D$ such that, for each $x \in X$, $d \leq x$. The greatest lower bound (or glb, or infimum) of $X$ is a lower bound $d \in D$ of $X$ such that, for every lower bound $d' \in D$ of $X$, $d' \leq d$. When it exists, it is unique and denoted by $\bigwedge X$ (or $\inf X$). Note that the notion of maximal element, maximum, and least upper bound (resp. minimal element, minimum, and greatest lower bound) are different, as illustrated by the following example.
+% Let $\langle D, \le \rangle$ be a partially ordered set. The least element of the poset, when it exists, is denoted by $\bot$: $\forall d \in D : \bot \le d$. Similarly, the greatest element of the poset, when it exists, is denoted by $\top$: $\forall d \in D : d \le \top$. Note that any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element. Let $X \subseteq D$. A maximal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $x \le d$. When $X$ has a unique maximal element, it is called maximum and it is denoted by $\max X$. Dually, a minimal element of $X$ is an element $d \in X$ such that, for each $x \in X$, $d \le x$. When $X$ has a unique minimal element, it is called minimum and it is denoted by $\min X$. An upper bound of $X$ is an element $d \in D$ (not necessarily belonging to $X$) such that, for each $x \in X$, $x \le d$. The least upper bound (or lub, or supremum) of $X$ is an upper bound $d \in D$ of $X$ and such that, for every upper bound $d' \in D$ of $X$, $d \le d'$. When it exists, it is unique and denoted by $\bigvee X$ (or $\sup X$). Dually, a lower bound of $X$ is an element $d \in D$ such that, for each $x \in X$, $d \le x$. The greatest lower bound (or glb, or infimum) of $X$ is a lower bound $d \in D$ of $X$ such that, for every lower bound $d' \in D$ of $X$, $d' \le d$. When it exists, it is unique and denoted by $\bigwedge X$ (or $\inf X$). Note that the notion of maximal element, maximum, and least upper bound (resp. minimal element, minimum, and greatest lower bound) are different, as illustrated by the following example.
 
 % \begin{example}
 % Let us consider the partially ordered set $\langle \setof(\{a, b, c\}), \subseteq \rangle$ represented in \reffig{hasse_diagram} and the subset $X' \defeq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$, . The maximal elements of $X$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$. Thus, the maximum $\max X$ of $X$ does not exist, while its least upper bound is $\sup X = \{a, b, c\}$. Similarly, the minimal elements of $X$ are $\{a\}$, $\{b\}$, and $\{c\}$. Thus, the minimum $\min X$ of $X$ does not exist, while its greatest lower bound is $\inf X = \emptyset$.
@@ -347,9 +347,9 @@ Complete lattices are lattices that additionally require every (possibly infinit
 \subsection{Functions}
 \labsec{functions}
 
-% A partial function $f$ from a set $A$ to a set $B$, written $f : A \rightharpoonup B$, is a binary relation between $A$ and $B$ that pairs each element $x \in A$ with no more than one element $y \in B$. The set of all partial functions from a set $A$ to a set $B$ is denoted by $A \rightharpoonup B$. We write $f(x) = y$ if there exists an element $y$ such that $(x, y) \in f$, and we say that $f(x)$ is defined, otherwise we say that $f(x)$ is undefined. Given a partial function $f : A \rightharpoonup B$, we define its domain as $\text{dom}(f) \triangleq \{x \in A \mid \exists y \in B : f(x) = y\}$. The totally undefined function, denoted by $\emptyset$, has the empty set as domain: $\text{dom}(\emptyset) = \emptyset$. The join of two partial functions $f_1 : A \rightharpoonup B$ and $f_2 : A \rightharpoonup B$ with disjoint domains, denoted by $f_1 \cup f_2 : A \rightharpoonup B$, is defined as follows:
+% A partial function $f$ from a set $A$ to a set $B$, written $f : A \rightharpoonup B$, is a binary relation between $A$ and $B$ that pairs each element $x \in A$ with no more than one element $y \in B$. The set of all partial functions from a set $A$ to a set $B$ is denoted by $A \rightharpoonup B$. We write $f(x) = y$ if there exists an element $y$ such that $(x, y) \in f$, and we say that $f(x)$ is defined, otherwise we say that $f(x)$ is undefined. Given a partial function $f : A \rightharpoonup B$, we define its domain as $\text{dom}(f) \triangle \{x \in A \mid \exists y \in B : f(x) = y\}$. The totally undefined function, denoted by $\emptyset$, has the empty set as domain: $\text{dom}(\emptyset) = \emptyset$. The join of two partial functions $f_1 : A \rightharpoonup B$ and $f_2 : A \rightharpoonup B$ with disjoint domains, denoted by $f_1 \cup f_2 : A \rightharpoonup B$, is defined as follows:
 % \[
-% (f_1 \cup f_2)(x) \triangleq
+% (f_1 \cup f_2)(x) \triangle
 % \begin{cases}
 % f_1(x) & x \in \text{dom}(f_1) \\
 % f_2(x) & x \in \text{dom}(f_2) \\
@@ -370,18 +370,18 @@ Complete lattices are lattices that additionally require every (possibly infinit
 %     \item Surjectivity: $\forall y \in B : \exists x \in A : f(x) = y$
 % \end{itemize}
 
-% A bijective function, also called isomorphism, is both injective and surjective. Two sets $A$ and $B$ are isomorphic if there exists a bijective function $f : A \to B$. The inverse of a bijective function $f : A \to B$ is the bijective function $f^{-1} : B \to A$ defined as $f^{-1} \triangleq \{(b, a) \mid (a, b) \in f\}$.
+% A bijective function, also called isomorphism, is both injective and surjective. Two sets $A$ and $B$ are isomorphic if there exists a bijective function $f : A \to B$. The inverse of a bijective function $f : A \to B$ is the bijective function $f^{-1} : B \to A$ defined as $f^{-1} \triangle \{(b, a) \mid (a, b) \in f\}$.
 
-% Let $\langle D_1, \leq_1 \rangle$ and $\langle D_2, \leq_2 \rangle$ be partially ordered sets. A function $f : D_1 \to D_2$ is said to be monotonic when, for each $x, y \in D_1, x \leq_1 y \implies f(x) \leq_2 f(y)$. It is continuous (or Scott-continuous) when it preserves existing least upper bounds of chains, that is, for each chain $C \subseteq D_1$, if $\bigvee C$ exists then $f(\bigvee C) = \bigvee \{f(x) \mid x \in C\}$. Dually, it is co-continuous when it preserves existing greatest lower bounds of chains, that is, if $\bigwedge C$ exists then $f(\bigwedge C) = \bigwedge \{f(x) \mid x \in C\}$. A complete $\bigvee$-morphism (resp. complete $\bigwedge$-morphism) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
+% Let $\langle D_1, \le_1 \rangle$ and $\langle D_2, \le_2 \rangle$ be partially ordered sets. A function $f : D_1 \to D_2$ is said to be monotonic when, for each $x, y \in D_1, x \le_1 y \implies f(x) \le_2 f(y)$. It is continuous (or Scott-continuous) when it preserves existing least upper bounds of chains, that is, for each chain $C \subseteq D_1$, if $\bigvee C$ exists then $f(\bigvee C) = \bigvee \{f(x) \mid x \in C\}$. Dually, it is co-continuous when it preserves existing greatest lower bounds of chains, that is, if $\bigwedge C$ exists then $f(\bigwedge C) = \bigwedge \{f(x) \mid x \in C\}$. A complete $\bigvee$-morphism (resp. complete $\bigwedge$-morphism) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
 
-% Given a complete lattice $\langle D, \leq, \bigvee, \bigwedge, \bot, \top \rangle$ (resp. a lattice, a cpo, a poset) and a set $S$, the set $S \to D$ of all functions from $S$ to $D$ inherits the complete lattice (resp. lattice, cpo, poset) structure of $D$: $\langle S \to D, \leq, \bigvee, \bigwedge, \bot, \top \rangle$ where the dotted operators are defined by pointwise lifting:
+% Given a complete lattice $\langle D, \le, \bigvee, \bigwedge, \bot, \top \rangle$ (resp. a lattice, a cpo, a poset) and a set $S$, the set $S \to D$ of all functions from $S$ to $D$ inherits the complete lattice (resp. lattice, cpo, poset) structure of $D$: $\langle S \to D, \le, \bigvee, \bigwedge, \bot, \top \rangle$ where the dotted operators are defined by pointwise lifting:
 % \[
 % \begin{aligned}
-% f \leq g & \triangleq \forall s \in S : f(s) \leq g(s) \\
-% \bigvee X & \triangleq \lambda s. \bigvee \{f(s) \mid f \in X\} \\
-% \bigwedge X & \triangleq \lambda s. \bigwedge \{f(s) \mid f \in X\} \\
-% \bot & \triangleq \lambda s. \bot \\
-% \top & \triangleq \lambda s. \top
+% f \le g & \triangle \forall s \in S : f(s) \le g(s) \\
+% \bigvee X & \triangle \lambda s. \bigvee \{f(s) \mid f \in X\} \\
+% \bigwedge X & \triangle \lambda s. \bigwedge \{f(s) \mid f \in X\} \\
+% \bot & \triangle \lambda s. \bot \\
+% \top & \triangle \lambda s. \top
 % \end{aligned}
 % \]
 
@@ -757,7 +757,7 @@ The set $\inputvariables \subseteq \variables$ contains the input variables.
       \linesep \defaexp + \defaexp \\
       \linesep \defaexp - \defaexp \\
       \linesep \randval(l, u) \tag{$l\in\Zinf \land l < u$} \\
-    \defbexp \grammardef \defaexp \leq \defvalue \\
+    \defbexp \grammardef \defaexp \le \defvalue \\
       \linesep \defaexp = \defvalue \\
       \linesep \defbexp \land \defbexp \\
       \linesep \lnot \defbexp \\
@@ -780,7 +780,7 @@ A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment sta
 
 Arithmetic expressions $\defaexp$ are either a variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$.\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.} The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or--generally--uncertainty in the program.
 %
-Boolean expressions $\defbexp$ are either a comparison between arithmetic values $\defaexp \leq \defvalue$ and $\defaexp = \defvalue$, a conjunction $\defbexp \land \defbexp$, or a negation $\lnot \defbexp$.
+Boolean expressions $\defbexp$ are either a comparison between arithmetic values $\defaexp \le \defvalue$ and $\defaexp = \defvalue$, a conjunction $\defbexp \land \defbexp$, or a negation $\lnot \defbexp$.
 
 \begin{remark}[{Syntactic Sugar}]
   The syntax depicted in \reffig{syntax} is minimalistic. Through \emph{syntactic sugar}, we can extend the language with additional constructs that are not part of the core language but can be expressed in terms of the core constructs. For instance, we can define a shorthand version of the conditional statement as just $\shortifstmt$ without the else branch. Such syntactic sugar expands to $\ifstmt[\defstmt][\skipstmt]$.
@@ -793,58 +793,232 @@ We could have been ever more minimalistic, \eg, all arithmetic expressions could
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
 
+
+\begin{marginfigure}
+  \begin{align*}
+    &\aexpsemantics \IN \setof\env \to \setof\values \\
+    &\aexpsemanticsnoparam \semanticsof{\defvalue} \defsetofenvs \DefeQ \{\defvalue\} \\
+    &\aexpsemanticsnoparam \semanticsof{\defvariable} \defsetofenvs \DefeQ \setdef{\defenv(\defvariable)}{\defenv\in\defsetofenvs} \\
+    &\aexpsemanticsnoparam \semanticsof{\defaexp + \defaexp'} \defsetofenvs \DefeQ \\
+      & \quad \setdef*{\defvalue + \defvalue'}{\defvalue \in \aexpsemanticsnoparam \semanticsof{\defaexp}\defsetofenvs \land {} \\ \defvalue' \in \aexpsemanticsnoparam \semanticsof{\defaexp'}\defsetofenvs} \\
+    &\aexpsemanticsnoparam \semanticsof{\defaexp - \defaexp'} \defsetofenvs \DefeQ \\
+      & \quad \setdef*{\defvalue - \defvalue'}{\defvalue \in \aexpsemanticsnoparam \semanticsof{\defaexp}\defsetofenvs \land {} \\ \defvalue' \in \aexpsemanticsnoparam \semanticsof{\defaexp'}\defsetofenvs} \\
+    &\aexpsemanticsnoparam \semanticsof{\randval(l, u)} \defsetofenvs \DefeQ \\
+    & \quad \setdef{\defvalue\in\values}{l \le \defvalue \le u}
+  \end{align*}
+\caption{Semantics of arithmetic expressions.}
+\labfig{aexp-semantics}
+\end{marginfigure}
+
+\begin{marginfigure}
+  \begin{align*}
+    &\bexpsemantics \IN \setof\env \to \setof\env \\
+    &\bexpsemanticsnoparam \semanticsof{\defaexp \le \defvalue} \defsetofenvs \DefeQ \\
+      & \quad \setdef{\defenv\in\defsetofenvs}{\defenv(\defaexp) \le \defvalue} \\
+    &\bexpsemanticsnoparam \semanticsof{\defaexp = \defvalue} \defsetofenvs \DefeQ \\
+      & \quad \setdef{\defenv\in\defsetofenvs}{\defenv(\defaexp) = \defvalue} \\
+    &\bexpsemanticsnoparam \semanticsof{\defbexp \land \defbexp'} \defsetofenvs \DefeQ \\
+      & \quad \bexpsemanticsnoparam \semanticsof{\defbexp}\defsetofenvs \setmeet \bexpsemanticsnoparam \semanticsof{\defbexp'}\defsetofenvs \\
+    &\bexpsemanticsnoparam \semanticsof{\lnot \defbexp} \defsetofenvs \DefeQ \defsetofenvs \setminus \bexpsemanticsnoparam \semanticsof{\defbexp}\defsetofenvs
+  \end{align*}
+\caption{Semantics of boolean expressions.}
+\labfig{bexp-semantics}
+\end{marginfigure}
+
+\begin{marginfigure}
+  \begin{align*}
+    &\initialloc[\plskipstmt] \DefeQ \bigloc \\
+    &\initialloc[\plassignstmt] \DefeQ \bigloc \\
+    &\initialloc[\plassertstmt] \DefeQ \bigloc \\
+    &\initialloc[\plifstmt] \DefeQ \bigloc \\
+    &\initialloc[\plwhilestmt] \DefeQ \bigloc \\
+    &\initialloc[\plcompstmt] \DefeQ \initialloc[\defstmt] \\
+    &\initialloc[\plprogstmt] \DefeQ \initialloc[\defstmt]
+  \end{align*}
+\caption{Initial control points.}
+\labfig{initial}
+\end{marginfigure}
+
 Here, we instantiate the general definition of transition system and maximal trace semantics, \cf{} \refdef{maximal-trace-semantics}, for our small imperative language.
 
-The set $\state$ is a (potentially infinite) set of program states, mapping tuples of variables and locations to values.
+\paragraph{Expression Semantics}
 
 
-\begin{definition}[State]\labdef{state}
-  The set of \emph{program states} $\state$ is defined as:
+An \emph{environment} $\defenv\in\env\defeq\variables \to \values$ is a mapping from a variable $\defvariable\in\variables$ to its value in memory $\defenv(\defvariable)\in\values$.
+The semantics of an arithmetic expression $\defaexp$ is defined as the function $\aexpsemantics\in\setof\env\to\setof\values$ that maps a set of environments $\defsetofenvs$ to the set of values $\aexpsemantics\defsetofenvs$ that the expression $\defaexp$ can evaluate to under the environments in $\defsetofenvs$.
+\reffig{aexp-semantics} shows the definition of $\aexpsemanticsnoparam$.
+
+Similarly, we define the semantics of boolean expressions $\defbexp$ as the function $\bexpsemantics\in\setof\env\to\setof\env$ that filters a set of environments $\defsetofenvs$ to those in which the expression $\defbexp$ holds. The semantics of boolean expressions is defined in \reffig{bexp-semantics}. In the following, we write $\texttt{true}$ and $\texttt{false}$ for the boolean expression that always evaluates to true and false, respectively.
+
+
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{.49\textwidth}
   \begin{align*}
-    \state \IN \pair\variables\locs \to \values
+    &(\defstmt = \skipstmt)\\
+    &\quad\finalloc[\plskipstmt] \DefeQ \finalloc[\defstmt]
+    \\[0.2cm]
+    &(\defstmt = \assignstmt)\\
+    &\quad\finalloc[\plassignstmt] \DefeQ \finalloc[\defstmt]
+    \\[0.2cm]
+    &(\defstmt = \assertstmt)\\
+    &\quad\finalloc[\plassertstmt] \DefeQ \finalloc[\defstmt]
+    \\[0.2cm]
+    &(\defstmt = \ifstmt[\defstmt'][\defstmt''][\defbexp])\\
+    &\quad\finalloc[{\plifstmt[\defstmt'][\defstmt''][\defbexp]}] \\
+    &\qquad\DefeQ \finalloc[\defstmt] \\
+    &\quad\finalloc[\defstmt'] \DefeQ \finalloc[\defstmt] \\
+    &\quad\finalloc[\defstmt''] \DefeQ \finalloc[\defstmt]
+  \end{align*}
+\end{subfigure}
+\begin{subfigure}{.49\textwidth}
+  \begin{align*}
+    &(\defstmt = \whilestmt[\defstmt'])\\
+    &\quad\finalloc[\plwhilestmt] \DefeQ \\
+    &\qquad\finalloc[\defstmt] \\
+    &\quad\finalloc[\defstmt'] \DefeQ \bigloc
+    \\[0.2cm]
+    &(\defstmt = \compstmt[\defstmt'][\defstmt''])\\
+    &\quad\finalloc[\plcompstmt] \DefeQ \finalloc[\defstmt'']\\
+    &\quad\finalloc[\defstmt'] \DefeQ \initialloc[\defstmt'']\\
+    &\quad\finalloc[\defstmt''] \DefeQ \finalloc[\defstmt]
+    \\[0.2cm]
+    &(\defstmt = \progstmt[\defstmt])\\
+    &\quad\finalloc[\plprogstmt] \DefeQ \bigloc
+  \end{align*}
+\end{subfigure}
+\caption{Final control points.}
+\labfig{final}
+\end{figure}
+
+
+The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is pointwise lifted to sets of environments, \ie, $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
+
+\paragraph{Transition System}
+
+Program states are tuples of program locations and environments, $\defstate\in\state\defeq\pair\locs\env$.
+The initial control point of a program (or a statement) defines where the execution of the program (statement) starts, namely $\initialloc$ and $\initialloc[\defstmt]$ respectively.
+Similarly, the final control point of a program (or a statement) defines where the execution of the program (statement) ends, namely $\finalloc$ and $\finalloc[\defstmt]$ respectively. The formal definitions of initial and final control points are given in \reffig{initial} and \reffig{final}.
+
+
+
+A program $\defprogram$ starts the execution at its initial program location $\initialloc[\defprogram]$ with any value for the program variables. The set of initial states of a program $\defprogram$ is $\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}$.
+
+The transition relation $\transitionrelation\in\pair\state\state$ applied to a program $\defprogram$ is defined as $\transitionrelation\semanticsof{\defprogram}\in\pair\state\state$ in \reffig{transition-semantics}. The semantics of a skip statement $\skipstmt$ is a simple step forward from one program location to the next one, without modifying the set of environments.
+The variable assignment $\assignstmt$  updates in one step the current value of the variable $\defvariable$ to any possible value of the arithmetic expression $\defaexp$. The semantics of the assertion statement $\assertstmt$ is a step forward for the environment that satisfies the boolean expression $\defbexp$.
+The semantics of the conditional statement $\ifstmt$ moves control from the initial location to the first statement $\defstmt$ for environments that satisfy the boolean expression $\defbexp$, and to the beginning of the second statement $\defstmt'$ for environments that do not satisfy the boolean expression; then, $\defstmt$ and $\defstmt'$ are executed independently. The execution of a while statement $\whilestmt$ is similar to the conditional statement, but the loop is executed until the boolean expression $\defbexp$ is false.
+The semantics of the composition statement $\compstmt$ executes the first and second statements, and join the transitions. Note that, control moves from the end of $\defstmt$ to the beginning of $\defstmt'$ because the final label of $\defstmt$ is the initial label of $\defstmt'$, \cf{} \refdef{final}.
+
+
+\begin{figure}[b]
+  \begin{align*}
+    &\transitionrelation \semanticsof{\plskipstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}}{\defenv\in\env} \\
+    &\transitionrelation \semanticsof{\plassignstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}}{\defenv\in\env \land \defvalue\in\aexpsemanticsnoparam \semanticsof{\defaexp}\{\defenv\}} \\
+    &\transitionrelation \semanticsof{\plassertstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}}{\defenv\in\env \land \defenv \in \bexpsemanticsnoparam \semanticsof{\defbexp}\{\defenv\}} \\
+    &\transitionrelation \semanticsof{\plifstmt} \DefeQ \\
+      &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}}}{\defenv\in\env \land \defenv \in \bexpsemantics \{\defenv\}} \SetjoiN \transitionrelation \semanticsof{\defstmt} \SetjoiN {} \\
+      &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt']}{\defenv}}}{\defenv\in\env \land \defenv \notin \bexpsemantics \{\defenv\}} \SetjoiN \transitionrelation \semanticsof{\defstmt'} \\
+    &\transitionrelation \semanticsof{\plwhilestmt} \DefeQ \\
+      &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}}}{\defenv\in\env \land \defenv \in \bexpsemantics \{\defenv\}} \SetjoiN \transitionrelation \semanticsof{\defstmt} \SetjoiN {} \\
+      &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}}{\defenv\in\env \land \defenv \notin \bexpsemantics \{\defenv\}} \\
+    &\transitionrelation \semanticsof{\plcompstmt} \DefeQ \transitionrelation \semanticsof{\defstmt} \SetjoiN \transitionrelation \semanticsof{\defstmt'}
+    % \\
+    % &\transitionrelation \semanticsof{\plprogstmt} \DefeQ \transitionrelation \semanticsof{\defstmt}
+  \end{align*}
+\caption{Transition semantics for programs $\defprogram$.}
+\labfig{transition-semantics}
+\end{figure}
+
+\paragraph{Maximal Trace Semantics}
+
+\marginnote{The initial states of a program $\defprogram$ are defined as $\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}$. The final states are states where the program execution ends without any further transition possible, \ie, $\finalstates \defeq \setdef{\tuple{\finalloc[\defprogram]}{\defenv}}{\defenv\in\env}$.}
+
+In this section, we provide the \emph{structural} definition of the fixpoint maximal trace semantics (\cf{} \refthm*{maximal-trace-semantics}) by induction on the structure of the program. We recall that the maximal trace semantics is the set of all possible traces that a program can generate, a program trace is a non-empty sequence of program states determined by the transition relation. We only consider maximal \emph{well-formed} traces, that is, traces that start from initial states $\initialstates$ of a program $\defprogram$, and either end in a final state $\finalstates$ or never end.
+Accordingly, \reffig{maximal-trace-semantics} defines the maximal trace semantics $\tracesemantics\in\tracetype \to \tracetype$ for programs (and $\tracesemanticsnoparam\semanticsof{\defstmt}\in\tracetype \to \tracetype$ for statements). Note that, the function $\tracesemanticsnoparam\semanticsof{\defstmt}$ takes as input a set of traces starting with the final location of the statement $\defstmt$ and returns a set of traces starting with the initial location of the statement $\defstmt$.
+
+\begin{figure*}[t]
+  \begin{align*}
+    &\tracesemanticsnoparam \semanticsof{\plskipstmt}\defsetoftraces \DefeQ \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \deftrace\in\finiteinfinitesequences\land\concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces} \\
+    &\tracesemanticsnoparam \semanticsof{\plassignstmt}\defsetoftraces \DefeQ
+       \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}}{\defenv\in\env \land \defvalue \in \aexpsemantics\{\defenv\} \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}\in\defsetoftraces} \\
+    &\tracesemanticsnoparam \semanticsof{\plassertstmt}\defsetoftraces \DefeQ
+      \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \defenv \in \bexpsemantics\{\defenv\} \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}\in\defsetoftraces} \\
+    &\tracesemanticsnoparam \semanticsof{\plifstmt}\defsetoftraces \DefeQ \\
+      &\quad \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \defenv \in \bexpsemantics\{\defenv\} \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
+      &\quad \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}}{\defenv\in\env \land \defenv \notin \bexpsemantics\{\defenv\} \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces} \\
+    &\tracesemanticsnoparam \semanticsof{\plwhilestmt}\defsetoftraces \DefeQ \lfp^{\tracesubseteq} \tracetransformer \\
+      &\quad \tracetransformer(X) \DefeQ \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \defenv \in \bexpsemantics\{\defenv\} \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}X} \SetjoiN {} \\
+        &\qquad \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \defenv \notin \bexpsemantics\{\defenv\} \\ {} \land \concat{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}\in\defsetoftraces} \\
+    &\tracesemanticsnoparam \semanticsof{\compstmt}\defsetoftraces \DefeQ \tracesemanticsnoparam\semanticsof{\defstmt}(\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces)
+    % \\
+    % &\tracesemanticsnoparam \semanticsof{\progstmt}\defsetoftraces \DefeQ \tracesemanticsnoparam\semanticsof{\defstmt}\defsetoftraces
+  \end{align*}
+\caption{Maximal trace semantics for programs $\defprogram$.}
+\labfig{maximal-trace-semantics}
+\end{figure*}
+
+The trace semantics of a skip statement $\skipstmt$ takes as input a set $\defsetoftraces\in\tracetype$ of traces starting from the final location of the statement and--according to the transition relation semantics of \reffig{transition-semantics}--it prepends to them the same environment paired with the initial location $\bigloc$.
+For an assignment statement $\assignstmt$, the trace semantics prepends to the traces the updated environment \emph{before} the assignment.
+Similarly, given a conditional statement $\ifstmt$, the trace semantics prepends to the input traces $\defsetoftraces$ the program states computed recursively by $\tracesemanticsnoparam\semanticsof{\defstmt}$ for the then-branch statement, and $\tracesemanticsnoparam\semanticsof{\defstmt'}$ for the else-branch statement. Then, it prepends again the initial location of the statement $\bigloc$ respectively to the beginning of the then-branch and else-branch traces.
+The trace semantics of a loop statement $\whilestmt$ is defined as the least fixpoint of the transformer $\tracetransformer\in\tracetransformertype$ over the complete lattice $\tracecompletelattice$ of traces, similarly to \refthm{maximal-trace-semantics}. The transformer builds the set of program traces that consist of an infinite number of iterations within the loop, and it prepends a finite number of iterations within the loop to an input set of traces $\defsetoftraces$ starting with the final label of the loop statement.
+In particular, the transformer $\tracetransformer$ takes as input a set $X\in\tracetype$ of traces, initially, $X$ is the set of all infinite sequences $\tracebottom$ (\ie, bottom element of the complete lattice of traces).
+At each iteration, the transformer prepends all program states whose location is the initial location $\bigloc$ of the loop statement, to the traces belonging to the input set $\defsetoftraces$, and to the traces that are obtained by means of the trace semantics of the loop body from $X$, \ie, $\tracesemanticsnoparam\semanticsof{\defstmt}X$.
+The invariant after the $i$-th iteration contains the program traces starting at the initial location of the loop statement whose prefix consist of 0 up to $i-1$ iterations of the loop and whose suffix is a trace in $\defsetoftraces$, and the sequences whose prefix are program traces which consist of $i-1$ iterations.\marginnote{A program \emph{trace} is a \emph{sequence} of program states that respects the transition relation.}
+\reffig{maximal-trace-semantics-of-programs} graphically depicts the maximal trace semantics of a program.
+The trace semantics of a composition statement $\compstmt$ is the composition of the trace semantics of the two statements, backwards starting from the second statement.
+Finally, the trace semantics $\tracesemantics\in\tracetype$ of a program $\defprogram$ is the trace semantics of the entry statement restricted to the traces starting from the program initial states $\initialstates$, defined from the set of program final states $\finalstates$.
+
+\begin{definition}[Maximal Trace Semantics of Programs]\labdef{maximal-trace-semantics-of-programs}
+  The \emph{maximal trace semantics} $\tracesemantics\in\tracetype\to\tracetype$ of a program $\defprogram$ is defined as:
+  \begin{align*}
+    \tracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \tracesemanticsnoparam \semanticsof{\defstmt}(\finalstates)
   \end{align*}
 \end{definition}
 
-\subsection{Numerical Abstract Domains}
-\labsec{numerical-abstract-domains}
-
-\subsubsection*{Sign}
-
-\subsubsection*{Boxes}
-
-\subsubsection*{Conjunctions of Linear Constraints}
-
-\subsection{Reduced Product}
-\labsec{reduced-product}
-
-\subsection{Forward Reachability State Semantics}
-\labsec{forward-reachability-state-semantics}
-
-\subsection{Backward Reachability State Semantics}
-\labsec{backward-reachability-state-semantics}
 
 
-\begin{definition}[Backward Semantics]\labdef{backward-semantics}
-\begin{align*}
-&\backwardsemanticsnoparam \semanticsof{\skipstmt}\defabstractvalue \DefeQ
-\defabstractvalue
-\\
-&\backwardsemanticsnoparam \semanticsof{\assignstmt}\defabstractvalue \DefeQ
-\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue
-\\
-&\backwardsemanticsnoparam \semanticsof{\assertstmt}\defabstractvalue \DefeQ
-\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue
-\\
-&\backwardsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
-\\
-&\quad \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue) \spacearound{\abstractdomainjoin} \abstractdomainfilter\semanticsof{\neg\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
-\\
-&\backwardsemanticsnoparam \semanticsof{\whilestmt}\defabstractvalue \DefeQ \lim_n \abstractdomainfixpoint_n \\
-&\quad \abstractdomainfixpoint_0 \DefeQ \defabstractvalue \\
-&\quad \abstractdomainfixpoint_{n+1} \DefeQ \abstractdomainfixpoint_n \spacearound{\abstractdomainwidening} \abstractdomainfixpoint(\abstractdomainfixpoint_n) \\
-&\quad \abstractdomainfixpoint(\defotherabstractvalue) \DefeQ \abstractdomainfilter\semanticsof{\neg\defbexp}\defabstractvalue \spacearound{\abstractdomainjoin} \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defotherabstractvalue)
-\\
-&\backwardsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
-\backwardsemanticsnoparam \semanticsof{\defstmt}( \backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
-\end{align*}
-\end{definition}
+
+% \subsection{Numerical Abstract Domains}
+% \labsec{numerical-abstract-domains}
+
+% \subsubsection*{Sign}
+
+% \subsubsection*{Boxes}
+
+% \subsubsection*{Conjunctions of Linear Constraints}
+
+% \subsection{Reduced Product}
+% \labsec{reduced-product}
+
+% \subsection{Forward Reachability State Semantics}
+% \labsec{forward-reachability-state-semantics}
+
+% \subsection{Backward Reachability State Semantics}
+% \labsec{backward-reachability-state-semantics}
+
+
+% \begin{definition}[Backward Semantics]\labdef{backward-semantics}
+% \begin{align*}
+% &\backwardsemanticsnoparam \semanticsof{\skipstmt}\defabstractvalue \DefeQ
+% \defabstractvalue
+% \\
+% &\backwardsemanticsnoparam \semanticsof{\assignstmt}\defabstractvalue \DefeQ
+% \abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue
+% \\
+% &\backwardsemanticsnoparam \semanticsof{\assertstmt}\defabstractvalue \DefeQ
+% \abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue
+% \\
+% &\backwardsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
+% \\
+% &\quad \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue) \spacearound{\abstractdomainjoin} \abstractdomainfilter\semanticsof{\neg\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
+% \\
+% &\backwardsemanticsnoparam \semanticsof{\whilestmt}\defabstractvalue \DefeQ \lim_n \abstractdomainfixpoint_n \\
+% &\quad \abstractdomainfixpoint_0 \DefeQ \defabstractvalue \\
+% &\quad \abstractdomainfixpoint_{n+1} \DefeQ \abstractdomainfixpoint_n \spacearound{\abstractdomainwidening} \abstractdomainfixpoint(\abstractdomainfixpoint_n) \\
+% &\quad \abstractdomainfixpoint(\defotherabstractvalue) \DefeQ \abstractdomainfilter\semanticsof{\neg\defbexp}\defabstractvalue \spacearound{\abstractdomainjoin} \abstractdomainfilter\semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}\defotherabstractvalue)
+% \\
+% &\backwardsemanticsnoparam \semanticsof{\compstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
+% \backwardsemanticsnoparam \semanticsof{\defstmt}( \backwardsemanticsnoparam \semanticsof{\defstmt'}\defabstractvalue)
+% \end{align*}
+% \end{definition}

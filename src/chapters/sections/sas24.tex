@@ -34,7 +34,7 @@ We present a concrete semantics extended with the global loop counter for the si
 \marginnote{
   \begin{align*}
     \defaexp \grammardef \defvalue  \sep \defvariable \sep \defaexp + \defaexp \sep \defaexp - \defaexp  \\
-    \defbexp \grammardef \defaexp \leq \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
+    \defbexp \grammardef \defaexp \le \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
     \defstmt \grammardef \skipstmt
     \sep \assignstmt
     \sep \assertstmt\\
@@ -54,7 +54,7 @@ We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the gl
 
 \marginnote{For simplicity, we omit program locations in the maximal trace semantics of \refdef{counter-semantics}}
 \begin{definition}[Maximal Trace Semantics with the Global Loop Counter]\labdef{counter-semantics}
-  The semantics $\countertracesemanticsnoparam\in\tracetype$ is defined as:
+  The semantics $\countertracesemanticsnoparam\in\tracetype\to\tracetype$ is defined as:
 \begin{align*}
   % &\reabwdsemanticsnoparam \semanticsof{\defstmt} \IN \reabwdtype \\
   &\countertracesemanticsnoparam \semanticsof{\pskipstmt}\defsetoftraces \DefeQ

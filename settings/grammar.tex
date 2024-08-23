@@ -27,6 +27,15 @@
 \newcommandx{\lwhilestmt}[2][1=\defstmt,2=\defbexp]{\texttt{while } \smallloc #2 \texttt{ do } #1 \texttt{ done} }
 \newcommand{\lprogstmt}{\progstmt\smallloc}
 
+\newcommand{\plskipstmt}{\smallloc\skipstmt}
+\newcommandx{\plassignstmt}[2][1=\deflhs,2=\defaexp]{\smallloc\assignstmt[#1][#2]}
+\newcommandx{\plassertstmt}[1][1=\defbexp]{\smallloc\assertstmt[#1]}
+\newcommandx{\plcompstmt}[2][1=\defstmt,2=\defstmt']{\compstmt[#1][#2]}
+\newcommandx{\plifstmt}[3][1=\defstmt,2=\defstmt',3=\defbexp]{\texttt{if } \smallloc #3 \texttt{ then }  #1  \texttt{ else }  #2 }
+\newcommand{\plifforwhilestmt}{\texttt{if } \smallloc \defbexp \texttt{ then }  \defstmt  \texttt{ else }  \counter := \counter + 1 }
+\newcommandx{\plwhilestmt}[2][1=\defstmt,2=\defbexp]{\texttt{while } \smallloc #2 \texttt{ do } #1 \texttt{ done} }
+\newcommand{\plprogstmt}{\progstmt\smallloc}
+
 \newcommand{\randval}{\texttt{rand}}
 
 \newcommand{\grammardef}{\spacer&{::=}\spacer}
@@ -40,3 +49,6 @@
 
 
 \newcommand*{\variablesof}[1]{\textup{\textsc{Vars}}(#1)}
+
+\newcommand*{\initialloc}[1][\defprogram]{\textup{\textsc{i}}\semanticsof{#1}}
+\newcommand*{\finalloc}[1][\defprogram]{\textup{\textsc{f}}\semanticsof{#1}}

@@ -102,21 +102,21 @@ The trace semantics of the program simplified to consider only the variables \te
   =}\\
   &\quad\left\{
     \begin{array}{l}
-      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\true}}, \\
-      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\false}}, \\
-      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\true}}, \\
-      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\false}}
+      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\true}}, \\
+      \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\false}}, \\
+      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\true}}, \\
+      \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\false}}
     \end{array}
   \right\}
 \end{align*}
-where the symbol $\anyvalue$ denotes any boolean value, the location $\locinit$ is the initial location (\refline{initial}), and $\loc{9}$ is the last location (\refline{last}).
+where the symbol $\anyvalue$ denotes any boolean value, the location $\locinit$ is the initial location (\refline{initial}), and $\loc[9]$ is the last location (\refline{last}).
 \reffig{school-year-traces} shows a graphical representation of the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}$.
 The input variable \texttt{sci} is unused, since each result value for \texttt{passing} is feasible from all possible initial values of \texttt{sci}.
 
 \begin{marginfigure}[*-9]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{9}:$};
+    \node (lend) at (-0.9,0) {$\loc[9]:$};
 
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -151,22 +151,22 @@ Instead, if we consider the variable \texttt{math}, the simplified trace semanti
   =}\\
   &\quad\left\{
     \begin{array}{l}
-    \tracetuple{\locinit}{\tuple\true\anyvalue}\tracearrow\tracetuple{\loc{9}}{\tuple\true\true}, \\
-    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc{9}}{\tuple\false\true}, \\
-    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc{9}}{\tuple\false\false}
+    \tracetuple{\locinit}{\tuple\true\anyvalue}\tracearrow\tracetuple{\loc[9]}{\tuple\true\true}, \\
+    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc[9]}{\tuple\false\true}, \\
+    \tracetuple{\locinit}{\tuple\false\anyvalue}\tracearrow\tracetuple{\loc[9]}{\tuple\false\false}
   \end{array}
   \right\}
 \end{align*}
 \reffig{school-year-math-traces} shows a graphical representation of the trace semantics $\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}$.
 The input variable \texttt{math} is used, since the result value for \texttt{passing} is not feasible from all possible initial values of \texttt{math}.
-Indeed, only the initial value $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tracetuple{\loc{9}}{\tuple\false\false}$).
+Indeed, only the initial value $\tuple\false\anyvalue$ yields the result value $\false$ for \texttt{passing} (in the final state $\tracetuple{\loc[9]}{\tuple\false\false}$).
 \end{example}
 
 
 \begin{marginfigure}[*-11]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{9}:$};
+    \node (lend) at (-0.9,0) {$\loc[9]:$};
 
     % Define the positions of the nodes
     \node (TT) at (0,2) {${\tuple\true\true}$};
@@ -212,7 +212,7 @@ This difference can be clearly seen by studying the trace semantics of the progr
   &\tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_{\texttt{max\_int}}}
   =\\
   &\quad\setdef{
-    \tracetuple{\locinit}{\langle{x}}\rangle\tracearrow\tracetuple{\loc{3}}{\langle{x+r \mod \texttt{max\_int}}\rangle}
+    \tracetuple{\locinit}{\langle{x}}\rangle\tracearrow\tracetuple{\loc[3]}{\langle{x+r \mod \texttt{max\_int}}\rangle}
   }{x, r \in \N}
 \end{align*}
 where $x\in\N$ denotes the value of the input variable \texttt{x} and $r\in\N$ a random integer from the \texttt{rand()} function.
@@ -221,7 +221,7 @@ Even if $x$ is bigger than a given outcome $z$, the result is still feasible as 
 \begin{marginfigure}[*-10]
   \begin{tikzpicture}[scale=0.8]
     % \node (linit) at (-0.9,2) {$\locinit:$};
-    % \node (lend) at (-0.9,0) {$\loc{3}:$};
+    % \node (lend) at (-0.9,0) {$\loc[3]:$};
 
     % Define the positions of the nodes
     \node (0) at (0,2) {${\langle 0 \rangle}$};
@@ -261,7 +261,7 @@ Even if $x$ is bigger than a given outcome $z$, the result is still feasible as 
 \begin{marginfigure}
   \begin{tikzpicture}[scale=0.8]
     % \node (linit) at (-0.9,2) {$\locinit:$};
-    % \node (lend) at (-0.9,0) {$\loc{3}:$};
+    % \node (lend) at (-0.9,0) {$\loc[3]:$};
 
     % Define the positions of the nodes
     \node (0) at (0,2) {${\langle 0 \rangle}$};
@@ -297,7 +297,7 @@ On the other hand, if we consider unbounded positive integers, the trace semanti
   \tracesemanticsnoparam\semanticsof{\texttt{x\_plus\_rand}_\N}
   =
   \setdef{
-    \tracetuple{\locinit}{\langle{x}\rangle}\tracearrow\tracetuple{\loc{3x}}{\langle{x+r}\rangle}
+    \tracetuple{\locinit}{\langle{x}\rangle}\tracearrow\tracetuple{\loc[3]}{\langle{x+r}\rangle}
   }{x, r \in \N}
 \end{align*}
 \reffig{traces-x-plus-rand} shows a graphical representation of the trace semantics of the program \refprog{syntactic-vs-semantic-usage} considering unbounded positive integers.
@@ -435,9 +435,9 @@ In conclusion, the variable \texttt{x} is syntactically used, but it may be sema
   %
   This can be easily seen by considering the two traces:
   \begin{gather*}
-    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc{9}}{\tuple\true\true} \\
+    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc[9]}{\tuple\true\true} \\
        \in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}} \\
-    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc{9}}{\tuple\true\false} \\
+    \tracetuple{\locinit}{\tuple\true\true}\tracearrow\tracetuple{\loc[9]}{\tuple\true\false} \\
        \in \tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}
   \end{gather*}
   where both start from the same initial state $\tuple\true\true$ and have different outcomes.}.
@@ -458,7 +458,7 @@ non_termination(x):
 \begin{marginfigure}[*9]
   \begin{tikzpicture}[scale=0.8]
     \node (linit) at (-0.9,2) {$\locinit:$};
-    \node (lend) at (-0.9,0) {$\loc{5}:$};
+    \node (lend) at (-0.9,0) {$\loc[5]:$};
 
     % Define the positions of the nodes
     \node (-2) at (0,2) {${\langle < \rangle}$};
@@ -499,8 +499,8 @@ non_termination(x):
     =
     \left\{
     \begin{array}{l}
-        \tracetuple{\locinit}{\langle{<}\rangle}\tracearrow\tracetuple{\loc{5}}{\langle{\anyvalue}\rangle}, \\
-        \tracetuple{\locinit}{\langle{0}\rangle}\tracearrow\tracetuple{\loc{5}}{\langle{\anyvalue}\rangle}, \\
+        \tracetuple{\locinit}{\langle{<}\rangle}\tracearrow\tracetuple{\loc[5]}{\langle{\anyvalue}\rangle}, \\
+        \tracetuple{\locinit}{\langle{0}\rangle}\tracearrow\tracetuple{\loc[5]}{\langle{\anyvalue}\rangle}, \\
         \tracetuple{\locinit}{\langle{>}\rangle}\nonterminatingtracearrow\
     \end{array}
     \right\}
@@ -714,16 +714,16 @@ With the use of the next example, we show that non-determinism may affect the ab
       =}\\
       &\quad\left\{
         \begin{array}{l}
-          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\true}}, \\
-          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\false}}, \\
-          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\true}}, \\
-          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\false}}
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\false}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\false}}
         \end{array}
       \right\}
     \end{align*}
     \begin{tikzpicture}[scale=0.8]
       \node (linit) at (-0.9,2) {$\locinit:$};
-      \node (lend) at (-0.9,0) {$\loc{9}:$};
+      \node (lend) at (-0.9,0) {$\loc[9]:$};
       % Define the positions of the nodes
       \node (TT) at (0,2) {${\tuple\true\true}$};
       \node (TF) at (1,2) {${\tuple\true\false}$};
@@ -756,9 +756,9 @@ With the use of the next example, we show that non-determinism may affect the ab
   the predicate of  abstract non-interference does not hold for the variable \texttt{sci}.
   This can be shown by the two traces
   \begin{align*}
-    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc{9}}{\tuple\true\true}
+    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc[9]}{\tuple\true\true}
     \\
-    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc{9}}{\tuple\true\false}
+    \tracetuple{\locinit}{\tuple\true\true}&\tracearrow\tracetuple{\loc[9]}{\tuple\true\false}
   \end{align*}
   where the output states are different, but the input states are the same.
   Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{sci} as an interfering variable.
@@ -838,10 +838,10 @@ We formally show that abstract non-interference matches the abstract unused pred
       =}\\
       &\quad\left\{
         \begin{array}{l}
-          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\true}}, \\
-          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\true}{\false}}, \\
-          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\true}}, \\
-          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc{9}}{\tuple{\false}{\false}}
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\true}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\true}{\false}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\true}}, \\
+          \tracetuple{\locinit}{\tuple{\false}{\anyvalue}}\tracearrow\tracetuple{\loc[9]}{\tuple{\false}{\false}}
         \end{array}
       \right\}
     \end{align*}
@@ -879,14 +879,14 @@ We formally show that abstract non-interference matches the abstract unused pred
   \begin{eqnarray*}
     \left\{
       \begin{array}{l}
-        \tracetuple{\locinit}{\langle{\true,\true,\true}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\true\true}, \\
-        \tracetuple{\locinit}{\langle{\true,\true,\false}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\true\false}, \\
-        \tracetuple{\locinit}{\langle{\true,\false,\true}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\true\true}, \\
-        \tracetuple{\locinit}{\langle{\true,\false,\false}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\true\false}, \\
-        \tracetuple{\locinit}{\langle{\false,\true,\true}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\false\true}, \\
-        \tracetuple{\locinit}{\langle{\false,\true,\false}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\false\false} \\
-        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\false\true}, \\
-        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc{9}}{\tuple\false\false}
+        \tracetuple{\locinit}{\langle{\true,\true,\true}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\true\true}, \\
+        \tracetuple{\locinit}{\langle{\true,\true,\false}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\true\false}, \\
+        \tracetuple{\locinit}{\langle{\true,\false,\true}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\true\true}, \\
+        \tracetuple{\locinit}{\langle{\true,\false,\false}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\true\false}, \\
+        \tracetuple{\locinit}{\langle{\false,\true,\true}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\false\true}, \\
+        \tracetuple{\locinit}{\langle{\false,\true,\false}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\false\false} \\
+        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\false\true}, \\
+        \tracetuple{\locinit}{\langle{\false,\false,\false}\rangle}\tracearrow\tracetuple{\loc[9]}{\tuple\false\false}
       \end{array}
     \right\}
   \end{eqnarray*}
@@ -1092,10 +1092,10 @@ The next result shows that the dependency semantics $\dependencysemanticsnoparam
     \spacearound{&=} \dependencyabstraction(\{\tracesemanticsnoparam\semanticsof{\texttt{is\_passed}_\texttt{sci}}\}) \\
     \spacearound{&=} \left\{\left\{
       \begin{array}{l}
-        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc{9}}{\tuple\true\true}}, \\
-        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc{9}}{\tuple\true\false}}, \\
-        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc{9}}{\tuple\false\true}}, \\
-        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc{9}}{\tuple\false\false}}
+        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc[9]}{\tuple\true\true}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\true\anyvalue}}{\tracetuple{\loc[9]}{\tuple\true\false}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc[9]}{\tuple\false\true}}, \\
+        \tuple{\tracetuple{\locinit}{\tuple\false\anyvalue}}{\tracetuple{\loc[9]}{\tuple\false\false}}
       \end{array}
     \right\}\right\}
   \end{align*}
