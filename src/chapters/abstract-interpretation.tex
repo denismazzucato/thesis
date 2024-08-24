@@ -745,9 +745,24 @@ Galois connections are also important because they compose, that is, given two G
 
 Based on Galois connections, abstract interpretation provides a \emph{constructive} way to derive program semantics by successive abstractions of the trace semantics.
 
-\begin{example}[Forward Reachability State Semantics]
-  \denis{Example showing the reachable state semantics as an abstraction of the maximal trace semantics.}
-\end{example}
+% \begin{example}[Forward Reachability State Semantics]\labexample{forward-reachability-state-semantics}
+%   The \emph{forward reachability state semantics} $\forwardreachabilitysemanticsnoparam\in\forwardreachabilitytype$ collects the states that are reachable from a given set of initial states $\initialstates\in\setof\state$ by abstraction of the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$. The two form a Galois connection:
+%   \begin{align*}
+%     \tuple{\tracetype}{\tracesubseteq}\galois{\forwardreachabilityabstraction}{\forwardreachabilityconcretization}\tuple{\forwardreachabilitytype}{\forwardreachabilitysubseteq}
+%   \end{align*}
+%   where the abstraction $\forwardreachabilityabstraction$ collects all the states that are reachable from the initial states:
+%   \begin{align*}
+%     \forwardreachabilityabstraction(\defsetoftraces) &\DefeQ \initialstates \setjoin \setdef{\defstate\in\state}{\exists \defstate'\in\initialstates,\deftrace\in\finitesequences, \deftrace'\in\finiteinfinitesequences.\spacer \concat{\concat{\defstate'}{\deftrace}}{\concat{\defstate}{\deftrace'}} \in \defsetoftraces}
+%   \end{align*}
+% Thus, we obtain the following definition for the forward reachability state semantics:
+% \[ \forwardreachabilitysemanticsnoparam \DefeQ \forwardreachabilityabstraction(\tracesemanticsnoparam) \]
+% It can be specified in fixpoint form as follows:
+% \begin{align*}
+%   \forwardreachabilitysemanticsnoparam &\spacearound{=} \lfp^{\forwardreachabilitysubseteq} \forwardreachabilitytransformer \\
+%   \forwardreachabilitytransformer(\defsetofstates) &\spacearound{=} \initialstates \setjoin \setdef{\defstate\in\state}{\exists \defstate'\in\defsetofstates.\spacer \tuple{\defstate'}{\defstate} \in \transitionrelation}
+% \end{align*}
+% Note that, while the traces from the maximal trace semantics are built backwards, \cf{} \refthm*{maximal-trace-semantics}, the states belonging to the forward reachability state semantics are retrieved forwards from the initial states $\initialstates$.
+% \end{example}
 
 
 \section{A Small Imperative Language}
@@ -861,7 +876,7 @@ Similarly, we define the semantics of boolean expressions $\defbexp$ as the func
 The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is pointwise lifted to sets of environments, \ie, $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
 
 
-\begin{marginfigure}[*12.5]
+\begin{marginfigure}
   \begin{align*}
     &\initialloc[\plskipstmt] \DefeQ \bigloc \\
     &\initialloc[\plassignstmt] \DefeQ \bigloc \\
@@ -875,7 +890,7 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 \labfig{initial}
 \end{marginfigure}
 
-\begin{figure}[!b]
+\begin{figure}[t]
   \centering
   \begin{subfigure}{.45\textwidth}
   \begin{align*}
@@ -933,7 +948,7 @@ The semantics of the conditional statement $\ifstmt$ moves control from the init
 The semantics of the composition statement $\compstmt$ executes the first and second statements, and join the transitions. Note that, control moves from the end of $\defstmt$ to the beginning of $\defstmt'$ because the final label of $\defstmt$ is the initial label of $\defstmt'$, \cf{} \refdef{final}.
 
 
-\begin{figure}[b]
+\begin{figure}[t]
   \begin{align*}
     &\transitionrelation \semanticsof{\plskipstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}}{\defenv\in\env} \\
     &\transitionrelation \semanticsof{\plassignstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}}{\defenv\in\env \land \defvalue\in\aexpsemanticsnoparam \semanticsof{\defaexp}\{\defenv\}} \\
@@ -1003,21 +1018,29 @@ Finally, the trace semantics $\tracesemantics\in\tracetype$ of a program $\defpr
 \labsec{forward-reachability-state-semantics}
 
 
-The forward reachability state semantics $\forwardreachabilitysemanticsnoparam\in\forwardreachabilitytype$ abstracts the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$ (\cf{} \refdef{maximal-trace-semantics}) by collecting all the possible reachability environments at each program location. In this section, we present the \emph{structural} definition of the forward reachability state semantics by induction on the structure of the program.
+% The forward reachability state semantics $\forwardreachabilitysemanticsnoparam\in\forwardreachabilitytype$ introduced in \refexample{forward-reachability-state-semantics} abstracts the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$ (\cf{} \refdef{maximal-trace-semantics}) by collecting all the possible reachability environments at each program location. In this section, we present the \emph{structural} definition of the forward reachability state semantics by induction on the structure of the program.
 
-Note that, the complete lattice of the reachability semantics $\forwardreachabilitycompletelattice$ is isomorphic to the complete lattice $\forwardliftedcompletelattice$ of functions from program locations to the set of reachability environments by pointwise lifting, \cf{} \refdef{pointwise-lifting}.
-We formalize it as a Galois connection, specifically a Galois isomorphism:
-\[\tuple{\forwardreachabilitytype}{\forwardreachabilitysubseteq} \GaloiS{\forwardliftedabstraction}{\forwardliftedconcretization} \tuple{\forwardliftedtype}{\forwardliftedsubseteq}\]
-where the abstraction $\forwardliftedabstraction$ and the concretization $\forwardliftedconcretization$ are defined as:
-\begin{align*}
-  \forwardliftedabstraction &\IN \forwardreachabilitytype \to \forwardliftedtype \\
-  \forwardliftedabstraction(\defsetofstates) &\DefeQ \lambda \bigloc.\setdef{\defenv \in \env}{\tuple{\bigloc}{\defenv}\in\defsetofstates} \\
-  \forwardliftedconcretization &\IN \forwardliftedtype \to \forwardreachabilitytype \\
-  \forwardliftedconcretization(f) &\DefeQ \setdef{\tuple{\bigloc}{\defenv}\in\state}{\defenv\in f(\bigloc)}
-\end{align*}
+% Note that, the complete lattice of the reachability semantics $\forwardreachabilitycompletelattice$ is isomorphic to the complete lattice $\forwardliftedcompletelattice$ of functions from program locations to the set of reachability environments by pointwise lifting, \cf{} \refdef{pointwise-lifting}.
+% We formalize it as a Galois connection, specifically a Galois isomorphism:
+% \[\tuple{\forwardreachabilitytype}{\forwardreachabilitysubseteq} \GaloiS{\forwardliftedabstraction}{\forwardliftedconcretization} \tuple{\forwardliftedtype}{\forwardliftedsubseteq}\]
+% where the abstraction $\forwardliftedabstraction$ and the concretization $\forwardliftedconcretization$ are defined as:
+% \begin{align*}
+%   \forwardliftedabstraction &\IN \forwardreachabilitytype \to \forwardliftedtype \\
+%   \forwardliftedabstraction(\defsetofstates) &\DefeQ \lambda \bigloc.\setdef{\defenv \in \env}{\tuple{\bigloc}{\defenv}\in\defsetofstates} \\
+%   \forwardliftedconcretization &\IN \forwardliftedtype \to \forwardreachabilitytype \\
+%   \forwardliftedconcretization(f) &\DefeQ \setdef{\tuple{\bigloc}{\defenv}\in\state}{\defenv\in f(\bigloc)}
+% \end{align*}
 
-We call this abstract semantics the \emph{invariance semantics} as it captures the invariance of the program states at each program location.
+% We call this abstract semantics the \emph{invariance semantics} as it captures the invariance of the program states at each program location.
 
+We introduce the \emph{forward reachability state semantics} $\forwardreachabilitysemantics\in\forwardreachabilitytype$, given a set of states that hold before the execution (\ie, a precondition), relates the set of states that are reached after executing the program $\defprogram$ (\ie, a postcondition). \reffig{forward-reachability-state-semantics} present the semantics by structural induction on the program.
+
+Missing:
+\begin{itemize}
+  \item Definition of forward and backward reachability concrete semantics in the previous section.
+  \item Definition here of the forward and backward reachability semantics by structural induction.
+  \item Next chapter shows abstract domain and forward \& backward reachability abstract semantics.
+\end{itemize}
 
 
 % \subsection{Numerical Abstract Domains}

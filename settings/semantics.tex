@@ -50,7 +50,7 @@
 
 %% forward reachability
 \newcommand*{\forwardreachabilitysym}{\normalfont f}
-\newcommand*{\forwardreachabilitytype}{\setof\state}
+\newcommand*{\forwardreachabilitytype}{\setof\state \to \setof\state}
 \newsemantics{forwardreachability}
 \renewcommand{\forwardreachabilitysubseteq}{\subseteq}
 \renewcommand{\forwardreachabilityjoin}{\setjoin}
@@ -66,6 +66,7 @@
 \renewcommand{\forwardliftedmeet}{\dot{\forwardreachabilitymeet}}
 \renewcommand{\forwardliftedtop}{\lambda \bigloc.\spacer \forwardreachabilitybottom}
 \renewcommand{\forwardliftedbottom}{\lambda \bigloc.\spacer \forwardreachabilitytop}
+
 
 %% backawrd reachability
 \newcommand*{\backwardreachabilitysym}{\normalfont r}
