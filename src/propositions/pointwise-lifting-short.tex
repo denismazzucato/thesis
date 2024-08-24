@@ -1,0 +1,8 @@
+The following $\langle Y \to X, \liftedsubseteq, \liftedjoin, \liftedmeet, \liftedbottom, \liftedtop \rangle$ forms a complete lattice where the operators are defined by \emph{pointwise lifting}:
+\begin{align*}
+  f \liftedsubseteq g & \triangleq \forall y \in Y.\spacer f(y) \sqsubseteq g(y) \\
+  \liftedjoin X & \triangleq \lambda y.\spacer \join \setdef{f(y)}{f \in X} \\
+  \liftedmeet X & \triangleq \lambda y.\spacer \meet \setdef{f(y)}{f \in X} \\
+  \liftedbottom & \triangleq \lambda y.\spacer \bottom \\
+  \liftedtop & \triangleq \lambda y.\spacer \top
+\end{align*}

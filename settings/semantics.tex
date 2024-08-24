@@ -48,6 +48,25 @@
 \newcommand*{\counterdependencysemantics}{\counterdependencysemanticsnoparam \semanticsof\defprogram}
 \newcommand*{\counterdependencyconcretization}{\dependencyconcretization}
 
+%% forward reachability
+\newcommand*{\forwardreachabilitysym}{\normalfont f}
+\newcommand*{\forwardreachabilitytype}{\setof\state}
+\newsemantics{forwardreachability}
+\renewcommand{\forwardreachabilitysubseteq}{\subseteq}
+\renewcommand{\forwardreachabilityjoin}{\setjoin}
+\renewcommand{\forwardreachabilitymeet}{\setmeet}
+\renewcommand{\forwardreachabilitytop}{\emptyset}
+\renewcommand{\forwardreachabilitybottom}{\state}
+
+\newcommand*{\forwardliftedtype}{\locs \to \setof\env}
+\newcommand*{\forwardliftedsym}{\locs}
+\newsemantics{forwardlifted}
+\renewcommand{\forwardliftedsubseteq}{\dot{\forwardreachabilitysubseteq}}
+\renewcommand{\forwardliftedjoin}{\dot{\forwardreachabilityjoin}}
+\renewcommand{\forwardliftedmeet}{\dot{\forwardreachabilitymeet}}
+\renewcommand{\forwardliftedtop}{\lambda \bigloc.\spacer \forwardreachabilitybottom}
+\renewcommand{\forwardliftedbottom}{\lambda \bigloc.\spacer \forwardreachabilitytop}
+
 %% backawrd reachability
 \newcommand*{\backwardreachabilitysym}{\normalfont r}
 \newcommand*{\backwardreachabilitytype}{\setofsetof\state}

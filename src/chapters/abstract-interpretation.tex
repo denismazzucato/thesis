@@ -442,6 +442,20 @@ It also defines the sequence $(F_i)_{i\in\Delta}$ of elements of $X$ indexed by 
   \[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots \]
 \end{example}
 
+Next, we show how to lift an ordered set via \emph{pointwise lifting} to define a new ordered set.
+
+\begin{definition}[Pointwise Lifting]\labdef{pointwise-lifting}
+  Given a complete lattice $\langle X, \sqsubseteq, \join, \meet, \bot, \top \rangle$ (respectively a lattice, a cpo, a poset) and a set $Y$, the set $Y \to X$ of all functions from $Y$ to $X$ forms a complete lattice $\langle Y \to X, \liftedsubseteq, \liftedjoin, \liftedmeet, \liftedbottom, \liftedtop \rangle$ (respectively a lattice, a cpo, a poset) where the operators are defined by \emph{pointwise lifting}:
+\begin{align*}
+  f \liftedsubseteq g & \triangleq \forall y \in Y.\spacer f(y) \sqsubseteq g(y) \\
+  \liftedjoin X & \triangleq \lambda y.\spacer \join \setdef{f(y)}{f \in X} \\
+  \liftedmeet X & \triangleq \lambda y.\spacer \meet \setdef{f(y)}{f \in X} \\
+  \liftedbottom & \triangleq \lambda y.\spacer \bottom \\
+  \liftedtop & \triangleq \lambda y.\spacer \top
+\end{align*}
+\end{definition}
+
+
 \subsection{Properties}
 \labsec{properties}
 
@@ -524,6 +538,7 @@ However, such characterization is not constructive, an alternative that expresse
 \end{theorem}
 
 In the following, the partial order between the fixpoint iterates is called the \emph{computational order}, in order to distinguish it from the \emph{approximation order} defined in the next section.
+
 
 \section{Notations of Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
@@ -730,7 +745,7 @@ Galois connections are also important because they compose, that is, given two G
 
 Based on Galois connections, abstract interpretation provides a \emph{constructive} way to derive program semantics by successive abstractions of the trace semantics.
 
-\begin{example}
+\begin{example}[Forward Reachability State Semantics]
   \denis{Example showing the reachable state semantics as an abstraction of the maximal trace semantics.}
 \end{example}
 
@@ -825,19 +840,7 @@ We could have been ever more minimalistic, \eg, all arithmetic expressions could
 \labfig{bexp-semantics}
 \end{marginfigure}
 
-\begin{marginfigure}
-  \begin{align*}
-    &\initialloc[\plskipstmt] \DefeQ \bigloc \\
-    &\initialloc[\plassignstmt] \DefeQ \bigloc \\
-    &\initialloc[\plassertstmt] \DefeQ \bigloc \\
-    &\initialloc[\plifstmt] \DefeQ \bigloc \\
-    &\initialloc[\plwhilestmt] \DefeQ \bigloc \\
-    &\initialloc[\plcompstmt] \DefeQ \initialloc[\defstmt] \\
-    &\initialloc[\plprogstmt] \DefeQ \initialloc[\defstmt]
-  \end{align*}
-\caption{Initial control points.}
-\labfig{initial}
-\end{marginfigure}
+
 
 Here, we instantiate the general definition of transition system and maximal trace semantics, \cf{} \refdef{maximal-trace-semantics}, for our small imperative language.
 
@@ -852,9 +855,29 @@ Similarly, we define the semantics of boolean expressions $\defbexp$ as the func
 
 
 
-\begin{figure}[t]
+
+
+
+The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is pointwise lifted to sets of environments, \ie, $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
+
+
+\begin{marginfigure}[*12.5]
+  \begin{align*}
+    &\initialloc[\plskipstmt] \DefeQ \bigloc \\
+    &\initialloc[\plassignstmt] \DefeQ \bigloc \\
+    &\initialloc[\plassertstmt] \DefeQ \bigloc \\
+    &\initialloc[\plifstmt] \DefeQ \bigloc \\
+    &\initialloc[\plwhilestmt] \DefeQ \bigloc \\
+    &\initialloc[\plcompstmt] \DefeQ \initialloc[\defstmt] \\
+    &\initialloc[\plprogstmt] \DefeQ \initialloc[\defstmt]
+  \end{align*}
+\caption{Initial control points.}
+\labfig{initial}
+\end{marginfigure}
+
+\begin{figure}[!b]
   \centering
-  \begin{subfigure}{.49\textwidth}
+  \begin{subfigure}{.45\textwidth}
   \begin{align*}
     &(\defstmt = \skipstmt)\\
     &\quad\finalloc[\plskipstmt] \DefeQ \finalloc[\defstmt]
@@ -872,7 +895,8 @@ Similarly, we define the semantics of boolean expressions $\defbexp$ as the func
     &\quad\finalloc[\defstmt''] \DefeQ \finalloc[\defstmt]
   \end{align*}
 \end{subfigure}
-\begin{subfigure}{.49\textwidth}
+\hfill
+\begin{subfigure}{.45\textwidth}
   \begin{align*}
     &(\defstmt = \whilestmt[\defstmt'])\\
     &\quad\finalloc[\plwhilestmt] \DefeQ \\
@@ -892,15 +916,13 @@ Similarly, we define the semantics of boolean expressions $\defbexp$ as the func
 \labfig{final}
 \end{figure}
 
-
-The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is pointwise lifted to sets of environments, \ie, $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
-
 \paragraph{Transition System}
+
+
 
 Program states are tuples of program locations and environments, $\defstate\in\state\defeq\pair\locs\env$.
 The initial control point of a program (or a statement) defines where the execution of the program (statement) starts, namely $\initialloc$ and $\initialloc[\defstmt]$ respectively.
 Similarly, the final control point of a program (or a statement) defines where the execution of the program (statement) ends, namely $\finalloc$ and $\finalloc[\defstmt]$ respectively. The formal definitions of initial and final control points are given in \reffig{initial} and \reffig{final}.
-
 
 
 A program $\defprogram$ starts the execution at its initial program location $\initialloc[\defprogram]$ with any value for the program variables. The set of initial states of a program $\defprogram$ is $\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}$.
@@ -972,10 +994,29 @@ Finally, the trace semantics $\tracesemantics\in\tracetype$ of a program $\defpr
 \begin{definition}[Maximal Trace Semantics of Programs]\labdef{maximal-trace-semantics-of-programs}
   The \emph{maximal trace semantics} $\tracesemantics\in\tracetype\to\tracetype$ of a program $\defprogram$ is defined as:
   \begin{align*}
-    \tracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \tracesemanticsnoparam \semanticsof{\defstmt}(\finalstates)
+    \tracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \tracesemanticsnoparam \semanticsof{\defstmt}\finalstates
   \end{align*}
 \end{definition}
 
+
+\subsection{Forward Reachability State Semantics}
+\labsec{forward-reachability-state-semantics}
+
+
+The forward reachability state semantics $\forwardreachabilitysemanticsnoparam\in\forwardreachabilitytype$ abstracts the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$ (\cf{} \refdef{maximal-trace-semantics}) by collecting all the possible reachability environments at each program location. In this section, we present the \emph{structural} definition of the forward reachability state semantics by induction on the structure of the program.
+
+Note that, the complete lattice of the reachability semantics $\forwardreachabilitycompletelattice$ is isomorphic to the complete lattice $\forwardliftedcompletelattice$ of functions from program locations to the set of reachability environments by pointwise lifting, \cf{} \refdef{pointwise-lifting}.
+We formalize it as a Galois connection, specifically a Galois isomorphism:
+\[\tuple{\forwardreachabilitytype}{\forwardreachabilitysubseteq} \GaloiS{\forwardliftedabstraction}{\forwardliftedconcretization} \tuple{\forwardliftedtype}{\forwardliftedsubseteq}\]
+where the abstraction $\forwardliftedabstraction$ and the concretization $\forwardliftedconcretization$ are defined as:
+\begin{align*}
+  \forwardliftedabstraction &\IN \forwardreachabilitytype \to \forwardliftedtype \\
+  \forwardliftedabstraction(\defsetofstates) &\DefeQ \lambda \bigloc.\setdef{\defenv \in \env}{\tuple{\bigloc}{\defenv}\in\defsetofstates} \\
+  \forwardliftedconcretization &\IN \forwardliftedtype \to \forwardreachabilitytype \\
+  \forwardliftedconcretization(f) &\DefeQ \setdef{\tuple{\bigloc}{\defenv}\in\state}{\defenv\in f(\bigloc)}
+\end{align*}
+
+We call this abstract semantics the \emph{invariance semantics} as it captures the invariance of the program states at each program location.
 
 
 

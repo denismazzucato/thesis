@@ -14,4 +14,4 @@ https://github.com/denismazzucato/thesis/blob/build/thesis.pdf
 
 
 10. background on abstract interpretation ch. 2
-12.
+12. is the maximal trace semantics really filtering for input states? Maybe yes by construction
