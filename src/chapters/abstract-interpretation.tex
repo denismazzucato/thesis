@@ -774,6 +774,10 @@ Thus, we obtain the following definition for the backward co-reachability state 
 
 \end{example}
 
+\begin{remark}[Absence of Galois Connection]\labremark{without-galoiS}
+  The use of Galois connections is not necessary to define program semantics. Instead, it represents an ideal situation where there exists the best way to approximate concrete properties. \sidetextcite{Cousot1992a} illustrates how to relax the Galois connection requirement in order only to work with concretization functions (or dually, with abstraction functions). In practice, concretization-based abstractions are much more common.
+\end{remark}
+
 
 \section{A Small Imperative Language}
 \labsec{a-small-imperative-language}
@@ -1425,6 +1429,27 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
 
 \subsection{Numerical Abstract Domains}
 \labsec{numerical-abstract-domains}
+
+We consider concretization-based abstractions of the form:
+\begin{align*}
+  \tuple{\setof{\env}}{\subseteq} \overset{\abstractdomainconcretization}{\leftarrow} \tuple{\abstractdomain}{\abstractdomainsubseteq}
+\end{align*}
+which provide a sound and computable over-approximation of the concrete semantics.
+The abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ is a \emph{numerical abstract domain} and is equipped with the following operations:
+
+\begin{definition}[Numerical Abstract Domain]\labdef{abstract-domain}
+  A \emph{numerical abstract domain} $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ is characterized by:
+  \begin{itemize}
+    \item elements in the abstract domain $\abstractdomain$ are computable representable;
+    \item a partial order $\abstractdomainsubseteq$ with an effective algorithm to check the ordering;
+    \item a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof{\env}$, or when possible a Galois connection\sidenote{See \refremark{without-galois} for the case where a Galois connection does not exist.}
+    $\tuple{\setof\env}{\subseteq}\galois{\abstractdomainabstraction}{\abstractdomainconcretization}\tuple{\abstractdomain}{\abstractdomainsubseteq}$;
+    \item a bottom element $\abstractdomainbottom\in\abstractdomain$ such that $\abstractdomainconcretization(\abstractdomainbottom) = \emptyset$;
+    \item a top element $\abstractdomaintop\in\abstractdomain$ such that $\abstractdomainconcretization(\abstractdomaintop) = \env$;
+    \item a sound join operator $\abstractdomainjoin\in\abstractdomain\times\abstractdomain\to\abstractdomain$ such that $ \abstractdomainconcretization(\defabstractvalue_1) \setjoin \abstractdomainconcretization(\defabstractvalue_2)\subseteq \abstractdomainconcretization(\defabstractvalue_1 \abstractdomainjoin \defabstractvalue_2)$;
+    \item a sound meet operator $\abstractdomainmeet\in\abstractdomain\times\abstractdomain\to\abstractdomain$ such that $\abstractdomainconcretization(\defabstractvalue_1) \setmeet \abstractdomainconcretization(\defabstractvalue_2)\subseteq \abstractdomainconcretization(\defabstractvalue_1 \abstractdomainmeet \defabstractvalue_2)$;
+  \end{itemize}
+\end{definition}
 
 % \subsubsection*{Sign}
 
