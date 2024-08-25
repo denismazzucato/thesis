@@ -1435,7 +1435,31 @@ We consider concretization-based abstractions of the form:
   \tuple{\setof{\env}}{\subseteq} \overset{\abstractdomainconcretization}{\leftarrow} \tuple{\abstractdomain}{\abstractdomainsubseteq}
 \end{align*}
 which provide a sound and computable over-approximation of the concrete semantics.
-The abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ is a \emph{numerical abstract domain} and is equipped with the following operations:
+  We introduce the concept of abstract domains with a simple example of the integer interval abstract domain \sidecite{Cousot1977}, called \intervalname. This domain abstracts the values of each variable with an interval. We assume concrete values are integers. The interval values are defined as:
+  \begin{align*}
+    \intervaltype \DefeQ \setdef{\interval{l}{u}}{l \in \Zminus \land u \in \Zplus \land l \le u} \setjoin \{\intervalbottom\}
+  \end{align*}
+  Then, the partial order $\intervalsubseteq$ is defined as:
+  \begin{align*}
+    \forall x, y \in \intervaltype, x = \intervalbottom \lor x = \interval{l}{u} \land y = \interval{l'}{u'} \IfF l' \le l \land u \le u'
+  \end{align*}
+  The concretization function $\intervalconcretization$ is defined as:
+  \begin{align*}
+    \intervalconcretization(x) \DefeQ \begin{cases}
+      \emptyset & \text{if } x = \intervalbottom \\
+      \setdef{v}{l \le v \le u} & \text{if } x = \interval{l}{u}
+    \end{cases}
+  \end{align*}
+  concretizing the set of integers between the two bounds of the interval, or the empty set for the bottom element $\intervalbottom$.
+  To obtain the interval abstract domain, we lift the intervals defined above as functions from variables $\defvariable$ to intervals $\intervaltype$:
+  \begin{align*}
+    \intervalabstractdomaintype \DefeQ \variables \to (\intervaltype \setminus \{\intervalbottom\}) \setjoin \{\intervalbottom\}
+  \end{align*}
+  where we enforce a single representation for the bottom element $\intervalbottom$, that is, if the interval associated to a variable is empty, then abstract domain contains no value for all the variables. The partial order $\intervalabstractdomainsubseteq$ is defined as:
+  \begin{align*}
+    \forall \defabstractvalue_1, \defabstractvalue_2.\spacer \defabstractvalue_1 = \intervalabstractdomainbottom \lor (\defabstractvalue_1 \neq \intervalabstractdomainbottom \land \defabstractvalue_2 \neq \intervalabstractdomainbottom \land \forall \defvariable \in \variables.\spacer \defabstractvalue_1(\defvariable) \intervalsubseteq \defabstractvalue_2(\defvariable))
+  \end{align*}
+
 
 \begin{definition}[Numerical Abstract Domain]\labdef{abstract-domain}
   A \emph{numerical abstract domain} $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ is characterized by:
