@@ -1459,6 +1459,21 @@ which provide a sound and computable over-approximation of the concrete semantic
   \begin{align*}
     \forall \defabstractvalue_1, \defabstractvalue_2.\spacer \defabstractvalue_1 = \intervalabstractdomainbottom \lor (\defabstractvalue_1 \neq \intervalabstractdomainbottom \land \defabstractvalue_2 \neq \intervalabstractdomainbottom \land \forall \defvariable \in \variables.\spacer \defabstractvalue_1(\defvariable) \intervalsubseteq \defabstractvalue_2(\defvariable))
   \end{align*}
+  THen, the concretization function $\intervalabstractdomainconcretization\in\intervalabstractdomaintype\to\setof\env$ is defined as:
+  \begin{align*}
+    \intervalabstractdomainconcretization(\defabstractvalue) \DefeQ \setdef{\defenv\in\env}{\forall \defvariable\in\variables.\spacer \defenv(\defvariable) \in \intervalconcretization(\defabstractvalue(\defvariable))}
+  \end{align*}
+  Fortunately, the integer\sidenote{In case of \dots, it would not be the case.} interval domain enjoys a Galois connection with the following abstraction function $\intervalabstractdomainabstraction\in\setof\env\to\intervalabstractdomaintype$:
+  \begin{align*}
+    \intervalabstractdomainabstraction(\defenv) \DefeQ \lambda \defvariable\in\variables.\spacer \begin{cases}
+      \intervalbottom & \text{if } \defenv(\defvariable) \notin \Z \\
+      \interval{\defenv(\defvariable)}{\defenv(\defvariable)} & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  It holds that:
+  \begin{align*}
+    \tuple{\setof{\env}}{\subseteq} \galois{\intervalabstractdomainabstraction}{\intervalabstractdomainconcretization}\tuple{\intervalabstractdomaintype}{\intervalabstractdomainsubseteq}
+  \end{align*}
 
 
 \begin{definition}[Numerical Abstract Domain]\labdef{abstract-domain}
