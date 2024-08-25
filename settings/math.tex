@@ -25,7 +25,7 @@
   \newcommand*{\false}{\textsc{f}}
 
 \newcommand*{\setof}[1]{\wp(#1)}
-\WithSuffix\newcommand\setof*[1]{\wp \left(\begin{array}{l} #1\end{array} \right)}
+\WithSuffix\newcommand\setof*[1]{\wp \left(\begin{array}[l]{@{}l@{}} #1\end{array} \right)}
 \newcommand*{\finitesetof}[1]{\wp_{\text{finite}}(#1)}
 \newcommand*{\nonemptysetof}[1]{\wp_{+}(#1)}
 \WithSuffix\newcommand\nonemptysetof*[1]{\wp_{+}\left(#1\right)}
@@ -36,9 +36,9 @@
 \WithSuffix\newcommand\setdef*[2]{\left\{ #1 \spacer\left|\spacer \begin{array}[l]{@{}l@{}} #2 \end{array} \right.\right\}}
 \WithSuffix\newcommand\setdef@[2]{
   \left\{
-  \begin{array}{l}
+  \begin{array}[l]{@{}l@{}}
   #1 \\
-  \quad\left| \begin{array}{l} #2 \end{array} \hspace{-3pt}\right.
+  \quad\left|\spacer \begin{array}[l]{@{}l@{}} #2 \end{array} \right.
 \end{array}
 \right\}
 }
