@@ -48,28 +48,24 @@
 \newcommand*{\counterdependencysemantics}{\counterdependencysemanticsnoparam \semanticsof\defprogram}
 \newcommand*{\counterdependencyconcretization}{\dependencyconcretization}
 
-%% forward reachability
-\newcommand*{\forwardreachabilitysym}{\normalfont f}
-\newcommand*{\forwardreachabilitytype}{\setof\state \to \setof\state}
-\newsemantics{forwardreachability}
-\renewcommand{\forwardreachabilitysubseteq}{\subseteq}
-\renewcommand{\forwardreachabilityjoin}{\setjoin}
-\renewcommand{\forwardreachabilitymeet}{\setmeet}
-\renewcommand{\forwardreachabilitytop}{\emptyset}
-\renewcommand{\forwardreachabilitybottom}{\state}
+%% forward reachability trace
+\newcommand*{\forwardreachabilitytracesym}{\normalfont r}
+\newcommand*{\forwardreachabilitytracetype}{\setof\state}
+\newsemantics{forwardreachabilitytrace}
+\renewcommand{\forwardreachabilitytracesubseteq}{\subseteq}
+\renewcommand{\forwardreachabilitytracejoin}{\setjoin}
+\renewcommand{\forwardreachabilitytracemeet}{\setmeet}
+\renewcommand{\forwardreachabilitytracetop}{\emptyset}
+\renewcommand{\forwardreachabilitytracebottom}{\state}
 
-\newcommand*{\forwardliftedtype}{\locs \to \setof\env}
-\newcommand*{\forwardliftedsym}{\locs}
-\newsemantics{forwardlifted}
-\renewcommand{\forwardliftedsubseteq}{\dot{\forwardreachabilitysubseteq}}
-\renewcommand{\forwardliftedjoin}{\dot{\forwardreachabilityjoin}}
-\renewcommand{\forwardliftedmeet}{\dot{\forwardreachabilitymeet}}
-\renewcommand{\forwardliftedtop}{\lambda \bigloc.\spacer \forwardreachabilitybottom}
-\renewcommand{\forwardliftedbottom}{\lambda \bigloc.\spacer \forwardreachabilitytop}
+\newcommand*{\backwardreachabilitytracesym}{\normalfont \overline{r}}
+\newcommand*{\backwardreachabilitytracetype}{\setof\state}
+\newsemantics{backwardreachabilitytrace}
+\renewcommand*{\backwardreachabilitytracesubseteq}{\subseteq}
 
 
 %% backawrd reachability
-\newcommand*{\backwardreachabilitysym}{\normalfont r}
+\newcommand*{\backwardreachabilitysym}{\normalfont \overline{r}}
 \newcommand*{\backwardreachabilitytype}{\setofsetof\state}
 \newsemantics{backwardreachability}
 \renewcommand*{\backwardreachabilitysubseteq}{\subseteq}
