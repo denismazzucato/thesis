@@ -1383,23 +1383,45 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
 \subsection{Numerical Abstract Domains}
 \labsec{numerical-abstract-domains}
 
+In this section, we introduce one of the fundamental concepts of static analysis by abstract interpretation: abstract semantics and abstract domain. The abstract semantics are \emph{computable} semantics that overapproximate the concrete semantics defined in the previous section. The abstract semantics yield an effective algorithm to compute an overapproximation of the program fixpoint, and for this reason the terms abstract semantics and analysis are often used interchangeably. The abstract domains are machine-representable structures that capture some detail of the program behavior. They come with computable operations that allow the abstract analysis to be performed efficiently.
+
 We consider concretization-based abstractions of the form:
 \begin{align*}
   \tuple{\setof{\env}}{\subseteq} \overset{\abstractdomainconcretization}{\leftarrow} \tuple{\abstractdomain}{\abstractdomainsubseteq}
 \end{align*}
 which provide a sound and computable over-approximation of the concrete semantics.
   We introduce the concept of abstract domains with a simple example of the integer interval abstract domain \sidecite{Cousot1977}, called \intervalname, \wrt{} the concrete domain of integers, \ie, $\values = \Z$.
+  Hence, concrete environments are mappings from variables to integers, \ie, $\env = \variables \to \Z$.
+
+\begin{marginfigure}
+  \begin{tikzpicture}
+    % new length: first line should be around 1.2
+    \newlength{\first}
+    \setlength{\first}{1.2cm}
+
+    % Nodes representing elements in the interval domain
+    \node (top) at (3, 4) {$[-\infty,+\infty]$};
+    \node (A) at (1, \first) {$[-2,-2]$};
+
+
+    \end{tikzpicture}
+  \caption{The interval lattice.}
+  \labfig{interval-partial-order}
+\end{marginfigure}
 
 \paragraph{Integer Interval Abstract Domain}
-This domain abstracts the values of each variable with an interval. The interval values are defined as:
+This domain abstracts the values of each variable with an interval.
+First we define interval values and operations on them, then we present the abstract domain. The interval values are defined as:
   \begin{align*}
     \intervaltype \DefeQ \setdef{\interval{l}{u}}{l \in \Zminus \land u \in \Zplus \land l \le u} \setjoin \{\intervalbottom\}
   \end{align*}
-  Then, the partial order $\intervalsubseteq$ is defined as:
+Note that, the interval values are either a closed interval $\interval{l}{u}$ with $l$ and $u$ integers such that $l \le u$, or the bottom element $\intervalbottom$ that represents the empty set of integers. Therefore, we can easily store the interval values in a machine, we say that $\intervaltype$ is \emph{machine-representable}.
+The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ checks if an interval is included in another. Formally, for all $x, y \in \intervaltype$:
   \begin{align*}
-    \forall x, y \in \intervaltype, x = \intervalbottom \lor x = \interval{l}{u} \land y = \interval{l'}{u'} \IfF l' \le l \land u \le u'
+    x = \intervalbottom \LoR (x = \interval{l}{u} \land y = \interval{l'}{u'} \IfF l' \le l \land u \le u')
   \end{align*}
-  The concretization function $\intervalconcretization$ is defined as:
+  \reffig{interval-partial-order} shows the lattice of interval values.
+  The concretization function $\intervalconcretization\in\intervaltype\to\setof\Z$ is defined as:
   \begin{align*}
     \intervalconcretization(x) \DefeQ \begin{cases}
       \emptyset & \text{if } x = \intervalbottom \\
@@ -1408,40 +1430,104 @@ This domain abstracts the values of each variable with an interval. The interval
   \end{align*}
   concretizing the set of integers between the two bounds of the interval, or the empty set for the bottom element $\intervalbottom$.
   Note that, while interval values have a machine-representable form and the ordering relation is effectively computable, the concretization function is not.
+%
+  The evaluation of arithmetic and boolean expressions for interval values are handled as one expects:
+  \begin{align*}
+    \defvalue &\DefeQ \interval{\defvalue}{\defvalue} \\
+    \intervalabstractdomainbottom \oplus^{\intervalabstractdomaintype} \defabstractvalue &\DefeQ \intervalabstractdomainbottom \\
+    \interval{l}{u} \oplus^{\intervalabstractdomaintype} \intervalabstractdomainbottom &\DefeQ \intervalabstractdomainbottom \\
+    \interval{l}{u} \oplus^{\intervalabstractdomaintype} \interval{l'}{u'} &\DefeQ
+    \interval{l \oplus l'}{u \oplus u'} \tag*{for $\oplus\in\{+, -\}$} \\
+    \randval(l, u) &\DefeQ \interval{l}{u} \\[1em]
+    \interval{l}{u} \le \defvalue &\DefeQ l \le \defvalue \\
+    \interval{l}{u} = \defvalue &\DefeQ l \le \defvalue \le u\\
+  \end{align*}
+  where $\defvalue\in\Z$ is an integer constant.
+  Next, we proceed with the description of the interval abstract domain.
 
   \begin{description}
-    \item[Abstract Elements] The abstract elements of the interval abstract domain are mappings from variables to intervals:
+    \item[Abstract Elements] The abstract elements of the interval abstract domain are mappings from variables $\variables$ to intervals $\intervaltype$:
+    \marginnote{The finite set $\variables$ contains the program variables.}
     \begin{align*}
       \intervalabstractdomaintype \DefeQ \variables \to (\intervaltype \setminus \{\intervalbottom\}) \setjoin \{\intervalbottom\}
     \end{align*}
     where we enforce a single representation for the bottom element $\intervalbottom$, that is, if the interval associated to a variable is empty, then abstract domain contains no value for all the variables.
-    As the amount of variables is finite, and the interval values are machine-representable, in turns, the elements of the interval abstract domain are computable.
-    \item[Partial Order] The partial order $\intervalabstractdomainsubseteq$ is defined as, for all $\defabstractvalue_1, \defabstractvalue_2 \in \intervalabstractdomaintype$:
+    As the amount of variables is finite, and the interval values are machine-representable, in turns, the elements of the interval abstract domain are machine-representable.
+    \item[Partial Order] The partial order $\intervalabstractdomainsubseteq$ is defined as follows, for all $\defabstractvalue_1, \defabstractvalue_2 \in \intervalabstractdomaintype$:
     \begin{align*}
       \defabstractvalue_1 = \intervalabstractdomainbottom \lor (\defabstractvalue_1 \neq \intervalabstractdomainbottom \land \defabstractvalue_2 \neq \intervalabstractdomainbottom \land \forall \defvariable \in \variables.\spacer \defabstractvalue_1(\defvariable) \intervalsubseteq \defabstractvalue_2(\defvariable))
     \end{align*}
     An effective algorithm can check the ordering relation between two abstract elements just by comparing the intervals associated to each variable.
     \item[Concretization Function] The concretization function $\intervalabstractdomainconcretization\in\intervalabstractdomaintype\to\setof\env$ is defined as all the environments that satisfy the interval constraints:
     \begin{align*}
-      \intervalabstractdomainconcretization(\defabstractvalue) \DefeQ \setdef{\defenv\in\env}{\forall \defvariable\in\variables.\spacer \defenv(\defvariable) \in \intervalconcretization(\defabstractvalue(\defvariable))}
+      \intervalabstractdomainconcretization(\defabstractvalue) \DefeQ \begin{cases}
+        \emptyset & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
+        \setdef{\defenv\in\env}{\forall \defvariable \in \variables.\spacer \defenv(\defvariable) \in \intervalconcretization(\defabstractvalue(\defvariable))} & \text{otherwise}
+      \end{cases}
     \end{align*}
-    As seen in \refsec{galois-connection}, \emph{soundness} is the foundation of abstract interpretation. An abstract element $\defabstractvalue$ is a sound abstraction of the set of environments $\defsetofenvs$ when the concretization of $\defabstractvalue$ contains all the environments in $\defsetofenvs$. Intuitively, the abstract element carries all the information of the concrete states it abstracts. Formally, given a concrete domain $\tuple{X}{\sqsubseteq_X}$ and an abstract domain $\tuple{X^\natural}{\sqsubseteq_{X^\natural}}$, then $x\in X$ is a \emph{sound abstraction} of $x^\natural\in X^\natural$ if and only if:
+    As seen in \refsec{galois-connection}, \emph{soundness} is the foundation of abstract interpretation. An abstract element $\defabstractvalue$ is a sound abstraction of the set of environments $\defsetofenvs$ when the concretization of $\defabstractvalue$ contains all the environments in $\defsetofenvs$. Intuitively, the abstract element carries all the information of the concrete states it abstracts.
+    \begin{definition}[Sound Abstraction]
+      Given a concrete domain $\tuple{X}{\sqsubseteq_X}$ and an abstract domain $\tuple{X^\natural}{\sqsubseteq_{X^\natural}}$, then $x\in X$ is a \emph{sound abstraction} of $x^\natural\in X^\natural$, if and only if:
     \begin{align*}
-      x \sqsubseteq_X \concretization(x^\natural)
+      x \sqsubseteq_X \abstractdomainconcretization(x^\natural)
     \end{align*}
-    For instance, assuming the variables $\defvariable, \texttt{y} \in \variables$, the interval $\defabstractvalue = \tuple{\defvariable \mapsto \interval{1}{2}}{\texttt{y} \mapsto \interval{0}{3}}$ is a sound abstraction of the set of environments $\{\tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 2}, \tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 3}\}$ as the concretization of the interval contains both environments. Instead, $\defabstractvalue$ is not a sound abstraction for the environment $\tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 4}$ as the value for the variable \texttt{y} is not in the interval $[0, 3]$.
+    \end{definition}
+    For instance, let the program variables be $\defvariable, \texttt{y} \in \variables$, the concrete domain be $\tuple{\env}{\subseteq}$, and the abstract domain be $\tuple{\intervalabstractdomaintype}{\intervalabstractdomainsubseteq}$.
+    Then, the interval $\defabstractvalue = \tuple{\defvariable \mapsto \interval{1}{2}}{\texttt{y} \mapsto \interval{0}{3}}$ is a sound abstraction of the set of environments $\{\tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 2}, \tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 3}\}$ as the concretization of the interval contains both environments. Instead, $\defabstractvalue$ is not a sound abstraction for the environment $\tuple{\defvariable\mapsto 1}{\texttt{y}\mapsto 4}$ as the value for the variable \texttt{y} is not in the interval $[0, 3]$.
+
+    The notion of soundness extend to operators as well.
+    \begin{definition}[Sound Operator]
+      Given a concrete domain $\tuple{X}{\sqsubseteq_X}$ and an abstract domain $\tuple{X^\natural}{\sqsubseteq_{X^\natural}}$, then an abstract operator $f^\natural\in X^\natural \to X^\natural$ is a \emph{sound abstraction} of a concrete operator $f\in X \to X$, if and only if:
+    \begin{align*}
+      \forall x^\natural \in X^\natural.\spacer f(\abstractdomainconcretization(x^\natural)) \sqsubseteq_X \abstractdomainconcretization(f^\natural(x^\natural))
+    \end{align*}
+    \end{definition}
     \item[Abstraction Function]
-    Fortunately, the integer\sidenote{In case of \dots, it would not be the case.} interval domain enjoys a Galois connection with the following abstraction function $\intervalabstractdomainabstraction\in\setof\env\to\intervalabstractdomaintype$:
+    Fortunately, the integer\sidenote{For instance, the rational intervals abstract domain does not enjoy a Galois connection when the underlying concrete domain are real numbers, as the concrete interval $\interval{0}{\sqrt{2}}$ does not have a best approximation in the rational numbers.} interval domain enjoys a Galois connection with the following abstraction function $\intervalabstractdomainabstraction\in\setof\env\to\intervalabstractdomaintype$:
     \begin{align*}
       \intervalabstractdomainabstraction(\defsetofenvs) \DefeQ \begin{cases}
         \intervalabstractdomainbottom & \text{if } \defsetofenvs = \emptyset \\
-        \lambda \defvariable.\interval{\min\setdef{\defenv(\defvariable)}{\defenv\in\defsetofenvs}}{\max\setdef{\defenv(\defvariable)}{\defenv\in\defsetofenvs}} & \text{otherwise}
+        \lambda \defvariable.\interval{\min X}{\max X} & \text{otherwise} \\
+        \quad \text{where } X = \setdef{\defenv(\defvariable)}{\defenv\in\defsetofenvs}
       \end{cases}
     \end{align*}
     It holds that:
   \begin{align*}
     \tuple{\setof{\env}}{\subseteq} \galois{\intervalabstractdomainabstraction}{\intervalabstractdomainconcretization}\tuple{\intervalabstractdomaintype}{\intervalabstractdomainsubseteq}
   \end{align*}
+  Galois connections are useful because they give a way to express the most precise abstraction of concrete values.
+  \begin{remark}
+    Let $\tuple{X}{\sqsubseteq_X} \galois{\abstraction}{\concretization}\tuple{X^\natural}{\sqsubseteq_{X^
+    natural}}$ be a Galois connection. Then, for any $x \in X$, $\abstraction(x)$ is the most precise abstraction of $x$ in $X^\natural$, \ie, the $\sqsubseteq_{X^\natural}$-smallest sound abstraction of $x$.
+  \end{remark}
+  This best abstraction also extends to operators.
+  \begin{definition}[Best Operator Abstraction]\labdef{best-operator-abstraction}
+    Let $\tuple{X}{\sqsubseteq_X} \galois{\abstraction}{\concretization}\tuple{X^\natural}{\sqsubseteq_{X^\natural}}$ be a Galois connection, and let $f\in X\to X$ be a concrete operator. Then, the best abstraction of $f$ is $\abstraction \circ f \circ \concretization$.
+  \end{definition}
+  Interestingly, \refdef{best-operator-abstraction} above provides a constructive way to define the best abstraction of concrete operators, without requiring a priori definitions and soundness proofs.
+  For instance, the successor operator on environments of integer variables:
+  \begin{align*}
+    \textsc{Succ} &\IN \setof\env \to \setof\env \\
+    \textsc{Succ}(\defsetofenvs) &\DefeQ \setdef{\updatemem{\defenv}{\defvariable}{\defenv(\defvariable) + 1}}{\defvariable\in\variables \land \defenv\in\defsetofenvs}
+  \end{align*}
+  enjoys the following best abstraction:
+  \begin{align*}
+    \texttt{Succ}^\natural &\IN \intervalabstractdomaintype \to \intervalabstractdomaintype \\
+    \texttt{Succ}^\natural(\defabstractvalue) &\DefeQ \intervalabstractdomainabstraction(\textsc{Succ}(\intervalabstractdomainconcretization(\defabstractvalue))) \\
+    &\spacearound{=} \begin{cases}
+      \intervalabstractdomainabstraction(\textsc{Succ}(\emptyset)) &\text{if $\defabstractvalue = \intervalabstractdomainbottom$} \\
+      \intervalabstractdomainabstraction\left(\setdef@{\updatemem{\defenv}{\defvariable}{\defenv(\defvariable) + 1}}{\defvariable\in\variables \land \defenv\in\intervalabstractdomainconcretization(\defabstractvalue)}\right) &\text{otherwise}
+    \end{cases} \\
+    &\spacearound{=} \begin{cases}
+      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{\min_{{l\in\defabstractvalue(\defvariable)}} l + 1}{\max_{u\in\defabstractvalue(\defvariable)} {u + 1}} & \text{otherwise}
+    \end{cases} \\
+    &\spacearound{=} \begin{cases}
+      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{l + 1}{u + 1} & \text{where } \interval{l}{u} = \defabstractvalue(\defvariable)
+    \end{cases}
+ \end{align*}
+  Unfortunately, often the Galois connection is not available, thus we consider the most general case and do not require a Galois connection for the abstract domain.
   \item[Bottom and Top Elements]
   The bottom element $\intervalabstractdomainbottom\in\intervalabstractdomaintype$ represents the empty interval for all the variables, and it is concretized to the empty set of environments:
   \begin{align*}
@@ -1452,26 +1538,40 @@ This domain abstracts the values of each variable with an interval. The interval
     \intervalabstractdomainconcretization(\intervalabstractdomaintop) = \env
   \end{align*}
   \item[Join and Meet Operators]
-  We also define sound join $\intervalabstractdomainjoin$ and meet $\intervalabstractdomainmeet$ operators to combine intervals:
+  We derive the best abstraction for the join $\intervalabstractdomainjoin$ and meet $\intervalabstractdomainmeet$ operators:
   \begin{align*}
-    \intervalabstractdomainjoin(\defabstractvalue_1, \defabstractvalue_2) &\DefeQ \begin{cases}
-      \intervalabstractdomainbottom & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
-    \end{cases} \\
-    \intervalabstractdomainmeet(\defabstractvalue_1, \defabstractvalue_2) &\DefeQ \begin{cases}
-      \intervalabstractdomainbottom & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\max\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\min\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
+    \intervalabstractdomainbottom \intervalabstractdomainjoin \defabstractvalue &\DefeQ \defabstractvalue \\
+    \defabstractvalue \intervalabstractdomainjoin \intervalabstractdomainbottom &\DefeQ \defabstractvalue \\
+    \defabstractvalue_1 \intervalabstractdomainjoin \defabstractvalue_2 &\DefeQ \lambda \defvariable.\intervalabstractdomainabstraction(\intervalabstractdomainconcretization(\defabstractvalue_1(\defvariable)) \setjoin \intervalabstractdomainconcretization(\defabstractvalue_2(\defvariable))) \\
+    &\spacearound{=} \lambda \defvariable.\intervalabstractdomainabstraction\left(\setdef*{x\in\Z}{\interval{l}{u} = \defabstractvalue_1(\defvariable) \land \interval{l'}{u'} = \defabstractvalue_2(\defvariable) \\ {} \land l \le x \le u \lor l' \le x \le u'}\right) \\
+    &\spacearound{=} \lambda \defvariable.\interval{\min(l, l')}{\max(u, u')} \tag*{where $\interval{l}{u} = \defabstractvalue_1(\defvariable) \land \interval{l'}{u'} = \defabstractvalue_2(\defvariable)$}
+  \end{align*}
+  \begin{align*}
+    \intervalabstractdomainbottom \intervalabstractdomainmeet \defabstractvalue &\DefeQ \intervalabstractdomainbottom \\
+    \defabstractvalue \intervalabstractdomainmeet \intervalabstractdomainbottom &\DefeQ \intervalabstractdomainbottom \\
+    \defabstractvalue_1 \intervalabstractdomainmeet \defabstractvalue_2 &\DefeQ \lambda \defvariable.\intervalabstractdomainabstraction(\intervalabstractdomainconcretization(\defabstractvalue_1(\defvariable)) \setmeet \intervalabstractdomainconcretization(\defabstractvalue_2(\defvariable))) \\
+    &\spacearound{=} \lambda \defvariable.\intervalabstractdomainabstraction\left(\setdef*{x\in\Z}{\interval{l}{u} = \defabstractvalue_1(\defvariable) \land \interval{l'}{u'} = \defabstractvalue_2(\defvariable) \\ {} \land l \le x \le u \land l' \le x \le u'}\right) \\
+    &\spacearound{=} \lambda \defvariable.\begin{cases}
+      \interval{\max(l, l')}{\min(u, u')} \\
+      \hspace{85px} \text{if } \max(l, l') \le \min(u, u') \\
+      \intervalbottom \hspace{138px} \text{otherwise}
     \end{cases}
   \end{align*}
-  The join operator computes the interval that contains all the values of the two input intervals, while the meet operator computes the interval that contains only the values that are in both input intervals. These are sound operators as the concretization of the result is a sound abstraction of the set of environments that are the join or meet of the concretization of the input abstract elements:
+  The join operator computes the interval that contains all the values of the two input intervals, while the meet operator computes the interval that contains only the values that are in both input intervals.
+  These are sound operators as the concretization of the result is a sound abstraction of the set of environments that are the join or meet of the concretization of the input abstract elements.
+  \begin{definition}[Soundness of Join and Meet Operators]\labdef{soundness-join-meet}
+    Given two abstract elements $\defabstractvalue_1, \defabstractvalue_2 \in \abstractdomain$, the join $\abstractdomainjoin \in \pair\abstractdomain\abstractdomain\to\abstractdomain$ and meet $\abstractdomainmeet\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operators are sound whenever it holds that:
   \begin{align*}
-    \intervalabstractdomainconcretization(\defabstractvalue_1) \setjoin \intervalabstractdomainconcretization(\defabstractvalue_2) &\subseteq \intervalabstractdomainconcretization(\defabstractvalue_1 \intervalabstractdomainjoin \defabstractvalue_2) \\
-    \intervalabstractdomainconcretization(\defabstractvalue_1) \setmeet \intervalabstractdomainconcretization(\defabstractvalue_2) &\subseteq \intervalabstractdomainconcretization(\defabstractvalue_1 \intervalabstractdomainmeet \defabstractvalue_2)
+    \concretization(\defabstractvalue_1) \setjoin \concretization(\defabstractvalue_2) &\subseteq \concretization(\defabstractvalue_1 \abstractdomainjoin \defabstractvalue_2) \\
+    \concretization(\defabstractvalue_1) \setmeet \concretization(\defabstractvalue_2) &\subseteq \concretization(\defabstractvalue_1 \abstractdomainmeet \defabstractvalue_2)
   \end{align*}
+  \end{definition}
+  Note that, \refdef{soundness-join-meet} is always satisfied for best abstractions operators, \cf{} \refdef*{best-operator-abstraction}.
   \item[Forward and Backward Assignments]
-  The abstract semantics of an assignment statement $\plassignstmt$ is defined as:
+  The abstract semantics of an assignment statement $\assignstmt$ for the interval abstract domain is defined as:
   \begin{align*}
-    \intervalabstractdomainassign(\defabstractvalue, \defvariable, \defaexp) \DefeQ \begin{cases}
+    \intervalabstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
+    \DefeQ \begin{cases}
       \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
       \lambda \defvariable.\interval{\defvalue}{\defvalue} & \text{if } \defaexp = \defvariable \land \defvalue \in \intervalconcretization(\defabstractvalue(\defvariable)) \\
       \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue(\defvariable)}} & \text{otherwise}
@@ -1535,8 +1635,34 @@ Above we presented all the characteristics of a numerical abstract domain. Forma
 \end{definition}
 
 It holds that the integer interval abstract domain is a numerical abstract domain.
-Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain, \cf{} \refdef{abstract-domain}.
+Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$, \cf{} \refdef{abstract-domain}.
 
 \paragraph{Forward Reachability State Abstract Semantics}
+
+The forward reachability state abstract semantics $\forwardsemantics\in\forwardtype$ is defined by induction on the structure of the program, as follows:
+
+\begin{description}
+  \marginnote{
+    \begin{align*}
+      &\forwardsemanticsnoparam \semanticsof{\pskipstmt}\defabstractvalue \DefeQ \defabstractvalue
+    \end{align*}
+  }
+  \item[\normalfont ($\pskipstmt$)] The abstract semantics of a skip statement is the identity function on the abstract element.
+  \marginnote{
+    \begin{align*}
+      &\forwardsemanticsnoparam \semanticsof{\plassignstmt}\defabstractvalue \DefeQ \abstractdomainassign(\defabstractvalue, \defvariable, \defaexp)
+    \end{align*}
+  }
+  \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract assignment of the abstract element.
+  \marginnote{
+    \begin{align*}
+      &\forwardsemanticsnoparam \semanticsof{\pifstmt}\defabstractvalue \DefeQ \\
+      &\quad \abstractdomainfilter(\defabstractvalue, \defbexp) \abstractdomainjoin \abstractdomainfilter(\defabstractvalue, \neg\defbexp)
+    \end{align*}
+  }
+  \item[\normalfont ($\pifstmt$)] The abstract semantics of a conditional statement is the join of the abstract semantics applied to the two branches.
+\end{description}
+
+
 \paragraph{Backward Co-Reachability State Abstract Semantics}
 \paragraph{Common Numerical Abstract Domains}
