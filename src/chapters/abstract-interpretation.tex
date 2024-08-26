@@ -807,7 +807,6 @@ The set $\inputvariables \subseteq \variables$ contains the input variables.
       \linesep \lnot \defbexp \\
     \defstmt \grammardef \lskipstmt\\
       \linesep \lassignstmt\\
-      \linesep \lassertstmt\\
       \linesep \lifstmt \\
       \linesep \lwhilestmt \\
       \linesep \lcompstmt \\
@@ -820,7 +819,7 @@ The set $\inputvariables \subseteq \variables$ contains the input variables.
 The entry point of a program $\defprogram$ is a statement $\defstmt$, denoted by $\progstmt$, followed by a unique program location $\bigloc\in\locs$.
 Another unique program location appears within each statement.
 Since we rarely need to explicitly specify program locations, most of the time we do not report them to improve clarity.
-A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment statement $\assignstmt$, an assertion statement $\assertstmt$, a conditional statement $\pifstmt$, a while statement $\pwhilestmt$, or a composition statement $\pcompstmt$.
+A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment statement $\assignstmt$, a conditional statement $\pifstmt$, a while statement $\pwhilestmt$, or a composition statement $\pcompstmt$.
 
 Arithmetic expressions $\defaexp$ are either a variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$.\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.} The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or--generally--uncertainty in the program.
 %
@@ -893,7 +892,6 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
   \begin{align*}
     &\initialloc[\plskipstmt] \DefeQ \bigloc \\
     &\initialloc[\plassignstmt] \DefeQ \bigloc \\
-    &\initialloc[\plassertstmt] \DefeQ \bigloc \\
     &\initialloc[\plifstmt] \DefeQ \bigloc \\
     &\initialloc[\plwhilestmt] \DefeQ \bigloc \\
     &\initialloc[\plcompstmt] \DefeQ \initialloc[\defstmt] \\
@@ -912,9 +910,6 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
     \\[0.2cm]
     &(\defstmt = \assignstmt)\\
     &\quad\finalloc[\plassignstmt] \DefeQ \finalloc[\defstmt]
-    \\[0.2cm]
-    &(\defstmt = \assertstmt)\\
-    &\quad\finalloc[\plassertstmt] \DefeQ \finalloc[\defstmt]
     \\[0.2cm]
     &(\defstmt = \ifstmt[\defstmt'][\defstmt''][\defbexp])\\
     &\quad\finalloc[{\plifstmt[\defstmt'][\defstmt''][\defbexp]}] \\
@@ -939,7 +934,6 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
     &(\defstmt = \progstmt[\defstmt])\\
     &\quad\finalloc[\plprogstmt] \DefeQ \bigloc
   \end{align*}
-  \vfill
 \end{subfigure}
 \caption{Final control points.}
 \labfig{final}
@@ -988,13 +982,6 @@ Next, we define $\transitionrelation$ for each program construct.
     The expression $\aexpsemantics\defenv$ may generate multiple values due to the non-deterministic choice $\randval(l, u)$.} of the arithmetic expression $\defaexp$, and control moves from the initial location $\bigloc$ to the final location $\finalloc[\plassignstmt]$.
   \marginnote{
     \begin{align*}
-      &\transitionrelation \semanticsof{\plassertstmt} \DefeQ \\
-      &\quad\setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}}{\defenv\in\env \land \bexpsemantics \defenv}
-    \end{align*}
-  }
-    \item[\normalfont ($\plassertstmt$)] The assertion statement does not modify the environment, and control moves from the initial location $\bigloc$ to the final location $\finalloc[\plassertstmt]$ for environments that satisfy the boolean expression $\defbexp$, \ie, $\bexpsemantics\defenv$.
-  \marginnote{
-    \begin{align*}
       &\transitionrelation \semanticsof{\plifstmt} \DefeQ \\
       &\quad \setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}}}{\defenv\in\env \land \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt} \SetjoiN {} \\
       &\quad \setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt']}{\defenv}}}{\defenv\in\env \land \neg \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt'}
@@ -1029,7 +1016,6 @@ Next, we define $\transitionrelation$ for each program construct.
 %   \begin{align*}
 %     &\transitionrelation \semanticsof{\plskipstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}}{\defenv\in\env} \\
 %     &\transitionrelation \semanticsof{\plassignstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}}{\defenv\in\env \land \defvalue\in\aexpsemanticsnoparam \semanticsof{\defaexp}\defenv} \\
-%     &\transitionrelation \semanticsof{\plassertstmt} \DefeQ \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}}{\defenv\in\env \land \bexpsemantics \defenv} \\
 %     &\transitionrelation \semanticsof{\plifstmt} \DefeQ \\
 %       &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}}}{\defenv\in\env \land \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt} \SetjoiN {} \\
 %       &\quad \setdef{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt']}{\defenv}}}{\defenv\in\env \land \neg \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt'} \\
@@ -1070,13 +1056,6 @@ Accordingly, we define the maximal trace semantics $\tracesemantics\in\tracetype
   \item[\normalfont ($\plassignstmt$)] For an assignment statement, to the traces of $\defsetoftraces$ that starts from the final location $\finalloc[\plassignstmt]$ and an updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ with the effect of the assignment statement (where $\defvalue$ is a\sidenote{
     As noted before, the expression $\aexpsemantics\defenv$ may generate multiple values due to the non-deterministic choice $\randval(l, u)$.}
   value of the arithmetic expression $\defaexp$ under the environment $\defenv$), the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ \emph{before} update. Note that, traces in maximal trace semantics $\tracesemanticsnoparam$ are built backwards, thus the environment $\defenv$ is prepended to the beginning of the trace, which is required starting from the updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ at the final location $\finalloc[\plassignstmt]$.
-  \marginnote{
-    \begin{align*}
-      &\tracesemanticsnoparam \semanticsof{\plassertstmt}\defsetoftraces \DefeQ \\
-      &\quad\setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land \deftrace\in\finiteinfinitesequences  \land {} \\ \concat{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}\in\defsetoftraces}
-    \end{align*}
-  }
-  \item[\normalfont ($\plassertstmt$)] The trace semantics of an assertion statement prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ to the traces of $\defsetoftraces$ that start from the final location $\finalloc[\plassertstmt]$ and the environment $\defenv$ given that $\defenv$ satisfies the boolean expression $\defbexp$, \ie, $\bexpsemantics\defenv$ holds.
   \marginnote{
     \begin{align*}
       &\tracesemanticsnoparam \semanticsof{\plifstmt}\defsetoftraces \DefeQ \\
@@ -1137,8 +1116,6 @@ These two semantics will be used to define the abstract semantics and to introdu
 %     &\tracesemanticsnoparam \semanticsof{\plskipstmt}\defsetoftraces \DefeQ \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \deftrace\in\finiteinfinitesequences\land\concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces} \\
 %     &\tracesemanticsnoparam \semanticsof{\plassignstmt}\defsetoftraces \DefeQ
 %        \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}}{\defenv\in\env \land \defvalue \in \aexpsemantics\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}\in\defsetoftraces} \\
-%     &\tracesemanticsnoparam \semanticsof{\plassertstmt}\defsetoftraces \DefeQ
-%       \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\deftrace}\in\defsetoftraces} \\
 %     &\tracesemanticsnoparam \semanticsof{\plifstmt}\defsetoftraces \DefeQ \\
 %       &\quad \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\defsetoftraces} \SetjoiN {} \\
 %       &\quad \setdef*{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces} \\
@@ -1194,13 +1171,6 @@ Given a set of states $\defsetofstates\in\setof{\state}$, for each program state
   \item[\normalfont ($\plassignstmt$)] The reachability semantics of an assignment statement updates the environments in $\defsetofstates$ with any value from the arithmetic expression $\defaexp$. Program locations are updated to the final location $\finalloc[\plassignstmt]$.
   \marginnote{
     \begin{align*}
-      &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plassertstmt}\defsetofstates \DefeQ \\
-      &\quad\setdef{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\tracetuple{\bigloc}{\defenv} \in \bexpsemantics\defsetofstates}
-    \end{align*}
-  }
-  \item[\normalfont ($\plassertstmt$)] The reachability semantics of an assertion statement maintains the set of environments of $\defsetofstates$ that are paired to program locations starting at the initial location $\bigloc$ and satisfy the boolean expression $\defbexp$. Program locations are updated to the final location $\finalloc[\plassertstmt]$.
-  \marginnote{
-    \begin{align*}
       &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ \\
       &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofstates) \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofstates)
     \end{align*}
@@ -1215,8 +1185,8 @@ Given a set of states $\defsetofstates\in\setof{\state}$, for each program state
     &\qquad \forwardreachabilitytracetransformer(X) \DefeQ \defsetofstates \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics X)
     \end{align*}
   }
-  \item[\normalfont ($\plwhilestmt$)] The reachability semantics of a while statement is the set of states with program locations updated to the final location $\finalloc[\plassertstmt]$ that do not satisfy the boolean expression $\defbexp$ from the least fixpoint of a transformer $\forwardreachabilitytracetransformer$.
-  Program locations are updated to the final location $\finalloc[\plassertstmt]$ because the final location of the loop statement is $\bigloc$, not the final location of the loop body $\finalloc[\defstmt]$, \cf{} \reffig{final}.
+  \item[\normalfont ($\plwhilestmt$)] The reachability semantics of a while statement is the set of states with program locations updated to the final location $\finalloc[\plwhilestmt]$ that do not satisfy the boolean expression $\defbexp$ from the least fixpoint of a transformer $\forwardreachabilitytracetransformer$.
+  Program locations are updated to the final location $\finalloc[\plwhilestmt]$ because the final location of the loop statement is $\bigloc$, not the final location of the loop body $\finalloc[\defstmt]$, \cf{} \reffig{final}.
   The transformer $\forwardreachabilitytracetransformer$ takes as input a set $X\in\setof{\state}$ of states.
   Initially, $X$ is the empty set $\emptyset$.
   At each iteration, the transformer joins $\defsetofstates$ with the reachability semantics of the loop body $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ for the environments in $X$ that satisfy the boolean expression $\defbexp$.
@@ -1256,9 +1226,6 @@ Note that, the reachability semantics presented in this section is strictly less
 %     &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plassignstmt}\defsetofstates \DefeQ
 %        \setdef{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\tracetuple{\otherloc}{\defenv}\in\defsetofstates \land \defvalue \in \aexpsemantics\defenv }
 %        \\
-%     &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plassertstmt}\defsetofstates \DefeQ
-%     \setdef{\tracetuple{\finalloc[\plassertstmt]}{\defenv}}{\tracetuple{\otherloc}{\defenv} \in \bexpsemantics\defsetofstates }
-%     \\
 %     &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ
 %     \\
 %     &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofstates) \SetjoiN \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofstates)
@@ -1287,9 +1254,6 @@ As a simplification, \reffig{forward-reachability-state-semantics-without-locati
     \\
     &\forwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \setdef{\updatemem{\defsetofenvs}{\defvariable}{\defvalue}}{\defvalue \in \aexpsemantics\defsetofenvs}
        \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\passertstmt}\defsetofenvs \DefeQ
-    \bexpsemantics\defsetofenvs
-    \\
     &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
     \\
     &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofenvs) \SetjoiN \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs)
@@ -1327,13 +1291,6 @@ The backward co-reachability state semantics $\backwardreachabilitytracesemantic
     \end{align*}
   }
   \item[\normalfont ($\plassignstmt$)] The backward co-reachability semantics of an assignment statement is the set of states $\tracetuple{\bigloc}{\defenv}$ such that the updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ is in $\defsetofstates$ with program location $\finalloc[\plassignstmt]$. The value $\defvalue$ is evaluated from the arithmetic expression $\defaexp$ under the environment $\defenv$, before the assignment.
-  \marginnote{
-    \begin{align*}
-      &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plassertstmt}\defsetofstates \DefeQ \\
-      &\quad\setdef@{\tracetuple{\bigloc}{\defenv}}{\defenv\in\env \land \bexpsemantics \land {} \\ \tracetuple{\finalloc[\plassertstmt]}{\defenv}\in\defsetofstates}
-    \end{align*}
-  }
-  \item[\normalfont ($\plassertstmt$)] The backward co-reachability semantics of an assertion statement is the set of states $\tracetuple{\bigloc}{\defenv}$ such that the environment $\defenv$ satisfies the boolean expression $\defbexp$ and is in $\defsetofstates$ with program location $\finalloc[\plassertstmt]$.
   \marginnote{
     \begin{align*}
       &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ \\
@@ -1384,8 +1341,6 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
 %     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plassignstmt}\defsetofstates \DefeQ
 %        \setdef{\tracetuple{\initialloc[\plassignstmt]}{\defenv}}{\tracetuple{\otherloc}{\updatemem{\defenv}{\defvariable}{\defvalue}}\in\defsetofstates \land \defvalue \in \aexpsemantics\defenv }
 %     \\
-%     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plassertstmt}\defsetofstates \DefeQ \setdef{\tracetuple{\initialloc[\plassertstmt]}{\defenv}}{\defenv \in \env}
-%     \\
 %     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ \\
 %     &\quad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofstates) \SetjoiN \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofstates)
 %     \\
@@ -1407,8 +1362,6 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
     \\
     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \setdef{\defenv\in\env}{\defvalue \in \aexpsemantics\defenv \land \updatemem{\defenv}{\defvariable}{\defvalue}\in\defsetofenvs}
        \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\passertstmt}\defsetofenvs \DefeQ \bexpsemantics\defsetofenvs
-    \\
     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
     \\
     &\quad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofenvs) \SetjoiN \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofenvs)
@@ -1489,7 +1442,7 @@ This domain abstracts the values of each variable with an interval. The interval
   \begin{align*}
     \tuple{\setof{\env}}{\subseteq} \galois{\intervalabstractdomainabstraction}{\intervalabstractdomainconcretization}\tuple{\intervalabstractdomaintype}{\intervalabstractdomainsubseteq}
   \end{align*}
-  \item{Bottom and Top Elements}
+  \item[Bottom and Top Elements]
   The bottom element $\intervalabstractdomainbottom\in\intervalabstractdomaintype$ represents the empty interval for all the variables, and it is concretized to the empty set of environments:
   \begin{align*}
     \intervalabstractdomainconcretization(\intervalabstractdomainbottom) = \emptyset
@@ -1498,7 +1451,7 @@ This domain abstracts the values of each variable with an interval. The interval
   \begin{align*}
     \intervalabstractdomainconcretization(\intervalabstractdomaintop) = \env
   \end{align*}
-  \item{Join and Meet Operators}
+  \item[Join and Meet Operators]
   We also define sound join $\intervalabstractdomainjoin$ and meet $\intervalabstractdomainmeet$ operators to combine intervals:
   \begin{align*}
     \intervalabstractdomainjoin(\defabstractvalue_1, \defabstractvalue_2) &\DefeQ \begin{cases}
@@ -1516,9 +1469,53 @@ This domain abstracts the values of each variable with an interval. The interval
     \intervalabstractdomainconcretization(\defabstractvalue_1) \setmeet \intervalabstractdomainconcretization(\defabstractvalue_2) &\subseteq \intervalabstractdomainconcretization(\defabstractvalue_1 \intervalabstractdomainmeet \defabstractvalue_2)
   \end{align*}
   \item[Forward and Backward Assignments]
+  The abstract semantics of an assignment statement $\plassignstmt$ is defined as:
+  \begin{align*}
+    \intervalabstractdomainassign(\defabstractvalue, \defvariable, \defaexp) \DefeQ \begin{cases}
+      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{\defvalue}{\defvalue} & \text{if } \defaexp = \defvariable \land \defvalue \in \intervalconcretization(\defabstractvalue(\defvariable)) \\
+      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue(\defvariable)}} & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  The abstract semantics of an assignment statement is the interval that contains all the values of the interval associated to the variable, or the value of the arithmetic expression if it is a variable.
+  In case of the backward execution of an assignment statement, the abstract semantics is:
+  \begin{align*}
+    \intervalabstractdomainsubstitute(\defabstractvalue, \defvariable, \defaexp) \DefeQ \begin{cases}
+      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{\defvalue}{\defvalue} & \text{if } \defaexp = \defvariable \land \defvalue \in \intervalconcretization(\defabstractvalue(\defvariable)) \\
+      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue(\defvariable)}} & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  In this case, we call substitution the operation of replacing the value of a variable with the value of an arithmetic expression, that is, a backward assignment.
   \item[Boolean Expressions]
+  Given a boolean expression $\defbexp$, the abstract semantics of the expression is:
+  \begin{align*}
+    \intervalabstractdomainfilter(\defabstractvalue, \defbexp) \DefeQ
+  \end{align*}
   \item[Widening]
-  \item[Narrowing]
+  When dealing with loops, the widening operator ensures the termination of the fixpoint computation by over-approximating the result of the iteration.
+  This step is recommended even for concrete domains that does not have infinite ascending chains, as the convergence of the fixpoint computation can be slow.
+  The widening operator for the interval abstract domain is defined as:
+  \begin{align*}
+    \intervalabstractdomainwidening(\defabstractvalue_1, \defabstractvalue_2) \DefeQ \begin{cases}
+      \defabstractvalue_2 & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
+    \end{cases}
+  \end{align*}
+  It holds that the widening domain computes an upper bound of the two input intervals:
+  \begin{align*}
+    \intervalabstractdomainconcretization(\defabstractvalue_1) \setjoin \intervalabstractdomainconcretization(\defabstractvalue_2) &\subseteq \intervalabstractdomainconcretization(\defabstractvalue_1 \intervalabstractdomainwidening \defabstractvalue_2)
+  \end{align*}
+  and it enforces termination: for any infinite sequence of abstract elements $\defabstractvalue_1, \defabstractvalue_2, \dots \in \intervalabstractdomaintype$, the sequence $\defotherabstractvalue_1, \defotherabstractvalue_2, \dots$ computed as $\defotherabstractvalue_1 = \defabstractvalue_1$ and $\defotherabstractvalue_{i+1} = \defotherabstractvalue_i \intervalabstractdomainwidening \defabstractvalue_{i+1}$ stabilizes after a finite number of iterations, \ie, there exists an $n \in \Npos$ such that $\defotherabstractvalue_n = \defotherabstractvalue_{n+1}$.
+\item[Narrowing]
+  The narrowing operator is the dual of the widening operator and helps to refine the over-approximation of the fixpoint computation.
+  The narrowing operator for the interval abstract domain is defined as:
+  \begin{align*}
+    \intervalabstractdomainnarrowing(\defabstractvalue_1, \defabstractvalue_2) \DefeQ \begin{cases}
+      \defabstractvalue_2 & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
+      \lambda \defvariable.\interval{\max\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\min\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
+    \end{cases}
+  \end{align*}
   \end{description}
 
 Above we presented all the characteristics of a numerical abstract domain. Formally, we define an abstract domain as follows:
