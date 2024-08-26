@@ -1635,6 +1635,31 @@ Above we presented all the characteristics of a numerical abstract domain. Forma
 \end{definition}
 
 It holds that the integer interval abstract domain is a numerical abstract domain.
+
+
+\paragraph{Common Numerical Abstract Domains}
+\denis{TODO: Add the most common numerical abstract domains.}
+
+\begin{description}
+  \item[Signs]
+  \item[Powerset]
+  \item[Excluded Powerset]
+  \item[Intervals]
+  \item[Disjunctive Intervals Domain]
+  \item[Congruences]
+\end{description}
+
+\denis{Relationals}
+\begin{description}
+  \item[Linear Equalities]
+  \item[Octagons]
+  \item[Polyhedra]
+\end{description}
+
+\denis{General Relational Domain}
+
+\denis{Reduced product}
+
 Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$, \cf{} \refdef{abstract-domain}.
 
 \paragraph{Forward Reachability State Abstract Semantics}
@@ -1650,19 +1675,83 @@ The forward reachability state abstract semantics $\forwardsemantics\in\forwardt
   \item[\normalfont ($\pskipstmt$)] The abstract semantics of a skip statement is the identity function on the abstract element.
   \marginnote{
     \begin{align*}
-      &\forwardsemanticsnoparam \semanticsof{\plassignstmt}\defabstractvalue \DefeQ \abstractdomainassign(\defabstractvalue, \defvariable, \defaexp)
+      &\forwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
     \end{align*}
   }
   \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract assignment of the abstract element.
   \marginnote{
     \begin{align*}
       &\forwardsemanticsnoparam \semanticsof{\pifstmt}\defabstractvalue \DefeQ \\
-      &\quad \abstractdomainfilter(\defabstractvalue, \defbexp) \abstractdomainjoin \abstractdomainfilter(\defabstractvalue, \neg\defbexp)
+      &\quad \abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue \abstractdomainjoin \abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue
     \end{align*}
   }
   \item[\normalfont ($\pifstmt$)] The abstract semantics of a conditional statement is the join of the abstract semantics applied to the two branches.
+  \marginnote{
+    \begin{align*}
+      &\forwardsemanticsnoparam \semanticsof{\pwhilestmt}\defabstractvalue \DefeQ \\
+      &\quad \lfp^{\abstractdomainsubseteq} \abstractdomainwidening \circ \abstractdomainfilter \semanticsof{\defbexp} \circ \abstractdomainassign \semanticsof{\defstmt}
+    \end{align*}
+  }
+  \item[\normalfont ($\pwhilestmt$)] The abstract semantics of a while statement is the least fixpoint of the widening of the abstract semantics of the loop body, filtered by the loop condition.
+  \marginnote{
+    \begin{align*}
+      &\forwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \forwardsemanticsnoparam \semanticsof{\defstmt'}(\forwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue)
+    \end{align*}
+  }
+  \item[\normalfont ($\pcompstmt$)] The abstract semantics of a composition statement is the composition of the abstract semantics of the two statements.
+  \item[\normalfont ($\pprogstmt$)] The abstract semantics of a program is the abstract semantics of the statement with the bottom element as initial abstract element.
+    \begin{definition}[Forward Reachability State Abstract Semantics]
+      The \emph{forward reachability state abstract semantics} $\forwardsemantics\in\forwardtype$ for a program $\defprogram$ is defined as:
+      \begin{align*}
+        \forwardsemantics(\defprogram) \DefeQ \forwardsemanticsnoparam \semanticsof{\defstmt}\intervalabstractdomainbottom
+      \end{align*}
+    \end{definition}
 \end{description}
 
 
 \paragraph{Backward Co-Reachability State Abstract Semantics}
-\paragraph{Common Numerical Abstract Domains}
+
+The backward reachability state abstract semantics $\backwardsemantics\in\backwardtype$ is defined by induction on the structure of the program, as follows:
+
+\begin{description}
+  \marginnote{
+    \begin{align*}
+      &\backwardsemanticsnoparam \semanticsof{\pskipstmt}\defabstractvalue \DefeQ \defabstractvalue
+    \end{align*}
+  }
+  \item[\normalfont ($\pskipstmt$)] The abstract semantics of a skip statement is the identity function on the abstract element.
+  \marginnote{
+    \begin{align*}
+      &\backwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
+    \end{align*}
+  }
+  \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract assignment of the abstract element.
+  \marginnote{
+    \begin{align*}
+      &\backwardsemanticsnoparam \semanticsof{\pifstmt}\defabstractvalue \DefeQ \\
+      &\quad \abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue \abstractdomainmeet \abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue
+    \end{align*}
+  }
+  \item[\normalfont ($\pifstmt$)] The abstract semantics of a conditional statement is the meet of the abstract semantics applied to the two branches.
+  \marginnote{
+    \begin{align*}
+      &\backwardsemanticsnoparam \semanticsof{\pwhilestmt}\defabstractvalue \DefeQ \\
+      &\quad \gfp^{\abstractdomainsubseteq} \abstractdomainmeet \circ \abstractdomainfilter \semanticsof{\defbexp} \circ \abstractdomainassign \semanticsof{\defstmt}
+    \end{align*}
+  }
+  \item[\normalfont ($\pwhilestmt$)] The abstract semantics of a while statement is the greatest fixpoint of the meet of the abstract semantics of the loop body, filtered by the loop condition.
+  \marginnote{
+    \begin{align*}
+      &\backwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \backwardsemanticsnoparam \semanticsof{\defstmt}\left(\backwardsemanticsnoparam \semanticsof{\defstmt'}
+      \defabstractvalue\right)
+    \end{align*}
+  }
+  \item[\normalfont ($\pcompstmt$)] The abstract semantics of a composition statement is the composition of the abstract semantics of the two statements.
+  \item[\normalfont ($\pprogstmt$)] The abstract semantics of a program is the abstract semantics of the statement with the bottom element as initial abstract element.
+    \begin{definition}[Backward Co-Reachability State Abstract Semantics]
+      The \emph{backward co-reachability state abstract semantics} $\backwardsemantics\in\backwardtype$ for a program $\defprogram$ is defined as:
+      \begin{align*}
+        \backwardsemantics(\defprogram) \DefeQ \backwardsemanticsnoparam \semanticsof{\defstmt}\intervalabstractdomainbottom
+      \end{align*}
+    \end{definition}
+\end{description}
