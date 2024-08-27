@@ -3,6 +3,7 @@
 \newcommand*{\semanticsof}[1]{\llbracket #1 \rrbracket}
 \newcommand*{\semanticsletter}{\Lambda}
 \newcommand*{\transformer}{\textup{F}}
+\newcommand*{\substitutionof}[2]{\semanticsof{#1\leftarrow#2}}
 
 %% trace semantics
 \newcommand*{\tracesym}{}
@@ -140,6 +141,7 @@
 
 \newcommand*{\abstractdomainforward}{\textup{\texttt{Forward}}^\natural}
 \newcommand*{\abstractdomainbackward}{\textup{\texttt{Backward}}^\natural}
+
 
 \newcommand*{\abstractdomainsubstitute}[2]{\textup{\texttt{Subs}}\semanticsof{#1\leftarrow#2}}
 \newcommand*{\abstractdomainwidening}{\nabla}

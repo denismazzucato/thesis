@@ -774,7 +774,7 @@ Thus, we obtain the following definition for the backward co-reachability state 
 
 \end{example}
 
-\begin{remark}[Absence of Galois Connection]\labremark{without-galoiS}
+\begin{remark}[Absence of Galois Connection]\labremark{without-galois}
   The use of Galois connections is not necessary to define program semantics. Instead, it represents an ideal situation where there exists the best way to approximate concrete properties. \sidetextcite{Cousot1992a} illustrates how to relax the Galois connection requirement in order only to work with concretization functions (or dually, with abstraction functions). In practice, concretization-based abstractions are much more common.
 \end{remark}
 
@@ -1390,7 +1390,7 @@ We consider concretization-based abstractions of the form:
   \tuple{\setof{\env}}{\subseteq} \overset{\abstractdomainconcretization}{\leftarrow} \tuple{\abstractdomain}{\abstractdomainsubseteq}
 \end{align*}
 which provide a sound and computable over-approximation of the concrete semantics.
-  We introduce the concept of abstract domains with a simple example of the integer interval abstract domain \sidecite{Cousot1977}, called \intervalname, \wrt{} the concrete domain of integers, \ie, $\values = \Z$.
+  We introduce the concept of abstract domains with a simple example of the integer interval abstract domain \sidecite{Cousot1976,Hickey2001}, called \intervalname, \wrt{} the concrete domain of integers, \ie, $\values = \Z$.
   Hence, concrete environments are mappings from variables to integers, \ie, $\env = \variables \to \Z$.
 
 \begin{marginfigure}
@@ -1431,18 +1431,22 @@ The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ chec
   concretizing the set of integers between the two bounds of the interval, or the empty set for the bottom element $\intervalbottom$.
   Note that, while interval values have a machine-representable form and the ordering relation is effectively computable, the concretization function is not.
 %
-  The evaluation of arithmetic and boolean expressions for interval values are handled as one expects:
-  \begin{align*}
-    \defvalue &\DefeQ \interval{\defvalue}{\defvalue} \\
-    \intervalabstractdomainbottom \oplus^{\intervalabstractdomaintype} \defabstractvalue &\DefeQ \intervalabstractdomainbottom \\
-    \interval{l}{u} \oplus^{\intervalabstractdomaintype} \intervalabstractdomainbottom &\DefeQ \intervalabstractdomainbottom \\
-    \interval{l}{u} \oplus^{\intervalabstractdomaintype} \interval{l'}{u'} &\DefeQ
-    \interval{l \oplus l'}{u \oplus u'} \tag*{for $\oplus\in\{+, -\}$} \\
-    \randval(l, u) &\DefeQ \interval{l}{u} \\[1em]
-    \interval{l}{u} \le \defvalue &\DefeQ l \le \defvalue \\
-    \interval{l}{u} = \defvalue &\DefeQ l \le \defvalue \le u\\
-  \end{align*}
-  where $\defvalue\in\Z$ is an integer constant.
+  % The evaluation of arithmetic $\intervalaexp$ and boolean $\intervalbexp$ expressions for interval values are handled as one expects:
+  % \begin{align*}
+  %   \intervalaexp \semanticsof{\defvalue} &\DefeQ \interval{\defvalue}{\defvalue} \\
+  %   \intervalaexp \semanticsof{\intervalbottom \oplus^{\intervalabstractdomaintype} \defabstractvalue} &\DefeQ \intervalbottom \\
+  %   \intervalaexp \semanticsof{\defabstractvalue \oplus^{\intervalabstractdomaintype} \intervalbottom} &\DefeQ \intervalbottom \\
+  %   \intervalaexp \semanticsof{\interval{l}{u} \oplus^{\intervalabstractdomaintype} \interval{l'}{u'}} &\DefeQ
+  %   \interval{l \oplus l'}{u \oplus u'} \tag*{for $\oplus\in\{+, -\}$} \\
+  %   \intervalaexp \semanticsof{\randval(l, u)} &\DefeQ \interval{l}{u} \\[1em]
+  %   \intervalbexp \semanticsof{\intervalbottom \le \defvalue} &\DefifF \false \\
+  %   \intervalbexp\semanticsof{\interval{l}{u} \le \defvalue} &\DefifF l \le \defvalue \\
+  %   \intervalbexp\semanticsof{\intervalbottom = \defvalue} &\DefifF \false\\
+  %   \intervalbexp\semanticsof{\interval{l}{u} = \defvalue} &\DefifF l \le \defvalue \le u\\
+  %   \intervalbexp\semanticsof{\interval
+  % \end{align*}
+  % where $\defvalue\in\Z$ is an integer constant.
+  %
   Next, we proceed with the description of the interval abstract domain.
 
   \begin{description}
@@ -1569,96 +1573,272 @@ The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ chec
   Note that, \refdef{soundness-join-meet} is always satisfied for best abstractions operators, \cf{} \refdef*{best-operator-abstraction}.
   \item[Forward and Backward Assignments]
   The abstract semantics of an assignment statement $\assignstmt$ for the interval abstract domain is defined as:
+  \marginnote{To update the value of a variable in the interval abstract domain we use:
   \begin{align*}
-    \intervalabstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
-    \DefeQ \begin{cases}
-      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\defvalue}{\defvalue} & \text{if } \defaexp = \defvariable \land \defvalue \in \intervalconcretization(\defabstractvalue(\defvariable)) \\
-      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue(\defvariable)}} & \text{otherwise}
-    \end{cases}
-  \end{align*}
-  The abstract semantics of an assignment statement is the interval that contains all the values of the interval associated to the variable, or the value of the arithmetic expression if it is a variable.
-  In case of the backward execution of an assignment statement, the abstract semantics is:
+  &\updatemem{\defabstractvalue}{\defvariable}{\interval{l}{u}} \DefeQ \\
+  &\qquad\lambda \defvariable'.\begin{cases}
+    \interval{l}{u} & \text{if } \defvariable' = \defvariable \\
+    \defabstractvalue(\defvariable') & \text{otherwise}
+  \end{cases}
+\end{align*}}
   \begin{align*}
-    \intervalabstractdomainsubstitute(\defabstractvalue, \defvariable, \defaexp) \DefeQ \begin{cases}
-      \intervalabstractdomainbottom & \text{if } \defabstractvalue = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\defvalue}{\defvalue} & \text{if } \defaexp = \defvariable \land \defvalue \in \intervalconcretization(\defabstractvalue(\defvariable)) \\
-      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue(\defvariable)}} & \text{otherwise}
-    \end{cases}
+    &\intervalabstractdomainassign \semanticsof{\assignstmt}\intervalabstractdomainbottom \DefeQ \intervalabstractdomainbottom \\
+    &\intervalabstractdomainassign \semanticsof{\assignstmt}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\intervalaexp \semanticsof{\defaexp}} \\
   \end{align*}
-  In this case, we call substitution the operation of replacing the value of a variable with the value of an arithmetic expression, that is, a backward assignment.
+  where arithmetic expressions are evaluated by $\intervalaexp\in{(\intervalabstractdomaintype \setminus \intervalabstractdomainbottom)}\to\intervaltype$ as follows:
+  \marginnote{
+    \begin{align*}
+      \defaexp \grammardef \defvalue \\
+        \linesep \defvariable \\
+        \linesep \defaexp + \defaexp \\
+        \linesep \defaexp - \defaexp \\
+        \linesep \randval(l, u) \tag{$l\in\Zinf \land l < u$} \\
+      % \defbexp \grammardef \defaexp \le \defvalue \\
+      %   \linesep \defaexp = \defvalue \\
+      %   \linesep \defbexp \land \defbexp \\
+      %   \linesep \lnot \defbexp \\
+      % \defstmt \grammardef \lskipstmt\\
+      %   \linesep \lassignstmt\\
+      %   \linesep \lifstmt \\
+      %   \linesep \lwhilestmt \\
+      %   \linesep \lcompstmt \\
+      % \defprogram \grammardef \lprogstmt \tag{$\bigloc \in \locs$}
+    \end{align*}
+  }
+  \begin{align*}
+    &\intervalaexp \semanticsof{\defvalue}\defabstractvalue \DefeQ \interval{\defvalue}{\defvalue} \\
+    &\intervalaexp \semanticsof{\defvariable}\defabstractvalue \DefeQ \defabstractvalue(\defvariable) \\
+    % \intervalaexp \semanticsof{\intervalbottom \oplus^{\intervalabstractdomaintype} \defabstractvalue}&\defabstractvalue \DefeQ \intervalbottom \\
+    % \intervalaexp \semanticsof{\defabstractvalue \oplus^{\intervalabstractdomaintype} \intervalbottom}&\defabstractvalue \DefeQ \intervalbottom \\
+    % \intervalaexp \semanticsof{\interval{l}{u} \oplus^{\intervalabstractdomaintype} \interval{l'}{u'}}&\defabstractvalue \DefeQ
+    % \interval{l \oplus l'}{u \oplus u'} \tag*{for $\oplus\in\{+, -\}$} \\
+    &\intervalaexp \semanticsof{\defaexp + \defaexp'} \defabstractvalue \DefeQ \interval{l + l'}{u + u'} \tag*{where $\interval{l}{u} = \intervalaexp\semanticsof{\defaexp}\defabstractvalue$ and $ \interval{l'}{u'} = \intervalaexp\semanticsof{\defaexp'}\defabstractvalue$} \\
+    &\intervalaexp \semanticsof{\defaexp - \defaexp'} \defabstractvalue \DefeQ \interval{l - u'}{u - l'} \tag*{where $\interval{l}{u} = \intervalaexp\semanticsof{\defaexp}\defabstractvalue$ and $ \interval{l'}{u'} = \intervalaexp\semanticsof{\defaexp'}\defabstractvalue$} \\
+    &\intervalaexp \semanticsof{\randval(l, u)}\defabstractvalue \DefeQ \interval{l}{u}
+    % \\[1em]
+    % \intervalbexp \semanticsof{\intervalbottom \le \defvalue} &\DefifF \false \\
+    % \intervalbexp\semanticsof{\interval{l}{u} \le \defvalue} &\DefifF l \le \defvalue \\
+    % \intervalbexp\semanticsof{\intervalbottom = \defvalue} &\DefifF \false\\
+    % \intervalbexp\semanticsof{\interval{l}{u} = \defvalue} &\DefifF l \le \defvalue \le u\\
+    % \intervalbexp\semanticsof{\interval
+  \end{align*}
+  where $\defvalue\in\Z$ is an integer constant.
+  In case of the backward evaluation of an assignment statement, we call substitution the operation of replacing the value of a variable with the value of an arithmetic expression that yields before the execution of the assignment. The substitution needs to be sound, \ie, the interval of an assigned variable should overapproximate the precondition for the assignment to be executed resulting in the given postcondition.
+  For instance, the evaluation of a constant assignment $\assignstmt[\defvariable][\defvalue]$ is $\intervaltop$ as any possible value could have been assigned to the variable $\defvariable$ before the execution of the assignment, similarly for the assignment of a non-deterministic choice, or another variable different from the assigned one. A similar reasoning applies to the rest of the cases, for the evaluation of complex expressions we need to \emph{reverse} the assignment \sidecite{Aman2020}, \ie, we need to find the possible values of the variable before the assignment.
+  Formally, a possible semantics for the substitution is defined as:
+  \begin{align*}
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defaexp}\intervalabstractdomainbottom \DefeQ \intervalabstractdomainbottom \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvalue}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\intervaltop} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\randval(l, u)}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\intervaltop} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvariable'}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\intervaltop} \\ \tag*{where $\defvariable \neq \defvariable'$}\\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvariable}\defabstractvalue \DefeQ \defabstractvalue \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvariable + \defvalue}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\interval{l-\defvalue}{u-\defvalue}} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvalue + \defvariable}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\interval{l-\defvalue}{u-\defvalue}} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvariable - \defvalue}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\interval{l+\defvalue}{u+\defvalue}} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defvalue - \defvariable}\defabstractvalue \DefeQ \updatemem{\defabstractvalue}{\defvariable}{\interval{\defvalue-l}{\defvalue-u}} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$} \\
+    &\intervalabstractdomainsubstitute \substitutionof{\defvariable}{\defaexp} \defabstractvalue \DefeQ \intervalabstractdomaintop
+  \end{align*}
+  Note that, we could even further add semantics rules to improve the precision of the domain, for instance, by considering the case where the arithmetic expression is more complex.
+
+  The soundness condition of an assignment abstractly interpreted either forward or backward is standard, it is based on the overapproximation of pre/postconditions.
+  \marginnote{
+    \begin{align*}
+      &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plassignstmt}\defsetofstates \DefeQ \\
+      &\quad
+       \setdef@{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\tracetuple{\bigloc}{\defenv}\in\defsetofstates \land {} \\ \defvalue \in \aexpsemantics\defenv}
+    \end{align*}
+  }
+  \begin{definition}[Soundness of Assignments]\labdef{soundness-assignment}
+    Given an assignment statement $\assignstmt$, the forward $\abstractdomainassign \semanticsof{\assignstmt}\in \abstractdomain \to \abstractdomain$ operator is a \emph{sound abstraction} of the forward evaluation of the assignment whenever it holds that:
+  \begin{align*}
+    \forall \defabstractvalue\in\abstractdomain.\spacer \forwardreachabilitytracesemanticsnoparam\semanticsof{\assignstmt}( \intervalabstractdomainconcretization(\defabstractvalue)) \SubseteQ \intervalabstractdomainconcretization(\abstractdomainassign \semanticsof{\assignstmt}\defabstractvalue)
+  \end{align*}
+\end{definition}
+\marginnote{
+  \begin{align*}
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plassignstmt}\defsetofstates \DefeQ \\
+    &\quad\setdef@{\tracetuple{\bigloc}{\defenv}}{\defenv\in\env \land \defvalue \in \aexpsemantics\defenv \land {} \\ \tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}\in\defsetofstates}
+  \end{align*}
+}
+\begin{definition}[Soundness of Substitution]\labdef{soundness-substitution}
+  Given an assignment statement $\assignstmt$, the backward $\abstractdomainsubstitute{\defvariable}{\defaexp} \in \abstractdomain \to \abstractdomain$ operator is a \emph{sound abstraction} of the backward evaluation of the assignment whenever it holds that:
+\begin{align*}
+  \forall \defabstractvalue\in\abstractdomain.\spacer \backwardreachabilitytracesemanticsnoparam\semanticsof{\assignstmt}( \intervalabstractdomainconcretization(\defabstractvalue)) \SubseteQ \intervalabstractdomainconcretization(\abstractdomainsubstitute{\defvariable}{\defaexp} \defabstractvalue)
+\end{align*}
+\end{definition}
+
   \item[Boolean Expressions]
-  Given a boolean expression $\defbexp$, the abstract semantics of the expression is:
+  Boolean expressions do not need special handle for the forward and backward cases separately, as deciding whether a boolean expression holds or not is independent of the direction of the analysis.
+  Therefore, the evaluation of boolean expressions in the interval abstract domain is defined as:
+  \marginnote{
+    \begin{align*}
+      % \defaexp \grammardef \defvalue \\
+      %   \linesep \defvariable \\
+      %   \linesep \defaexp + \defaexp \\
+      %   \linesep \defaexp - \defaexp \\
+      %   \linesep \randval(l, u) \tag{$l\in\Zinf \land l < u$} \\
+      \defbexp \grammardef \defaexp \le \defvalue \\
+        \linesep \defaexp = \defvalue \\
+        \linesep \defbexp \land \defbexp \\
+        \linesep \lnot \defbexp \\
+      % \defstmt \grammardef \lskipstmt\\
+      %   \linesep \lassignstmt\\
+      %   \linesep \lifstmt \\
+      %   \linesep \lwhilestmt \\
+      %   \linesep \lcompstmt \\
+      % \defprogram \grammardef \lprogstmt \tag{$\bigloc \in \locs$}
+    \end{align*}
+  }
   \begin{align*}
-    \intervalabstractdomainfilter(\defabstractvalue, \defbexp) \DefeQ
+    \intervalabstractdomainfilter \semanticsof{\defbexp} \intervalabstractdomainbottom &\DefeQ \intervalabstractdomainbottom \\
+    \intervalabstractdomainfilter \semanticsof{\defaexp \le \defvalue} \defabstractvalue &\DefeQ \begin{cases}
+      \intervalabstractdomainbottom & \text{if } l > \defvalue \\
+      \interval{l}{\min(u, \defvalue)} & \text{otherwise}
+    \end{cases} \tag*{where $\interval{l}{u} = \intervalaexp \semanticsof{\defaexp} \defabstractvalue$} \\
+    \intervalabstractdomainfilter \semanticsof{\defaexp = \defvalue} \defabstractvalue &\DefeQ \begin{cases}
+      \intervalabstractdomainbottom & \text{if } l > \defvalue \lor u < \defvalue \\
+      \interval{\defvalue}{\defvalue} & \text{otherwise}
+    \end{cases} \tag*{where $\interval{l}{u} = \intervalaexp \semanticsof{\defaexp} \defabstractvalue$} \\
+    \intervalabstractdomainfilter \semanticsof{\defbexp \land \defbexp'} \defabstractvalue &\DefeQ \intervalabstractdomainfilter \semanticsof{\defbexp} \defabstractvalue \intervalabstractdomainmeet \intervalabstractdomainfilter \semanticsof{\defbexp'} \defabstractvalue
   \end{align*}
+  We can always solve the negation of boolean expression via De Morgan's laws.
+  \marginnote{
+    De Morgan's laws:
+    \begin{align*}
+      \lnot(\defbexp \land \defbexp') &\spacearound{=} \lnot\defbexp \lor \lnot\defbexp' \\
+      \lnot(\defbexp \lor \defbexp') &\spacearound{=} \lnot\defbexp \land \lnot\defbexp'
+    \end{align*}
+  }
+  Therefore, we do not handle them explicitly, instead we first simplify the condition to the base cases, then we add specific rules for the negation of the simple cases. The following are the additional rules:
+  \begin{align*}
+    &\intervalabstractdomainfilter \semanticsof{\neg(\defaexp \le \defvalue)} \defabstractvalue \DefeQ \\
+    &\quad\intervalabstractdomainfilter \semanticsof{\defaexp > \defvalue} \defabstractvalue \spacearound{=}\begin{cases}
+      \intervalabstractdomainbottom & \text{if } u < \defvalue \\
+      \interval{\max(l, \defvalue)}{u} & \text{otherwise}
+    \end{cases} \tag*{where $\interval{l}{u} = \intervalaexp \semanticsof{\defaexp} \defabstractvalue$} \\
+    &\intervalabstractdomainfilter \semanticsof{\neg(\defaexp = \defvalue)} \defabstractvalue \DefeQ \\
+    &\quad\intervalabstractdomainfilter \semanticsof{\defaexp \neq \defvalue} \defabstractvalue \spacearound{=} \defabstractvalue \\
+    &\intervalabstractdomainfilter \semanticsof{\defbexp \lor \defbexp'} \defabstractvalue \DefeQ \intervalabstractdomainfilter \semanticsof{\defbexp} \defabstractvalue \intervalabstractdomainjoin \intervalabstractdomainfilter \semanticsof{\defbexp'} \defabstractvalue
+  \end{align*}
+  The soundness of the boolean expressions is standard, it is defined as the overapproximation of the set of environments that satisfy the boolean expression.
+  \begin{definition}[Soundness of Boolean Expressions]\labdef{soundness-boolean}
+    Given a boolean expression $\defbexp$, the filter $\abstractdomainfilter \semanticsof{\defbexp}\in\abstractdomain\to\abstractdomain$ operator is a \emph{sound abstraction} of the evaluation of the boolean expression whenever it holds that:
+  \begin{align*}
+    \forall \defabstractvalue\in\abstractdomain.\spacer
+    \bexpsemantics
+    (\abstractdomainconcretization(\defabstractvalue))
+    \SubseteQ
+    \abstractdomainconcretization(\abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue)
+  \end{align*}
+\end{definition}
   \item[Widening]
   When dealing with loops, the widening operator ensures the termination of the fixpoint computation by over-approximating the result of the iteration.
   This step is recommended even for concrete domains that does not have infinite ascending chains, as the convergence of the fixpoint computation can be slow.
-  The widening operator for the interval abstract domain is defined as:
+  The main idea is that widening enforce fast termination by pushing unstable sequences of iterations to infinite:
   \begin{align*}
-    \intervalabstractdomainwidening(\defabstractvalue_1, \defabstractvalue_2) \DefeQ \begin{cases}
-      \defabstractvalue_2 & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\min\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\max\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
-    \end{cases}
+    % \intervalabstractdomainbottom \intervalabstractdomainwidening \defabstractvalue &\DefeQ \defabstractvalue \\
+    % \defabstractvalue \intervalabstractdomainwidening \intervalabstractdomainbottom &\DefeQ \defabstractvalue \\
+    \defabstractvalue \intervalabstractdomainwidening \defotherabstractvalue &\DefeQ \lambda \defvariable.\begin{cases}
+      \interval{l}{u} & \text{if } \defabstractvalue(\defvariable) \intervalsubseteq \defotherabstractvalue(\defvariable) \\
+      \interval{-\infty}{u} & \text{if } l' \le l \\
+      \interval{l}{+\infty} & \text{if } u \le u' \\
+      \intervaltop & \text{otherwise}
+    \end{cases} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$ and $\interval{l'}{u'} = \defotherabstractvalue(\defvariable)$}
   \end{align*}
   It holds that the widening domain computes an upper bound of the two input intervals:
   \begin{align*}
-    \intervalabstractdomainconcretization(\defabstractvalue_1) \setjoin \intervalabstractdomainconcretization(\defabstractvalue_2) &\subseteq \intervalabstractdomainconcretization(\defabstractvalue_1 \intervalabstractdomainwidening \defabstractvalue_2)
+    \forall \defabstractvalue, \defotherabstractvalue \in \intervalabstractdomaintype.\spacer \defabstractvalue \intervalabstractdomainsubseteq \defabstractvalue \intervalabstractdomainwidening \defotherabstractvalue \land \defotherabstractvalue \intervalabstractdomainsubseteq \defabstractvalue \intervalabstractdomainwidening \defotherabstractvalue
   \end{align*}
   and it enforces termination: for any infinite sequence of abstract elements $\defabstractvalue_1, \defabstractvalue_2, \dots \in \intervalabstractdomaintype$, the sequence $\defotherabstractvalue_1, \defotherabstractvalue_2, \dots$ computed as $\defotherabstractvalue_1 = \defabstractvalue_1$ and $\defotherabstractvalue_{i+1} = \defotherabstractvalue_i \intervalabstractdomainwidening \defabstractvalue_{i+1}$ stabilizes after a finite number of iterations, \ie, there exists an $n \in \Npos$ such that $\defotherabstractvalue_n = \defotherabstractvalue_{n+1}$.
+  \begin{definition}[Widening]\labdef{widening}
+    Let $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ be an abstract domain.
+    A binary operator $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ is a \emph{widening} operator whenever it holds that:
+    \begin{itemize}
+      \item $\abstractdomainwidening$ computes an upper bound:
+      \[\forall \defabstractvalue, \defotherabstractvalue \in \abstractdomain.\spacer \defabstractvalue \abstractdomainsubseteq \defabstractvalue \abstractdomainwidening \defotherabstractvalue \land \defotherabstractvalue \abstractdomainsubseteq \defabstractvalue \abstractdomainwidening \defotherabstractvalue\]
+      \item $\abstractdomainwidening$ enforces termination: for any infinite sequence of abstract elements $\defabstractvalue_1, \defabstractvalue_2, \dots \in \abstractdomain$, the sequence $\defotherabstractvalue_1, \defotherabstractvalue_2, \dots$ computed as $\defotherabstractvalue_1 = \defabstractvalue_1$ and $\defotherabstractvalue_{i+1} = \defotherabstractvalue_i \abstractdomainwidening \defabstractvalue_{i+1}$ stabilizes after a finite number of iterations, \ie, there exists an $n \in \Npos$ such that $\defotherabstractvalue_n = \defotherabstractvalue_{n+1}$.
+    \end{itemize}
+  \end{definition}
+  \vspace{5pt}
+  It holds that widenings can indeed be used to approximate least fixpoints in the abstract.
+  \begin{theorem}
+    Let $\tuple{X}{\subseteq}$ be the concrete and $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ be the abstract domain.
+    The function $f \in X \to X$ is a monotonic operator and $g \in \abstractdomain \to \abstractdomain$ is a sound abstraction of $f$, the following iteration:
+    \begin{align*}
+      x^0 &\DefeQ \abstractdomainbottom \\
+      x^{i+1} &\DefeQ x^i \abstractdomainwidening g(x^i)
+    \end{align*}
+    converges in finite time, and its limit $x$ is a sound abstractino of the least fixpoint $\lfp f$, \ie, $\lfp f \subseteq \abstractdomainconcretization(x)$.
+  \end{theorem}
 \item[Narrowing]
-  The narrowing operator is the dual of the widening operator and helps to refine the over-approximation of the fixpoint computation.
+  The narrowing operator is the dual of the widening operator and helps to refine the over-approximation of the fixpoint computation after the application of the widening.
   The narrowing operator for the interval abstract domain is defined as:
   \begin{align*}
-    \intervalabstractdomainnarrowing(\defabstractvalue_1, \defabstractvalue_2) \DefeQ \begin{cases}
-      \defabstractvalue_2 & \text{if } \defabstractvalue_1 = \intervalabstractdomainbottom \lor \defabstractvalue_2 = \intervalabstractdomainbottom \\
-      \lambda \defvariable.\interval{\max\setdef{l}{l\in\defabstractvalue_1(\defvariable) \land l\in\defabstractvalue_2(\defvariable)}}{\min\setdef{u}{u\in\defabstractvalue_1(\defvariable) \land u\in\defabstractvalue_2(\defvariable)}} & \text{otherwise}
-    \end{cases}
+    \defabstractvalue \intervalabstractdomainnarrowing \defotherabstractvalue &\DefeQ \lambda \defvariable.\begin{cases}
+      \interval{l'}{u'} & \text{if } l = -\infty \land u = +\infty \\
+      \interval{l'}{u} & \text{if } l = -\infty \land u' \neq +\infty \\
+      \interval{l}{u'} & \text{if } l' \neq -\infty \land u = +\infty \\
+      \interval{l}{u} & \text{otherwise}
+    \end{cases} \tag*{where $\interval{l}{u} = \defabstractvalue(\defvariable)$ and $\interval{l'}{u'} = \defotherabstractvalue(\defvariable)$}
   \end{align*}
+  The following states the conditions for the narrowing operator:
+  \begin{definition}[Narrowing]\labdef{narrowing}
+    Let $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ be an abstract domain.
+    A binary operator $\abstractdomainnarrowing\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ is a \emph{narrowing} operator whenever it holds that:
+    \begin{itemize}
+      \item $\abstractdomainnarrowing$ computes a lower bound:
+      \[\forall \defabstractvalue, \defotherabstractvalue \in \abstractdomain.\spacer \defabstractvalue \abstractdomainnarrowing \defotherabstractvalue \abstractdomainsubseteq \defabstractvalue \land \defabstractvalue \abstractdomainnarrowing \defotherabstractvalue \abstractdomainsubseteq\defotherabstractvalue\]
+      \item $\abstractdomainnarrowing$ enforces termination: for any infinite sequence of abstract elements $\defabstractvalue_1, \defabstractvalue_2, \dots \in \abstractdomain$, the sequence $\defotherabstractvalue_1, \defotherabstractvalue_2, \dots$ computed as $\defotherabstractvalue_1 = \defabstractvalue_1$ and $\defotherabstractvalue_{i+1} = \defotherabstractvalue_i \abstractdomainnarrowing \defabstractvalue_{i+1}$ stabilizes after a finite number of iterations, \ie, there exists an $n \in \Npos$ such that $\defotherabstractvalue_n = \defotherabstractvalue_{n+1}$.
+    \end{itemize}
+  \end{definition}
+  The narrowing ensures convergence to a better approximation of the fixpoint than only by using the widening. Generally, the total number of abstract iterations is much smaller than the number of concrete iterations.
   \end{description}
 
-Above we presented all the characteristics of a numerical abstract domain. Formally, we define an abstract domain as follows:
+Above we presented all the characteristics of a numerical (non-relational) abstract domain. Formally, we define an abstract domain as follows:
 
 \begin{definition}[Numerical Abstract Domain]\labdef{abstract-domain}
   A \emph{numerical abstract domain} $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ is characterized by:
   \begin{itemize}
-    \item elements in the abstract domain $\abstractdomain$ are computable representable;
+    \item elements in the abstract domain $\abstractdomain$ are computable-representable;
     \item a partial order $\abstractdomainsubseteq$ with an effective algorithm to check the ordering;
     \item a concretization function $\abstractdomainconcretization\in\abstractdomain\to\setof{\env}$, or when possible a Galois connection\sidenote{See \refremark{without-galois} for the case where a Galois connection does not exist.}
     $\tuple{\setof\env}{\subseteq}\galois{\abstractdomainabstraction}{\abstractdomainconcretization}\tuple{\abstractdomain}{\abstractdomainsubseteq}$;
     \item a bottom element $\abstractdomainbottom\in\abstractdomain$ such that $\abstractdomainconcretization(\abstractdomainbottom) = \emptyset$;
     \item a top element $\abstractdomaintop\in\abstractdomain$ such that $\abstractdomainconcretization(\abstractdomaintop) = \env$;
-    \item a sound join operator $\abstractdomainjoin\in\abstractdomain\times\abstractdomain\to\abstractdomain$ such that $ \abstractdomainconcretization(\defabstractvalue_1) \setjoin \abstractdomainconcretization(\defabstractvalue_2)\subseteq \abstractdomainconcretization(\defabstractvalue_1 \abstractdomainjoin \defabstractvalue_2)$;
-    \item a sound meet operator $\abstractdomainmeet\in\abstractdomain\times\abstractdomain\to\abstractdomain$ such that $\abstractdomainconcretization(\defabstractvalue_1) \setmeet \abstractdomainconcretization(\defabstractvalue_2)\subseteq \abstractdomainconcretization(\defabstractvalue_1 \abstractdomainmeet \defabstractvalue_2)$;
+    \item a sound join $\abstractdomainjoin\in\abstractdomain\times\abstractdomain\to\abstractdomain$ and meet $\abstractdomainmeet\in\abstractdomain\times\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-join-meet};
+    \item a sound forward assignment $\abstractdomainassign\semanticsof{\assignstmt}\in\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-assignment};
+    \item a sound backward substitution $\abstractdomainsubstitute{\defvariable}{\defaexp}\in\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-substitution};
+    \item a sound filter $\abstractdomainfilter\semanticsof{\defbexp}\in\to\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-boolean};
+    \item a sound widening $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{widening};
+    \item a sound narrowing $\abstractdomainnarrowing\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{narrowing}.
   \end{itemize}
 \end{definition}
 
-It holds that the integer interval abstract domain is a numerical abstract domain.
+\begin{remark}[Relational Abstract Domains]
+  It holds that the integer interval abstract domain is a numerical abstract domain.
+  Specifically, as it relates each variable singularly to an interval value, we say that such domain is a \emph{non-relational} abstract domain.
+  On the other hand, a \emph{relational} abstract domain yields constraints that relate multiple variables together.
+\end{remark}
 
 
 \paragraph{Common Numerical Abstract Domains}
-\denis{TODO: Add the most common numerical abstract domains.}
+In the following, we report some of the most common numerical abstract domains used in the literature:
 
 \begin{description}
-  \item[Signs]
-  \item[Powerset]
-  \item[Excluded Powerset]
-  \item[Intervals]
-  \item[Disjunctive Intervals Domain]
-  \item[Congruences]
+  \item[Signs \cite{Cousot1977}] \phantomcite{Cousot1977} The sign domain infers constraints about the sign of the variables: positive, negative, zero, anything, or nothing. The domain is--potentially--the fastest available as simply associate a sign to each variable. Unfortunately, rarely useful in practice.
+  \item[Powerset \cite{Min_e2017}] \phantomcite{Min_e2017} The powerset domain associate each variable with a finite set of possible values. This domain is quite precise but becomes quickly intractable as the number as the number of possible values grows.
+  \item[Excluded Powerset \cite{Monat2024}] \phantomcite{Monat2024} The excluded powerset domain is a variant of the powerset domain that keeps track of the values that a variable cannot definitely take. This domain is able to compute disjunctions precisely but suffers from even higher scalability issues than the precedent.
+  \item[Intervals \cite{Cousot1976,Hickey2001}] \phantomcite{Cousot1976,Hickey2001} The interval domain has been presented throughly above. It offers a good trade-off between precision and scalability.
+  \item[Congruences \cite{Granger1991}] \phantomcite{Granger1991} The congruence domain infers constraints about the remainders of the variables when divided by a constant. This domain is particularly useful when dealing with modular arithmetic and pointer offset.
 \end{description}
-
-\denis{Relationals}
+These domains above are non-relational as they associate an abstract element to each variable singularly. Next, we present some of the most common relational abstract domains:
 \begin{description}
-  \item[Linear Equalities]
-  \item[Octagons]
-  \item[Polyhedra]
+  \item[Linear Equalities \cite{Karr1976}] \phantomcite{Karr1976} The linear equalities domain infers constraints about the linear relationships between variables.
+  \item[Polyhedra \cite{Cousot1978}] \phantomcite{Cousot1978} The polyhedra domain infers constraints about the linear relationships between variables and the convex combinations of the variables. Thanks to its expressiveness, the polyhedra domain is usually the most precise domain available for numerical analyses.
+  \item[Octagons \cite{Min_e2006a}] \phantomcite{Min_e2006a} The octagons domain infers constraints about the relationships between variables of the form $x - y \le c$. Potentially, one of the best trade-offs between precision and scalability among the relational domains.
 \end{description}
 
-\denis{General Relational Domain}
-
-\denis{Reduced product}
+Different abstract domains represent complementary information about the program variables. Therefore, it is common to combine multiple abstract domains to leverage the strengths of each domain. The combination of abstract domains is known as the \emph{reduced product} domain \sidecite{Cousot1979a}. The reduced product domain is defined as the Cartesian product of the abstract domains, with the ordering defined as the pointwise ordering of the abstract elements. The reduced product domain is a sound abstraction of the concrete domain, and it is more precise than any of the individual domains. However, the reduced product domain is also more expensive to compute than the individual domains. The reduced product domain is particularly useful when the individual domains are complementary, \eg{} when one domain is good at inferring linear relationships and another domain is good at inferring disjunctions.
 
 Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$, \cf{} \refdef{abstract-domain}.
 

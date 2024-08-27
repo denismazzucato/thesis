@@ -4,7 +4,10 @@
 \newcommand*{\intervaltype}{\mathbb{I}}
 \newcommand*{\intervalsubseteq}{\sqsubseteq^\intervaltype}
 \newcommand*{\intervalbottom}{\bottom^\intervaltype}
+\newcommand*{\intervaltop}{\interval{-\infty}{+\infty}}
 \newcommand*{\intervalconcretization}{\concretization^\intervaltype}
+\newcommand*{\intervalaexp}{\aexpsemanticsnoparam^{\intervaltype}}
+\newcommand*{\intervalbexp}{\bexpsemanticsnoparam^{\intervaltype}}
 
 \newcommand*{\intervalabstractdomaintype}{\abstractdomain^{\intervaltype}}
 \newcommand*{\intervalabstractdomainconcretization}{\concretization^{\intervalabstractdomaintype}}
@@ -15,7 +18,7 @@
 \newcommand*{\intervalabstractdomainjoin}{\join^{\intervalabstractdomaintype}}
 \newcommand*{\intervalabstractdomainmeet}{\meet^{\intervalabstractdomaintype}}
 \newcommand*{\intervalabstractdomainassign}{\abstractdomainassign^{\intervalabstractdomaintype}}
-\newcommand*{\intervalabstractdomainsubstitute}{\abstractdomainsubstitute^{\intervalabstractdomaintype}}
+\newcommand*{\intervalabstractdomainsubstitute}{\textup{\texttt{Subs}}^{\intervalabstractdomaintype}}
 \newcommand*{\intervalabstractdomainfilter}{\abstractdomainfilter^{\intervalabstractdomaintype}}
 \newcommand*{\intervalabstractdomainwidening}{\abstractdomainwidening^{\intervalabstractdomaintype}}
 \newcommand*{\intervalabstractdomainnarrowing}{\abstractdomainnarrowing^{\intervalabstractdomaintype}}
