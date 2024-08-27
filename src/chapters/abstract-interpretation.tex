@@ -1809,7 +1809,7 @@ Above we presented all the characteristics of a numerical (non-relational) abstr
     \item a sound forward assignment $\abstractdomainassign\semanticsof{\assignstmt}\in\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-assignment};
     \item a sound backward substitution $\abstractdomainsubstitute{\defvariable}{\defaexp}\in\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-substitution};
     \item a sound filter $\abstractdomainfilter\semanticsof{\defbexp}\in\to\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{soundness-boolean};
-    \item a sound widening $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{widening};
+    \item a sound widening $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{widening}; and
     \item a sound narrowing $\abstractdomainnarrowing\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ operator, \cf{} \refdef{narrowing}.
   \end{itemize}
 \end{definition}
@@ -1821,7 +1821,6 @@ Above we presented all the characteristics of a numerical (non-relational) abstr
 \end{remark}
 
 
-\paragraph{Common Numerical Abstract Domains}
 In the following, we report some of the most common numerical abstract domains used in the literature:
 
 \begin{description}
@@ -1838,7 +1837,57 @@ These domains above are non-relational as they associate an abstract element to 
   \item[Octagons \cite{Min_e2006a}] \phantomcite{Min_e2006a} The octagons domain infers constraints about the relationships between variables of the form $x - y \le c$. Potentially, one of the best trade-offs between precision and scalability among the relational domains.
 \end{description}
 
-Different abstract domains represent complementary information about the program variables. Therefore, it is common to combine multiple abstract domains to leverage the strengths of each domain. The combination of abstract domains is known as the \emph{reduced product} domain \sidecite{Cousot1979a}. The reduced product domain is defined as the Cartesian product of the abstract domains, with the ordering defined as the pointwise ordering of the abstract elements. The reduced product domain is a sound abstraction of the concrete domain, and it is more precise than any of the individual domains. However, the reduced product domain is also more expensive to compute than the individual domains. The reduced product domain is particularly useful when the individual domains are complementary, \eg{} when one domain is good at inferring linear relationships and another domain is good at inferring disjunctions.
+Different abstract domains represent complementary information about the program variables. Therefore, it is common to combine multiple abstract domains to leverage the strengths of each domain. The combination of abstract domains is known as the \emph{reduced product} domain \sidecite{Cousot1979a}.\sidenote{ Specifically, this domain is the \emph{partially} reduced product, as the (fully) reduced product is only applicable when the underlying abstract domains feature Galois connections.} The reduced product domain is defined as the Cartesian product of the abstract domains, with the ordering defined as the pointwise ordering of the abstract elements. Each abstract operator is defined to share information from the individual domains and to refine their abstract elements.
+The reduced product domain is thus sound by construction and is, at least, always as precise as any of the individual domains. The reduced product domain is particularly useful when the individual domains are complementary, \eg{} when one domain is good at inferring linear relationships and another domain is good at inferring disjunctions.
+
+Specifically, let $\productdomain$ be the reduced product of two abstract domains, a reduction operator $\productdomainreduce\in\productdomain\to\productdomain$ enables information sharing between the two domains.
+Importantly, the reduction operator needs to not modify the concretized states of the two abstract domains, but it is permitted to refine each of the two abstract elements in their respective domains.
+
+\begin{definition}[Soundness of the Reduction Operation]\labdef{soundness-reduction}
+  The operator $\productdomainreduce\in\productdomain\to\productdomain$ is a \emph{sound reduction} operator between the two domains $\abstractdomain_1$ and $\abstractdomain_2$ whenever it holds that, for any $\tuple{\defabstractvalue_1}{\defabstractvalue_2}, \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \in \productdomain$:
+  \begin{align*}
+    \tuple{\defabstractvalue_1}{\defabstractvalue_2} = \productdomainreduce(\tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2}) \Rightarrow
+    &\productdomainconcretization(\tuple{\defabstractvalue_1}{\defabstractvalue_2}) = \productdomainconcretization(\tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2}) \land {} \\
+    &\abstractdomainconcretization_1(\defabstractvalue_1) \abstractdomainsubseteq_1 \abstractdomainconcretization_1(\defotherabstractvalue_1) \land {} \\
+    &\abstractdomainconcretization_2(\defabstractvalue_2) \abstractdomainsubseteq_2 \abstractdomainconcretization_2(\defotherabstractvalue_2)
+  \end{align*}
+\end{definition}
+
+The reduced product is defined as:
+
+\begin{definition}[Reduced Product]\labdef{reduced-product}
+Let $\tuple{\abstractdomain_1}{\abstractdomainsubseteq_1}$ and $\tuple{\abstractdomain_2}{\abstractdomainsubseteq_2}$ be two abstract domains, and $\productdomainreduce\in\productdomain\to\productdomain$ a sound reduction operator, \cf{} \refdef{soundness-reduction}.
+The \emph{reduced product} domain $\productdomain$ is defined as:
+\begin{itemize}
+  \item $\productdomain = \abstractdomain_1 \times \abstractdomain_2$;
+  \item for $\defabstractvalue_1, \defabstractvalue_2 \in \abstractdomain_1$ and $\defotherabstractvalue_1, \defotherabstractvalue_2\in\abstractdomain_2$, the partial order $\tuple{\defabstractvalue_1}{\defotherabstractvalue_1} \productdomainsubseteq \tuple{\defabstractvalue_2}{\defotherabstractvalue_2}$ holds if and only if $\defabstractvalue_1 \abstractdomainsubseteq_1 \defabstractvalue_2$ and $\defotherabstractvalue_1 \abstractdomainsubseteq_2 \defotherabstractvalue_2$;
+  \item the concretization function $\productdomainconcretization(\tuple{\defabstractvalue}{\defotherabstractvalue}) \defeq \abstractdomainconcretization_1(\defabstractvalue) \setmeet \abstractdomainconcretization_2(\defotherabstractvalue)$;
+  \item if $\abstractdomainabstraction_1$ and $\abstractdomainabstraction_2$ exist, we have an abstraction $\productdomainabstraction\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ that forms a Galois connection $\tuple{\setof\env}{\subseteq}\galois{\productdomainabstraction}{\productdomainconcretization}\tuple{\productdomain}{\productdomainsubseteq}$. The abstraction is defined as follows:
+  $ \productdomainabstraction(\defenv) \DefeQ \tuple{\abstractdomainabstraction_1(\defenv)}{\abstractdomainabstraction_2(\defenv)} $;
+  \item the bottom element $\productdomainbottom \defeq \tuple{\abstractdomainbottom_1}{\abstractdomainbottom_2}$;
+  \item the top element $\productdomaintop \defeq \tuple{\abstractdomaintop_1}{\abstractdomaintop_2}$;
+  \item the sound join $\tuple{\defabstractvalue_1}{\defabstractvalue_2} \productdomainjoin \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \defeq \tuple{\defabstractvalue_1 \abstractdomainjoin_1 \defotherabstractvalue_1}{\defabstractvalue_2 \abstractdomainjoin_2 \defotherabstractvalue_2}$;
+  \item the sound meet $\tuple{\defabstractvalue_1}{\defabstractvalue_2} \productdomainmeet \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \defeq \tuple{\defabstractvalue_1 \abstractdomainmeet_1 \defotherabstractvalue_1}{\defabstractvalue_2 \abstractdomainmeet_2 \defotherabstractvalue_2}$;
+  \item the sound forward assignment:
+  \begin{align*}
+    &\productdomainassign\semanticsof{\assignstmt}\tuple{\defabstractvalue_1}{\defabstractvalue_2} \DefeQ \\
+    &\quad \tuple{\abstractdomainassign\semanticsof{\assignstmt}\defabstractvalue_1}{\abstractdomainassign\semanticsof{\assignstmt}\defabstractvalue_2}
+  \end{align*}
+  \item the sound backward substitution:
+  \begin{align*}
+    &\productdomainsubsitute\substitutionof{\defvariable}{\defaexp}(\tuple{\defabstractvalue_1}{\defabstractvalue_2}) \DefeQ \\
+    &\quad \tuple{\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue_1}{\abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue_2}
+  \end{align*}
+  \item the sound filter:
+  \begin{align*}
+    &\productdomainfilter\semanticsof{\defbexp}(\tuple{\defabstractvalue_1}{\defabstractvalue_2}) \DefeQ \\
+    &\quad \tuple{\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue_1}{\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue_2}
+  \end{align*}
+  \item the widening $\tuple{\defabstractvalue_1}{\defabstractvalue_2} \productdomainwidening \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \DefeQ \tuple{\defabstractvalue_1 \abstractdomainwidening_1 \defotherabstractvalue_1}{\defabstractvalue_2 \abstractdomainwidening_2 \defotherabstractvalue_2}$.
+\end{itemize}
+\end{definition}
+
+Note that, the reduced product defined above applies the reduction operator $\productdomainreduce$ after joins and meets but refrains from applying it after a widening. The reason is that the widening operator ensures termination on each individual domain, this is not any more guaranteed when applying the reduction operator between widening steps. The problem is that the reduction operator might refine the abstract elements in such a way that the widening operator does not terminate anymore. For instance, if the reduction would provide finite interval bounds, the widening operator of the interval abstract domain may push these bounds to infinity indefinitely, without ever reaching a fixpoint.
 
 Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$, \cf{} \refdef{abstract-domain}.
 
@@ -1858,40 +1907,58 @@ The forward reachability state abstract semantics $\forwardsemantics\in\forwardt
       &\forwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
     \end{align*}
   }
-  \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract assignment of the abstract element.
+  \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract forward assignment.
   \marginnote{
     \begin{align*}
       &\forwardsemanticsnoparam \semanticsof{\pifstmt}\defabstractvalue \DefeQ \\
-      &\quad \abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue \abstractdomainjoin \abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue
+      &\quad \forwardsemanticsnoparam \semanticsof{\defstmt}(\abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue) \spacearound{\abstractdomainjoin} {} \\
+      &\quad\forwardsemanticsnoparam \semanticsof{\defstmt'}(\abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue)
     \end{align*}
   }
   \item[\normalfont ($\pifstmt$)] The abstract semantics of a conditional statement is the join of the abstract semantics applied to the two branches.
   \marginnote{
     \begin{align*}
       &\forwardsemanticsnoparam \semanticsof{\pwhilestmt}\defabstractvalue \DefeQ \\
-      &\quad \lfp^{\abstractdomainsubseteq} \abstractdomainwidening \circ \abstractdomainfilter \semanticsof{\defbexp} \circ \abstractdomainassign \semanticsof{\defstmt}
+      &\quad \abstractdomainfilter \semanticsof{\neg\defbexp} (\lim \abstractdomaintransformer) \\[5pt]
+      &\quad \abstractdomaintransformer (\defotherabstractvalue) \DefeQ \\
+      &\qquad\defabstractvalue \abstractdomainjoin \forwardsemanticsnoparam \semanticsof{\defstmt}(\abstractdomainfilter \semanticsof{\defbexp}\defotherabstractvalue)
     \end{align*}
   }
-  \item[\normalfont ($\pwhilestmt$)] The abstract semantics of a while statement is the least fixpoint of the widening of the abstract semantics of the loop body, filtered by the loop condition.
+  \item[\normalfont ($\pwhilestmt$)] The while statement represents the most interesting construct. A na\"ive approach would be to compute an overapproximation of the fixpoint of the loop body, filtered by the loop condition. However, this approach is not guaranteed to terminate in finite time. Instead, thanks to the widening operator, we can compute the abstract iterates least fixpoint in the abstract domain by applying the widening operator to ensure convergence. The least fixpoint computation is then guaranteed to terminate, hopefully in a small number of abstract iterations.
+  The abstract iterates are computed by the limit operator of the abstract transformer $\lim \abstractdomaintransformer$, it is defined as follows:
+  \begin{align*}
+    \lim \abstractdomaintransformer &\DefeQ x^k \text{ such that } k\in\Npos \text{ and } x^k \abstractdomainsubseteq \abstractdomaintransformer(x^k) \\
+    \text{where } x^0 &\DefeQ \abstractdomainbottom \\
+    x^{i+1} &\DefeQ x^i \spacearound{\abstractdomainwidening} \abstractdomaintransformer(x^i)
+  \end{align*}
   \marginnote{
     \begin{align*}
-      &\forwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \forwardsemanticsnoparam \semanticsof{\defstmt'}(\forwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue)
+      &\forwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \\
+      &\quad\forwardsemanticsnoparam \semanticsof{\defstmt'}(\forwardsemanticsnoparam \semanticsof{\defstmt}\defabstractvalue)
     \end{align*}
   }
-  \item[\normalfont ($\pcompstmt$)] The abstract semantics of a composition statement is the composition of the abstract semantics of the two statements.
-  \item[\normalfont ($\pprogstmt$)] The abstract semantics of a program is the abstract semantics of the statement with the bottom element as initial abstract element.
+  \item[\normalfont ($\pcompstmt$)] The abstract semantics of a composition statement is the composition of the abstract semantics of the two statements, from $\defstmt$ to $\defstmt'$.
+  \item[\normalfont ($\pprogstmt$)] The abstract semantics of a program is the abstract semantics of the entry statement starting from the abstract element representing all the states, \ie, the top element $\abstractdomaintop$.
     \begin{definition}[Forward Reachability State Abstract Semantics]
       The \emph{forward reachability state abstract semantics} $\forwardsemantics\in\forwardtype$ for a program $\defprogram$ is defined as:
       \begin{align*}
-        \forwardsemantics(\defprogram) \DefeQ \forwardsemanticsnoparam \semanticsof{\defstmt}\intervalabstractdomainbottom
+        \forwardsemantics \DefeQ \forwardsemanticsnoparam \semanticsof{\progstmt} \spacearound{=} \forwardsemanticsnoparam \semanticsof{\defstmt}\abstractdomaintop
       \end{align*}
     \end{definition}
 \end{description}
 
+The following result provides the soundness of $\forwardsemantics$ with respect to the concrete semantics $\forwardreachabilitytracesemantics$, \cf{} \refdef*{forward-reachability-state-semantics}.
+
+\begin{theorem}
+  Given a program $\defprogram$, the forward reachability state abstract semantics $\forwardsemantics$ is sound with respect to the forward reachability state semantics $\forwardreachabilitytracesemantics$ whenever it holds that:
+  \begin{align*}
+    \forwardreachabilitytracesemantics \subseteq \abstractdomainconcretization(\forwardsemantics)
+  \end{align*}
+\end{theorem}
 
 \paragraph{Backward Co-Reachability State Abstract Semantics}
 
-The backward reachability state abstract semantics $\backwardsemantics\in\backwardtype$ is defined by induction on the structure of the program, as follows:
+The \emph{backward} reachability state abstract semantics $\backwardsemantics\in\backwardtype$ is defined by induction on the structure of the program, as follows:
 
 \begin{description}
   \marginnote{
@@ -1899,39 +1966,64 @@ The backward reachability state abstract semantics $\backwardsemantics\in\backwa
       &\backwardsemanticsnoparam \semanticsof{\pskipstmt}\defabstractvalue \DefeQ \defabstractvalue
     \end{align*}
   }
-  \item[\normalfont ($\pskipstmt$)] The abstract semantics of a skip statement is the identity function on the abstract element.
+  \item[\normalfont ($\pskipstmt$)] The backward semantics of a skip statement is the identity function on the abstract element.
   \marginnote{
     \begin{align*}
-      &\backwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainassign \semanticsof{\assignstmt}\defabstractvalue
+      &\backwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainsubstitute{\defvariable}{\defbexp}\defabstractvalue
     \end{align*}
   }
-  \item[\normalfont ($\plassignstmt$)] The abstract semantics of an assignment statement is the abstract assignment of the abstract element.
+  \item[\normalfont ($\plassignstmt$)] The backward semantics of an assignment statement is the substitution of the value of an expression $\defaexp$ into the variable $\defvariable$.
   \marginnote{
     \begin{align*}
       &\backwardsemanticsnoparam \semanticsof{\pifstmt}\defabstractvalue \DefeQ \\
-      &\quad \abstractdomainfilter \semanticsof{\defbexp}\defabstractvalue \abstractdomainmeet \abstractdomainfilter \semanticsof{\neg\defbexp}\defabstractvalue
+      &\quad \abstractdomainfilter \semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt} \defabstractvalue) \spacearound{\abstractdomainjoin} \\
+      &\quad \abstractdomainfilter \semanticsof{\neg\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt'} \defabstractvalue)
     \end{align*}
   }
-  \item[\normalfont ($\pifstmt$)] The abstract semantics of a conditional statement is the meet of the abstract semantics applied to the two branches.
+  \item[\normalfont ($\pifstmt$)] The backward semantics of a conditional statement is the backward semantics of the two branches, then the filter from the condition $\defbexp$ is applied and the results of the two branches are joined.
   \marginnote{
     \begin{align*}
-      &\backwardsemanticsnoparam \semanticsof{\pwhilestmt}\defabstractvalue \DefeQ \\
-      &\quad \gfp^{\abstractdomainsubseteq} \abstractdomainmeet \circ \abstractdomainfilter \semanticsof{\defbexp} \circ \abstractdomainassign \semanticsof{\defstmt}
+      &\backwardsemanticsnoparam \semanticsof{\pwhilestmt}\defabstractvalue \DefeQ \lim \abstractdomaintransformer \\
+      &\quad \abstractdomaintransformer(\defotherabstractvalue) \DefeQ \left(\begin{array}[l]{@{}l@{}}
+        \abstractdomainfilter \semanticsof{\neg\defbexp}(\defabstractvalue) \abstractdomainjoin {} \\ \abstractdomainfilter
+        \semanticsof{\defbexp}(\backwardsemanticsnoparam \semanticsof{\defstmt}(\defotherabstractvalue))
+      \end{array}\right)
     \end{align*}
   }
-  \item[\normalfont ($\pwhilestmt$)] The abstract semantics of a while statement is the greatest fixpoint of the meet of the abstract semantics of the loop body, filtered by the loop condition.
+  \item[\normalfont ($\pwhilestmt$)] The backward semantics of a while statement is the limit of the abstract iterates. The negated condition is applied first as $\defabstractvalue$ is the postcondition outside the loop, then the condition is applied to every iterate of the loop body, and the results are joined. The limit is computed by exploiting the widening operator to ensure convergence.
+
+  Note that, we could further improve precision of the while statement (for both the forward and backward abstract analysis) by considering the narrowing operator as follows:
+  \begin{align*}
+    \lim \abstractdomaintransformer &\DefeQ y^k \text{ such that } k\in\Npos \text{ and } y^k \abstractdomainsubseteq \abstractdomaintransformer(y^k) \\
+    \text{where } y^0 &\DefeQ x \\
+    y^{i+1} &\DefeQ y^i \spacearound{\abstractdomainwidening} \abstractdomaintransformer(y^i)
+  \end{align*}
+  where $x$ is the limit of the abstract iterates using the widening operator.
+  Further improvements can be achieved by delaying the application of the widening with the join operator, or by unrolling the loop body.
   \marginnote{
     \begin{align*}
-      &\backwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \backwardsemanticsnoparam \semanticsof{\defstmt}\left(\backwardsemanticsnoparam \semanticsof{\defstmt'}
+      &\backwardsemanticsnoparam \semanticsof{\pcompstmt}\defabstractvalue \DefeQ \\
+      &\quad\backwardsemanticsnoparam \semanticsof{\defstmt}\left(\backwardsemanticsnoparam \semanticsof{\defstmt'}
       \defabstractvalue\right)
     \end{align*}
   }
-  \item[\normalfont ($\pcompstmt$)] The abstract semantics of a composition statement is the composition of the abstract semantics of the two statements.
-  \item[\normalfont ($\pprogstmt$)] The abstract semantics of a program is the abstract semantics of the statement with the bottom element as initial abstract element.
+  \item[\normalfont ($\pcompstmt$)] The backward semantics of a composition statement is the composition of the abstract semantics of the two statements.
+  \item[\normalfont ($\pprogstmt$)]
+    The backward semantics of a program is the abstract semantics of the exit statement starting from the abstract element representing all the states, \ie, the top element $\abstractdomaintop$.
     \begin{definition}[Backward Co-Reachability State Abstract Semantics]
       The \emph{backward co-reachability state abstract semantics} $\backwardsemantics\in\backwardtype$ for a program $\defprogram$ is defined as:
       \begin{align*}
-        \backwardsemantics(\defprogram) \DefeQ \backwardsemanticsnoparam \semanticsof{\defstmt}\intervalabstractdomainbottom
+        \backwardsemantics \DefeQ \backwardsemanticsnoparam \semanticsof{\progstmt} \spacearound{=} \backwardsemanticsnoparam \semanticsof{\defstmt}\abstractdomaintop
       \end{align*}
     \end{definition}
 \end{description}
+
+
+The following result provides the soundness of $\backwardsemantics$ with respect to the concrete semantics $\backwardreachabilitytracesemantics$, \cf{} \refdef*{backward-reachability-state-semantics}.
+
+\begin{theorem}
+  Given a program $\defprogram$, the backward reachability state abstract semantics $\backwardsemantics$ is sound with respect to the backward reachability state semantics $\backwardreachabilitytracesemantics$ whenever it holds that:
+  \begin{align*}
+    \backwardreachabilitytracesemantics \subseteq \abstractdomainconcretization(\backwardsemantics)
+  \end{align*}
+\end{theorem}

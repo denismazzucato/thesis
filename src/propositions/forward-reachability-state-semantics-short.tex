@@ -1,0 +1,26 @@
+\resizebox{\textwidth}{!}{
+\begin{minipage}{\textwidth}
+\begin{align*}
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pskipstmt}\defsetofenvs \DefeQ \defsetofenvs
+  \\
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \\
+  &\quad\setdef{\updatemem{\defsetofenvs}{\defvariable}{\defvalue}}{\defvalue \in \aexpsemantics\defsetofenvs}
+     \\
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
+  \\
+  &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofenvs) \SetjoiN {} \\
+  &\quad\forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs)
+  \\
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetofenvs \DefeQ \\
+  &\quad
+  \bexpsemanticsnoparam \semanticsof{\neg\defbexp}(\lfp^{\forwardreachabilitytracesubseteq} \forwardreachabilitytracetransformer)
+  \\
+  &\qquad \forwardreachabilitytracetransformer(X) \DefeQ \defsetofenvs \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics X)
+  \\
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pcompstmt}\defsetofenvs \DefeQ \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}(\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\defsetofenvs)
+  \\
+  &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pprogstmt} \DefeQ \\
+  &\quad\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\setdef{\defenv\in\env}{\bigloc\in\locs\land\tracetuple{\bigloc}{\defenv}\in\initialstates}
+\end{align*}
+\end{minipage}
+}
