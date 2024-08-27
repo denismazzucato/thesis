@@ -82,8 +82,8 @@ pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-
 echo "Finished fourth compilation"
 
 # revert the first line of kaobook.tex
-# run_sed '1s/.*/\\def\\customcitkey{}\\def\\absintkey{}/' src/chapters/kaobook.tex
-# echo "Reverted kaobook.tex to \\\def\\\customcitkey{} on the first line."
+run_sed '1s/.*/\\def\\customcitkey{}\\def\\absintkey{}/' src/chapters/kaobook.tex
+echo "Reverted kaobook.tex to \\\def\\\customcitkey{} on the first line."
 
 # Uncomment \drafttrue for draft compilation
 # sed -i.bak 's/%\\drafttrue/\\drafttrue/g' "$PACKAGES"
