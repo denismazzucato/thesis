@@ -12,7 +12,7 @@
 \labch{abstract-interpretation}
 
 
-% \marginemptybox{14cm}
+\marginemptybox{11.4cm}
 
 In this chapter, we introduce the concepts that are the foundation of this work.
 We assume basic knowledge of mathematics, we summarize the necessary background in set theory and logic.
@@ -502,10 +502,18 @@ When the order $\sqsubseteq$ is not clear from the context, we explicitly write 
     \addplot[domain=0:6.5, seabornRed, thick] {x};
   \end{axis}
 
-  \draw[seabornYellow, thick, dashed, rounded corners] (-0.4, -0.5) -- (0.2, -0.5) -- (4, 3) -- cycle;
+  \draw[seabornYellow, rounded corners, thick, dashed, rotate=32.4]
+      (-0.3,-0.3) rectangle (6.5,0.4);
+  \node[seabornYellow, fill=white] at (1.9, 2.5) {Fixpoints};
+  \draw[seabornRed, rounded corners, thick, dashed, rotate=32.4]
+      (1.8,-0.9) rectangle (5, -0.35);
+  \node[seabornRed, fill=white] at (4, 0.5) {Prefixpoints};
+  \draw[seabornGreen, rounded corners, thick, dashed]
+      (5,5.8) -- (5,4) -- (7,5);
+  \node[seabornGreen, fill=white] at (3.6, 4.7) {Postfixpoints};
   % \node[seabornYellow, fill=white] at (1, 0) {Lub};
 \end{tikzpicture}
-\caption{Fixpoints of the fibonacci function.}
+\caption{Prefixpoint, fixpoints, and postfixpoints of the fibonacci function.}
 \labfig{fixpoints}
 \end{marginfigure}
 
