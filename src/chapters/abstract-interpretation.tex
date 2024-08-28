@@ -431,6 +431,28 @@ An operator is \emph{idempotent} when $f(f(x)) = f(x)$ for all $x \in X$, and \e
 A \emph{family} $F \in \Delta \to X$ of elements of $X$ indexed by a set $\Delta$ (called the \emph{domain} or \emph{indexed set} of $F$, which may be infinite) is a function from $\Delta$ to $X$. Such family defines a set $\setdef{F(i)}{i \in \Delta}$ (where $F(i)$ is often denoted as $F_i$ with an index $i\in\Delta$) of elements of $X$ indexed by $\Delta$.
 It also defines the sequence $(F_i)_{i\in\Delta}$ of elements of $X$ indexed by $\Delta$.
 
+\begin{marginfigure}
+  % simple plot x-y axis for the fibonacci function
+  % grid system showing the fixpoints
+  \begin{tikzpicture}[scale=0.65]
+    \begin{axis}[
+      grid=both,
+      major grid style = {dashed, lightgray},  % Style for major grid lines
+      minor grid style = {dashed, gray!25},    % Style for minor grid lines
+      xtick = {0, 1, 2, 3, 4, 5, 6},% x-axis ticks
+      ytick = {0, 1, 2, 3, 5, 8},  % y-axis ticks (Fibonacci numbers)
+      xmin = 0, xmax = 6.5,
+      ymin = 0, ymax = 8.5]
+      \addplot[samples at={0,1,5},only marks, seabornBlue] { x };
+      \addplot[samples at={2,3,4},only marks, seabornBlue] { x - 1 };
+      \addplot[samples at={6},only marks, seabornBlue] { x +2 };
+    \end{axis}
+
+  \end{tikzpicture}
+  \caption{The fibonacci function.}
+  \labfig{fibonacci}
+  \end{marginfigure}
+
 \begin{example}
   Let $\textsc{fib}(n)$ be the $n$-th Fibonacci number, defined as:
   \begin{align*}
@@ -441,6 +463,7 @@ It also defines the sequence $(F_i)_{i\in\Delta}$ of elements of $X$ indexed by 
   \end{align*}
   The sequence $(\textsc{fib}(n))_{n\in\N}$ is a family of elements of $\N$ indexed by $\N$:
   \[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots \]
+  \reffig{fibonacci} depicts the first 6 elements of the Fibonacci sequence over the natural numbers.
 \end{example}
 
 Next, we show how to lift an ordered set via \emph{pointwise lifting} to define a new ordered set.
@@ -498,31 +521,57 @@ When the order $\sqsubseteq$ is not clear from the context, we explicitly write 
     ytick = {0, 1, 2, 3, 5, 8},  % y-axis ticks (Fibonacci numbers)
     xmin = 0, xmax = 6.5,
     ymin = 0, ymax = 8.5]
-    \addplot[samples at={0,1,...,6},only marks, seabornBlue] {( ((1+sqrt(5))/(2))^\x - cos(deg(\x * pi)) * ((1+sqrt(5))/(2))^(-\x) )/sqrt(5) };
-    \addplot[domain=0:6.5, seabornRed, thick] {x};
+    \addplot[samples at={0,1,5},only marks, seabornBlue] { x };
+    \addplot[samples at={2,3,4},only marks, seabornRed] { x - 1 };
+    \addplot[samples at={6},only marks, seabornGreen] { x +2 };
+    \addplot[domain=0:6.5, lightgray, thick, dotted] {x};
   \end{axis}
 
-  \draw[seabornYellow, rounded corners, thick, dashed, rotate=32.4]
+  \draw[seabornBlue, rounded corners, thick, dashed, rotate=32.4]
       (-0.3,-0.3) rectangle (6.5,0.4);
-  \node[seabornYellow, fill=white] at (1.9, 2.5) {Fixpoints};
+  \node[seabornBlue, fill=white, rounded corners=10pt] at (1.9, 2.5) {Fixpoints};
   \draw[seabornRed, rounded corners, thick, dashed, rotate=32.4]
       (1.8,-0.9) rectangle (5, -0.35);
-  \node[seabornRed, fill=white] at (4, 0.5) {Prefixpoints};
+  \node[seabornRed, fill=white] at (3.9, 0.5) {Postfixpoints};
   \draw[seabornGreen, rounded corners, thick, dashed]
-      (5,5.8) -- (5,4) -- (7,5);
-  \node[seabornGreen, fill=white] at (3.6, 4.7) {Postfixpoints};
+      (5,5.9) -- (5,4) -- (7.2,5.2);
+  \node[seabornGreen, fill=white,rounded corners=10pt] at (3.69, 4.7) {Prefixpoints};
   % \node[seabornYellow, fill=white] at (1, 0) {Lub};
 \end{tikzpicture}
 \caption{Prefixpoint, fixpoints, and postfixpoints of the fibonacci function.}
 \labfig{fixpoints}
 \end{marginfigure}
 
+\begin{marginfigure}
+  % simple plot x-y axis for the fibonacci function
+  % grid system showing the fixpoints
+  \begin{tikzpicture}[scale=0.65]
+    \begin{axis}[
+      grid=both,
+      major grid style = {dashed, lightgray},  % Style for major grid lines
+      minor grid style = {dashed, gray!25},    % Style for minor grid lines
+      xtick = {0, 1, 2, 3, 4, 5, 6},% x-axis ticks
+      ytick = {0, 1, 2, 3, 4, 5, 6},  % y-axis ticks (Fibonacci numbers)
+      xmin = 0, xmax = 6.5,
+      ymin = 0, ymax = 6.5]
+      \addplot[samples at={0,...,6},only marks, seabornGreen] { x + 1 };
+      \addplot[domain=0:6.5, lightgray, thick, dotted] {x};
+    \end{axis}
+    \draw[seabornGreen, rounded corners=15pt, thick, dashed]
+        (-0.4,5.7) -- (-0.4,0.1) -- (6.2,5.7);
+    \node[seabornGreen] at (2.7, 4.7) {Prefixpoints};
+    % \node[seabornYellow, fill=white] at (1, 0) {Lub};
+  \end{tikzpicture}
+  \caption{Prefixpoints of the construct function, \ie, $\textsc{cons}(x) \defeq x + 1$.}
+  \labfig{prefixpoints}
+  \end{marginfigure}
+
 \begin{example}
-  Let us consider again the fibonacci function $\textsc{fib} \in \N \to \N$. The fixpoints are shown in \reffig{fixpoints}, the set of fixpoints is $\fixpoints(\textsc{fib}) = \setof{0, 1, 5}$, the elements $2$, $3$, and $4$ are prefixpoints are their values are smaller than the values of their images, and the elements greater than or equal to $6$ are postfixpoints.
+  Let us consider again the fibonacci function $\textsc{fib} \in \N \to \N$. The fixpoints are shown in \reffig{fixpoints}, the set of fixpoints is $\fixpoints(\textsc{fib}) = \{0, 1, 5\}$, the elements $2$, $3$, and $4$ are prefixpoints are their values are smaller than the values of their images, and the elements greater than or equal to $6$ are postfixpoints.
   The least fixpoint of $\textsc{fib}$ is $\lfp \textsc{fib} = 0$, as $0$ is the smallest element of $\fixpoints(\textsc{fib})$.
   On the other hand, the greatest fixpoint of $\textsc{fib}$ is $\gfp \textsc{fib} = 5$.
 
-  Instead, if we consider another operator, for example the $\textsc{cons}(x) \defeq x + 1$ operator, then there is no fixpoint, as $\textsc{cons}(x) \neq x$ for all $x \in \N$.
+  Instead, if we consider another operator, for example the $\textsc{cons}(x) \defeq x + 1$ operator, then there is no fixpoint, as $\textsc{cons}(x) \neq x$ for all $x \in \N$. instead, all the domain is composed of prefixpoints, as $x \le \textsc{cons}(x) = x + 1$ for all $x \in \N$. \reffig{prefixpoints} shows graphically this example.
 \end{example}
 
 Next, we recall a fundamental theorem of Alfred Tarski \sidecite{Tarski1955} that characterizes fixpoints of monotonic functions over complete lattices.
@@ -610,14 +659,45 @@ The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ of a tr
   \end{align*}
 \end{definition}
 
-\begin{example}
-  Let us consider the transition system $\transitionsystem$ with states $\state = \{x, y\}$, transitions $\transitionrelation = \{\tuple{x}{x}, \tuple{x, y}\}$ with final states $\finalstates = \{y\}$. The maximal trace semantics $\tracesemanticsnoparam$ is the set of all traces that are terminating in the final state $y$ and all non-terminating traces from the transition $\tuple{x}{x}$.
-  That is, $\tracesemanticsnoparam = \retrieveinfinitetraces{x} \setjoin {\retrievefiniteoremptytraces{x}}{y}$.
-  Note that, the maximal trace semantics does not represent partial computations that are not terminating in the final states, such as the trace $\{x\spacer x\spacer x\}$.
+\begin{marginfigure}
+  \centering
+\begin{tikzpicture}
+    % Nodes
+    \node[state] (q0)   {$x$};
+    \node[state, accepting, right=of q0] (q1) {$y$};
+    \node[above=0.2cm of q1] {$\finalstates$};
+
+    % Edges
+    \path[->] (q0) edge[loop above] node {$(i)$} ()
+              (q0) edge node[above] {$(ii)$} (q1);
+\end{tikzpicture}
+\resizebox{\textwidth}{!}{
+  \begin{minipage}{\textwidth}
+\begin{align*}
+  \tracesemanticsnoparam =
+  \left\{\quad\begin{aligned}
+  y,& \\
+  x \xrightarrow{(ii)} y,& \\
+  x \xrightarrow{(i)} x \xrightarrow{(ii)} y,& \\
+  x \xrightarrow{(i)} \dots \xrightarrow{(ii)} y,& \\
+  x \xrightarrow{(i)} \dots \xrightarrow{(i)} x& \xrightarrow{(i)} \dots
+\end{aligned}\quad\right\}
+\end{align*}
+\end{minipage}
+}
+\caption{Maximal trace semantics of the transition system presented in \refexample{transition-system}.}
+\labfig{transition-system}
+\end{marginfigure}
+
+\begin{example}\labexample{transition-system}
+  Let us consider the transition system $\transitionsystem$ with states $\state = \{x, y\}$, transitions $\transitionrelation = \{x \xrightarrow{(i)}, x \xrightarrow{(ii)} y\}$ with final states $\finalstates = \{y\}$. The maximal trace semantics $\tracesemanticsnoparam$ is the set of all traces that are terminating in the final state $y$ and all non-terminating traces from the transition $\tuple{x}{x}$.
+  \reffig{transition-system} depicts graphically the transition system and the traces generated by the maximal trace semantics.
+  Note that, the maximal trace semantics does not represent partial computations that are not terminating in the final states, such as the trace $x \xrightarrow{(i)} x \xrightarrow{(i)} x$.
 \end{example}
 
 \begin{remark}
-  Observe that not all program semantics can be generated by a transition system. For instance, in case the program semantics is the set of traces $\retrievefiniteoremptytraces{x}y$ where $y$ is eventually reached, the transition relation $\transitionrelation = \{\tuple{x}{x}, \tuple{x}{y}\}$ generates also infinite sequences of $x$ that are not part of the semantics.
+  Observe that not all program semantics can be generated by a transition system.
+  For instance, in case the program semantics is the set of traces starting with an arbitrary finite number of $x$ where $y$ is eventually reached, the transition relation $\transitionrelation = \{\tuple{x}{x}, \tuple{x}{y}\}$ generates also infinite sequences of $x$ that are not part of the semantics.
 \end{remark}
 
 % The following result provides a (least) fixpoint characterization of the maximal trace semantics over the complete lattice $\tracecompletelattice$.
@@ -658,10 +738,16 @@ The maximal trace semantics is the most precise semantics and fully describes th
 In the following, to facilitate reading, we call the maximal trace semantics simply the \emph{trace semantics}.
 
 \begin{remark}[Non-determinism]
-  We say that a program $\defprogram$ is \emph{non-deterministic} whenever there are multiple different traces that share the same prefix. Formally:
+  We say that a transition system $\transitionsystem$ is \emph{non-deterministic} whenever the maximal trace semantics generates (at least) two different traces that share the same prefix. Formally:
   \begin{gather*}
-    \defprogram \text{ is non-deterministic} \\ \IfF \\ \exists \deftrace \in \finitesequences, \deftrace', \deftrace'' \in \finiteinfinitesequences.\spacer \deftrace' \neq \deftrace'' \land \concat{\deftrace}{\deftrace'} \in \tracesemantics \land \concat{\deftrace}{\deftrace''} \in \tracesemantics
+    \transitionsystem \text{ is non-deterministic} \\ \IfF \\ \exists \deftrace \in \finitesequences, \deftrace', \deftrace'' \in \finiteinfinitesequences.\spacer \deftrace' \neq \deftrace'' \land \concat{\deftrace}{\deftrace'} \in \tracesemanticsnoparam \land \concat{\deftrace}{\deftrace''} \in \tracesemanticsnoparam
   \end{gather*}
+  In fact, the transition system of \refexample{transition-system} is non-deterministic, as these two traces belongs to the maximal trace semantics:
+  \begin{align*}
+    x \xrightarrow{(i)} x &\xrightarrow{(ii)} y\\
+    x \xrightarrow{(i)} x &\xrightarrow{(i)} x \xrightarrow{(ii)} y
+  \end{align*}
+  Both traces share the same prefix, \ie, $x \xrightarrow{(i)} x$.
 \end{remark}
 
 \subsection{Collecting Semantics}
@@ -1906,7 +1992,7 @@ These domains above are non-relational as they associate an abstract element to 
   \item[Octagons \cite{Min_e2006a}] \phantomcite{Min_e2006a} The octagons domain infers constraints about the relationships between variables of the form $x - y \le c$. Potentially, one of the best trade-offs between precision and scalability among the relational domains.
 \end{description}
 
-Different abstract domains represent complementary information about the program variables. Therefore, it is common to combine multiple abstract domains to leverage the strengths of each domain. The combination of abstract domains is known as the \emph{reduced product} domain \sidecite{Cousot1979a}.\sidenote{ Specifically, this domain is the \emph{partially} reduced product, as the (fully) reduced product is only applicable when the underlying abstract domains feature Galois connections.} The reduced product domain is defined as the Cartesian product of the abstract domains, with the ordering defined as the pointwise ordering of the abstract elements. Each abstract operator is defined to share information from the individual domains and to refine their abstract elements.
+Different abstract domains represent complementary information about the program variables. Therefore, it is common to combine multiple abstract domains to leverage the strengths of each domain. The combination of abstract domains is known as the \emph{reduced product} domain \sidecite{Cousot1979a}.\sidenote{ Specifically, this domain is called the \emph{partially} reduced product, as the (fully) reduced product is only applicable when the underlying abstract domains feature Galois connections.} The reduced product domain is defined as the Cartesian product of the abstract domains, with the ordering defined as the pointwise ordering of the abstract elements. Each abstract operator is defined to share information from the individual domains and to refine their abstract elements.
 The reduced product domain is thus sound by construction and is, at least, always as precise as any of the individual domains. The reduced product domain is particularly useful when the individual domains are complementary, \eg{} when one domain is good at inferring linear relationships and another domain is good at inferring disjunctions.
 
 Specifically, let $\productdomain$ be the reduced product of two abstract domains, a reduction operator $\productdomainreduce\in\productdomain\to\productdomain$ enables information sharing between the two domains.
@@ -1915,7 +2001,7 @@ Importantly, the reduction operator needs to not modify the concretized states o
 \begin{definition}[Soundness of the Reduction Operation]\labdef{soundness-reduction}
   The operator $\productdomainreduce\in\productdomain\to\productdomain$ is a \emph{sound reduction} operator between the two domains $\abstractdomain_1$ and $\abstractdomain_2$ whenever it holds that, for any $\tuple{\defabstractvalue_1}{\defabstractvalue_2}, \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \in \productdomain$:
   \begin{align*}
-    \tuple{\defabstractvalue_1}{\defabstractvalue_2} = \productdomainreduce(\tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2}) \Rightarrow
+    \tuple{\defabstractvalue_1}{\defabstractvalue_2} = \productdomainreduce(\tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2}) \ImplieS
     &\productdomainconcretization(\tuple{\defabstractvalue_1}{\defabstractvalue_2}) = \productdomainconcretization(\tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2}) \land {} \\
     &\abstractdomainconcretization_1(\defabstractvalue_1) \abstractdomainsubseteq_1 \abstractdomainconcretization_1(\defotherabstractvalue_1) \land {} \\
     &\abstractdomainconcretization_2(\defabstractvalue_2) \abstractdomainsubseteq_2 \abstractdomainconcretization_2(\defotherabstractvalue_2)
