@@ -1402,17 +1402,78 @@ which provide a sound and computable over-approximation of the concrete semantic
   Hence, concrete environments are mappings from variables to integers, \ie, $\env = \variables \to \Z$.
 
 \begin{marginfigure}
-  \begin{tikzpicture}
-    % new length: first line should be around 1.2
-    \newlength{\first}
-    \setlength{\first}{1.2cm}
+  \centering
+  \begin{tikzpicture}[scale=0.355, every node/.style={font=\tiny}]
+    % Nodes
+    \node (empty) at (0,-0.4) {$\intervalbottom$};
+    \node (m2m2) at (-4,2) {$[-2,-2]$};
+    \node (m1m1) at (-2,2) {$[-1,-1]$};
+    \node (00) at (0,2) {$[0,0]$};
+    \node (11) at (2,2) {$[1,1]$};
+    \node (22) at (4,2) {$[2,2]$};
 
-    % Nodes representing elements in the interval domain
-    \node (top) at (3, 4) {$[-\infty,+\infty]$};
-    \node (A) at (1, \first) {$[-2,-2]$};
+    \node (m2m1) at (-3,4) {$[-2,-1]$};
+    \node (m10) at (-1,4) {$[-1,0]$};
+    \node (01) at (1,4) {$[0,1]$};
+    \node (12) at (3,4) {$[1,2]$};
+
+    \node (m20) at (-2,6) {$[-2,0]$};
+    \node (m11) at (0,6) {$[-1,1]$};
+    \node (02) at (2,6) {$[0,2]$};
+
+    \node (inf) at (0,8.4) {$\intervaltop$};
+
+     % Dots to indicate continuation
+    \node (l0) at (-6,2) {$\dots$};
+    \node (r0) at (6,2) {$\dots$};
+    \node (l1) at (-5,4) {$\dots$};
+    \node (r1) at (5,4) {$\dots$};
+    \node (l2) at (-4,6) {$\dots$};
+    \node (r2) at (4,6) {$\dots$};
 
 
-    \end{tikzpicture}
+    % Edges
+    \draw (empty) -- (m2m2);
+    \draw (empty) -- (m1m1);
+    \draw (empty) -- (00);
+    \draw (empty) -- (11);
+    \draw (empty) -- (22);
+    \draw[dotted] (empty) -- (l0);
+    \draw[dotted] (empty) -- (r0);
+
+
+    \draw (m2m2) -- (m2m1);
+    \draw (m1m1) -- (m2m1);
+    \draw (m1m1) -- (m10);
+    \draw (00) -- (m10);
+    \draw (00) -- (01);
+    \draw (11) -- (01);
+    \draw (11) -- (12);
+    \draw (22) -- (12);
+    \draw[dotted] (l0) -- (l1);
+    \draw[dotted] (m2m2) -- (l1);
+    \draw[dotted] (22) -- (r1);
+    \draw[dotted] (r0) -- (r1);
+
+
+    \draw (m2m1) -- (m20);
+    \draw (m10) -- (m20);
+    \draw (01) -- (02);
+    \draw (12) -- (02);
+    \draw (m10) -- (m11);
+    \draw (01) -- (m11);
+    \draw[dotted] (r1) -- (r2);
+    \draw[dotted] (m2m1) -- (l2);
+    \draw[dotted] (l1) -- (l2);
+    \draw[dotted] (12) -- (r2);
+
+    \draw[dotted] (m20) -- (inf);
+    \draw[dotted] (m11) -- (inf);
+    \draw[dotted] (02) -- (inf);
+    \draw[dotted] (l2) -- (inf);
+    \draw[dotted] (r2) -- (inf);
+
+\end{tikzpicture}
   \caption{The interval lattice.}
   \labfig{interval-partial-order}
 \end{marginfigure}
