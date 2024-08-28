@@ -659,6 +659,12 @@ The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ of a tr
   \end{align*}
 \end{definition}
 
+In the maximal trace semantics, traces are ordered by, for any $\defsetoftraces_1, \defsetoftraces_2 \in \tracesemanticsnoparam$:
+\begin{align*}
+  \defsetoftraces_1 \tracesubseteq \defsetoftraces_2 \DefifF \retrievefinitetraces{\defsetoftraces_1} \subseteq \retrievefinitetraces{\defsetoftraces_2} \land \retrieveinfinitetraces{\defsetoftraces_1} \supseteq \retrieveinfinitetraces{\defsetoftraces_2}
+\end{align*}
+That is, the set of finite traces of $\defsetoftraces$ should be included in the set of finite traces of $\defsetoftraces'$, and conversely the set of infinite traces of $\defsetoftraces'$ should be included in the set of infinite traces of $\defsetoftraces$. The maximal trace semantics lattice $\tracecompletelattice$ forms a complete lattice.
+
 \begin{marginfigure}
   \centering
 \begin{tikzpicture}
@@ -856,7 +862,7 @@ Thus, we obtain the following definition for the forward reachability state sema
 Note that, the reachability semantics presented in this example is strictly less expressive than the maximal trace semantics. For instance, the reachability semantics does not capture non-terminating traces.
 \end{example}
 
-\begin{example}[Backward Co-Reachability State Semantics]\labexample{backward-co-reachability-state-semantics}
+\begin{example}[Backward Co-Reachability State Semantics]\labexample{backward-reachability-state-semantics}
   Dually, the \emph{backward co-reachability state semantics} $\backwardreachabilitytracesemanticsnoparam\in\backwardreachabilitytracetype$ collects the states that can reach a given set of final states $\finalstates\in\setof\state$ by abstraction of the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$. The two form a Galois connection:
   \begin{align*}
     \tuple{\tracetype}{\tracesubseteq}\galois{\backwardreachabilitytraceabstraction}{\backwardreachabilitytraceconcretization}\tuple{\backwardreachabilitytracetype}{\backwardreachabilitytracesubseteq}
@@ -1099,7 +1105,7 @@ Next, we define $\transitionrelation$ for each program construct.
   }
   \item[\normalfont ($\plcompstmt$)] The composition statement executes the first and second statements, and join the transitions. Note that, control moves from the end of $\defstmt$ to the beginning of $\defstmt'$ because the final label of $\defstmt$ is the initial label of $\defstmt'$, \cf{} \reffig{initial} and \reffig{final}.
   \item[\normalfont ($\plprogstmt$)] The transition relation of a program is the transition relation of its statement.
-  \begin{definition}[{Transition Semantics}]
+  \begin{definition}[{Transition Semantics}]\labdef{transition-semantics}
     The transition semantics of a program $\defprogram$ is the set of all possible transitions that the program can generate:
     \begin{align*}
       \transitionrelation\semanticsof{\defprogram} \DefeQ \transitionrelation\semanticsof{\progstmt} \DefeQ \transitionrelation\semanticsof{\defstmt}
@@ -2126,7 +2132,7 @@ The \emph{backward} reachability state abstract semantics $\backwardsemantics\in
   \item[\normalfont ($\pskipstmt$)] The backward semantics of a skip statement is the identity function on the abstract element.
   \marginnote{
     \begin{align*}
-      &\backwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainsubstitute{\defvariable}{\defbexp}\defabstractvalue
+      &\backwardsemanticsnoparam \semanticsof{\passignstmt}\defabstractvalue \DefeQ \abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue
     \end{align*}
   }
   \item[\normalfont ($\plassignstmt$)] The backward semantics of an assignment statement is the substitution of the value of an expression $\defaexp$ into the variable $\defvariable$.
@@ -2167,7 +2173,7 @@ The \emph{backward} reachability state abstract semantics $\backwardsemantics\in
   \item[\normalfont ($\pcompstmt$)] The backward semantics of a composition statement is the composition of the abstract semantics of the two statements.
   \item[\normalfont ($\pprogstmt$)]
     The backward semantics of a program is the abstract semantics of the exit statement starting from the abstract element representing all the states, \ie, the top element $\abstractdomaintop$.
-    \begin{definition}[Backward Co-Reachability State Abstract Semantics]
+    \begin{definition}[Backward Co-Reachability State Abstract Semantics]\labdef{backward-semantics}
       The \emph{backward co-reachability state abstract semantics} $\backwardsemantics\in\backwardtype$ for a program $\defprogram$ is defined as:
       \begin{align*}
         \backwardsemantics \DefeQ \backwardsemanticsnoparam \semanticsof{\progstmt} \spacearound{=} \backwardsemanticsnoparam \semanticsof{\defstmt}\abstractdomaintop
