@@ -38,6 +38,7 @@ $P \implies Q$ holds \emph{vacuously} when $P$ is false or when $Q$ is true.
 We write $P \defiff Q$ to denote that $P$ is defined to hold whenever $Q$ holds.
 
 \subsection{Sets}
+\index{Sets}
 
 
 A set $X$ is an unordered collection of distinct elements. We use $x \in X$ (respectively, $x \notin X$) to indicate that $x$ is (respectively, is not) an element of the set $X$. A set is expressed in extension when it is uniquely determined by its elements: \eg, $\{x, y\}$ represents the set containing elements $x$ and $y$. The empty set is denoted by $\emptyset$ and no element belong to it, \ie, $\foralldef{x}{x \notin \emptyset}$.
@@ -88,6 +89,7 @@ For the sake of compactness, we may write both the logical predicate and the num
 
 
 \subsection{Relations}
+\index{Relations}
 A binary relation $R$ between two sets $X$ and $Y$ is a subset of the cartesian product $X \times Y$.
 The following are some important properties which may hold for a binary relation $R$ over a set $S$:
 \begin{description}
@@ -106,6 +108,7 @@ An \emph{equivalence} relation is a binary relation which is reflexive, symmetri
 
 \subsection{Ordered Sets}
 \labsec{ordered-sets}
+\index{Ordered Sets}
 
 A partially ordered set (poset in short) is defined as sets equipped with a partial order relation.
 
@@ -281,6 +284,7 @@ As a consequence, any partial ordered set that satisfies the ascending chain con
 
 \subsection{Lattices}
 \labsec{lattices}
+\index{Lattices}
 
 Lattices are posets that require every nonempty finite subset to have both a least upper bound and a greatest lower bound.
 
@@ -347,6 +351,7 @@ Complete lattices are lattices that additionally require every (possibly infinit
 
 \subsection{Functions}
 \labsec{functions}
+\index{Functions}
 
 % A partial function $f$ from a set $A$ to a set $B$, written $f : A \rightharpoonup B$, is a binary relation between $A$ and $B$ that pairs each element $x \in A$ with no more than one element $y \in B$. The set of all partial functions from a set $A$ to a set $B$ is denoted by $A \rightharpoonup B$. We write $f(x) = y$ if there exists an element $y$ such that $(x, y) \in f$, and we say that $f(x)$ is defined, otherwise we say that $f(x)$ is undefined. Given a partial function $f : A \rightharpoonup B$, we define its domain as $\text{dom}(f) \triangle \{x \in A \mid \exists y \in B : f(x) = y\}$. The totally undefined function, denoted by $\emptyset$, has the empty set as domain: $\text{dom}(\emptyset) = \emptyset$. The join of two partial functions $f_1 : A \rightharpoonup B$ and $f_2 : A \rightharpoonup B$ with disjoint domains, denoted by $f_1 \cup f_2 : A \rightharpoonup B$, is defined as follows:
 % \[
@@ -427,6 +432,7 @@ An operator is \emph{idempotent} when $f(f(x)) = f(x)$ for all $x \in X$, and \e
 \begin{definition}[Upper Closure Operator]\labdef{upper-closure-operator}
   An \emph{upper closure operator} on a partially ordered set $\langle X, \subseteq \rangle$ is an operator $\rho\in X \to X$ which is monotone, idempotent, and extensive.
 \end{definition}
+\index{Upper Closure Operator}
 
 A \emph{family} $F \in \Delta \to X$ of elements of $X$ indexed by a set $\Delta$ (called the \emph{domain} or \emph{indexed set} of $F$, which may be infinite) is a function from $\Delta$ to $X$. Such family defines a set $\setdef{F(i)}{i \in \Delta}$ (where $F(i)$ is often denoted as $F_i$ with an index $i\in\Delta$) of elements of $X$ indexed by $\Delta$.
 It also defines the sequence $(F_i)_{i\in\Delta}$ of elements of $X$ indexed by $\Delta$.
@@ -482,6 +488,7 @@ Next, we show how to lift an ordered set via \emph{pointwise lifting} to define 
 
 \subsection{Properties}
 \labsec{properties}
+\index{Properties}
 
 Properties (\eg, ``to be an even natural number'' or ``to be a number of the sequence of Fibonacci'') by extension are the sets of elements that satisfy the property (\eg, $2\N \defeq \setdef{x \in \N}{\exists k \in \N.\spacer x = 2k}$ or $B \defeq \setdef{\textsc{fib}(n)}{n\in\N}$). Therefore, if $Q$ is a property, then $x \in Q$ means that $x$ satisfies the property $Q$ (\eg, $2 \in 2\N$ or $12 \notin B$).
 
@@ -493,6 +500,7 @@ The strongest property is $\emptyset$ satisfied by no element, and the weakest p
 
 \subsection{Fixpoints}
 \labsec{fixpoints}
+\index{Fixpoints}
 
 Fixpoints are elements of a poset that are invariant under a function.
 As of fundamental importance to formally reason about program behaviors, we introduce the concept of fixpoints in partially ordered sets.
@@ -600,6 +608,7 @@ In the following, the partial order between the fixpoint iterates is called the 
 
 \section{Notations of Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
+\index{Abstract Interpretation}
 
 \emph{Abstract Interpretation} \sidecite{Cousot1977,Cousot1978} is a general theory for approximating the semantics of programs as a unifying framework for static program analysis, co-invented in the late 1970s by Patrick and Radhia Cousot.
 Various books are available for an in-depth study of the topic \sidecite{Cousot2021,Rival2020}.
@@ -607,6 +616,7 @@ In the following, we introduce the notations, main definitions, and results that
 
 \subsection{Transition System}
 \labsec{transition-system}
+\index{Transition System}
 
 The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data.
 In order to be independent of a particular choice of programming language, we consider programs as transition systems, where the behavior of a program is described by a set of states and a set of transitions between states.
@@ -623,6 +633,7 @@ The set $\finalstates \defeq \setdef{\defstate \in \state}{\forall \defstate' \i
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
+\index{Maximal Trace Semantics}
 
 The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data. We formally define this notion for a transition system below.
 
@@ -758,6 +769,7 @@ In the following, to facilitate reading, we call the maximal trace semantics sim
 
 \subsection{Collecting Semantics}
 \labsec{collecting-semantics}
+\index{Collecting Semantics}
 
 \marginnote{Program proerties are also reffered to as \emph{hyperproperties} \cite{Clarkson2010}. In this thesis, we prefer the term \emph{program properties} to emphasize that we consider properties of the semantics of programs.}
 \phantomcite{Clarkson2010}
@@ -779,6 +791,7 @@ We write $\tracesemantics$ to denote the trace semantics of a particular program
 The same applies notation applies to all the semantics we study in this thesis. Hence, the collecting semantics of a program $\defprogram$ is denoted by $\collectingsemantics$.
 
 \paragraph{Property Validation.}
+\index{Property!Validation}
 
 A program $\defprogram$ with semantics $\tracesemantics$ satisfies a property $\defproperty \in \collectingtype$ if and only if the property $\defproperty$ is implied by the collecting semantics $\collectingsemantics\in\collectingtype$.
 
@@ -794,6 +807,7 @@ Traditional properties are often trace properties, and thus can be expressed as 
 
 
 \paragraph{Hierarchy of Semantics}
+\index{Hierarchy of Semantics}
 
 To reason about a particular program property, it is not necessary to consider all the details of the trace semantics.
 In fact, reasoning is facilitated by the design of an abstract semantics that forgets irrelevant details about program computations.
@@ -807,6 +821,7 @@ These semantics are organized in a hierarchy, where the collecting semantics is 
 
 \subsection{Galois Connection}
 \labsec{galois-connection}
+\index{Galois Connection}
 
 Galois connections\sidecite{Schmidt1953} are a fundamental concept in abstract interpretation that relate two partially ordered sets.
 They formalize the correspondence between concrete and abstract properties, and provide a systematic way to derive abstract semantics from concrete semantics.
@@ -889,6 +904,7 @@ Here, we consider a simple imperative programming language to instantiate the tr
 
 \subsection{Syntax}
 \labsec{syntax}
+\index{Syntax}
 
 Our programming language features the classic iterative constructs such as while loops and assignments, and the basic control flow constructs such as conditionals and compositions.
 To keep the language simple, we do not consider function calls, recursion, or pointers.
@@ -1042,6 +1058,7 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 \end{figure}
 
 \paragraph{Transition System}
+\index{Transition System}
 
 
 
@@ -1133,6 +1150,7 @@ Next, we define $\transitionrelation$ for each program construct.
 % \end{figure}
 
 \paragraph{Maximal Trace Semantics}
+\index{Maximal Trace Semantics}
 
 \marginnote{The initial states of a program $\defprogram$ are defined as $\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}$. The final states are states where the program execution ends without any further transition possible, \ie, $\finalstates \defeq \setdef{\tuple{\finalloc[\defprogram]}{\defenv}}{\defenv\in\env}$.}
 
@@ -1234,6 +1252,7 @@ These two semantics will be used to define the abstract semantics and to introdu
 
 \subsection{Forward Reachability State Semantics}
 \labsec{forward-reachability-state-semantics}
+\index{Forward Semantics}
 
 
 % The forward reachability state semantics $\forwardreachabilitysemanticsnoparam\in\forwardreachabilitytype$ introduced in \refexample{forward-reachability-state-semantics} abstracts the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$ (\cf{} \refdef{maximal-trace-semantics}) by collecting all the possible reachability environments at each program location. In this section, we present the \emph{structural} definition of the forward reachability state semantics by induction on the structure of the program.
@@ -1375,6 +1394,7 @@ As a simplification, \reffig{forward-reachability-state-semantics-without-locati
 
 \subsection{Backward Co-Reachability State Semantics}
 \labsec{backward-reachability-state-semantics}
+\index{Backward Semantics}
 
 The backward co-reachability state semantics $\backwardreachabilitytracesemanticsnoparam\in\backwardreachabilitytracetype$ introduced in \refexample{backward-reachability-state-semantics} abstracts the maximal trace semantics $\tracesemanticsnoparam\in\tracetype$ by collecting the program states that can reach a given set of final states. In this section, we present the \emph{structural} definition of the backward co-reachability state semantics by induction on the structure of the program:
 
@@ -1484,6 +1504,7 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
 
 \subsection{Numerical Abstract Domains}
 \labsec{numerical-abstract-domains}
+\index{Abstract Domain}
 
 In this section, we introduce one of the fundamental concepts of static analysis by abstract interpretation: abstract semantics and abstract domain. The abstract semantics are \emph{computable} semantics that overapproximate the concrete semantics defined in the previous section. The abstract semantics yield an effective algorithm to compute an overapproximation of the program fixpoint, and for this reason the terms abstract semantics and analysis are often used interchangeably. The abstract domains are machine-representable structures that capture some detail of the program behavior. They come with computable operations that allow the abstract analysis to be performed efficiently.
 
@@ -1977,6 +1998,8 @@ Above we presented all the characteristics of a numerical (non-relational) abstr
   \end{itemize}
 \end{definition}
 
+As we will see in \refch{quantitative-input-data-usage}, the operators required for the abstract domain may vary depending on the analysis we are performing. For instance, we may require an operator to remove the information about a variable.
+
 \begin{remark}[Relational Abstract Domains]
   It holds that the integer interval abstract domain is a numerical abstract domain.
   Specifically, as it relates each variable singularly to an interval value, we say that such domain is a \emph{non-relational} abstract domain.
@@ -2049,12 +2072,14 @@ The \emph{reduced product} domain $\productdomain$ is defined as:
   \item the widening $\tuple{\defabstractvalue_1}{\defabstractvalue_2} \productdomainwidening \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \DefeQ \tuple{\defabstractvalue_1 \abstractdomainwidening_1 \defotherabstractvalue_1}{\defabstractvalue_2 \abstractdomainwidening_2 \defotherabstractvalue_2}$.
 \end{itemize}
 \end{definition}
+\index{Reduced Product Domain}
 
 Note that, the reduced product defined above applies the reduction operator $\productdomainreduce$ after joins and meets but refrains from applying it after a widening. The reason is that the widening operator ensures termination on each individual domain, this is not any more guaranteed when applying the reduction operator between widening steps. The problem is that the reduction operator might refine the abstract elements in such a way that the widening operator does not terminate anymore. For instance, if the reduction would provide finite interval bounds, the widening operator of the interval abstract domain may push these bounds to infinity indefinitely, without ever reaching a fixpoint.
 
 Next, we show how the (sound) operators of the numerical abstract domains can be used to define the abstract semantics of programs. We present both the forward and backward reachability state abstract semantics for a generic numerical abstract domain $\tuple{\abstractdomain}{\abstractdomainsubseteq}$, \cf{} \refdef{abstract-domain}.
 
 \paragraph{Forward Reachability State Abstract Semantics}
+\index{Forward Semantics!Abstract}
 
 The forward reachability state abstract semantics $\forwardsemantics\in\forwardtype$ is defined by induction on the structure of the program, as follows:
 
@@ -2120,6 +2145,7 @@ The following result provides the soundness of $\forwardsemantics$ with respect 
 \end{theorem}
 
 \paragraph{Backward Co-Reachability State Abstract Semantics}
+\index{Backward Semantics!Abstract}
 
 The \emph{backward} reachability state abstract semantics $\backwardsemantics\in\backwardtype$ is defined by induction on the structure of the program, as follows:
 

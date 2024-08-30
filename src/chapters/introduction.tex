@@ -113,6 +113,7 @@ Based on this, formal methods are classified into three categories \sidecite{Cou
 \end{marginfigure}
 
 \paragraph{Theorem Proving.}
+\index{Theorem Proving}
 
 Theorem provers \sidecite{Nawaz2019} produce proofs of correctness using interactive tools, also called proof assistants, such as \textsc{Coq} \sidecite{Bertot2004}, \textsc{HOL Light} \sidecite{Harrison2009}, \textsc{Lean} \sidecite{Moura2021}, \textsc{Isabelle} \sidecite{Wenzel2008}, and \textsc{Agda} \sidecite{Bove2009,Wadler2022}; or automatic ones \sidecite{Sutcliffe2001}.
 Theorem provers are complete and sound but not fully automated.
@@ -120,6 +121,7 @@ Indeed, user interaction is ultimately required to guide the proof search in bot
 In this category also fall proof-oriented programming languages, such as \textsc{Dafny} \sidecite{Leino2010},  \textsc{F*} \sidecite{Swamy2016}, and \textsc{Why3} \sidecite{Filli_atre2013}.
 
 \paragraph{Model Checking.}
+\index{Model Checking}
 
 Formal methods based on model checking \sidecite{Clarke1981,Queille1982} automatically explore the state space of a program's model to verify whether undesirable states are reachable.
 However, modern software model checker trades termination for automation and completeness, as state-of-the-art software model checkers may not terminate.
@@ -127,6 +129,7 @@ In such cases, the software model checker halts on a timeout, returning an \emph
 \sidetextcite{Clarke2004} applied model checking to prove the correctness of ANSI-C programs.
 
 \paragraph{Symbolic Execution.}
+\index{Symbolic Execution}
 
 Symbolic execution \sidecite{Baldoni2018} approaches perform abstract execution of programs to collect constraints on the program execution. During the abstract computation, variables with unknown values are represented symbolically and propagated through the program.
 The collected constraints are then solved to verify whether an assertion is violated or not. As model checking, symbolic execution trades soundness for automation and completeness.
@@ -140,6 +143,7 @@ However, whenever the static analysis certifies the absence of a bug, the progra
 In formal methods, the most common static analysis techniques are based on \emph{abstract interpretation}.
 
 \paragraph{Abstract Interpretation.}
+\index{Abstract Interpretation}
 
 Abstract Interpretation \sidecite{Cousot1977} is a general theory for approximating program semantics, developed by Patrick and Radhia Cousot in the late 1970s (see \sidecite{Cousot2024a} for an historical view and \sidecite{Cousot2021} for a comprehensive overview).
 Their framework is based on the observation that not all computational details are necessary to reason about program properties.
@@ -152,6 +156,7 @@ We provide a formal introduction to abstract interpretation in \refch{abstract-i
 At the end of that chapter, we will illustrate the main results on a small idealized programming language.
 
 \section{Input Data Usage}
+\index{Input Data Usage}
 
 Programming errors in software systems do not always result in crashes or runtime errors.
 Sometimes, faulty programs produce plausible yet erroneous outcomes or unsafe behaviors.
@@ -179,7 +184,7 @@ Such extension blends abstract non-interference with input data usage, providing
 
 
 \section{Quantitative Properties}
-
+\index{Quantitative Information Flow}
 Typically, program properties are qualitative: a program either satisfies a property or not.
 This is not always sufficient to capture the complexity of real-world requirements \sidecite{Smith2007}.
 For instance, in program security, one fundamental requirement is protecting sensitive information confidentiality.

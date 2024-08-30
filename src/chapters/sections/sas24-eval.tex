@@ -29,7 +29,7 @@ The program under analysis can be evaluated even in presence of statements and e
 Indeed, excluding irrelevant statements from the analysis does not affect the global loop bounds.
 The excluded statements are never looping structures as they are always relevant.
 
-
+\index{Syntactic Dependency Analysis}
 We recall from \refsec{syntactic-dependency-analysis}, the syntactic dependency analysis already serves as an input data usage analysis, identifying variables with zero impact on the global loop counter.
 
 \begin{example}
@@ -131,6 +131,7 @@ x = x - y %\labline{second}%
 
 \section{Timing Side-Channels}
 \labsec{timing-side-channels}
+\index{Side-Channel Attacks!Timing Side-Channels}
 
 
 In this section, we showcase the potential of \timesec{} on the \bignum{} library.\sidenote{\rurl{github.com/awslabs/s2n-bignum}}

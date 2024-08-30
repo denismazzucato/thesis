@@ -109,4 +109,7 @@ echo "Restored main.tex"
 cp pdf/thesis.pdf thesis.pdf
 echo "Copied thesis.pdf to root directory"
 
+cp thesis.pdf ../denismazzucato.github.io/thesis.pdf
+echo "Copied thesis.pdf to denismazzucato.github.io"
+
 echo "Done"

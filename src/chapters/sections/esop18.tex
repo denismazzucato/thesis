@@ -3,6 +3,7 @@
 
 \chapter{Input Data Usage}
 \labch{input-data-usage}
+\index{Input Data Usage}
 
 
 In this chapter, we introduce the notion of input data usage as proposed by \textcite{Urban2018}.
@@ -44,6 +45,7 @@ holds whenever all the input variables in $\definputvariables$ are not used by t
   From two states $\defstate, \defstate'\in\state$, the notation $\defstate \stateeq{\inputvariableswithoutw} \defstate'$ denotes that the values of the variables in $\inputvariableswithoutw$ are equal in both states, \ie, $\forall \defvariable\in\inputvariableswithoutw$ it holds that $\defstate(\defvariable) = \defstate'(\defvariable)$.
   Locations are not considered in the equality between states.
 }
+\index{Unused!Predicate}
 \begin{definition}[Unused]\labdef{unused-predicate}
   Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if and only if the following predicate holds:
   \begin{eqnarray*}
@@ -567,6 +569,7 @@ we introduce an abstracted version of the unused predicate.
 That is, a version of the unused predicate that abstracts the output states, allowing for a more general definition of the unused property.
 Later, we will define the quantitative measure of input data usage, and use the abstraction of output states to determine numerical values from output states.
 
+\index{Abstract Non-Interference}
 \marginnote[*-2]{
 \begin{definitionshort}[Abstract Non-Interference]\labdef{ani-predicate}
   The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
@@ -582,7 +585,7 @@ where $\aniselect$ and $\aniobserver$ are upper closure operators on program sta
 
 We define the abstraction of output states, called output observer, as an upper closure operator over states.
 
-
+\index{Output Observer}
 \begin{definition}[Output Observer]\labdef{output-observer}
   Given a program $\defprogram$, an \emph{output observer} $\aniobserver\in \stateandbottom \to \stateandbottom$ is an upper closure operator (\refdef*{upper-closure-operator}[*2.7]) that abstracts the output states.
 \end{definition}
@@ -590,7 +593,7 @@ We define the abstraction of output states, called output observer, as an upper 
 
 We employ the output observer to define an abstract version of the unused predicate, called $\unusediowrapper$, as follows:
 
-
+\index{Unused!Predicate!Abstract}
 \begin{definition}[Abstract Unused]\labdef{abstract-unused}
   Given a program $\defprogram$, an output observer $\aniobserver\in \stateandbottom \to \stateandbottom$, and the input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are (abstractly) \emph{unused} if and only if the following predicate holds:
   \begin{eqnarray*}
@@ -687,6 +690,7 @@ The reason is that to take into account non-determinism, for any value of the in
 Such low-level detail cannot be captured by the input abstraction employed in the definition of abstract non-interference.
 
 The next result shows that the abstract unused predicate is equivalent to the original unused when the output observer is the identity function.\sidenote{The identity function returns its parameter without any modification, \ie, $\identity(x) = x$.}
+\index{Unused!Equivalence}
 \begin{proposition}[Unused Equivalence]\labprop{unused-predicate-equivalence}
   \marginnote{
     Note that, $\unusedwrapper$ is the unused predicate, \cf{} \nrefdef{unused-predicate}, and $\unusediowrapper$ is the abstract unused predicate, \cf{} \nrefdef{abstract-unused}.
@@ -766,6 +770,7 @@ With the use of the next example, we show that non-determinism may affect the ab
 
 We formally show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction forgets the values of the variables in $\definputvariables$, returning $\top$ otherwise.
 
+\index{Unused!Equivalence}
 \begin{proposition}[Abstract Non-Interference Equivalence]\labprop{ani-predicate-equivalence}
   \siderefbox{def}{ani-predicate}
   If $\defprogram$ is deterministic and the input abstraction is defined as:
@@ -915,6 +920,7 @@ When such property is plugged into $\unusediowrapper$, it convenes a non-exploit
 \end{definitionshort}
 }
 
+\index{Non-Exploitability}
 \begin{definition}[Non-Exploitability for Non-Deterministic Programs]\labdef{ne-unused}
   Let $\definputvariables\in\setof\inputvariables$ be the set of public input variables.
   The \emph{non-exploitability predicate for non-deterministic programs} is defined as follows:
@@ -973,13 +979,14 @@ In this section, we state the \emph{unused property} as a property of programs.
 Whenever a program does not use the input variables $\definputvariables$, the trace semantics of the program belongs to the unused property. The unused property is defined as follows:
 \marginnote{Given a program $\defprogram$, its semantics is defined by the trace semantics $\tracesemantics\in\tracetype$, that is, the set of finite and infinite traces of the program $\defprogram$, \cf{} \refsec{maximal-trace-semantics}.}
 \siderefbox{def}{abstract-unused}
-\begin{definition}[\unusedwrappername Property]\labdef{unused}
+\begin{definition}[\unusedwrappername{} Property]\labdef{unused}
   Given a program $\defprogram$, and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the \emph{unused property} $\unused\in\setofsetof\finiteinfinitesequences$ is:
   \begin{align*}
     \unused\DefeQ&
     \setdef{\tracesemantics\in\tracetype}{\unusediowrapper(\tracesemantics)}
   \end{align*}
 \end{definition}
+\index{Unused!Property}
 
 
 Specifically, the unused property $\unused$ is the set of all the programs (or rather, their semantics) that do not use any of the variables in $\definputvariables$.
@@ -991,6 +998,7 @@ Specifically, the unused property $\unused$ is the set of all the programs (or r
     \defprogram \satisfies \unused \IfF \collectingsemantics \subseteq \unused
   \end{align*}
 \end{remark}
+\index{Property!Validation}
 
 
 % The next result shows that the unused property is a sound and complete for a program to not use the set of variables $\definputvariables$.
@@ -1009,6 +1017,7 @@ Indeed, given a set of traces generated by the trace semantics of a program $\de
 
 \section{Dependency Semantics}
 \labsec{dependency-semantics}
+\index{Dependency Semantics}
 
 Since the unused property $\unused$ is an extensional property, we can abstract away the intermediate states of traces without losing the information about the input-output dependencies.
 Specifically, we abstract the collecting semantics $\collectingsemanticsnoparam\in\collectingtype$, \cf{} \refdef*{collecting-semantics}[*-17], into a set of dependencies between initial and output states of finite traces and between initial and $\statebottom$ for infinite traces.
@@ -1104,6 +1113,7 @@ The next result shows that the dependency semantics $\dependencysemanticsnoparam
 
 \section{Output-Abstraction Semantics}
 \labsec{output-abstraction-semantics}
+\index{Output-Abstraction Semantics}
 
 We further abstract the dependency semantics $\dependencysemanticsnoparam$ into the output-abstraction semantics $\outputsemanticsnoparam$ as the unused property $\unused$ never considers output states without first abstracting them via the output observer $\aniobserver$, \refdef*{output-observer}[*-5].
 Formally, the pair of right-left adjoints $\tuple{\outputabstraction}{\outputconcretization}$ is defined as:
@@ -1230,7 +1240,7 @@ In the rest of the thesis, we abuse the notation and refer to $\unusedwrappernam
 
 
 Additionally, we define the reduction of a set of sets of dependencies $\defsetofsetofdependencies$ to those with abstraction of a final state in $X$.
-
+\index{Output Reduction}
 \begin{definition}[Output Reduction]\labdef{output-reduction}
   Let $X\in\setof\stateandbottom$ be a set of output states.
   The \emph{output reduction} $\reduce[\defsetofsetofdependencies]{X}\in\outputtype$ of $\defsetofsetofdependencies\in\outputtype$ is defined as:
@@ -1251,6 +1261,7 @@ Note that, in case no dependency in $\defsetofsetofdependencies$ ends in an outp
 
 Similarly, we define the reduction of a set of sets of dependencies $\defsetofsetofdependencies$ to those that start from an \emph{initial} state in $X$.
 
+\index{Input Reduction}
 \begin{definition}[Input Reduction]\labdef{input-reduction}
   Let $X\in\setof\state$ be a set of input states.
   The \emph{input reduction} $\reduceinit[\defsetofsetofdependencies]{X}\in\outputtype$ of $\defsetofsetofdependencies\in\outputtype$ is defined as:
@@ -1269,6 +1280,7 @@ Similarly, we define the reduction of a set of sets of dependencies $\defsetofse
 
 \section{Syntactic Dependency Analysis}
 \labsec{syntactic-dependency-analysis}
+\index{Syntactic Dependency Analysis}
 
 From \sidetextcite[][Section 10]{Urban2018}, we report a data usage analysis based on \emph{syntactic} dependencies between program variables.
 The analysis captures both implicit and explicit flows of information between variables.

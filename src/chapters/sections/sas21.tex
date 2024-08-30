@@ -22,6 +22,7 @@ The next chapter will present the experimental evaluation for the quantitative v
 
 \section{Neural Networks}
 \labsec{neural-networks}
+\index{Neural Networks}
 
 This section introduces the computational model of a feed-forward deep neural network and how it can be used for classification purposes.
 \subsection{Feed-Forward Deep Neural Networks}
@@ -98,6 +99,8 @@ Forward%${}_{\defmodel,\abstractdomain}$%(%$\defabstractvalue$%):
 \end{lstlisting}
 \end{marginalgorithm}
 
+\index{Forward Analysis!Abstract}
+
 \marginnote{
   In the algorithm above (\cf{} $\abstractdomainforward_{\defmodel, \abstractdomain}$), $\lastlayerindex$ is the number of layers of the neural network $\defmodel$, $\cardinalitynospaces{\hiddenlayer{i}}$ is the number of nodes in layer $i$, and $\node$ is the $j$-th node in layer $i$.
   Even though not explicitly written, the handler for affine and activation functions (respectively, $\abstractdomainforwardaffine$ and $\abstractdomainforwardrelu$) employs the abstract domain $\abstractdomain$.
@@ -128,6 +131,7 @@ Backward%${}_{\defmodel,\abstractdomain, \defabstractactivationpattern}$%(%$\def
   Even though not explicitly written, the backward handler for affine and activation functions (respectively, $\abstractdomainbackwardaffine$ and $\abstractdomainbackwardrelu$) employs the abstract domain $\abstractdomain$.
 }
 
+\index{Backward Analysis!Abstract}
 Conversely, a backward analysis of neural networks replaces concrete operators with their abstract sound \emph{backward} counterparts. This analysis is also parameterized by the abstract domain $\abstractdomain$ and an abstract element $\defabstractvalue$ representing the target classes.
 \refalg{backward-neural-networks} shows the backward analysis of neural network models, where the abstract operator $\abstractdomainbackwardaffine$ computes the result $\defabstractvalue$ of the analysis of the
 backward affine transformation performed on a given node, and $\abstractdomainbackwardrelu$ manages the \relu{} activation function given the node's activation status $\defabstractactivationpattern$.
@@ -180,6 +184,8 @@ The next result instead shows the soundness of the backward analysis of neural n
 
 
 \subsection{Abstract Domains for Neural Network Analysis}
+\index{Abstract Domains!Neural Networks}
+\index{Neural Networks!Verification}
 
 
 Different abstract domains can be used for the forward analysis of neural networks.
@@ -335,6 +341,7 @@ The over-approximation of non-fixed \relu{} nodes is done \emph{independently} f
 \reffig{neurify} shows the approximation for $l = l_{low} = l_{up}$ and $u = u_{low} = u_{up}$. In general, the slope of the symbolic constraints will differ through successive approximation steps.
 
 \paragraph{Reduced Product}
+\index{Reduced Product Domain}
 
 Finally, as part of the thesis contributions, the \emph{Product Builder} \sidecite{Mazzucato2021} provides a parametric interface for constructing the product of the above domains \sidecite{Cousot1979a}.
 The reduction function consists in an exchange of concrete bounds between domains. In particular, this allows determining tighter lower and upper bound estimations for each neuron in the network and thus reducing the over-approximation error introduced by the \relu{} nodes.
@@ -620,7 +627,7 @@ To better illustrate how the function $\segments$ works, consider the following 
 Formally, \changesname{} is defined as the maximum, for each input configuration, of the number of stable regions in which the output value changes.
 In words, a set of input variables $\definputvariables$ has a high impact on the network outcome if the output value changes in many stable regions when the input variables are modified.
 
-
+\index{\changesname Impact Quantifier@Impact Quantifier!\changesname}
 \begin{definition}[\changesname]\labdef{changes}
   Given a set of input variables of interest $\definputvariables\in\setof\inputvariables$, and an output observer $\outputobs$,
   the quantity $\changes\in\tracetype\to\Nplus$ is defined as:
@@ -746,6 +753,7 @@ We show the validation of the $\defbound$-bounded impact property when instantia
 denoted $\boundedchanges$.
 
 \siderefbox{def}{output-abstraction-semantics}
+\index{Property!Validation!\changesname}
 \begin{lemma}[$\boundedchanges$ Validation]\lablemma{changes-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDCHANGES \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDCHANGES))
@@ -779,6 +787,7 @@ To do so, we employ the $\unusediowrapper$ predicate, \cf{} \refdef*{abstract-un
 We determine the volume of this set of points by applying the standard volume operation inherent to metric spaces.
 Formally, the \qlibraname{} impact quantifier is defined as follows:
 
+\index{\qlibraname Impact Quantifier@Impact Quantifier!\qlibraname}
 \begin{definition}[\qlibraname]\labdef{qlibra}
   Given a set of input variables of interest $\definputvariables\in\setof\inputvariables$, and an output descriptor $\outputobs$,
   the quantity $\qlibra\in\tracetype\to[0, 1]$ is defined as:
@@ -907,6 +916,7 @@ We show the validation of the $\defbound$-bounded impact property when instantia
 denoted $\boundedqlibra$.
 
 \siderefbox{def}{output-abstraction-semantics}
+\index{Property!Validation!\qlibraname}
 \begin{lemma}[$\boundedqlibra$ Validation]\lablemma{qlibra-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDQLIBRA \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDQLIBRA))
@@ -994,6 +1004,8 @@ The underlying idea is that each connected component corresponds to the set of s
 Finally, $\abstractchanges$ determines the maximum count of changes across all connected components $J$ and buckets $\buckets$.
 It counts the number of indices $l$ (\cf{} $\cardinalitynospaces{\setdef{l \in J}{l \neq j}}$) in each connected component $J$ where $k$ is not equal to $j$, thus excluding the polyhedra leading to the same output bucket $j$.
 
+
+\index{Impact Quantifier!Abstract Implementation!Abstract \abstractchangesname}
 \begin{definition}[$\abstractchanges$]\labdef{abstractchanges}
   We define $\abstractchanges\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
@@ -1035,7 +1047,7 @@ Note that, whenever the given program is deterministic, the traces concretized f
 With the exactness of the backward analysis, we show that $\abstractchanges$ is a sound implementation of $\changes$.
 The next result shows that the abstract impact $\abstractchanges$ is a sound over-approximation of the concrete $\changes$ \wrt{} the $\le$ operator.
 
-
+\index{Sound Implementation!Abstract \abstractchangesname}
 \begin{lemma}[$\abstractchanges$ is a Sound Implementation of $\changes$]\lablemma{abstractchanges-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
@@ -1096,6 +1108,7 @@ The next result shows that the abstract impact $\abstractchanges$ is a sound ove
 
 Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractchanges$ and the comparison operator $\le$.
 
+\index{Soundness!Abstract \abstractchangesname}
 \begin{theorem}[Soundness of $\boundedchangesle$] \labthm{soundness-boundedchangesle}
   Let $\boundedchangesle$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
@@ -1216,6 +1229,7 @@ We first present the implementation of $\abstractqlibra$, which is too na\"ive t
 % \end{lstlisting}
 % \end{marginalgorithm}
 
+\index{Impact Quantifier!Abstract Implementation!Abstract \abstractqlibraname}
 \begin{definition}[\texorpdfstring{$\abstractqlibra$}{Abstract QAUnused}]\labdef{abstract-qlibra}
   We define $\abstractqlibra\in\pair\vectorbuckets\vectorbuckets\to\valuesposplus$ as:
   \begin{align*}
@@ -1238,6 +1252,7 @@ The volume of this input space is an over-approximation of the biased space, hen
 We assume the classical soundness condition on the abstract operator $\abstractdomainvolume$ to ensure that the abstract volume is always bigger than the concrete one.
 The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is always lower than the concrete $\qlibra$, \cf{} \refdef*{qlibra}, as it measures the volume of the input space that contains bias.
 
+\index{Sound Implementation!Abstract \abstractqlibraname}
 \begin{lemma}[$\abstractqlibra$ is a Sound Implementation of $\qlibra$]\lablemma{abstractqlibra-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the set of input variables of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
@@ -1262,6 +1277,7 @@ The quantity measured by $\abstractqlibra$, \cf{} \refdef{abstract-qlibra}, is a
 
 We show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqlibra$ and the comparison operator $\ge$.
 
+\index{Soundness!Abstract \abstractqlibraname}
 \begin{theorem}[Soundness of $\boundedqlibrage$] \labthm{soundness-boundedqlibrage}
   Let $\boundedqlibrage$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
@@ -1299,6 +1315,7 @@ This section is based on the work presented in \sidetextcite{Urban2020} and \sid
 We observe that the semantics of a program satisfying the $\boundedqlibra$ property induces a partition of the input space restricted to the input variables in $\inputvariableswithoutw$.
 We call this input partition \emph{fair}.
 
+\index{Fair Input Partition}
 \begin{definition}[Fair Input Partition]\labdef{fair-input-partition}
   An input partition $\definputpartitions$ of $\reducedstate$ is \emph{fair} if all value choices $\values$ for the variables of interest $\definputvariables$ are possible in all the partitions:
   \begin{math}
@@ -1439,7 +1456,7 @@ The parallel abstraction $\parallelabstraction$ is defined as the set of depende
 
 % Ensuring that all the non-empty set of dependencies in $\defsetofsetofdependencies$ are included in $\defsetofsetofdependencies'$ for each fair partition $\definputpartition$.
 We have the following result:
-
+\index{Parallel Semantics}
 
 \begin{theorem}\labthm{output-parallel-galois-connection}
   The two adjoints $\tuple{\parallelabstraction}{\parallelconcretization}$ form a \emph{Galois connection}:
@@ -1620,7 +1637,7 @@ The complement of the biased input space is an under-approximation of the fair i
 The next result shows that the abstract implementation $\parallelqlibra$ is a sound under-approximation of the concrete implementation $\qlibra$.
 Therefore, it can be used to validate the $\boundedqlibrage$ property with the $\ge$ operator.
 
-
+\index{Soundness!Parallel Implementation \parallelqlibraname}
 \begin{theorem}
   Let $\boundedqlibrage$ be the property of interest we want to verify for the model $\defmodel$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Given an abstract domain $\abstractdomain$, and the budget $\tune = \langle \upperbound, \lowerbound, \maxupperbound, \minlowerbound\rangle$, the following implication holds:
@@ -1645,6 +1662,7 @@ Notably, the parallel implementation $\parallelqlibra$ yields the so called \emp
 In this section, we discuss related work on the verification of neural networks and the quantification of input usage in machine learning models.
 
 \paragraph{Verification of Neural Networks.}
+\index{Neural Networks!Verification}
 
 The interest in the verification of neural networks has significantly increased over the last decade. For an introduction to the topic, refer to Albarghouthi's tutorial \sidecite{Albarghouthi2021}.
 The most common approach in this domain is to verify the robustness of neural networks against minimal input perturbations \sidecite{Goodfellow2016}.
