@@ -12,11 +12,10 @@
 \labch{abstract-interpretation}
 
 
-\marginemptybox{11.4cm}
+\marginemptybox{11.6cm}
 
-In this chapter, we introduce the concepts that are the foundation of this work.
-We assume basic knowledge of mathematics, we summarize the necessary background in set theory and logic.
-We present an overview of Abstract Interpretation and define the notations and concepts that will be used in the rest of the thesis.
+In this chapter, we define the notations and introduce the necessary set theoretic and logic concepts to understand the rest of the thesis, we assume a basic knowledge of mathematics.
+Afterwards, we present an overview of Abstract Interpretation.
 
 \emph{Dans ce chapitre, nous introduisons les concepts qui constituent la base de ce travail. Nous supposons une connaissance de base en mathématiques, nous résumons les éléments nécessaires en théorie des ensembles et en logique. Nous présentons un aperçu de l'interprétation abstraite et définissons les notations et concepts qui seront utilisés dans le reste de la thèse.}
 
@@ -28,8 +27,8 @@ Here, we briefly revisit well-known concepts to establish the logical and mathem
 
 We write $p \defeq P$ to define the mathematical object $p$ to be equal to the object $P$.
 Let $\B \defeq \{\true, \false\}$ be the set of Boolean values, where $\true$ represents true and $\false$ represents false.
-We can state properties by logical predicates,\sidenote{For instance, $x \le x + 1$ is a basic logical predicate} where a predicate is a function that returns a Boolean value.
-Often, we say that the predicate $P$ holds whenever $P = \true$.
+We can state properties by logical predicates\sidenote{For instance, $x \le x + 1$ is a basic logical predicate} yielding a Boolean value.
+Often, we say that a predicate holds whenever it evaluates to $\true$.
 We combine predicates using logical connectives: $\land$ for conjunction, $\lor$ for disjunction, $\neg$ for negation, $\implies$ for implication (respectively, $\Leftarrow$ for reverse implication), and $\iff$ for if and only if, as well as $\forall$ for universal and $\exists$ for existential quantification.
 In the logical predicate $P \implies Q$, $P$ is called the premise and $Q$ the conclusion.
 We call $P$ the \emph{sufficient} condition for $Q$ to hold and, conversely, $Q$ the \emph{necessary} condition for $P$ to hold.
@@ -51,7 +50,7 @@ A set is defined in comprehension\sidenote{Set comprehension notation will be, i
 % We call $P$ the \emph{sufficient} condition for $Q$ to hold and, conversely, $Q$ the \emph{necessary} condition for $P$ to hold.
 % In $P \iff Q$, $P$ is a necessary and sufficient condition for $Q$ to hold, and vice versa.
 % $P \implies Q$ holds \emph{vacuously} when $P$ is false or when $Q$ is true.
-Contradictions such as circular definitions, \eg, $X \defeq \setdef{x}{x \notin X}$, are avoided in this thesis.
+% Contradictions such as circular definitions, \eg, $X \defeq \setdef{x}{x \notin X}$, are avoided in this thesis.
 The cardinality of a set $X$ is represented by $\cardinalitynospaces{X}$, \eg, $\cardinalitynospaces{\emptyset} = 0$ and $\cardinalitynospaces{\{x, y\}} = 2$.
 
 A set $X$ is a subset of another set $X'$, denoted $X \subseteq X'$, if every element of $X$ is also an element of $X'$. The empty set $\emptyset$ is subset of any set. The power set $\setof{X}$ of a set $X$ is defined as the set of all the subsets of $X$, \ie, $\setof{X} \defeq \setdef{X'}{X' \subseteq X}$. The union of two sets $X$ and $Y$, denoted $X \setjoin Y$, is the set containing all elements of $X$ and all elements of $Y$, \ie, $X \setjoin Y \defeq \setdef{x}{x \in X \lor x \in Y}$. More generally, the union of a set of sets $X$ is denoted by $\bigsetjoin X$, \ie, $\bigsetjoin X \defeq \bigsetjoin_{X' \in X} X' = \setdef{x}{\existsdef{X' \in X}{x \in X'}}$. The intersection $X \setmeet Y$ of two sets $X$ and $Y$ is the set of all elements that are common to both $X$ and $Y$, \ie, $X \setmeet Y \defeq \setdef{x}{x \in X \land x \in Y}$.
@@ -64,7 +63,7 @@ A pair\sidenote{
   We have that, $\tuple{x}{y}_1 = x$ and $\tuple{x}{y}_2 = y$.
 }\phantomcite{Kuratowski1921} is a tuple of two elements, \eg, $\langle x, y \rangle$ is a pair where the first element is $x$ and the second $y$.
 The Cartesian product of two sets $X$ and $Y$, denoted $X \times Y$, is the set of all pairs where the first component is an element of $X$ and the second component is an element of $Y$, \ie, $X \times Y \defeq \setdef{(x, y)}{x \in X \land y \in Y}$.
-More generally, $X_1 \times \cdots \times X_n \defeq \setdef{(x_1, \ldots, x_n)}{x_1 \in X_1 \land \cdots \land x_n \in X_n}$ denotes the set of all $n$-tuples from elements of $X_1, \dots, X_n$, and $X^n$ when $X_1 = \cdots = X_n = X$.
+More generally, $X_1 \times \cdots \times X_n \defeq \setdef{(x_1, \ldots, x_n)}{x_1 \in X_1 \land \cdots \land x_n \in X_n}$ denotes the set of all $n$-tuples from elements of $X_1, \dots, X_n$ (we write $X^n$ when $X_1 = \cdots = X_n = X$).
 The selection of the
 $i$-th element of a tuple
 $\langle{x_1, \dots, x_n}\rangle$ is denoted by the subscript notation, \ie,
@@ -81,7 +80,6 @@ In general, whenever the precise numerical type is not known or required, we wri
 We write $\valuesinf$ to denote $\values$ extended with the symbols $-\infty$ and $+\infty$.
 The set $\values_{\ge 0}$ denotes the set of non-negative numbers, \ie, $\values_{\ge 0} \defeq \setdef{n \in \values}{n \geq 0}$.
 Similarly, we can use this notation with other predicates, for instance, $\values_{\le m} \defeq \setdef{n \in \values}{n \le m}$ denotes the set of numbers less than or equal to $m$.
-As we did not specify whether natural numbers include zero, this notation comes in handy as it permits us to be explicit about the inclusion of zero.
 For example, $\N_{\ge 0}^{+\infty}$ denotes the set of natural numbers including zero and $+\infty$, on the other hand, $\N_{> 0}$ denotes the set of strictly positive natural numbers.
 
 Given two bounds $l, u \in \values$, we define the interval $[l, u]$ as the set of numbers between $l$ and $u$, \ie, $[l, u] \defeq \setdef{n \in \values}{l \le n \le u}$. Hence, $[l, u] = \emptyset$ when $l > u$.
@@ -95,7 +93,7 @@ The following are some important properties which may hold for a binary relation
 \begin{description}
     \item[Reflexivity]: $\forall x \in S : \tuple{x}{x} \in R$
     \item[Irreflexivity]: $\forall x \in S : \tuple{x}{x} \notin R$
-    \item[Symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \implies \tuple{x}{y} \in R$
+    \item[Symmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \implies \tuple{y}{x} \in R$
     \item[Antisymmetry]: $\forall x, y \in S : \tuple{x}{y} \in R \wedge \tuple{x}{y} \in R \implies x = y$
     \item[Transitivity]: $\forall x, y, z \in S : \tuple{x}{y} \in R \wedge \tuple{y}{z} \in R \implies \tuple{x}{z} \in R$
     \item[Totality]: $\forall x, y \in S : \tuple{x}{y} \in R \vee \tuple{x}{y} \in R$
@@ -190,10 +188,10 @@ Let $\langle X, \sqsubseteq \rangle$ be a partially ordered set and $X'$ be a su
   \item[Greatest Element] When it exists, the greatest element of $X$ (or top) is denoted by $\top$: $\forall x \in X.\spacer x \sqsubseteq \top$.
   \marginnote{Note that, any partially ordered set can always be equipped with a least (resp. greatest) element by adding a new element that is smaller (resp. greater) than every other element.}
   \item[Least Element] When it exists, the least element of $X$ (or bottom) is denoted by $\bot$: $\forall x \in X.\spacer \bot \sqsubseteq x$.
-  \item[Maximal Element] An element $x \in X$ is maximal in $X$ if, $\forall y \in X.\spacer x \sqsubseteq y$ implies $x = y$.
-  \item[Maximum] A maximal element $x \in X$ is a maximum of $X$ if it is unique.
-  \item[Minimal Element] Dually, an element $x \in X$ is minimal in $X$ if, $\forall y \in X.\spacer y \sqsubseteq x$ implies $x = y$.
-  \item[Minimum] A minimal element $x \in X$ is a minimum of $X$ if it is unique.
+  \item[Maximal Element] An element $x \in X'$ is maximal in $X'$ if, $\forall y \in X'.\spacer x \sqsubseteq y$ implies $x = y$.
+  \item[Maximum] A maximal element $x \in X'$ is a maximum of $X'$ if it is unique.
+  \item[Minimal Element] Dually, an element $x \in X'$ is minimal in $X'$ if, $\forall y \in X'.\spacer y \sqsubseteq x$ implies $x = y$.
+  \item[Minimum] A minimal element $x \in X'$ is a minimum of $X'$ if it is unique.
   \item[Upper Bound] An element $x \in X$ is an upper bound of $X'$ if, $\forall y \in X'.\spacer y \sqsubseteq x$.
   \item[Lower Bound] Dually, an element $x \in X$ is a lower bound of $X'$ if, $\forall y \in X'.\spacer x \sqsubseteq y$.
   \item[Least Upper Bound] When it exists, the least upper bound (lub) of $X'$ is denoted by $\join X'$: it is an upper bound $x \in X$ of $X'$ such that, for every upper bound $x' \in X$ of $X'$, $x \sqsubseteq x'$.
@@ -257,9 +255,11 @@ Let $\langle X, \sqsubseteq \rangle$ be a partially ordered set and $X'$ be a su
   \end{marginfigure}
 
 \begin{example}
-  Let us consider the partially ordered set $\langle \setof{\{a, b, c\}}, \subseteq \rangle$ and the subset $X' \defeq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$, represented in blue in \reffig{elements}.
-  The maximal elements of $X'$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$, labelled ``Maximals'' in green. As we notice, the maximum of $X'$ does not exist, while its least upper bound is $\join X' = \{a, b, c\}$, labelled ``Lub'' in yellow.
-  The minimal elements of $X'$ are $\{a\}$, $\{b\}$, and $\{c\}$, labelled ``Minimals'' in red. As we notice, the minimum of $X'$ does not exist, while its greatest lower bound is $\meet X' = \emptyset$, labelled ``Glb'' in orange.
+  Let us consider the partially ordered set $\langle \setof{\{a, b, c\}}, \subseteq \rangle$ and the subset $X' \defeq \{\{a\}, \{b\}, \{c\}, \{a, b\}, \{a, c\}, \{b, c\}\}$, represented in \reffig{elements}.
+  The maximal elements of $X'$ are $\{a, b\}$, $\{a, c\}$, and $\{b, c\}$, and are not comparable with each other.
+  Hence, the maximum of $X'$ does not exist, however, its least upper bound is $\join X' = \{a, b, c\}$.
+  The minimal elements of $X'$ are $\{a\}$, $\{b\}$, and $\{c\}$.
+  Again the minimum of $X'$ does not exist and its greatest lower bound is $\meet X' = \emptyset$.
 \end{example}
 
 
@@ -340,7 +340,7 @@ Complete lattices are lattices that additionally require every (possibly infinit
 %
   \reffig{hasse_diagram} represents a complete lattice with a finite number of elements.
   The poset $\langle \N, \le \rangle$ is a lattice, as every pair of natural numbers has a least upper bound and a greatest lower bound, but it is not a complete lattice, as $\join \N$ does not exist.
-  Lastly, $\langle \Nplus, \le, \max, \min, 0, +\infty \rangle$ where $+\infty$ is greater than any natural number is indeed a complete lattice.
+  Lastly, $\langle \Nplus, \le, \max, \min, 0, +\infty \rangle$ where $+\infty$ is greater than any natural number is a complete lattice.
   \reffig{N} shows the Hasse diagram for $\langle \Nplus, \le \rangle$ and \reffig{Nplus} the one for $\langle \Nplus, \le \rangle$.
 \end{example}
 
@@ -410,18 +410,18 @@ Two sets $X$ and $Y$ are \emph{isomorphic} if there exists a bijective function 
 Next, we introduce some properties of functions that are relevant in the context of partially ordered sets.
 
 \begin{definition}[Monotonicity]\labdef{monotonicity}
-  Let $f\in X \to Y$ be a function, $\langle X, \sqsubseteq_X \rangle$ and $\langle Y, \sqsubseteq_Y \rangle$ be two partially ordered sets.
-  The function $f$ is \emph{monotonic} whenever, for all $x, x' \in X$, it holds that $x \sqsubseteq_X x' \implies f(x) \sqsubseteq_Y f(x')$.
+  Let $\langle X, \sqsubseteq_X \rangle$ and $\langle Y, \sqsubseteq_Y \rangle$ be two partially ordered sets, and $f\in X \to Y$ be a function.
+  The function $f$ is \emph{monotonic} whenever, for all $x, x' \in X$, it holds that $x \sqsubseteq_X x' \implies f(x) \sqsubseteq_Y f(x') \lor f(x) \sqsupseteq_Y f(x')$.
 \end{definition}
 
-Sometimes we refer to a function as \emph{increasing} monotone when it is monotonic and \emph{decreasing} monotone when it is monotonic and the inequality is reversed, \ie, $x \sqsubseteq_X x' \implies f(x') \sqsupseteq_Y f(x)$. Note that, a decreasing monotone function is (increasing) monotone over $\langle X, \sqsubseteq_Y \rangle$ and $\langle Y, \sqsupseteq_Y \rangle$.
+We refer to a function as \emph{increasing} monotone when $x \sqsubseteq_X x' \implies f(x) \sqsubseteq_Y f(x')$ and \emph{decreasing} monotone when the inequality is reversed, \ie, $x \sqsubseteq_X x' \implies f(x') \sqsupseteq_Y f(x)$. Note that, a decreasing monotone function is increasing monotone over $\langle X, \sqsubseteq_Y \rangle$ and $\langle Y, \sqsupseteq_Y \rangle$, where $\sqsupseteq_Y$ is the reverse order of $\sqsubseteq_Y$.
 
-\begin{definition}[Continuity]\labdef{continuity}
-  Let $f\in X \to Y$ be a function, $\langle X, \sqsubseteq_X, \join_X, \meet_X \rangle$ and $\langle Y, \sqsubseteq_Y, \join_Y, \meet_Y \rangle$ be two partially ordered sets.
-  The function $f$ is \emph{continuous} (or \emph{Scot-continuous}) whenever, for all chains $C \subseteq X$, if $\join_X C$ exists then the limit coincide, \ie, $f(\join_X C) = \join_Y \setof{f(x) \mid x \in C}$.
+\begin{definition}[Scott Continuity]\labdef{continuity}
+  Let $\langle X, \sqsubseteq_X, \join_X, \meet_X \rangle$ and $\langle Y, \sqsubseteq_Y, \join_Y, \meet_Y \rangle$ be two partially ordered sets, and $f\in X \to Y$ be a function.
+  The function $f$ is \emph{Scott-continuous} whenever, for all chains $C \subseteq X$, if $\join_X C$ exists then the upper bound is preserved, \ie, $f(\join_X C) = \join_Y \setof{f(x) \mid x \in C}$.
 \end{definition}
 
-Dually, a function is \emph{co-continuous} whenever, for all chains $C \subseteq X$, if $\meet_X C$ exists then the limit coincide, \ie, $f(\meet_X C) = \meet_Y \setof{f(x) \mid x \in C}$. A \emph{complete $\join$-morphism} (resp. \emph{complete $\meet$-morphism}) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
+Dually, a function is \emph{co-continuous} whenever, for all chains $C \subseteq X$, if $\meet_X C$ exists then $f(\meet_X C) = \meet_Y \setof{f(x) \mid x \in C}$. A \emph{complete $\join$-morphism} (resp. \emph{complete $\meet$-morphism}) preserves existing least upper bounds (resp. greatest lower bounds) of arbitrary non-empty sets.
 
 % The upper closure of a subset $Y\subseteq X$ in a poset $\langle X, \sqsubseteq\rangle$ is the set of all elements in $X$ that are greater than or equal to some element of $Y$.
 % We write $\uparrow Y \defeq \setdef{x \in X}{\exists y \in Y.\spacer y \sqsubseteq x}$ for the upper closure of $Y$. Dually, the lower closure of a subset $Y\subseteq X$ in a poset $\langle X, \sqsubseteq\rangle$ is the set of all elements in $X$ that are smaller than or equal to some element of $Y$, and is denoted by $\downarrow Y \defeq \setdef{x \in X}{\exists y \in Y.\spacer x \sqsubseteq y}$.
@@ -494,8 +494,8 @@ Properties (\eg, ``to be an even natural number'' or ``to be a number of the seq
 
 By considering properties as sets, we have that logical implication is subset inclusion. For instance, the property ``to be an even natural number'' implies ``to be a multiple of $4$,'' that is $2\N \subseteq 4\N$, where $4\N \defeq \setdef{x \in \N}{\exists k \in \N.\spacer x = 4k}$.
 Whenever $P$ implies $Q$ ($P \subseteq Q$), we say that $P$ is \emph{stronger} than $Q$ and $Q$ is \emph{weaker} than $P$.
-Stronger properties are satisfied by less elements, whether weaker properties are satisfied by more.
-The strongest property is $\emptyset$ satisfied by no element, and the weakest property is the set containing all elements, \eg, $\N$ is the weakest property of natural numbers.
+Stronger properties are satisfied by fewer elements, while weaker properties are satisfied by more.
+Given an element $x \in X$, the strongest property satisfied by $x$ is $\{x\}$, and the weakest property is $X$.
 
 
 \subsection{Fixpoints}
@@ -503,7 +503,6 @@ The strongest property is $\emptyset$ satisfied by no element, and the weakest p
 \index{Fixpoints}
 
 Fixpoints are elements of a poset that are invariant under a function.
-As of fundamental importance to formally reason about program behaviors, we introduce the concept of fixpoints in partially ordered sets.
 In the following, let $\langle X, \subseteq \rangle$ be a partially ordered set and $f : X \to X$ be an operator on $X$.
 
 \begin{description}
@@ -511,8 +510,8 @@ In the following, let $\langle X, \subseteq \rangle$ be a partially ordered set 
   \item[Prefixpoint] An element $x \in X$ is a \emph{prefixpoint} of $f$ whenever $x \sqsubseteq f(x)$.
   \item[Postfixpoint] An element $x \in X$ is a \emph{postfixpoint} of $f$ whenever $f(x) \sqsubseteq x$.
   \item[Set of Fixpoints] The set of fixpoints of $f$ is denoted by $\fixpoints(f) \defeq \setdef{x \in X}{f(x) = x}$.
-  \item[Least Fixpoint] The \emph{least fixpoint} of $f$ is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $\lfp f \sqsubseteq x$. We write $\lfp_{x_0} f$ for the least fixpoint of $f$ which is greater than or equal to $x_0 \in X$.
-  \item[Greatest Fixpoint] The \emph{greatest fixpoint} of $f$ is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $x \sqsubseteq \gfp f$. We write $\gfp_{x_0} f$ for the greatest fixpoint of $f$ which is smaller than or equal to $x_0 \in X$.
+  \item[Least Fixpoint] The \emph{least fixpoint} of $f$, denoted $\lfp f$, is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $\lfp f \sqsubseteq x$. We write $\lfp_{x_0} f$ for the least fixpoint of $f$ which is greater than or equal to $x_0 \in X$.
+  \item[Greatest Fixpoint] The \emph{greatest fixpoint} of $f$, denoted $\gfp f$, is a fixpoint of $f$ such that, for every fixpoint $x \in X$ of $f$, $x \sqsubseteq \gfp f$. We write $\gfp_{x_0} f$ for the greatest fixpoint of $f$ which is smaller than or equal to $x_0 \in X$.
 \end{description}
 
 When the order $\sqsubseteq$ is not clear from the context, we explicitly write $\lfp^{\sqsubseteq} f$ and $\gfp^{\sqsubseteq} f$. Note that, in general, a function may have no fixpoint at all or multiple ones.
@@ -592,7 +591,7 @@ Next, we recall a fundamental theorem of Alfred Tarski \sidecite{Tarski1955} tha
 \end{proof}
 \refthm{tarski} guarantees that $f$ has a least fixpoint $\lfp f = \meet \setdef{x \in X}{f(x) \sqsubseteq x}$ and a greatest fixpoint $\gfp f = \join \setdef{x \in X}{x \sqsubseteq f(x)}$ as $fixpoints(f)$ is a non-empty complete lattice.
 
-However, such characterization is not constructive, an alternative that expresses the least fixpoint of a function as the limit of iterates is Kleene's Fixpoint Theorem \sidecite{Kleene1952}.
+However, such characterization is not constructive. An alternative that expresses the least fixpoint of a function as the limit of iterates is Kleene's Fixpoint Theorem \sidecite{Kleene1952}.
 
 
 \marginnote{
@@ -606,11 +605,11 @@ However, such characterization is not constructive, an alternative that expresse
 In the following, the partial order between the fixpoint iterates is called the \emph{computational order}, in order to distinguish it from the \emph{approximation order} defined in the next section.
 
 
-\section{Notations of Abstract Interpretation}
+\section{Abstract Interpretation}
 \labsec{notations-of-abstract-interpretation}
 \index{Abstract Interpretation}
 
-\emph{Abstract Interpretation} \sidecite{Cousot1977,Cousot1978} is a general theory for approximating the semantics of programs as a unifying framework for static program analysis, co-invented in the late 1970s by Patrick and Radhia Cousot.
+\emph{Abstract Interpretation} \sidecite{Cousot1977,Cousot1978} is a general theory for approximating the semantics of programs as a unifying framework for static program analysis, co-invented in the late 1970s by Patrick Cousot and Radhia Cousot.
 Various books are available for an in-depth study of the topic \sidecite{Cousot2021,Rival2020}.
 In the following, we introduce the notations, main definitions, and results that will be used throughout the rest of this thesis.
 
@@ -618,16 +617,16 @@ In the following, we introduce the notations, main definitions, and results that
 \labsec{transition-system}
 \index{Transition System}
 
-The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data.
-In order to be independent of a particular choice of programming language, we consider programs as transition systems, where the behavior of a program is described by a set of states and a set of transitions between states.
+The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible inputs.
+In order to be independent of a particular choice of programming language, we formalize programs as transition systems, where the behavior of a program is described by a set of states and a set of transitions between states.
 In the next section, we instantiate the transition system model for a small imperative language.
 
 \begin{definition}[Transition System]\labdef{transition-system}
-  A \emph{transition system} is a pair $\transitionsystem$ where $\state$ is a (potentially infinite) set of states and $\transitionrelation \in \transitionrelationtype$ is the transition relation.
+  A \emph{transition system} is a pair $\transitionsystem$ where $\state$ is a (potentially infinite) set of states and $\transitionrelation \in \transitionrelationtype$ is the transition relation, which describes the possible transitions between states.
 \end{definition}
 
 This model allows expressing programs with (possibly unbounded) non-determinism.
-In the following, we write $\defstate \rightarrow \defstate'$ to denote that there is a transition from state $\defstate$ to state $\defstate'$, \ie, $\tuple{\defstate}{\defstate'} \in \transitionrelation$.
+In the following, we write $\defstate \rightarrow \defstate'$ to denote a transition from state $\defstate$ to state $\defstate'$, \ie, $\tuple{\defstate}{\defstate'} \in \transitionrelation$.
 The set $\finalstates \defeq \setdef{\defstate \in \state}{\forall \defstate' \in \state.\spacer \tuple{\defstate}{\defstate'} \notin \transitionrelation}$ represents the \emph{final states} (or blocking states) of the transition system.
 
 
@@ -635,7 +634,7 @@ The set $\finalstates \defeq \setdef{\defstate \in \state}{\forall \defstate' \i
 \labsec{maximal-trace-semantics}
 \index{Maximal Trace Semantics}
 
-The \emph{semantics} of a program is a mathematical characterization of its behavior for all possible input data. We formally define this notion for a transition system below.
+In the following, we formally define the maximal trace semantics over a transition system, which is the set of all possible traces generated by the transition system.
 
 \paragraph{Sequences.}
 Given a set of elements $X$, the set of all sequences of exactly $n$ elements of $X$ is denoted by $X^n\defeq\setdef{\defstate_0 \dots \defstate_{n-1}}{\forall i < n.\spacer s_i \in X}$.
@@ -670,11 +669,7 @@ The \emph{maximal trace semantics} $\tracesemanticsnoparam\in\tracetype$ of a tr
   \end{align*}
 \end{definition}
 
-In the maximal trace semantics, traces are ordered by, for any $\defsetoftraces_1, \defsetoftraces_2 \in \tracesemanticsnoparam$:
-\begin{align*}
-  \defsetoftraces_1 \tracesubseteq \defsetoftraces_2 \DefifF \retrievefinitetraces{\defsetoftraces_1} \subseteq \retrievefinitetraces{\defsetoftraces_2} \land \retrieveinfinitetraces{\defsetoftraces_1} \supseteq \retrieveinfinitetraces{\defsetoftraces_2}
-\end{align*}
-That is, the set of finite traces of $\defsetoftraces$ should be included in the set of finite traces of $\defsetoftraces'$, and conversely the set of infinite traces of $\defsetoftraces'$ should be included in the set of infinite traces of $\defsetoftraces$. The maximal trace semantics lattice $\tracecompletelattice$ forms a complete lattice.
+The maximal trace semantics lattice $\tracecompletelattice$ forms a complete lattice.
 
 \begin{marginfigure}
   \centering
@@ -751,7 +746,7 @@ That is, the set of finite traces of $\defsetoftraces$ should be included in the
 % The $i$-th iterate of the transformer $\tracetransformer$ contains all finite traces of length at most $i$ that are terminating in the final states $\finalstates$, and all infinite sequences whose prefixes of length $i$ are generated by the transition relation $\transitionrelation$.
 % At the limit, we obtain the maximal trace semantics.
 
-The maximal trace semantics is the most precise semantics and fully describes the behavior of programs. However, reasoning about a particular property of a program is often facilitated by the design of a semantics that abstracts away from irrelevant details about program computations.
+The maximal trace semantics fully describes the behavior of programs. However, reasoning about a particular property of a program is often facilitated by the design of a semantics that abstracts away from irrelevant details about program computations.
 In the following, to facilitate reading, we call the maximal trace semantics simply the \emph{trace semantics}.
 
 \begin{remark}[Non-determinism]
@@ -771,7 +766,7 @@ In the following, to facilitate reading, we call the maximal trace semantics sim
 \labsec{collecting-semantics}
 \index{Collecting Semantics}
 
-\marginnote{Program proerties are also reffered to as \emph{hyperproperties} \cite{Clarkson2010}. In this thesis, we prefer the term \emph{program properties} to emphasize that we consider properties of the semantics of programs.}
+\marginnote{Program properties are also referred to as \emph{hyperproperties} \cite{Clarkson2010}. In this thesis, we prefer the term \emph{program properties} to emphasize that we consider properties of the semantics of programs.}
 \phantomcite{Clarkson2010}
 As seen in \refsec{properties}, a \emph{property} is specified by its extension, that is, the set of elements that manifest such property.
 In this thesis, we consider \emph{program properties} with respect to their trace semantics.
@@ -788,7 +783,7 @@ The strongest property of the trace semantics is the set containing the trace se
 
 The collecting semantics $\collectingsemanticsnoparam$ is satisfied only and exactly by the trace semantics $\tracesemanticsnoparam$.
 We write $\tracesemantics$ to denote the trace semantics of a particular program $\defprogram$, that is, the maximal trace semantics generated by the transition system induced by the program $\defprogram$, see later in \refsec{a-small-imperative-language}.
-The same applies notation applies to all the semantics we study in this thesis. Hence, the collecting semantics of a program $\defprogram$ is denoted by $\collectingsemantics$.
+The same notation convention applies to all the semantics we study in this thesis. Hence, the collecting semantics of a program $\defprogram$ is denoted by $\collectingsemantics$.
 
 \paragraph{Property Validation.}
 \index{Property!Validation}
@@ -803,7 +798,8 @@ A program $\defprogram$ with semantics $\tracesemantics$ satisfies a property $\
   \end{align*}
 \end{definition}
 
-Traditional properties are often trace properties, and thus can be expressed as sets of traces in $\tracetype$. In this case, it is often used a weaker form of property validation. A program $\defprogram$ satisfies a trace property $\defproperty\in\tracetype$ whenever the trace semantics $\tracesemantics$ implies the property $\defproperty$, not the collecting semantics. Note that, not all program properties can be expressed as trace properties. As an example, the unused property \sidecite{Urban2018} (\cf{} \refch{input-data-usage}) is not a trace property, because whether a program utilizes a variable or not depends on the whole set of traces generated by the program.
+Traditionally in the literature, properties are often trace properties, and thus can be expressed as sets of traces in $\tracetype$. In this case, it is often used a simplified form of property validation: $\defprogram \satisfies F \IfF \tracesemantics \subseteq F$ for a property $F \in \tracetype$.
+Note that, not all program properties can be expressed as trace properties. As an example, the unused property \sidecite{Urban2018} (\cf{} \refch{input-data-usage}) is not a trace property, because whether a program utilizes a variable or not depends on the whole set of traces generated by the program.
 
 
 \paragraph{Hierarchy of Semantics}
@@ -828,15 +824,14 @@ They formalize the correspondence between concrete and abstract properties, and 
 
 \begin{definition}[Galois Connection]\labdef{galois-connection}
   Let $\tuple{X}{\sqsubseteq_X}$ and $\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ be two partially ordered sets.
-  The pair $\tuple\abstraction\concretization$ of functions $\abstraction\in X \to {X^\natural}$ and $\concretization\in {X^\natural} \to X$ is a \emph{Galois connection} if and only if, for all $x\in X$ and ${x^\natural}\in {X^\natural}$, it holds that:
+  The pair $\tuple\abstraction\concretization$ of functions $\abstraction\in X \to {X^\natural}$ and $\concretization\in {X^\natural} \to X$ forms a \emph{Galois connection}, denoted by $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$, if and only if, for all $x\in X$ and ${x^\natural}\in {X^\natural}$, it holds that:
   \begin{align*}
     x \sqsubseteq_X \concretization({x^\natural}) &\IfF \abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}
   \end{align*}
-  which we write as $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$.
 \end{definition}
 \marginnote{The definition of Galois connection can also be defined for preorders, most of the results presented hold for preorders as well.}
 
-The poset $\tuple{X}{\sqsubseteq_X}$ is called the \emph{concrete domain}, and $\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ is called the \emph{abstract domain}. The function $\abstraction$ is called the \emph{abstraction} and $\concretization$ is called the \emph{concretization} function, or together called right-left adjoints.
+The poset $\tuple{X}{\sqsubseteq_X}$ is called the \emph{concrete domain}, and $\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ is called the \emph{abstract domain}. The function $\abstraction$ is called the \emph{abstraction} and $\concretization$ is called the \emph{concretization} function, or together they are called right-left adjoints.
 The intuition behind Galois connections is that properties in a concrete domain $X$ are approximated by abstract properties in ${X^\natural}$.
 The concretization function $\concretization$ provides the concrete meaning $\concretization({x^\natural})$ of an abstract property ${x^\natural}\in {X^\natural}$, that is, $\concretization({x^\natural})$ is the least precise element of $X$ that is overapproximated by the abstract property ${x^\natural}$. As a consequence, any concrete property $x\in X$ below $\concretization({x^\natural})$, \ie, $x \sqsubseteq_X \concretization({x^\natural})$, is approximated by ${x^\natural}$.
 Whenever $x \sqsubseteq_X \concretization({x^\natural})$, we say that the abstract property ${x^\natural}$ is a \emph{sound} overapproximation of the concrete property $x$. That is, $x$ is a stronger property than $\concretization({x^\natural})$, the stronger the abstract property, the more precise is the abstraction.
@@ -851,15 +846,15 @@ In Galois connections, the abstraction $\abstraction$ and concretization $\concr
 \begin{remark}
   In a Galois Connection, one adjoint uniquely determines the other:
   \begin{align*}
-    \abstraction(x) &\DefeQ \bigjoin \setdef{{x^\natural} \in {X^\natural}}{x \sqsubseteq_X \concretization({x^\natural})} \\
-    \concretization({x^\natural}) &\DefeQ \bigmeet \setdef{x \in X}{\abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}}
+    \abstraction(x) &\DefeQ \bigmeet \setdef{{x^\natural} \in {X^\natural}}{x \sqsubseteq_X \concretization({x^\natural})} \\
+    \concretization({x^\natural}) &\DefeQ \bigjoin \setdef{x \in X}{\abstraction(x) \sqsubseteq_{X^\natural} {x^\natural}}
   \end{align*}
 \end{remark}
 
 
 It follows that if $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ and $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization'}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ are two Galois connections, then $\concretization = \concretization'$. If $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ and $\tuple{X}{\sqsubseteq_X}\galois{\abstraction'}{\concretization}\tuple{{X^\natural}}{\sqsubseteq_{X^\natural}}$ are two Galois connections, then $\abstraction = \abstraction'$.\sidenote{It is important to note that the two Galois connections must have the same concrete and abstract partial orders $\sqsubseteq_X$ and $\sqsubseteq_{X^\natural}$, otherwise the abstractions or concretizations may no longer be equal.}
-
-Galois connections are also important because they compose, that is, given two Galois connections $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{Y}{\sqsubseteq_Y}$ and $\tuple{Y}{\sqsubseteq_Y}\galois{\abstraction'}{\concretization'}\tuple{Z}{\sqsubseteq_Z}$, then $\tuple{X}{\sqsubseteq_X}\galois{\abstraction' \circ \abstraction}{\concretization \circ \concretization'}\tuple{Z}{\sqsubseteq_Z}$ is a Galois connection.
+%
+Galois connections also compose, that is, given two Galois connections $\tuple{X}{\sqsubseteq_X}\galois{\abstraction}{\concretization}\tuple{Y}{\sqsubseteq_Y}$ and $\tuple{Y}{\sqsubseteq_Y}\galois{\abstraction'}{\concretization'}\tuple{Z}{\sqsubseteq_Z}$, then $\tuple{X}{\sqsubseteq_X}\galois{\abstraction' \circ \abstraction}{\concretization \circ \concretization'}\tuple{Z}{\sqsubseteq_Z}$ is a Galois connection.
 
 Based on Galois connections, abstract interpretation provides a \emph{constructive} way to derive program semantics by successive abstractions of the trace semantics.
 
@@ -870,7 +865,8 @@ Based on Galois connections, abstract interpretation provides a \emph{constructi
   \end{align*}
   where the abstraction $\forwardreachabilitytraceabstraction$ collects all the states that are reachable from the initial states:
   \begin{align*}
-    \forwardreachabilitytraceabstraction(\defsetoftraces) &\DefeQ \setdef{\defstate\in\state}{ \defstate'\in\initialstates \land \deftrace\in\finitesequences \land \concat{\concat{\defstate'}{\deftrace}}{\defstate} \in \defsetoftraces}
+    \forwardreachabilitytraceabstraction(\defsetoftraces) &\DefeQ \setdef{\defstate\in\state}{ \defstate'\in\initialstates \land \deftrace\in\finitesequences \land \concat{\concat{\defstate'}{\deftrace}}{\defstate} \in \defsetoftraces} \\
+    \forwardreachabilitytraceconcretization(\defsetofstates) &\DefeQ \setdef{\concat{\concat{\defstate'}{\deftrace}}{\defstate}}{\defstate'\in\initialstates \land \deftrace\in\finiteinfinitesequences \land \defstate \in \defsetofstates}
   \end{align*}
 Thus, we obtain the following definition for the forward reachability state semantics:
 \[ \forwardreachabilitytracesemanticsnoparam \DefeQ \forwardreachabilitytraceabstraction(\tracesemanticsnoparam) \]
@@ -884,7 +880,8 @@ Note that, the reachability semantics presented in this example is strictly less
   \end{align*}
   where the abstraction $\backwardreachabilitytraceabstraction$ collects all the states that can reach the final states:
   \begin{align*}
-    \backwardreachabilitytraceabstraction(\defsetoftraces) &\DefeQ \setdef{\defstate\in\state}{ \defstate'\in\finalstates \land \deftrace\in\finitesequences \land \concat{\defstate}{\deftrace}{{\defstate'}} \in \defsetoftraces}
+    \backwardreachabilitytraceabstraction(\defsetoftraces) &\DefeQ \setdef{\defstate\in\state}{ \defstate'\in\finalstates \land \deftrace\in\finitesequences \land \concat{\concat{\defstate}{\deftrace}}{{\defstate'}} \in \defsetoftraces} \\
+    \backwardreachabilitytraceconcretization(\defsetofstates) &\DefeQ \setdef{\concat{\concat{\defstate}{\deftrace}}{{\defstate'}}}{\defstate\in\defsetofstates \land \deftrace\in\finiteinfinitesequences \land \defstate' \in \finalstates}
   \end{align*}
 Thus, we obtain the following definition for the backward co-reachability state semantics:
 \[ \backwardreachabilitytracesemanticsnoparam \DefeQ \backwardreachabilitytraceabstraction(\tracesemanticsnoparam) \]
