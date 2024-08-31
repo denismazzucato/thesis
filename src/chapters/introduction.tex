@@ -9,17 +9,17 @@
 \labch{introduction}
 
 \marginemptybox{3cm}
-In today's world, software rules safety critical systems such as nuclear power plants \sidecite{Krasner2021},
+In today's world, software rules safety-critical systems such as nuclear power plants \sidecite{Krasner2021},
 car engines \sidecite{Finch2009},
 airplane control systems
 \sidecite{Briere1993},
 and medical devices \sidecite{Leveson1993}.
 The reliability of these systems is based on their correctness.
-Any failure or vulnerability in safety critical software poses significant risks, potentially threatening human safety or causing financial losses.
+Any failure or vulnerability in safety-critical software poses significant risks, potentially causing financial losses or threatening human safety.
 Recent advances in software development have led to increasingly complex software systems.
 As software grows in complexity, the likelihood of bugs also increases.
 The effort and cost of fixing these bugs escalate with late detection, as illustrated in \reftab{effort-to-fix} \sidecite{White2017}, which shows the relative costs of fixing bugs at different development stages.
-For safety critical systems, detecting and addressing bugs before deployment is mandatory to ensure safety.
+For safety-critical systems, detecting and addressing bugs before deployment is mandatory to ensure safety.
 
 \begin{margintable}
   \caption{Cost of fixing bugs at different development stages \cite{White2017}.}
@@ -40,13 +40,20 @@ For safety critical systems, detecting and addressing bugs before deployment is 
   }
 \end{margintable}
 
+Beyond traditional software, machine learning-based software is increasingly being integrated into safety-critical systems, presenting new challenges to traditional assurance processes \sidecite{Googloe2023}.
+Despite these challenges, the high standards for correctness in such systems remain the same, regardless of whether the software is traditional or machine learning-based.
+Additionally, machine learning is also influencing societal decision-making in areas such as social welfare \sidecite{Larson2016}, criminal justice \sidecite{Buolamwini2018}, and healthcare \sidecite{Obermeyer2019}.
+However, recent cases have demonstrated that machine learning software can inadvertently reproduce or even amplify biases present in the training data \cite{Buolamwini2018,Kay2015,Larson2016,Obermeyer2019}\phantomcite{Kay2015}.
+In response of these risks, the European Commission proposed the Artificial Intelligence Act~\sidecite{Commission2021}, which aims to establish the first legal framework for machine learning software, with strict requirements to minimize the potential for discriminatory outcomes.
+Therefore, detecting bugs and biases in machine learning software is crucial to ensure that it behaves as intended and does not cause harm to users.
 
-
-Beyond traditional software, the rise of machine learning software has introduced new challenges.
-Machine learning is increasingly impacting society by assisting or even automating decision-making in fields such as social welfare \sidecite{Larson2016}, criminal justice \sidecite{Buolamwini2018}, and healthcare \sidecite{Obermeyer2019}.
-However, recent cases have shown that such software can reproduce or even reinforce biases present in the training data \cite{Buolamwini2018,Kay2015,Larson2016,Obermeyer2019}\phantomcite{Kay2015}.
-In response to the rise of machine learning software based software, and thus the potential risks associated with it, the European Commission proposed the Artificial Intelligence Act~\sidecite{Commission2021}: a first legal framework on machine learning software, imposing strict requirements to minimize the risk of discriminatory outcomes.
-Detecting bugs and bias in machine learning software is crucial to ensure that the software behaves as intended and does not harm users.
+% Beyond traditional software, also machine learning-based software is increasingly being used in safety-critical systems \sidecite{Googloe2023}.
+% In such contexts, machine learning poses new challenges to traditional assurance processes.
+% Nevertheless, the high standards for correctness in safety-critical systems remain the same, no matter of the software's nature.
+% Furthermore, machine learning is increasingly impacting society by assisting or even automating decision-making in fields such as social welfare \sidecite{Larson2016}, criminal justice \sidecite{Buolamwini2018}, and healthcare \sidecite{Obermeyer2019}.
+% However, recent cases have shown that such software can reproduce or even reinforce biases present in the training data \cite{Buolamwini2018,Kay2015,Larson2016,Obermeyer2019}\phantomcite{Kay2015}.
+% In response to the rise of machine learning software based software, and thus the potential risks associated with it, the European Commission proposed the Artificial Intelligence Act~\sidecite{Commission2021}: a first legal framework on machine learning software, imposing strict requirements to minimize the risk of discriminatory outcomes.
+% Overall, detecting bugs and bias in machine learning software is crucial to ensure that the software behaves as intended and does not harm users.
 
 
 % Even more recently, the last advancements in artificial intelligence have led to the rise of large language models (LLMs) capable of generating software from natural language specifications.
@@ -54,7 +61,7 @@ Detecting bugs and bias in machine learning software is crucial to ensure that t
 % Specifically designed for coding, GitHub Copilot.\sidenote{\rurl{github.com/features/copilot}} assists programmers within IDEs and has over a million subscribers\sidenote{\rurl{github.blog/news-insights/research/the-economic-impact-of-the-ai-powered-developer-lifecycle-and-lessons-from-github-copilot}}
 % Despite their benefits, AI-generated code can introduce bugs as human-written code \sidecite{Asare2023}, making it crucial to use techniques that detect software errors or certify intended behaviors.
 
-Therefore, from more traditional to the latest machine learning-based software, detecting errors in safety critical or high-stakes contexts is mandatory to ensure a correct software behavior.
+Overall, from more traditional to the latest machine learning-based software, detecting errors in safety-critical or high-stakes contexts is mandatory to ensure a correct software behavior.
 
 \section{Software Quality}
 
@@ -64,8 +71,8 @@ The correct behavior of software is tested empirically for a finite number of in
 However, testing has inherent limitations. For instance,
 % It can only verify a program against functional requirements, which may be poorly defined and ambiguous, leading to inadequate testing.
 exhaustive testing is impractical, and constraints on time and budget can further impact the process.
-Mostly, testing cannot guarantee the absence of bugs.\sidenote{``Program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- \textcite{Dijkstra1976}} \sidecite{Dijkstra1976}
-While in some cases deploying software with bugs and relying on patches to fix it is acceptable, \cf{} \reftab{effort-to-fix}, ensuring that software is free of bugs before deployment is necessary to avoid catastrophic consequences in safety critical systems.
+Mostly, testing cannot guarantee the absence of bugs.\sidenote{``Program testing can be quite effective for showing the presence of bugs, but is hopelessly inadequate for showing their absence.'' -- \textcite{Dijkstra1976}} \phantomcite{Dijkstra1976}
+While in some cases deploying software with bugs and relying on patches to fix it is acceptable, \cf{} \reftab{effort-to-fix}, ensuring that software is free of bugs before deployment is necessary to avoid catastrophic consequences in safety-critical systems.
 
 In contrast to testing, \emph{formal methods} provide rigorous mathematical guarantees about software correctness.
 The idea of formally verifying software dates back to the late 1960s with program proofs and invariants from \sidetextcite{Floyd1967} and \sidetextcite{Hoare1969}.
@@ -73,7 +80,7 @@ Even earlier, formal methods can be traced to the work of \sidetextcite{Church19
 According to software engineering practices, formal methods should be introduced early in the development lifecycle, enabling the verification of software properties at the design stage.
 
 \begin{center}\em
-  Why should formal methods replace other well-known, widely accepted, and user-friendly techniques such as testing?
+  Why should formal methods complement other well-known, widely accepted, and user-friendly techniques such as testing?
 \end{center}
 
 To answer this question, consider the following examples where testing failed:
@@ -91,7 +98,7 @@ Unlike testing, formal methods enable exhaustive search and detection of bugs th
 System requirements are translated into formal specifications, which are mathematically verified to ensure the system's behavior aligns with real-world scenarios.
 However, Rice's undecidability theorem \sidecite{Rice1953} states that all non-trivial program properties\sidenote{A property is trivial if it is true for all programs or false for all programs.} are undecidable, meaning there is no always terminating algorithm that can decide whether any program satisfies a non-trivial program property.
 Consequently, formal methods either sacrifice: \emph{automation}, \emph{soundness}/\emph{termination}, or \emph{completeness}.
-Based on this, formal methods are classified into three categories \sidecite{Cousot2010} (\cf{} \reffig{formal-methods-trade-offs}): \emph{theorem provering}, \emph{model checking}/\emph{symbolic execution}, and \emph{static analysis}.
+Based on this, formal methods are classified into three categories \sidecite{Cousot2010} (\cf{} \reffig{formal-methods-trade-offs}): \emph{theorem proving}, \emph{model checking}/\emph{symbolic execution}, and \emph{static analysis}.
 
 \begin{marginfigure}
   \begin{tikzpicture}[scale=0.8]
@@ -115,17 +122,20 @@ Based on this, formal methods are classified into three categories \sidecite{Cou
 \paragraph{Theorem Proving.}
 \index{Theorem Proving}
 
-Theorem provers \sidecite{Nawaz2019} produce proofs of correctness using interactive tools, also called proof assistants, such as \textsc{Coq} \sidecite{Bertot2004}, \textsc{HOL Light} \sidecite{Harrison2009}, \textsc{Lean} \sidecite{Moura2021}, \textsc{Isabelle} \sidecite{Wenzel2008}, and \textsc{Agda} \sidecite{Bove2009,Wadler2022}; or automatic ones \sidecite{Sutcliffe2001}.
+Theorem provers \sidecite{Nawaz2019} produce proofs of correctness using interactive tools, also called proof assistants, such as \textsc{Coq} \sidecite{Bertot2004}, \textsc{HOL Light} \sidecite{Harrison2009}, \textsc{Lean} \sidecite{Moura2021}, \textsc{Isabelle} \sidecite{Wenzel2008}, and \textsc{Agda} \sidecite{Bove2009}.
 Theorem provers are complete and sound but not fully automated.
-Indeed, user interaction is ultimately required to guide the proof search in both the interactive and automatic cases.
-In this category also fall proof-oriented programming languages, such as \textsc{Dafny} \sidecite{Leino2010},  \textsc{F*} \sidecite{Swamy2016}, and \textsc{Why3} \sidecite{Filli_atre2013}.
+Indeed, user interaction is ultimately required to guide the proof search.
+There are some attempts to automate theorem proving \sidecite{Sutcliffe2001} based on proof search strategies where the prover automatically search for the proof.
+Nevertheless, the user interaction is still required whenever the proof search fails.
+In this category of complete and sound methods also fall proof-oriented programming languages, such as \textsc{Dafny} \sidecite{Leino2010},  \textsc{F*} \sidecite{Swamy2016}, and \textsc{Why3} \sidecite{Filli_atre2013}.
 
 \paragraph{Model Checking.}
 \index{Model Checking}
 
 Formal methods based on model checking \sidecite{Clarke1981,Queille1982} automatically explore the state space of a program's model to verify whether undesirable states are reachable.
-However, modern software model checker trades termination for automation and completeness, as state-of-the-art software model checkers may not terminate.
-In such cases, the software model checker halts on a timeout, returning an \emph{unknown} result, which indicates that the verification process was inconclusive.
+Modern software model checkers trade termination for automation and completeness, as state-of-the-art software model checkers may not terminate.
+When the answer is \emph{unknown}, indicating that the verification process halted on a timeout, the property may still be satisfied or violated, but the model checker was not able to determine it as the search space was too large.
+However, model checking is complete because when the model checker answers that the property has been violated, a counterexample is provided.
 \sidetextcite{Clarke2004} applied model checking to prove the correctness of ANSI-C programs.
 
 \paragraph{Symbolic Execution.}
@@ -149,8 +159,8 @@ Abstract Interpretation \sidecite{Cousot1977} is a general theory for approximat
 Their framework is based on the observation that not all computational details are necessary to reason about program properties.
 Instead, the program's semantics can be approximated by a simpler, more abstract model that facilitates automatic reasoning.
 
-Over the past decade, abstract interpretation-based static analyses became part of the software development lifecycle of safety critical systems.
-For instance, the \textsc{Astrée} static analyzer \sidecite{Blanchet2003} is routinely used to ensure the absence of runtime errors in embedded synchronous C programs for the Airbus A340 and A380.
+Over the past decade, abstract interpretation-based static analyses became part of the software development lifecycle of safety-critical systems.
+For instance, the \textsc{Astrée} static analyzer \sidecite{Blanchet2003} is routinely used to ensure the absence of runtime errors in embedded synchronous C programs by Airbus.
 
 We provide a formal introduction to abstract interpretation in \refch{abstract-interpretation}.
 At the end of that chapter, we will illustrate the main results on a small idealized programming language.
@@ -172,7 +182,7 @@ In data science and machine learning applications, where software involves long 
 Hence, it is essential to employ techniques that enhance confidence in the usage of input variables for data-driven applications.
 
 
-In \arefpart{background}, \refch{input-data-usage} formally introduces input data usage, a program property that captures the \emph{qualitative} usage of input data in a program as proposed by \textcite{Urban2018}.
+In \arefpart{background}, \refch{input-data-usage} formally introduces input data usage, a program property that captures the \emph{qualitative} usage of input data in a program, as proposed by \textcite{Urban2018}.
 We provide a hierarchy of semantics that precisely captures the input data usage property, abstracting unnecessary details.
 Finally, we report an abstract semantics that captures syntactic dependencies between variables from \sidetextcite[][Section 10]{Urban2018}, used to approximate the input data usage property soundly.
 
@@ -186,7 +196,7 @@ Such extension blends abstract non-interference with input data usage, providing
 \section{Quantitative Properties}
 \index{Quantitative Information Flow}
 Typically, program properties are qualitative: a program either satisfies a property or not.
-This is not always sufficient to capture the complexity of real-world requirements \sidecite{Smith2007}.
+This is not always sufficient for capturing the complexity of real-world requirements \sidecite{Smith2007}.
 For instance, in program security, one fundamental requirement is protecting sensitive information confidentiality.
 Secure information flow analysis questions whether a program could leak information about its secrets.
 Non-interference, certifying that a program reveals no information about its secrets, is a classic secure information flow approach.
@@ -248,7 +258,7 @@ The followings are the contributions of \arefpart{extensional}, consisting of \c
   \item An artifact of \impatto{} comprehensive of \impatto's source code, documentation, and evaluation benchmarks is available on Zenodo.\sidenote{\impattozenodo}
   \item In \refch{quantitative-fairness}, we present two novel impact quantifiers for neural networks.
   \item In \refch{quantitative-fairness}, we propose an improved backward analysis that exploits parallel computations and achieves better precision by combining abstract domains.
-  \item In \refch{evaluation-on-neural-networks}, we extended both the \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
+  \item In \refch{evaluation-on-neural-networks}, we extended \impatto{} and \libra\sidenote{\libraurl} tools to evaluate our quantitative analysis on neural networks.
   \item An artifact extending \libra{} with the quantitative evaluation of fairness is available on Zenodo.\sidenote{\librazenodo}
 \end{itemize}
 
@@ -261,7 +271,7 @@ The followings are the contributions of \arefpart{extensional}, consisting of \c
 This part is divided into two chapters: the first one presenting the novel quantitative timing analysis, and the second one showing the experimental evaluation.
 
 In \refch{quantitative-static-timing-analysis}, we consider the number of program iterations as the program outcome, capturing the impact of input variables on the global number of iterations.
-This variation is crucial, as programming errors affecting iterations can degrade performance or introduce security vulnerabilities without functional errors.
+Therefore, we are able to discover programming errors affecting iterations can degrade performance or introduce security vulnerabilities without functional errors.
 For instance, unexpected input impacts on runtime could reveal sensitive information \sidecite{Wong2005}, posing security threats.
 Even cryptographic programs are vulnerable to timing attacks, depending on implementation choices.
 \sidetextcite{Kocher1996} demonstrated that public key cryptographic algorithms, like RSA, are susceptible to timing attacks, potentially leaking secret keys.
@@ -275,8 +285,8 @@ We leverage global loop bound analysis to derive an over-approximation of the gl
 Our approach blends syntactic and semantic information: generating invariants as linear constraints for accuracy and combining global loop bound analysis with syntactic dependency analysis \sidecite[][Section 10]{Urban2018} for scalability.
 
 In \refch{sas24-eval}, we present \timesec,\sidenote{\timesecurl} a tool implementing our quantitative timing analysis.
-We demonstrate its effectiveness in a real-world cryptographic library, certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
-Additionally, we evaluate \timesec{} against programs from \svcomp.
+We demonstrate its effectiveness in the Amazon Web Services \bignum{} cryptographic library,\sidenote{\bignumurl} certifying its immunity to timing side-channel attacks by showing no impact of input variables on loop iterations.
+Additionally, we evaluate \timesec{} against programs from \svcomp,\sidenote{\svcompurl} a benchmark suite specifically designed for software verification tools.
 
 
 \paragraph{Contributions}
@@ -284,12 +294,12 @@ Additionally, we evaluate \timesec{} against programs from \svcomp.
 The followings are the contributions of \arefpart{intensional}:
 
 \begin{itemize}
-  \item In \refch{quantitative-static-timing-analysis}, we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding to quantify the impact of input variables on loop iterations, and
+  \item In \refch{quantitative-static-timing-analysis}, we propose a static analysis, employing a linear constraint abstract domain, global loop bound analysis, and linear programming encoding, to quantify the impact of input variables on loop iterations.
   \item In \refch{sas24-eval}, we present \timesec,\sidenote{\timesecurl} a tool implementing our quantitative timing analysis, and evaluate it against the \bignum{} cryptographic library\sidenote{\bignumurl} and programs from \svcomp.\sidenote{\svcompurl}
   \item An artifact of \timesec{} comprehensive of \timesec's source code and evaluation benchmarks is available on Zenodo.\sidenote{\timeseczenodo}
 \end{itemize}
 
 \frenchdiv
 
-Related works are discussed at the end of each chapter, providing a comprehensive overview of the literature.
+Related works are discussed at the end of each chapter, providing a comprehensive overview of the relevant literature.
 At the end of the thesis, in \arefpart{conclusion}, we conclude the thesis with a summary and perspectives on future directions.
