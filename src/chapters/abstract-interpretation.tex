@@ -903,11 +903,11 @@ Here, we consider a simple imperative programming language to instantiate the tr
 \labsec{syntax}
 \index{Syntax}
 
-Our programming language features the classic iterative constructs such as while loops and assignments, and the basic control flow constructs such as conditionals and compositions.
+Our programming language features the classic iterative constructs such as while loops and assignments, and the basic control flow constructs such as conditionals and sequential compositions.
 To keep the language simple, we do not consider function calls, recursion, or pointers.
-The set $\variables$ is the finite set of (statically allocated) program variables, the data type is $\values \in \{\N, \Z, \R\}$ for arithmetic and $\B$\marginnote{the set of boolean values is $\B \defeq \{\true,\false\}$ where $\true$ is true and $\false$ is false.} for boolean expressions.
+The set $\variables$ is the finite set of (statically allocated) program variables, the data type is $\values \in \{\N, \Z, \R\}$ for arithmetic and $\B$\marginnote{the set of boolean values is $\B \defeq \{\true,\false\}$ where $\true$ is true and $\false$ is false.} for boolean conditions.
 The set $\inputvariables \subseteq \variables$ contains the input variables.
-\reffig{syntax} shows the syntax of our small imperative language, where $\defvariable\in\variables$ is a variable, $defvalue\in\values$ is a constant value, $\defaexp$ is an arithmetic expression, $\defbexp$ is a boolean expression, and $\defstmt$ is a program statement.
+\reffig{syntax} shows the syntax of our small imperative language, where $\defvariable\in\variables$ is a variable, $\defvalue\in\values$ is a constant value, $\defaexp$ is an arithmetic expression, $\defbexp$ is a boolean condition, and $\defstmt$ is a program statement.
 
 \begin{marginfigure}
   \begin{align*}
@@ -933,20 +933,20 @@ The set $\inputvariables \subseteq \variables$ contains the input variables.
 
 The entry point of a program $\defprogram$ is a statement $\defstmt$, denoted by $\progstmt$, followed by a unique program location $\bigloc\in\locs$.
 Another unique program location appears within each statement.
-Since we rarely need to explicitly specify program locations, most of the time we do not report them to improve clarity.
-A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment statement $\assignstmt$, a conditional statement $\pifstmt$, a while statement $\pwhilestmt$, or a composition statement $\pcompstmt$.
+Since we rarely need to explicitly specify program locations, most of the time we do not report them to lighten the notation.
+A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment statement $\assignstmt$, a conditional statement $\pifstmt$, a while statement $\pwhilestmt$, or a sequential composition statement $\pcompstmt$.
 
-Arithmetic expressions $\defaexp$ are either a variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$.\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.} The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or--generally--uncertainty in the program.
+Arithmetic expressions $\defaexp$ are either a constant value $\defvalue\in\values$, variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$.\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.} The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or -- generally -- uncertainty in the program.
 %
 Boolean expressions $\defbexp$ are either a comparison between arithmetic values $\defaexp \le \defvalue$ and $\defaexp = \defvalue$, a conjunction $\defbexp \land \defbexp$, or a negation $\lnot \defbexp$.
 
 \begin{remark}[{Syntactic Sugar}]
   The syntax depicted in \reffig{syntax} is minimalistic. Through \emph{syntactic sugar}, we can extend the language with additional constructs that are not part of the core language but can be expressed in terms of the core constructs. For instance, we can define a shorthand version of the conditional statement as just $\shortifstmt$ without the else branch. Such syntactic sugar expands to $\ifstmt[\defstmt][\skipstmt]$.
 
-  Similarly, we can reconstruct boolean expressions as well: $\defbexp \lor \defbexp'$ is expanded to $\lnot(\lnot\defbexp \land \lnot\defbexp')$ by De Morgan's laws.
+  Similarly, we can reconstruct boolean conditions as well: $\defbexp \lor \defbexp'$ is expanded to $\lnot(\lnot\defbexp \land \lnot\defbexp')$ by De Morgan's laws.
 \end{remark}
 
-We could have been ever more minimalistic, \eg, all arithmetic expressions could have been defined from $1$, $-$, and iteration, or all boolean expressions with $<$ and $\texttt{nand}$. The syntax in \reffig{syntax} is a trade-off between minimalism, simplicity, and expressiveness.
+We could have been ever more minimalistic, \eg, all arithmetic expressions could have been defined from $1$, $-$, and iteration, or all boolean conditions with $<$ and $\texttt{nand}$. The syntax in \reffig{syntax} is a trade-off between minimalism, simplicity, and expressiveness.
 
 \subsection{Maximal Trace Semantics}
 \labsec{maximal-trace-semantics}
@@ -977,7 +977,7 @@ We could have been ever more minimalistic, \eg, all arithmetic expressions could
       & \quad\bexpsemanticsnoparam \semanticsof{\defbexp}\defenv \land \bexpsemanticsnoparam \semanticsof{\defbexp'}\defenv \\
     &\bexpsemanticsnoparam \semanticsof{\lnot \defbexp} \defenv \DefifF \neg \bexpsemanticsnoparam \semanticsof{\defbexp}\defenv
   \end{align*}
-\caption{Semantics of boolean expressions.}
+\caption{Semantics of boolean conditions.}
 \labfig{bexp-semantics}
 \end{marginfigure}
 
@@ -989,10 +989,10 @@ Here, we instantiate the general definition of transition system and maximal tra
 
 
 An \emph{environment} $\defenv\in\env\defeq\variables \to \values$ is a mapping from a variable $\defvariable\in\variables$ to its value in memory $\defenv(\defvariable)\in\values$.
-The semantics of an arithmetic expression $\defaexp$ is defined as the function $\aexpsemantics\in\setof\env\to\setof\values$ that maps a set of environments $\defsetofenvs$ to the set of values $\aexpsemantics\defsetofenvs$ that the expression $\defaexp$ can evaluate to under the environments in $\defsetofenvs$.
+The semantics of an arithmetic expression $\defaexp$ is defined as the function $\aexpsemantics\in\env\to\setof\values$ that maps an environment $\defenv$ to the set of values $\aexpsemantics\defsetofenvs$ that the expression $\defaexp$ can evaluate to under the environments in $\defsetofenvs$. Note that, expressions may evaluate to multiple values due to non-deterministic choices.
 \reffig{aexp-semantics} shows the definition of $\aexpsemanticsnoparam$.
 
-Similarly, we define the semantics of boolean expressions $\defbexp$ as the function $\bexpsemantics\in\setof\env\to\setof\env$ that filters a set of environments $\defsetofenvs$ to those in which the expression $\defbexp$ holds. The semantics of boolean expressions is defined in \reffig{bexp-semantics}. In the following, we write $\texttt{true}$ and $\texttt{false}$ for the boolean expression that always evaluates to true and false, respectively.
+Similarly, we define the semantics of boolean conditions $\defbexp$ as the function $\bexpsemantics\in\env\to\B$ that holds whenever the condition $\defbexp$ holds in the environment $\defenv$. The semantics of boolean conditions is defined in \reffig{bexp-semantics}. In the following, we write $\texttt{true}$ and $\texttt{false}$ for the boolean condition that always evaluates to true and false, respectively.
 
 
 
@@ -1000,7 +1000,11 @@ Similarly, we define the semantics of boolean expressions $\defbexp$ as the func
 
 
 
-The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is pointwise lifted to sets of environments, \ie, $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
+The update of an environment $\defenv$ with a variable $\defvariable$ to a value $\defvalue$ is denoted by $\updatemem{\defenv}{\defvariable}{\defvalue} \defeq \lambda \defvariable'.\defenv(\defvariable')$ if $\defvariable \neq \defvariable'$ and $\defvalue$ otherwise. The environment update is lifted pointwise to sets of environments as $\updatemem{\defsetofenvs}{\defvariable}{\defvalue} \defeq \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}$.
+
+
+
+
 
 
 \begin{marginfigure}
@@ -1016,7 +1020,7 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 \labfig{initial}
 \end{marginfigure}
 
-\begin{figure}[t]
+\begin{figure}[t!]
   \centering
   \begin{subfigure}{.45\textwidth}
   \begin{align*}
@@ -1037,7 +1041,7 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 \begin{subfigure}{.45\textwidth}
   \begin{align*}
     &(\defstmt = \whilestmt[\defstmt'])\\
-    &\quad\finalloc[\whilestmt[\defstmt']] \DefeQ \\
+    &\quad\finalloc[\plwhilestmt[\defstmt']] \DefeQ \\
     &\qquad\finalloc[\defstmt] \\
     &\quad\finalloc[\defstmt'] \DefeQ \bigloc
     \\[0.2cm]
@@ -1059,21 +1063,20 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 
 
 
-Program states are tuples of program locations and environments, $\defstate\in\state\defeq\pair\locs\env$.
+Program states are pairs of a program location and an environment, $\defstate\in\state\defeq\pair\locs\env$.
 The initial control point of a program (or a statement) defines where the execution of the program (statement) starts, namely $\initialloc$ and $\initialloc[\defstmt]$ respectively.
-Similarly, the final control point of a program (or a statement) defines where the execution of the program (statement) ends, namely $\finalloc$ and $\finalloc[\defstmt]$ respectively. The formal definitions of initial and final control points are given in \reffig{initial} and \reffig{final}.
+Similarly, the final control point of a program (or a statement) defines where the execution of the program (statement) ends, namely $\finalloc$ and $\finalloc[\defstmt]$ respectively. The formal definitions of initial and final control points are given in \reffig{initial} on the side and \reffig{final} above.
 
 
 A program $\defprogram$ starts the execution at its initial program location $\initialloc[\defprogram]$ with any value for the program variables. The set of initial states of a program $\defprogram$ is $\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}$.
 
-In the following, we lift to set of states and environment the arithmetic expression, boolean expression, and environment updates.
-Formally, for $\defsetofstates\in\setof\state$ and $\defsetofenvs\in\setof\env$, we define:
-\begin{align*}
-  \aexpsemantics\defsetofenvs &\DefeQ \setdef{\defvalue\in\values}{\defvalue\in\aexpsemanticsnoparam\semanticsof{\defaexp}\defenv \land \defenv\in\defsetofenvs} \\
-  \bexpsemantics \defsetofstates &\DefeQ \setdef{\tracetuple{\bigloc}{\defenv}\in\defsetofstates}{\bexpsemantics\defenv} \\
-  \bexpsemantics \defsetofenvs &\DefeQ \setdef{\defenv\in\defsetofenvs}{\bexpsemantics\defenv} \\
-  \updatemem{\defsetofenvs}{\defvariable}{\defvalue} &\DefeQ \setdef{\updatemem{\defenv}{\defvariable}{\defvalue}}{\defenv\in\defsetofenvs}
-\end{align*}
+% In the following, we lift to set of states and environment the arithmetic expression, boolean condition.
+% Formally, for $\defsetofenvs\in\setof\env$, we define:
+% \begin{align*}
+%   \aexpsemantics\defsetofenvs &\DefeQ \setdef{\defvalue\in\values}{\defvalue\in\aexpsemanticsnoparam\semanticsof{\defaexp}\defenv \land \defenv\in\defsetofenvs} \\
+%   % \bexpsemantics \defsetofstates &\DefeQ \setdef{\tracetuple{\bigloc}{\defenv}\in\defsetofstates}{\bexpsemantics\defenv} \\
+%   \bexpsemantics \defsetofenvs &\DefeQ \setdef{\defenv\in\defsetofenvs}{\bexpsemantics\defenv}
+% \end{align*}
 
 The transition relation $\transitionrelation\in\pair\state\state$ applied to a program $\defprogram$ is defined as the transition semantics $\transitionrelation\semanticsof{\defprogram}\in\pair\state\state$.
 Next, we define $\transitionrelation$ for each program construct.
@@ -1088,14 +1091,13 @@ Next, we define $\transitionrelation$ for each program construct.
 
   \item[\normalfont ($\plskipstmt$)] The skip statement does not modify the environment, and control moves from the initial location $\bigloc$ to the final location $\finalloc[\plskipstmt]$.
 
-  \marginnote{
-    \begin{align*}
-      &\transitionrelation \semanticsof{\plassignstmt} \DefeQ \\
-      &\quad\setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}}{\defenv\in\env \land \defvalue\in\aexpsemanticsnoparam \semanticsof{\defaexp}\defenv}
-    \end{align*}
-  }
-  \item[\normalfont ($\plassignstmt$)] The assignment statement updates the value of the variable $\defvariable$ to any possible value\sidenote{
-    The expression $\aexpsemantics\defenv$ may generate multiple values due to the non-deterministic choice $\randval(l, u)$.} of the arithmetic expression $\defaexp$, and control moves from the initial location $\bigloc$ to the final location $\finalloc[\plassignstmt]$.
+  \item[\normalfont ($\plassignstmt$)] The assignment statement updates the value of the variable $\defvariable$ to any possible value of the arithmetic expression $\defaexp$,
+    \marginnote[*-4]{
+      \begin{align*}
+        &\transitionrelation \semanticsof{\plassignstmt} \DefeQ \\
+        &\quad\setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}}{\defenv\in\env \land \defvalue\in\aexpsemanticsnoparam \semanticsof{\defaexp}\defenv}
+      \end{align*}
+    } and control moves from the initial location $\bigloc$ to the final location $\finalloc[\plassignstmt]$.
   \marginnote{
     \begin{align*}
       &\transitionrelation \semanticsof{\plifstmt} \DefeQ \\
@@ -1103,15 +1105,16 @@ Next, we define $\transitionrelation$ for each program construct.
       &\quad \setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt']}{\defenv}}}{\defenv\in\env \land \neg \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt'}
     \end{align*}
   }
-  \item[\normalfont ($\plifstmt$)] The conditional statement moves control from the initial location $\bigloc$ to the first statement $\defstmt$ for environments that satisfy the boolean expression $\defbexp$, and to the beginning of the second statement $\defstmt'$ for environments that do not satisfy the boolean expression; then, $\defstmt$ and $\defstmt'$ are executed independently.
-  \item[\normalfont ($\plwhilestmt$)]
-  The while statement moves control from the initial location $\bigloc$ \marginnote{
+  \item[\normalfont ($\plifstmt$)] The conditional statement moves control from the initial location $\bigloc$ to the first statement $\defstmt$ for environments that satisfy the boolean condition $\defbexp$, and to the beginning of the second statement $\defstmt'$ for environments that do not satisfy the boolean condition; then, $\defstmt$ and $\defstmt'$ are executed independently.
+  \marginnote{
     \begin{align*}
       &\transitionrelation \semanticsof{\plwhilestmt} \DefeQ \\
       & \setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}}}{\defenv\in\env \land \bexpsemantics \defenv} \SetjoiN \transitionrelation \semanticsof{\defstmt} \SetjoiN {} \\
       & \setdef@{\tracestep{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}}{\defenv\in\env \land \neg \bexpsemantics \defenv}
     \end{align*}
-  }to the beginning of the statement $\defstmt$ for environments that satisfy the boolean expression $\defbexp$, and to the final location $\finalloc[\plwhilestmt]$ for environments that do not satisfy the boolean expression; then, $\defstmt$ is executed.
+  }
+  \item[\normalfont ($\plwhilestmt$)]
+  The while statement moves control from the initial location $\bigloc$ to the beginning of the statement $\defstmt$ for environments that satisfy the boolean condition $\defbexp$, and to the final location $\finalloc[\plwhilestmt]$ for environments that do not satisfy the boolean condition; then, $\defstmt$ is executed.
   \marginnote{
     \begin{align*}
       &\transitionrelation \semanticsof{\plcompstmt} \DefeQ \transitionrelation \semanticsof{\defstmt} \SetjoiN \transitionrelation \semanticsof{\defstmt'}
@@ -1122,7 +1125,7 @@ Next, we define $\transitionrelation$ for each program construct.
   \begin{definition}[{Transition Semantics}]\labdef{transition-semantics}
     The transition semantics of a program $\defprogram$ is the set of all possible transitions that the program can generate:
     \begin{align*}
-      \transitionrelation\semanticsof{\defprogram} \DefeQ \transitionrelation\semanticsof{\progstmt} \DefeQ \transitionrelation\semanticsof{\defstmt}
+      \transitionrelation\semanticsof{\defprogram} \DefeQ \transitionrelation\semanticsof{\plprogstmt} \DefeQ \transitionrelation\semanticsof{\defstmt}
     \end{align*}
   \end{definition}
 \end{description}
@@ -1159,56 +1162,58 @@ Accordingly, we define the maximal trace semantics $\tracesemantics\in\tracetype
   \marginnote{
     \begin{align*}
       &\tracesemanticsnoparam \semanticsof{\plskipstmt}\defsetoftraces \DefeQ\\
-      &\quad\setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \deftrace\in\finiteinfinitesequences\land {} \\ \concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces}
+      &\quad\setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \deftrace\in\finiteoremptyinfinitesequences\land {} \\ \concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces}
     \end{align*}}
-  \item[\normalfont ($\plskipstmt$)] The trace semantics of a skip statement  prepends to the traces of $\defsetoftraces$ that starts from the final location of the statement $\finalloc[\plskipstmt]$, \ie, the traces $\concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces$,
+  \item[\normalfont ($\plskipstmt$)] The trace semantics of a skip statement  prepends to the traces of $\defsetoftraces$ that starts from the final location of the statement $\finalloc[\plskipstmt]$ (\ie, the traces $\concat{\tracetuple{\finalloc[\plskipstmt]}{\defenv}}{\deftrace}\in\defsetoftraces$)
    a single program state with the same environment $\defenv$ paired with the initial location $\bigloc$.
   \marginnote{
     \begin{align*}
       &\tracesemanticsnoparam \semanticsof{\plassignstmt}\defsetoftraces \DefeQ \\
       &\quad
-       \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}}{\defenv\in\env \land \defvalue \in \aexpsemantics\defenv \land {} \\  \deftrace\in\finiteinfinitesequences \land {} \\ \concat{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}\in\defsetoftraces}
+       \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}}{\defenv\in\env \land \defvalue \in \aexpsemantics\defenv \land {} \\  \deftrace\in\finiteoremptyinfinitesequences \land {} \\ \concat{\tracetuple{\finalloc[\plassignstmt]}{\updatemem{\defenv}{\defvariable}{\defvalue}}}{\deftrace}\in\defsetoftraces}
     \end{align*}
   }
-  \item[\normalfont ($\plassignstmt$)] For an assignment statement, to the traces of $\defsetoftraces$ that starts from the final location $\finalloc[\plassignstmt]$ and an updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ with the effect of the assignment statement (where $\defvalue$ is a\sidenote{
-    As noted before, the expression $\aexpsemantics\defenv$ may generate multiple values due to the non-deterministic choice $\randval(l, u)$.}
+  \item[\normalfont ($\plassignstmt$)] For an assignment statement, to the traces of $\defsetoftraces$ that starts from the final location $\finalloc[\plassignstmt]$ and an updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ with the effect of the assignment statement (where $\defvalue$ is a
   value of the arithmetic expression $\defaexp$ under the environment $\defenv$), the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ \emph{before} update. Note that, traces in maximal trace semantics $\tracesemanticsnoparam$ are built backwards, thus the environment $\defenv$ is prepended to the beginning of the trace, which is required starting from the updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ at the final location $\finalloc[\plassignstmt]$.
   \marginnote{
     \begin{align*}
       &\tracesemanticsnoparam \semanticsof{\plifstmt}\defsetoftraces \DefeQ \\
-      &\quad \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\defsetoftraces} \setjoin {} \\
-      &\quad \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv \land \deftrace\in\finiteinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces}
+      &\quad \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land \deftrace\in\finiteoremptyinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\defsetoftraces} \setjoin {} \\
+      &\quad \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv \land \deftrace\in\finiteoremptyinfinitesequences \\ {} \land \concat{\tracetuple{\initialloc[\defstmt']}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces}
     \end{align*}
   }
   \item[\normalfont ($\plifstmt$)]
-    The trace semantics of a conditional statement is the union of the traces from the then and the else branch. For the then branch, the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ to the traces of $\tracesemanticsnoparam\semanticsof{\defstmt}$ that start from the initial location of the then branch, \ie, $\initialloc[\defstmt]$, and satisfies the boolean expression $\defbexp$.
-    Similarly, for the else branch, the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ to the traces of $\tracesemanticsnoparam\semanticsof{\defstmt'}$ that start from the initial location of the else branch, \ie, $\initialloc[\defstmt']$, and do not satisfy the boolean expression $\defbexp$.
+    The trace semantics of a conditional statement is the union of the traces from the then and the else branch. For the then branch, the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ to the traces of $\tracesemanticsnoparam\semanticsof{\defstmt}$ that start from the initial location of the then branch, \ie, $\initialloc[\defstmt]$, and satisfies the boolean condition $\defbexp$.
+    Similarly, for the else branch, the trace semantics prepends a program state with the initial location $\bigloc$ and the environment $\defenv$ to the traces of $\tracesemanticsnoparam\semanticsof{\defstmt'}$ that start from the initial location of the else branch, \ie, $\initialloc[\defstmt']$, and do not satisfy the boolean condition $\defbexp$.
 
   \marginnote{
     \begin{align*}
-      &\tracesemanticsnoparam \semanticsof{\plwhilestmt}\defsetoftraces \DefeQ \lfp^{\tracesubseteq} \tracetransformer \\
-      &\quad \tracetransformer(X) \DefeQ \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land {} \\ \deftrace\in\finiteinfinitesequences \land {} \\ \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}X} \SetjoiN {} \\
-        & \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv \land {} \\ \deftrace\in\finiteinfinitesequences \land {} \\ \concat{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}\in\defsetoftraces}
+      &\tracesemanticsnoparam \semanticsof{\plwhilestmt}\defsetoftraces \DefeQ \lfp^{\sqsubseteq} \tracetransformer \\
+      &\quad \tracetransformer(X) \DefeQ \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemantics\defenv \land {} \\ \deftrace\in\finiteoremptyinfinitesequences \land {} \\ \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}X} \SetjoiN {} \\
+        & \setdef@{\concat{\tracetuple{\bigloc}{\defenv}\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}}{\defenv\in\env \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv \land {} \\ \deftrace\in\finiteoremptyinfinitesequences \land {} \\ \concat{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\deftrace}\in\defsetoftraces}
     \end{align*}
   }
   \item[\normalfont ($\plwhilestmt$)]
-    The trace semantics of a while statement is the least fixpoint of a transformer $\tracetransformer$ over the complete lattice $\tracecompletelattice$
-   that iteratively prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces provided as argument that start from the initial location of the loop statement and satisfies the boolean expression $\defbexp$.
+    The trace semantics of a while statement is the least fixpoint of a transformer $\tracetransformer\in \tracetype\to\tracetype$ over the complete lattice $\langle\tracetype, \sqsubseteq, \join, \meet, \tracebottom, \tracetop\rangle$. Note that, this is not the complete lattice of traces, but it employs the so-called \emph{computational order}:
+    \begin{align*}
+      \defsetoftraces_1 \sqsubseteq \defsetoftraces_2 \DefeQ \retrievefinitetraces{\defsetoftraces_1} \subseteq \retrievefinitetraces{\defsetoftraces_2} \land \retrieveinfinitetraces{\defsetoftraces_1} \supseteq \retrieveinfinitetraces{\defsetoftraces_2}
+    \end{align*}
+   The transformer $\tracetransformer$ iteratively prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces provided as argument that start from the initial location of the loop statement and satisfy the boolean condition $\defbexp$.
 In particular, the transformer $\tracetransformer$ takes as input a set $X\in\tracetype$ of traces.
 Initially, $X$ is the set of all infinite sequences $\tracebottom$ (\ie, bottom element of the complete lattice of traces).
-At each iteration, the transformer joins $\ref{a-max}$ the traces from an iteration of traces in $X$ with $\ref{b-max}$ the traces in $\defsetoftraces$ that do not satisfy the boolean expression $\defbexp$, that is, the postcondition of the loop body that is able to enter backward the loop.
-\begin{itemize}
-  \item \label{a-max} $\tracetransformer$ prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces of the loop body $\defstmt$, \ie,  $\tracesemanticsnoparam\semanticsof{\defstmt}$, that start from the initial location $\initialloc[\defstmt]$ and satisfy the boolean expression $\defbexp$.
-  \item \label{b-max} $\tracetransformer$ prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces in $\defsetoftraces$ that start from the final location of the loop statement $\finalloc[\plwhilestmt]$ and do not satisfy the boolean expression $\defbexp$.
-\end{itemize}
+At each iteration, the transformer joins \ref{a-max} the traces result from a single iteration of traces in $X$ with \ref{b-max} the traces in $\defsetoftraces$ that do not satisfy the boolean condition $\defbexp$. Respectively, these two cases are defined as follows:
+\begin{enumerate}[label=(\roman*)]
+  \item \label{a-max} $\tracetransformer$ prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces of the loop body $\defstmt$, \ie,  $\tracesemanticsnoparam\semanticsof{\defstmt}$, that start from the initial location $\initialloc[\defstmt]$ and satisfy the boolean condition $\defbexp$.
+  \item \label{b-max} $\tracetransformer$ prepends the initial location $\bigloc$ and the environment $\defenv$ to the traces in $\defsetoftraces$ that start from the final location of the loop statement $\finalloc[\plwhilestmt]$ and do not satisfy the boolean condition $\defbexp$.
+\end{enumerate}
 The invariant after the $i$-th iteration contains the program \emph{traces} starting at the initial location of the loop statement whose prefix consist of 0 up to $i-1$ iterations of the loop and whose suffix is a trace in $\defsetoftraces$, and the \emph{sequences}\sidenote{Note the difference between traces and sequences: a program \emph{trace} is a \emph{sequence} of program states that respects the transition relation.} whose prefix are program traces which consist of $i-1$ iterations.
-At the limit, the set of traces generated by the transformer $\tracetransformer$ corresponds to executing the loop an arbitrary number of times, until the boolean expression $\defbexp$ is false, and then exiting the loop.
+At the limit, the set of traces generated by the transformer $\tracetransformer$ corresponds to executing the loop an arbitrary number of times, until the boolean condition $\defbexp$ is false, and then exiting the loop.
 \marginnote{
   \begin{align*}
     \tracesemanticsnoparam \semanticsof{\compstmt}\defsetoftraces \DefeQ \tracesemanticsnoparam\semanticsof{\defstmt}(\tracesemanticsnoparam\semanticsof{\defstmt'}\defsetoftraces)
   \end{align*}
 }
-\item[\normalfont ($\plcompstmt$)] The trace semantics of a composition of two statements is the (function) composition of the trace semantics of the two statements, backwards starting from $\defstmt'$ to $\defstmt$.
+\item[\normalfont ($\plcompstmt$)] The trace semantics of a sequential composition of two statements is the (function) composition of the trace semantics of the two statements, backwards starting from $\defstmt'$ to $\defstmt$.
 \item[\normalfont ($\plprogstmt$)] Finally, the trace semantics $\tracesemantics\in\tracetype$ of a program $\defprogram$ is the trace semantics of the entry statement restricted to the traces starting from the program initial states $\initialstates$, defined from the set of program final states $\finalstates$.
 \marginnote{The initial states of a program $\defprogram$ are defined as: \[\initialstates \defeq \setdef{\tuple{\initialloc[\defprogram]}{\defenv\in\env}}{\defenv\in\env}
 \]
@@ -1217,10 +1222,10 @@ The final states are states where the program execution ends without any further
 \begin{definition}[Maximal Trace Semantics of Programs]\labdef{maximal-trace-semantics-of-programs}
   The \emph{maximal trace semantics} $\tracesemantics\in\tracetype$ of a program $\defprogram$ is defined as:
   \begin{align*}
-    &\tracesemantics \DefeQ \\
-    &\tracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \setdef*{
-      \concat{\tracetuple{\bigloc}{\defenv}}{\deftrace}
-    }{\defenv\in\initialstates \land \deftrace\in\finiteinfinitesequences \land {} \\ \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\finalstates}
+    &\tracesemantics \spacearound{=}
+    \tracesemanticsnoparam \semanticsof{\plprogstmt} \DefeQ \setdef@{
+      \concat{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\deftrace}\in\tracesemanticsnoparam\semanticsof{\defstmt}\finalstates
+    }{\defenv\in\initialstates \land \deftrace\in\finiteoremptyinfinitesequences}
   \end{align*}
 \end{definition}
 \end{description}
@@ -1290,26 +1295,28 @@ Given a set of states $\defsetofstates\in\setof{\state}$, for each program state
   \marginnote{
     \begin{align*}
       &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ \\
-      &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofstates) \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofstates)
+      &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \setdef*{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\tracetuple{\bigloc}{\defenv}\in\defsetofstates \land {} \\ \bexpsemantics\defenv} \setjoin {} \\
+      &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \setdef*{\tracetuple{\initialloc[\defstmt']}{\defenv}}{\tracetuple{\bigloc}{\defenv}\in\defsetofstates \land {} \\ \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv}
     \end{align*}
   }
-  \item[\normalfont ($\plifstmt$)] The reachability semantics of a conditional statement is the union of the reachability semantics of the then and the else branch. For the then branch, $\bexpsemantics \defsetofstates$ filters out the environments that do not satisfy the boolean expression $\defbexp$ (without moving control of these states), then the reachability semantics of the then branch $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ is computed. Note that, the reachability semantics of the then branch expects control locations at the final location of the then branch, \ie{} $\finalloc[\defstmt]$, which is also the final location of the conditional statement, \cf{} \reffig{final}, hence the program locations are not updated before the branch evaluation. Similarly, for the else branch, the reachability semantics of the else branch $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}$ is computed for the environments that do not satisfy the boolean expression $\defbexp$.
+  \item[\normalfont ($\plifstmt$)] The reachability semantics of a conditional statement is the union of the reachability semantics of the then and the else branch. For the then branch, $\bexpsemantics \defsetofstates$ keeps the environments that satisfy the boolean condition $\defbexp$ and update them to the initial location $\initialloc[\defstmt]$, then the reachability semantics of the then branch $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ is computed. Note that, the reachability semantics of the then branch expects control locations at the final location of the then branch (\ie, $\finalloc[\defstmt]$) which is also the final location of the conditional statement, \cf{} \reffig{final}, hence the program locations are not updated after the branch evaluation. Similarly, for the else branch, the reachability semantics of the else branch $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}$ is computed for the environments that do not satisfy the boolean condition $\defbexp$.
   \marginnote{
     \begin{align*}
       &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plwhilestmt}\defsetofstates \DefeQ
     \\
-    &\quad\setdef@{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\tracetuple{\bigloc}{\defenv} \in \bexpsemanticsnoparam \semanticsof{\neg\defbexp}(\lfp^{\forwardreachabilitytracesubseteq} \forwardreachabilitytracetransformer)}
+    &\quad\setdef@{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}}{\tracetuple{\bigloc}{\defenv} \in \lfp^{\forwardreachabilitytracesubseteq} \forwardreachabilitytracetransformer \land \bexpsemanticsnoparam \semanticsof{\neg\defbexp}\defenv}
     \\
-    &\qquad \forwardreachabilitytracetransformer(X) \DefeQ \defsetofstates \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics X)
+    &\forwardreachabilitytracetransformer(X) \DefeQ \defsetofstates \setjoin {} \\
+    &\quad\forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \setdef*{\tracetuple{\initialloc[\defstmt]}{\defenv}}{\tracetuple{\bigloc}{\defenv} \in X \land {} \\ \bexpsemantics\defenv}
     \end{align*}
   }
-  \item[\normalfont ($\plwhilestmt$)] The reachability semantics of a while statement is the set of states with program locations updated to the final location $\finalloc[\plwhilestmt]$ that do not satisfy the boolean expression $\defbexp$ from the least fixpoint of a transformer $\forwardreachabilitytracetransformer$.
+  \item[\normalfont ($\plwhilestmt$)] The reachability semantics of a while statement is the set of states with program locations updated to the final location $\finalloc[\plwhilestmt]$ that do not satisfy the boolean condition $\defbexp$ from the least fixpoint of a transformer $\forwardreachabilitytracetransformer$\kern-0.3em.
   Program locations are updated to the final location $\finalloc[\plwhilestmt]$ because the final location of the loop statement is $\bigloc$, not the final location of the loop body $\finalloc[\defstmt]$, \cf{} \reffig{final}.
   The transformer $\forwardreachabilitytracetransformer$ takes as input a set $X\in\setof{\state}$ of states.
   Initially, $X$ is the empty set $\emptyset$.
-  At each iteration, the transformer joins $\defsetofstates$ with the reachability semantics of the loop body $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ for the environments in $X$ that satisfy the boolean expression $\defbexp$.
-  At each iteration, program locations are correctly updated from $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ to $\bigloc$, ready for another iteration or the exit of the loop.
-  The least fixpoint of the transformer $\forwardreachabilitytracetransformer$ collects all the states that can reach the final location of the loop statement $\finalloc[\plwhilestmt]$ (outside the loop) in an arbitrary number of iterations.
+  At each iteration, the transformer joins $\defsetofstates$ with the reachability semantics of the loop body $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ for the environments in $X$ updated to the initial location $\initialloc[\defstmt]$ that satisfy the boolean condition $\defbexp$.
+  Program locations are correctly updated by $\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ to $\bigloc$, ready for another iteration or the exit of the loop.
+  The least fixpoint of the transformer $\forwardreachabilitytracetransformer$ collects all the states that can reach the final location of the loop statement $\finalloc[\plwhilestmt]$ in an arbitrary number of iterations.
   \marginnote{
     \begin{align*}
       &\forwardreachabilitytracesemanticsnoparam \semanticsof{\plcompstmt}\defsetofstates \DefeQ \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}(\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\defsetofstates)
@@ -1329,11 +1336,43 @@ Given a set of states $\defsetofstates\in\setof{\state}$, for each program state
   \begin{definition}[Forward Reachability State Semantics of Programs]\labdef{forward-reachability-state-semantics}
     The \emph{forward reachability state semantics} $\forwardreachabilitytracesemantics\in\forwardreachabilitytracetype$ of a program $\defprogram$ is defined as:
     \begin{align*}
-      &\forwardreachabilitytracesemantics \DefeQ
+      &\forwardreachabilitytracesemantics \spacearound{=}
       \forwardreachabilitytracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\initialstates
     \end{align*}
   \end{definition}
 \end{description}
+
+\begin{marginfigure}
+  \resizebox{\textwidth}{!}{
+    \begin{minipage}{\textwidth}
+  \begin{align*}
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pskipstmt}\defsetofenvs \DefeQ \defsetofenvs
+    \\
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \\
+    &\quad\setdef{\updatemem{\defsetofenvs}{\defvariable}{\defvalue}}{\defvalue \in \aexpsemantics\defsetofenvs}
+       \\
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
+    \\
+    &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofenvs) \SetjoiN {} \\
+    &\quad\forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs)
+    \\
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetofenvs \DefeQ \\
+    &\quad
+    \bexpsemanticsnoparam \semanticsof{\neg\defbexp}(\lfp^{\forwardreachabilitytracesubseteq} \forwardreachabilitytracetransformer)
+    \\
+    &\qquad \forwardreachabilitytracetransformer(X) \DefeQ \defsetofenvs \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics X)
+    \\
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pcompstmt}\defsetofenvs \DefeQ \\
+    &\quad\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}(\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\defsetofenvs)
+    \\
+    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pprogstmt} \DefeQ \\
+    &\quad \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\setdef{\defenv\in\env}{\bigloc\in\locs\land\tracetuple{\bigloc}{\defenv}\in\initialstates}
+  \end{align*}
+\end{minipage}
+}
+\caption{Forward reachability state semantics without program locations.}
+\labfig{forward-reachability-state-semantics-without-location}
+\end{marginfigure}
 
 Note that, the reachability semantics presented in this section is strictly less expressive than the maximal trace semantics. For instance, it does not capture non-terminating traces.
 
@@ -1362,32 +1401,19 @@ Note that, the reachability semantics presented in this section is strictly less
 % \labfig{forward-reachability-state-semantics}
 % \end{figure}
 
-As a simplification, \reffig{forward-reachability-state-semantics-without-location} shows the forward reachability state semantics without explicitly handling program locations, in such case, the program states are just the environments, \ie, $\state = \env$.
+
+
+As a further abstraction, \reffig{forward-reachability-state-semantics-without-location} shows the forward reachability state semantics without explicitly handling program locations, in such case, the program states are just the environments, \ie, $\state = \env$. This semantics is often called the \emph{invariance semantics} \sidecite[][Section 3.3]{Urban2015c}.
+To lighten the notation, we lift to set of environments the arithmetic expression and boolean condition evaluation.
+Formally, for $\defsetofenvs\in\setof\env$, we define:
+\begin{align*}
+  \aexpsemantics\defsetofenvs &\DefeQ \setdef{\defvalue\in\values}{\defvalue\in\aexpsemanticsnoparam\semanticsof{\defaexp}\defenv \land \defenv\in\defsetofenvs} \\
+  % \bexpsemantics \defsetofstates &\DefeQ \setdef{\tracetuple{\bigloc}{\defenv}\in\defsetofstates}{\bexpsemantics\defenv} \\
+  \bexpsemantics \defsetofenvs &\DefeQ \setdef{\defenv\in\defsetofenvs}{\bexpsemantics\defenv}
+\end{align*}
 
 
 
-\begin{figure}[h]
-  \begin{align*}
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pskipstmt}\defsetofenvs \DefeQ \defsetofenvs
-    \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \setdef{\updatemem{\defsetofenvs}{\defvariable}{\defvalue}}{\defvalue \in \aexpsemantics\defsetofenvs}
-       \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
-    \\
-    &\quad \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics\defsetofenvs) \SetjoiN \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} (\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs)
-    \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetofenvs \DefeQ
-    \bexpsemanticsnoparam \semanticsof{\neg\defbexp}(\lfp^{\forwardreachabilitytracesubseteq} \forwardreachabilitytracetransformer)
-    \\
-    &\qquad \forwardreachabilitytracetransformer(X) \DefeQ \defsetofenvs \setjoin \forwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} (\bexpsemantics X)
-    \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pcompstmt}\defsetofenvs \DefeQ \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}(\forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\defsetofenvs)
-    \\
-    &\forwardreachabilitytracesemanticsnoparam \semanticsof{\pprogstmt} \DefeQ \forwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\setdef{\defenv\in\env}{\bigloc\in\locs\land\tracetuple{\bigloc}{\defenv}\in\initialstates}
-  \end{align*}
-\caption{Forward reachability state semantics without program locations.}
-\labfig{forward-reachability-state-semantics-without-location}
-\end{figure}
 
 \subsection{Backward Co-Reachability State Semantics}
 \labsec{backward-reachability-state-semantics}
@@ -1410,28 +1436,28 @@ The backward co-reachability state semantics $\backwardreachabilitytracesemantic
     \end{align*}
   }
   \item[\normalfont ($\plassignstmt$)] The backward co-reachability semantics of an assignment statement is the set of states $\tracetuple{\bigloc}{\defenv}$ such that the updated environment $\updatemem{\defenv}{\defvariable}{\defvalue}$ is in $\defsetofstates$ with program location $\finalloc[\plassignstmt]$. The value $\defvalue$ is evaluated from the arithmetic expression $\defaexp$ under the environment $\defenv$, before the assignment.
-  \marginnote{
+  \item[\normalfont ($\plifstmt$)] Similarly to the forward reachability semantics for the conditional statement,\marginnote{
     \begin{align*}
       &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plifstmt}\defsetofstates \DefeQ \\
-      &\quad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofstates) \setjoin \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofstates)
+      &\quad \setdef*{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv} \in \backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofstates \\ {} \land \bexpsemantics\defenv} \setjoin {} \\
+      &\quad \setdef*{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt']}{\defenv} \in \backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofstates \\ {} \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv}
     \end{align*}
-  }
-  \item[\normalfont ($\plifstmt$)] Similarly to the forward reachability semantics for the conditional statement, the backward co-reachability semantics is the union of the semantics applied to the branches. Slightly differently, the boolean condition is evaluated \emph{after} the branch evaluation. As the initial location of both branches is $\bigloc$, there is no need to further update the program locations.
+  } the backward co-reachability semantics is the union of the semantics applied to the branches. Slightly differently, the boolean condition is evaluated \emph{after} the branch evaluation. Program locations are updated to the initial locations of the conditional statement $\initialloc[\plifstmt]$.
   \marginnote{
     \begin{align*}
       &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plwhilestmt}\defsetofstates \DefeQ \lfp^{\backwardreachabilitytracesubseteq} \backwardreachabilitytracetransformer \\
-      & \backwardreachabilitytracetransformer(X) \DefeQ \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} X)\SetjoiN {} \\
-      &\bexpsemanticsnoparam\semanticsof{\neg\defbexp}\setdef@{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}\in\defsetofstates}
+      & \backwardreachabilitytracetransformer(X) \DefeQ \setdef*{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\initialloc[\defstmt]}{\defenv}\in\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} X \\ {} \land \bexpsemantics\defenv} \SetjoiN {} \\
+      &\quad\setdef@{\tracetuple{\bigloc}{\defenv}}{\tracetuple{\finalloc[\plwhilestmt]}{\defenv}\in\defsetofstates \\ {} \land \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defenv}
     \end{align*}
   }
-  \item[\normalfont ($\plwhilestmt$)] The backward co-reachability semantics of a while statement is the least fixpoint of the transformer $\backwardreachabilitytracetransformer$. The transformer joins the state that--instead--satisfy the boolean expression $\defbexp$ from the backward co-reachability semantics of the loop body $\backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ applied to the input of the transformer $X$, with the set of states $\defsetofstates$ that do not satisfy the boolean expression $\defbexp$.
+  \item[\normalfont ($\plwhilestmt$)] The backward co-reachability semantics of a while statement is the least fixpoint of the transformer $\backwardreachabilitytracetransformer$. The transformer joins the state that satisfy the boolean condition $\defbexp$ from the backward co-reachability semantics of the loop body $\backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}$ applied to the input of the transformer $X$, with the set of states $\defsetofstates$ that do not satisfy the boolean condition $\defbexp$.
   Note that, we update the program locations of the states in $\defsetofstates$ as otherwise when input of the next transformer iterate they would not be considered correct for the loop body as $\finalloc[\plwhilestmt] \neq \finalloc[\defstmt]$.
   \marginnote{
     \begin{align*}
       &\backwardreachabilitytracesemanticsnoparam \semanticsof{\plcompstmt}\defsetofstates \DefeQ \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}(\backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}\defsetofstates)
     \end{align*}
   }
-  \item[\normalfont ($\plcompstmt$)] Similarly to the previous semantics, the backward co-reachability semantics of a composition of two statements is their (backwards) composition.
+  \item[\normalfont ($\plcompstmt$)] Similarly to the previous semantics, the backward co-reachability semantics of a sequential composition of two statements is their (backwards) composition.
   % \marginnote{
   %   \begin{align*}
   %     &\backwardreachabilitytracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\finalstates
@@ -1444,11 +1470,42 @@ The backward co-reachability state semantics $\backwardreachabilitytracesemantic
   \begin{definition}[Backward Co-Reachability State Semantics of Programs]\labdef{backward-reachability-state-semantics}
     The \emph{backward co-reachability state semantics} $\backwardreachabilitytracesemantics\in\backwardreachabilitytracetype$ of a program $\defprogram$ is defined as:
     \begin{align*}
-      &\backwardreachabilitytracesemantics \DefeQ
+      &\backwardreachabilitytracesemantics \spacearound{=}
       \backwardreachabilitytracesemanticsnoparam \semanticsof{\progstmt} \DefeQ \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\finalstates
     \end{align*}
   \end{definition}
 \end{description}
+
+\begin{marginfigure}
+  \resizebox{\textwidth}{!}{
+    \begin{minipage}{\textwidth}
+  \begin{align*}
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pskipstmt}\defsetofenvs \DefeQ \defsetofenvs
+    \\
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \\
+    &\quad\setdef*{\defenv\in\env}{\defvalue \in \aexpsemantics\defenv \land {} \\ \updatemem{\defenv}{\defvariable}{\defvalue}\in\defsetofenvs}
+       \\
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
+    \\
+    &\quad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofenvs) \SetjoiN {} \\
+    &\quad\bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofenvs)
+    \\
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetofenvs \DefeQ \\ &\qquad
+    \lfp^{\backwardreachabilitytracesubseteq} \backwardreachabilitytracetransformer
+    \\
+    &\quad \backwardreachabilitytracetransformer(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs \SetjoiN {} \\ &\qquad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} X)
+    \\
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pcompstmt}\defsetofenvs \DefeQ \\
+    &\quad \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}(\backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}\defsetofenvs)
+    \\
+    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pprogstmt} \DefeQ \\
+    &\quad \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\setdef{\defenv\in\env}{\bigloc\in\locs\land\tracetuple{\bigloc}{\defenv}\in\finalstates}
+  \end{align*}
+\end{minipage}
+}
+\caption{Backward reachability state semantics without program location.}
+\labfig{backward-reachability-state-semantics-without-location}
+\end{marginfigure}
 
 As done for the forward reachability semantics, \reffig{backward-reachability-state-semantics-without-location} shows the backward reachability state semantics without explicitly handling program locations, in such case, the program states are just the environments, \ie, $\state = \env$.
 
@@ -1475,28 +1532,7 @@ As done for the forward reachability semantics, \reffig{backward-reachability-st
 % \end{figure}
 
 
-\begin{figure}[h]
-  \begin{align*}
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pskipstmt}\defsetofenvs \DefeQ \defsetofenvs
-    \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\passignstmt}\defsetofenvs \DefeQ \setdef{\defenv\in\env}{\defvalue \in \aexpsemantics\defenv \land \updatemem{\defenv}{\defvariable}{\defvalue}\in\defsetofenvs}
-       \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pifstmt}\defsetofenvs \DefeQ
-    \\
-    &\quad \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} \defsetofenvs) \SetjoiN \bexpsemanticsnoparam\semanticsof{\neg\defbexp}(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt'} \defsetofenvs)
-    \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pwhilestmt}\defsetofenvs \DefeQ
-    \lfp^{\backwardreachabilitytracesubseteq} \backwardreachabilitytracetransformer
-    \\
-    &\qquad \backwardreachabilitytracetransformer(X) \DefeQ \bexpsemanticsnoparam\semanticsof{\neg\defbexp}\defsetofenvs \SetjoiN \bexpsemantics(\backwardreachabilitytracesemanticsnoparam \semanticsof{\defstmt} X)
-    \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pcompstmt}\defsetofenvs \DefeQ \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}(\backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt'}\defsetofenvs)
-    \\
-    &\backwardreachabilitytracesemanticsnoparam \semanticsof{\pprogstmt} \DefeQ \backwardreachabilitytracesemanticsnoparam\semanticsof{\defstmt}\setdef{\defenv\in\env}{\bigloc\in\locs\land\tracetuple{\bigloc}{\defenv}\in\finalstates}
-  \end{align*}
-\caption{Backward reachability state semantics without program location.}
-\labfig{backward-reachability-state-semantics-without-location}
-\end{figure}
+
 
 
 \subsection{Numerical Abstract Domains}
@@ -1849,8 +1885,8 @@ The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ chec
 \end{definition}
 
   \item[Boolean Expressions]
-  Boolean expressions do not need special handle for the forward and backward cases separately, as deciding whether a boolean expression holds or not is independent of the direction of the analysis.
-  Therefore, the evaluation of boolean expressions in the interval abstract domain is defined as:
+  Boolean expressions do not need special handle for the forward and backward cases separately, as deciding whether a boolean condition holds or not is independent of the direction of the analysis.
+  Therefore, the evaluation of boolean conditions in the interval abstract domain is defined as:
   \marginnote{
     \begin{align*}
       % \defaexp \grammardef \defvalue \\
@@ -1882,7 +1918,7 @@ The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ chec
     \end{cases} \tag*{where $\interval{l}{u} = \intervalaexp \semanticsof{\defaexp} \defabstractvalue$} \\
     \intervalabstractdomainfilter \semanticsof{\defbexp \land \defbexp'} \defabstractvalue &\DefeQ \intervalabstractdomainfilter \semanticsof{\defbexp} \defabstractvalue \intervalabstractdomainmeet \intervalabstractdomainfilter \semanticsof{\defbexp'} \defabstractvalue
   \end{align*}
-  We can always solve the negation of boolean expression via De Morgan's laws.
+  We can always solve the negation of boolean condition via De Morgan's laws.
   \marginnote{
     De Morgan's laws:
     \begin{align*}
@@ -1901,9 +1937,9 @@ The partial order $\intervalsubseteq\in\pair{\intervaltype}{\intervaltype}$ chec
     &\quad\intervalabstractdomainfilter \semanticsof{\defaexp \neq \defvalue} \defabstractvalue \spacearound{=} \defabstractvalue \\
     &\intervalabstractdomainfilter \semanticsof{\defbexp \lor \defbexp'} \defabstractvalue \DefeQ \intervalabstractdomainfilter \semanticsof{\defbexp} \defabstractvalue \intervalabstractdomainjoin \intervalabstractdomainfilter \semanticsof{\defbexp'} \defabstractvalue
   \end{align*}
-  The soundness of the boolean expressions is standard, it is defined as the overapproximation of the set of environments that satisfy the boolean expression.
+  The soundness of the boolean conditions is standard, it is defined as the overapproximation of the set of environments that satisfy the boolean condition.
   \begin{definition}[Soundness of Boolean Expressions]\labdef{soundness-boolean}
-    Given a boolean expression $\defbexp$, the filter $\abstractdomainfilter \semanticsof{\defbexp}\in\abstractdomain\to\abstractdomain$ operator is a \emph{sound abstraction} of the evaluation of the boolean expression whenever it holds that:
+    Given a boolean condition $\defbexp$, the filter $\abstractdomainfilter \semanticsof{\defbexp}\in\abstractdomain\to\abstractdomain$ operator is a \emph{sound abstraction} of the evaluation of the boolean condition whenever it holds that:
   \begin{align*}
     \forall \defabstractvalue\in\abstractdomain.\spacer
     \bexpsemantics
