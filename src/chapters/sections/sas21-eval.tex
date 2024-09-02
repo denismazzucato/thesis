@@ -19,7 +19,7 @@ In this chapter, we investigate whether our two impact quantifiers for neural ne
 
 
 
-For the evaluation of \changesname, we implemented this evaluation prototype as part of the tool \impatto,\sidenote{\impattourl} \cf{} \refch{showcase}, in \python{}.
+For the evaluation of \changesname, we implemented this evaluation prototype as part of the tool \impatto\sidenote{\impattourl}, \cf{} \refch{showcase}, in \python{}.
 We extended the front-end of \impatto{} to handle neural networks written in \python{} format, and the backend to support the abstract analysis of neural networks, \cf{} \refsec{neural-network-abstract-analysis}. This prototype implements the \abstractchangesname{} abstract quantifier, which is used to quantify the impact of input features on the output of a neural network. All neural network models used in this evaluation are open source and part of \impatto.
 In particular we instrument \impatto{} to use \abstractchangesname{} starting from the output buckets representing all the target classes in the model, one for each bucket: $\buckets = \vecdef{\{\bigwedge_{j'\le m} x_{\outputlayer, j'}\le x_{\outputlayer, j}\}}{j\le m}$.
 
@@ -34,11 +34,11 @@ The number of input features ranges from at least 3, to the number of attribute 
 respectively, 10 attributes for ``\wine,'' 8 for ``\diabetes'', 17 for ``\rain'', and 13 for ``\princess''.
 The model size ranges from 2 to 6 hidden layers, each with 3 to 6 nodes, for a total of 6 to 36 nodes for each network model.
 This relatively small network size is chosen as a proof-of-concept evaluation to study \changesname{} without the need for extensive computational resources.
-All models were trained with Keras,\sidenote{\rurl{github.com/keras-team/keras}} using the Adam optimizer~\sidecite{Kingma2014} with the default learning rate, and binary crossentropy as the loss function. Each model was trained for 150 iterations.
+All models were trained with Keras\sidenote{\rurl{github.com/keras-team/keras}}, using the Adam optimizer~\sidecite{Kingma2014} with the default learning rate, and binary crossentropy as the loss function. Each model was trained for 150 iterations.
 The obtained neural network accuracy usually depends on the chosen subset of input features which is usually lower than the accuracy achieved in the literature.
 However, we remark that our study focuses on the impact analysis, therefore high accuracy is not needed in our benchmarks.
 
-% We implemented $\abstractchangesname$ in \python{}, as part of the tool \impatto.\sidenote{\impattourl}
+% We implemented $\abstractchangesname$ in \python{}, as part of the tool \impatto\sidenote{\impattourl}.
 % All models used in our experiments are open source as part of \impatto.
 % In particular, we instrument \impatto{} to use $\abstractchangesname$  starting from the output buckets represent all the target classes in the model $\defmodel$, one for each bucket: $\buckets = \vecdef{\{\bigwedge_{j'\le m} x_{\outputlayer, j'}\le x_{\outputlayer, j}\}}{j\le m}$.
 % For each model, we assume a uniform distribution of the input space.
@@ -899,7 +899,7 @@ Continue in the next pages.
 \section{Evaluation of \qlibraname{}}[\qlibraname]
 \labsec{eval-qlibra}
 
-We implement \qlibraname{} in \python{} as part of the tool \libra.\sidenote{\libraurl}
+We implement \qlibraname{} in \python{} as part of the tool \libra\sidenote{\libraurl}.
 %
 To demonstrate its effectiveness, we evaluated it on neural networks trained on
 %popular datasets in the fairness literature. Specifically, we used the Japanese Credit Screening\sidenote{\rurl{archive.ics.uci.edu/ml/datasets/Japanese+Credit+Screening}} (\textsc{japanese} in the following) and
@@ -917,10 +917,10 @@ The neural networks were trained with Keras for 50 iterations, using the RMSprop
 %
 All networks are open source as part of \libra.
 
-%We performed all the experiments using the CLEPS infrastructure,\sidenote{\rurl{paris-cluster-2019.gitlabpages.inria.fr/cleps/cleps-userguide/}} on the \texttt{cpu\_homogen} partition. Based on a 64-core Intel\textsuperscript{\tiny{\textregistered}} Xeon\textsuperscript{\tiny{\textregistered}} 5218 CPU @ 2.4GHz machine with 192GB of RAM, running CentOS 7.7. with linux kernel 3.10.0.
+%We performed all the experiments using the CLEPS infrastructure\sidenote{\rurl{paris-cluster-2019.gitlabpages.inria.fr/cleps/cleps-userguide/}}, on the \texttt{cpu\_homogen} partition. Based on a 64-core Intel\textsuperscript{\tiny{\textregistered}} Xeon\textsuperscript{\tiny{\textregistered}} 5218 CPU @ 2.4GHz machine with 192GB of RAM, running CentOS 7.7. with linux kernel 3.10.0.
 %
 
-The experiments were conducted on the Inria Paris \textsc{cleps} infrastructure,\sidenote{\rurl{paris-cluster-2019.gitlabpages.inria.fr/cleps/cleps-userguide/}} on a machine with two 16-core Intel\textsuperscript{\tiny{\textregistered}} Xeon\textsuperscript{\tiny{\textregistered}} 5218 CPU @ 2.4GHz, 192GB of RAM, and running CentOS 7.7. with linux kernel 3.10.0.
+The experiments were conducted on the Inria Paris \textsc{cleps} infrastructure\sidenote{\rurl{paris-cluster-2019.gitlabpages.inria.fr/cleps/cleps-userguide/}}, on a machine with two 16-core Intel\textsuperscript{\tiny{\textregistered}} Xeon\textsuperscript{\tiny{\textregistered}} 5218 CPU @ 2.4GHz, 192GB of RAM, and running CentOS 7.7. with linux kernel 3.10.0.
 %
 For each experiment, we report the average results of five executions to account for the effect of randomness of the environment.
 

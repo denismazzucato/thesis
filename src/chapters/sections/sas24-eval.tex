@@ -5,12 +5,12 @@
 
 \marginemptybox{2.2cm}
 
-This chapter presents \timesec,\sidenote{\timesecurl} written in about 3000 lines of \python{} code.
+This chapter presents \timesec\sidenote{\timesecurl}, written in about 3000 lines of \python{} code.
 The global loop bound analysis is based on the numerical library \apron{} \sidecite{Jeannet2009}, we instrumented the analysis with widening and narrowing operators after 2 fixpoint iterations.
-For the linear programming encoding, we used the \python{} library \scipy.\sidenote{\rurl{scipy.org}}
+For the linear programming encoding, we used the \python{} library \scipy\sidenote{\rurl{scipy.org}}.
 In this chapter, we discuss some implementation features that make the analysis scalable, precise, and able to handle real-world programs.
-We evaluate \timesec{} on the \bignum{} library,\sidenote{\bignumurl} a collection of arithmetic routines designed for cryptographic applications, and on the \svcomp{} benchmarks.\sidenote{\svcompurl}
-An artifact of \timesec, including the source code, the benchmarks, and the evaluation results, is available on Zenodo.\sidenote{\timeseczenodo}
+We evaluate \timesec{} on the \bignum{} library\sidenote{\bignumurl}, a collection of arithmetic routines designed for cryptographic applications, and on the \svcomp{} benchmarks\sidenote{\svcompurl}.
+An artifact of \timesec, including the source code, the benchmarks, and the evaluation results, is available on Zenodo\sidenote{\timeseczenodo}.
 This chapter is based on the work presented at the 31st Static Analysis Symposium (SAS 2024)~\sidecite{Mazzucato2024c}.
 
 
@@ -134,7 +134,7 @@ x = x - y %\labline{second}%
 \index{Side-Channel Attacks!Timing Side-Channels}
 
 
-In this section, we showcase the potential of \timesec{} on the \bignum{} library.\sidenote{\rurl{github.com/awslabs/s2n-bignum}}
+In this section, we showcase the potential of \timesec{} on the \bignum{} library\sidenote{\rurl{github.com/awslabs/s2n-bignum}}.
 % In \Appendix{sv-comp}, we show an evaluation on the \svcomp{} benchmarks, focusing on the effect of changes in the input space, the analysis time, and the categorization of input variables.
 %
 % \subsection{\texorpdfstring{\bignum{} Library}{S2N Bignum Library}}

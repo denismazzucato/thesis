@@ -261,7 +261,7 @@ else:
 \begin{example}\labexample{output-observer-landing}
   Consider the \refprog{landing-alarm-system}, called for simplicity program \landingprogram{} in the following. The goal of program \landingprogram{} is to inform the pilot about the level of risk associated with the landing approach.
   It takes two input variables, denoted as \texttt{angle} and \texttt{speed}, for the aircraft-airstrip alignment angle and the aircraft speed, respectively.
-A value of 1 represents a good alignment while -4 a non-aligned angle, whereas 1, 2, 3 denote low, medium, and high speed.\sidenote{We initially focus on discrete values to simplify the example and convey the concept. We expand to continuous inputs in \refch{showcase}.}
+A value of 1 represents a good alignment while -4 a non-aligned angle, whereas 1, 2, 3 denote low, medium, and high speed\sidenote{We initially focus on discrete values to simplify the example and convey the concept. We expand to continuous inputs in \refch{showcase}.}.
 A safer approach is indicated by lower speed.
 The landing risk coefficient combines the absolute landing angle and speed.
 The output variable \texttt{risk} is the danger level with possible values $\{0, 1, 2, 3\}$, where 0 represents low danger and 3 high danger.
@@ -802,7 +802,7 @@ The output semantics $\outputsemanticsnoparam$ is sound and complete for validat
 \end{proof}
 
 \reflemma{range-monotonic} and \reflemma{range-validation} show that the $\rangename$ impact quantifier can be used to certify that a program has impact of \emph{at most} $\defbound$. In the present of deterministic systems, an impact quantity of zero implies that the input variable is unused.
-Otherwise, similarly to $\rangename$, the input variable may have an impact on the program computation even if not used.\sidenote{See \refexample{outcomes-nondeterminism} for a similar discussion of the \outcomesname{} impact quantifier when applied to programs containing nondeterministic statements.}
+Otherwise, similarly to $\rangename$, the input variable may have an impact on the program computation even if not used\sidenote{See \refexample{outcomes-nondeterminism} for a similar discussion of the \outcomesname{} impact quantifier when applied to programs containing nondeterministic statements.}.
 
 Notably, the property $\boundedrangele$ (with the operator $\le$) is subset-closed, \ie, if a program semantics satisfies the property, then all its subsets also satisfy the property.
 
@@ -2355,7 +2355,7 @@ However, it holds that:
   \abstractqused \neq 0 &\ImplieS \neg\synunused \\
   \synunused &\ImplieS \abstractqused = 0
 \end{align*}
-In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used.\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used} Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
+In words, whenever the abstract implementation $\abstractqused$ returns a strictly positive quantity, it means that the input variables $\definputvariables$ are definitely used in the program $\defprogram$, and thus also syntactically used\sidenote{Note the double negation in the predicate $\neg\synunusedname$: being not syntactically unused is equivalent to be syntactically used}. Whenever the syntactic dependency analysis $\synunused$ holds, it means that the input variables $\definputvariables$ are definitely not used in the program $\defprogram$, and thus also not used in the abstract implementation $\abstractqused$.
 
 \section{Related Work}
 \labsec{nfm24-related-work}

@@ -24,15 +24,15 @@ We introduced three different quantifiers: \outcomesname{}, \rangename{}, and \q
 \outcomesname{} counts distinct outcomes, \rangename{} measures the range of outcome values, and \qusedname{} counts the number of input values not used to produce outcomes.
 We developed a static analysis to automatically compute a sound bound on the impact according to an abstract implementation of the given quantifier.
 These results are guaranteed to be sound by abstract interpretation, formally ensuring that the computed bounds are sound \wrt{} the actual impact.
-A prototype implementation, \impatto,\sidenote{\impattourl} demonstrated the feasibility of our approach on a set of sample programs.
+A prototype implementation, \impatto\sidenote{\impattourl}, demonstrated the feasibility of our approach on a set of sample programs.
 
 \paragraph{Impact of Input Features.} Our second contribution extends the quantitative framework to neural networks.
 Recognizing that \outcomesname{}, \rangename{}, and \qusedname{} do not meaningfully capture the impact of input features on neural network classification, we introduced two new quantifiers: \changesname{} and \qlibraname{}. These quantifiers are specifically designed to address the non-linear behavior inherent from the input space of neural networks.
-We evaluated our method by extending two tools, \impatto{} and \libra{}.\sidenote{\libraurl}
+We evaluated our method by extending two tools, \impatto{} and \libra{}\sidenote{\libraurl}.
 Our experiments confirmed that these quantifiers effectively capture the impact of input features on neural network classifications.
 
 
-\paragraph{Impact on Execution Time.} Our final contribution applies the quantitative framework to discover the impact related to the number of loop iterations in programs, which can estimate the effect of input variables on program execution time. We implemented this analysis in a tool called \timesec,\sidenote{\timesecurl} which automatically computes an upper bound on the impact of input data on loop iterations. Notably, we certified that the \bignum{} library\sidenote{\bignumurl} is free from timing side-channel vulnerabilities, providing stronger guarantees than previous empirical results.
+\paragraph{Impact on Execution Time.} Our final contribution applies the quantitative framework to discover the impact related to the number of loop iterations in programs, which can estimate the effect of input variables on program execution time. We implemented this analysis in a tool called \timesec\sidenote{\timesecurl}, which automatically computes an upper bound on the impact of input data on loop iterations. Notably, we certified that the \bignum{} library\sidenote{\bignumurl} is free from timing side-channel vulnerabilities, providing stronger guarantees than previous empirical results.
 
 % \frenchdiv
 
