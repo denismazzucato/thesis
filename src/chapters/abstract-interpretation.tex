@@ -12,12 +12,14 @@
 \labch{abstract-interpretation}
 
 
-\marginemptybox{11.6cm}
+\marginemptybox{11.1cm}
 
 In this chapter, we define the notations and introduce the necessary set theoretic and logic concepts to understand the rest of the thesis, we assume a basic knowledge of mathematics.
 Afterwards, we present an overview of Abstract Interpretation.
 
-\emph{Dans ce chapitre, nous introduisons les concepts qui constituent la base de ce travail. Nous supposons une connaissance de base en mathématiques, nous résumons les éléments nécessaires en théorie des ensembles et en logique. Nous présentons un aperçu de l'interprétation abstraite et définissons les notations et concepts qui seront utilisés dans le reste de la thèse.}
+\frenchdiv
+
+\emph{Dans ce chapitre, nous définissons les notations et introduisons les concepts nécessaires en théorie des ensembles et en logique pour comprendre le reste de la thèse, en supposant une connaissance de base des mathématiques. Par la suite, nous présentons un aperçu de l'interprétation abstraite.}
 
 \section{Set Theory}
 
@@ -939,6 +941,30 @@ A statement $\defstmt$ is either a skip statement $\skipstmt$, an assignment sta
 Arithmetic expressions $\defaexp$ are either a constant value $\defvalue\in\values$, variable $\defvariable\in\variables$, an addition $\defaexp + \defaexp$, a subtraction $\defaexp - \defaexp$, or a non-deterministic choice $\randval(l, u)$ that returns a random integer between $l\in\Zinf$ and $u\in\Zinf$\sidenote{Note that, the non-deterministic choice cannot be instantiated as $\randval(+\infty,+\infty)$ as we require the two bounds to be not equal.}. The non-deterministic choice is useful to model user input, to approximate function calls, arithmetic expressions that cannot be represented exactly in our language, or -- generally -- uncertainty in the program.
 %
 Boolean expressions $\defbexp$ are either a comparison between arithmetic values $\defaexp \le \defvalue$ and $\defaexp = \defvalue$, a conjunction $\defbexp \land \defbexp$, or a negation $\lnot \defbexp$.
+The operator $\variablesofname$ takes as input an arithmetic expression or boolean condition and returns the set of variables that appear in the expression or condition. Formally:
+
+\begin{minipage}{.45\textwidth}
+\begin{align*}
+  \variablesof{\defvalue} &\DefeQ \emptyset \\
+  \variablesof{\defvariable} &\DefeQ \{\defvariable\} \\
+  \variablesof{\defaexp + \defaexp'} &\DefeQ \\
+  \tag*{$\variablesof{\defaexp} \setjoin \variablesof{\defaexp'}$} \\
+  \variablesof{\defaexp - \defaexp'} &\DefeQ \\
+  \tag*{$\variablesof{\defaexp} \setjoin \variablesof{\defaexp'}$} \\
+  \variablesof{\randval(l, u)} &\DefeQ \emptyset
+\end{align*}
+\end{minipage}
+\hfill
+\begin{minipage}{.4\textwidth}
+\begin{align*}
+  \variablesof{\defaexp \le \defvalue} &\DefeQ \variablesof{\defaexp} \\
+  \variablesof{\defaexp = \defvalue} &
+   \DefeQ \variablesof{\defaexp} \\
+  \variablesof{\defbexp \land \defbexp'} &\DefeQ \\
+  \tag*{$\variablesof{\defbexp} \setjoin \variablesof{\defbexp'}$} \\
+  \variablesof{\lnot \defbexp} &\DefeQ \variablesof{\defbexp}
+\end{align*}
+\end{minipage}
 
 \begin{remark}[{Syntactic Sugar}]
   The syntax depicted in \reffig{syntax} is minimalistic. Through \emph{syntactic sugar}, we can extend the language with additional constructs that are not part of the core language but can be expressed in terms of the core constructs. For instance, we can define a shorthand version of the conditional statement as just $\shortifstmt$ without the else branch. Such syntactic sugar expands to $\ifstmt[\defstmt][\skipstmt]$.
@@ -1020,7 +1046,7 @@ The update of an environment $\defenv$ with a variable $\defvariable$ to a value
 \labfig{initial}
 \end{marginfigure}
 
-\begin{figure}[t!]
+\begin{figure}[b]
   \centering
   \begin{subfigure}{.45\textwidth}
   \begin{align*}

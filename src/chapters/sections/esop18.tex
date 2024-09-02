@@ -5,8 +5,9 @@
 \labch{input-data-usage}
 \index{Input Data Usage}
 
+\marginemptybox{5cm}
 
-In this chapter, we introduce the notion of input data usage as proposed by \textcite{Urban2018}.
+In this chapter, we introduce the notion of input data usage as proposed by \sidecite{Urban2018}.
 In particular, we include output abstractions in the definition of an unused input variable, obtaining a more general definition.
 Through this chapter, we study relations among abstract non-interference and the unused predicate and their use in the context of non-deterministic programs.
 Then, we present a \emph{sound and complete} hierarchy of semantics that contains only, and exactly, the information needed to reason about the usage of input variables.
@@ -16,12 +17,7 @@ Later in the next chapters, we will define a quantitative measure of usage of in
 
 \frenchdiv
 
-\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée telle que proposée par \sidetextcite{Urban2018}.
-En particulier, nous incluons des abstractions de sortie dans la définition d'une variable d'entrée inutilisée, obtenant ainsi une définition plus générale.
-Dans ce chapitre, nous étudions les relations entre la non-interférence généralisée et le prédicat inutilisé, ainsi que leur utilisation dans le contexte des programmes non déterministes.
-Ensuite, nous présentons une hiérarchie de sémantique qui contient uniquement et exactement les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée.
-Enfin, nous montrons une abstraction \emph{sound} de la propriété inutilisée recueillant les dépendances syntaxiques entre les variables.
-Dans les prochains chapitres, nous définirons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
+\emph{Dans ce chapitre, nous introduisons la notion d'utilisation des données d'entrée telle que proposée par \textcite{Urban2018}. En particulier, nous incluons des abstractions de sortie dans la définition d'une variable d'entrée non utilisée, obtenant ainsi une définition plus générale. Tout au long de ce chapitre, nous étudions les relations entre la non-interférence abstraite et le prédicat de non-utilisation, ainsi que leur utilisation dans le contexte des programmes non déterministes. Ensuite, nous présentons une hiérarchie de sémantiques \emph{correcte et complète} qui contient uniquement, et exactement, les informations nécessaires pour raisonner sur l'utilisation des variables d'entrée. Enfin, nous montrons une abstraction \emph{correcte} de la propriété de non-utilisation en collectant les dépendances syntaxiques entre les variables. Dans les prochains chapitres, nous définirons une mesure quantitative de l'utilisation des variables d'entrée, en étendant la notion qualitative présentée dans ce chapitre.}
 
 \section{Input Data Usage}
 \labsec{input-data-usage}
@@ -1282,13 +1278,6 @@ Similarly, we define the reduction of a set of sets of dependencies $\defsetofse
 \labsec{syntactic-dependency-analysis}
 \index{Syntactic Dependency Analysis}
 
-From \sidetextcite[][Section 10]{Urban2018}, we report a data usage analysis based on \emph{syntactic} dependencies between program variables.
-The analysis captures both implicit and explicit flows of information between variables.
-To do so, it tracks when a variable is used or modified in a statement also based on the nesting level. The idea is that a variable also depend on variables that are not explicitly assigned to it.
-For instance, if a variable is modified within a loop body, it depends on the variables of the loop condition.
-More formally, each variable in the program maps a value in the \usage{} complete lattice, \reffig{usage-lattice}.
-The lattice contains the following elements: $\usedtag$ (\emph{\underline{u}sed}) and $\unusedtag$ (\emph{\underline{u}nused}) denoting respectively that a variable may be used or is definitely not used at the current nesting level.
-The elements $\belowtag$ (\emph{\underline{b}elow}) and $\overwrittentag$ (\emph{over\underline{w}ritten}) denote that a variable may be used at a lower nesting level or is modified at the current nesting level, respectively.
 
 \begin{marginfigure}
   \centering
@@ -1303,7 +1292,35 @@ The elements $\belowtag$ (\emph{\underline{b}elow}) and $\overwrittentag$ (\emph
   \labfig{usage-lattice}
 \end{marginfigure}
 
-A variable is (explicitly) used if it is assigned to another variable that is used in the current ($\usedtag$) or lower nesting level ($\belowtag$).
+From \sidetextcite[][Section 10]{Urban2018}, we report a data usage analysis based on \emph{syntactic} dependencies between program variables.
+The analysis captures both implicit and explicit flows of information between variables.
+To do so, it tracks when a variable is used or modified in a statement also based on the nesting level. The idea is that a variable also depend on variables that are not explicitly assigned to it.
+For instance, if a variable is modified within a loop body, it depends on the variables of the loop condition.
+More formally, each variable in the program maps a value in the \usage{} complete lattice, \reffig{usage-lattice}.
+The lattice contains the following elements: $\usedtag$ (\emph{\underline{u}sed}) and $\unusedtag$ (\emph{\underline{u}nused}) denoting respectively that a variable may be used or is definitely not used at the current nesting level.
+The elements $\belowtag$ (\emph{\underline{b}elow}) and $\overwrittentag$ (\emph{over\underline{w}ritten}) denote that a variable may be used at a lower nesting level or is modified at the current nesting level, respectively.
+
+\begin{marginfigure}
+  \begin{align*}
+    \defaexp \grammardef \defvalue \\
+      \linesep \defvariable \\
+      \linesep \defaexp + \defaexp \\
+      \linesep \defaexp - \defaexp \\
+      \linesep \randval(l, u) \tag{$l\in\Zinf \land l < u$} \\
+    \defbexp \grammardef \defaexp \le \defvalue \\
+      \linesep \defaexp = \defvalue \\
+      \linesep \defbexp \land \defbexp \\
+      \linesep \lnot \defbexp \\
+    \defstmt \grammardef \lskipstmt\\
+      \linesep \lassignstmt\\
+      \linesep \lifstmt \\
+      \linesep \lwhilestmt \\
+      \linesep \lcompstmt \\
+    \defprogram \grammardef \lprogstmt \tag{$\bigloc \in \locs$}
+  \end{align*}
+\end{marginfigure}
+
+Based on the syntax of the simple programming language of \reffig{syntax}, reported on the side, a variable is (explicitly) used if it is assigned to another variable that is used in the current ($\usedtag$) or lower nesting level ($\belowtag$).
 We define the operator $\usageassign\semanticsof{\assignstmt}$ to handle the assignment of variables on a map $\usagemap\in\variables\to\usage$ as follows:
 
 
@@ -1325,7 +1342,7 @@ We define the operator $\usagefilter\semanticsof{\defbexp}$ to handle boolean co
   & \usagefilter\semanticsof{\defbexp}(\usagemap) \DefeQ \\
   &\qquad \lambda \defvariable'.
   \begin{cases}
-    \usedtag & \defvariable' \in \variablesof{\defaexp} \land \exists \defvariable \in \variables.\spacer \usagemap(\defvariable) \in\{ \usedtag, \overwrittentag\} \\
+    \usedtag & \defvariable' \in \variablesof{\defbexp} \land \exists \defvariable \in \variables.\spacer \usagemap(\defvariable) \in\{ \usedtag, \overwrittentag\} \\
     \usagemap(\defvariable') & \text{ otherwise}
   \end{cases}
 \end{align*}
@@ -1470,4 +1487,4 @@ Notably, we will exploit the output abstraction to obtain numerical values from 
 
 \frenchdiv
 
-\emph{Dans ce chapitre, nous avons introduit la notion d'utilisation des données d'entrée et défini une version généralisée inspirée de la définition de la non-interférence abstraite. Nous avons présenté la hiérarchie des sémantiques qui permet de raisonner sur l'utilisation des variables d'entrée d'un programme. Nous avons montré une abstraction recueillant les dépendances syntaxiques entre les variables. Dans le prochain chapitre, nous définirons une contrepartie quantitative de l'utilisation des données d'entrée, capable de mesurer l'impact des variations des données d'entrée sur le résultat d'un programme. Notamment, nous exploiterons l'abstraction de sortie pour obtenir des valeurs numériques à partir des états de sortie.}
+\emph{Dans ce chapitre, nous avons introduit la notion d'utilisation des données d'entrée et défini une version abstraite inspirée de la définition de la non-interférence abstraite. Nous avons présenté la hiérarchie des sémantiques permettant de raisonner sur l'utilisation des variables d'entrée d'un programme. Nous avons montré une sémantique calculable qui collecte les dépendances syntaxiques entre les variables. Dans le prochain chapitre, nous définirons une contrepartie quantitative de l'utilisation des données d'entrée, capable de mesurer l'impact des variations des données d'entrée sur le résultat d'un programme. Notamment, nous exploiterons l'abstraction de sortie pour obtenir des valeurs numériques à partir des états de sortie.}
