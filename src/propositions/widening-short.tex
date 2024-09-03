@@ -1,0 +1,7 @@
+Let $\tuple{\abstractdomain}{\abstractdomainsubseteq}$ be an abstract domain.
+    A binary operator $\abstractdomainwidening\in\pair\abstractdomain\abstractdomain\to\abstractdomain$ is a \emph{widening} operator whenever it holds that:
+    \begin{enumerate}
+      \item $\abstractdomainwidening$ computes an upper bound:
+      $\forall \defabstractvalue, \defotherabstractvalue \in \abstractdomain.\spacer \defabstractvalue \abstractdomainsubseteq \defotherabstractvalue \abstractdomainsubseteq \defabstractvalue \abstractdomainwidening \defotherabstractvalue$, and
+      \item $\abstractdomainwidening$ enforces termination: for any infinite sequence of abstract elements $\defabstractvalue_1, \defabstractvalue_2, \dots \in \abstractdomain$, the sequence $\defotherabstractvalue_1, \defotherabstractvalue_2, \dots$ computed as $\defotherabstractvalue_1 = \defabstractvalue_1$ and $\defotherabstractvalue_{i+1} = \defotherabstractvalue_i \abstractdomainwidening \defabstractvalue_{i+1}$ stabilizes after a finite number of iterations, \ie, there exists an $n \in \Npos$ such that $\defotherabstractvalue_n = \defotherabstractvalue_{n+1}$.
+    \end{enumerate}

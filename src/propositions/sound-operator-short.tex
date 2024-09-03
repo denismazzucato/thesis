@@ -1,0 +1,4 @@
+Given a concrete domain $\tuple{X}{\sqsubseteq_X}$ and an abstract domain $\tuple{X^\natural}{\sqsubseteq_{X^\natural}}$, then an abstract operator $f^\natural\in X^\natural \to X^\natural$ is a \emph{sound abstraction} of a concrete operator $f\in X \to X$, if and only if:
+    \begin{align*}
+      \forall x^\natural \in X^\natural.\spacer f(\abstractdomainconcretization(x^\natural)) \sqsubseteq_X \abstractdomainconcretization(f^\natural(x^\natural))
+    \end{align*}
