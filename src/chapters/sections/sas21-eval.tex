@@ -1247,14 +1247,14 @@ As expected, adding more CPUs always improves \libra{} running time. The most li
 \reftab{cpus} additionally shows the estimated percentage of bias detected with each abstract domain, \ie, \libra{} is able to certify fairness for about $95\%$ of the neural network input space. Note that, the bias estimate depends on the partitioning of the input space computed by the pre-analysis, \cf{} \refsec{parallel-implementation-qlibra}. This explains the different percentages found even by runs with the same abstract domain. Within the same column, the difference is at most $0.14\%$ on average.
 
 
-\begin{marginfigure}[*-5]
+\begin{marginfigure}
   \centering
   \includegraphics[width=\textwidth]{figures/old}
   \caption{Former Task Scheduling}
   \labfig{old}
 \end{marginfigure}
 
-\begin{marginfigure}[*16]
+\begin{marginfigure}
   \centering
   \includegraphics[width=\textwidth]{figures/new}
   \caption{Current Task Scheduling}

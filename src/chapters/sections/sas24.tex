@@ -36,8 +36,7 @@ We present a concrete semantics extended with the global loop counter for the si
     \defaexp \grammardef \defvalue  \sep \defvariable \sep \defaexp + \defaexp \sep \defaexp - \defaexp  \\
     \defbexp \grammardef \defaexp \le \defvalue \sep \defaexp = \defvalue \sep \defbexp \land \defbexp \sep \lnot \defbexp \\
     \defstmt \grammardef \skipstmt
-    \sep \assignstmt
-    \sep \assertstmt\\
+    \sep \assignstmt \\
     \linesep \ifstmt \\
     \linesep \whilestmt \\
     \linesep \compstmt \\
@@ -50,9 +49,9 @@ We present a concrete semantics extended with the global loop counter for the si
 In order to accumulate the number of iterations of (all) loops in the program, we introduce a variable $\counter\not\in\variables$, called the \emph{global loop counter}.
 Consequently, we extend the program states to include the value of the global loop counter, \ie, $\state$ maps from variables in $\variablesandcounter\defeq\variables\setjoin\{\counter\}$ to values in $\values$.
 As a consequence, $\counter$ is not an input variable either, \ie, $\counter\notin\inputvariables$.
-We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the global loop counter as follows:
-
-\marginnote{For simplicity, we omit program locations in the maximal trace semantics of \refdef{counter-semantics}}
+In the following, we extend the maximal trace semantics $\tracesemanticsnoparam$ to include the global loop counter.
+For simplicity, we omit program locations from the semantics, as they are not relevant for the analysis.
+\newpage
 \index{Maximal Trace Semantics!Global Loop Counter}
 \begin{definition}[Maximal Trace Semantics with the Global Loop Counter]\labdef{counter-semantics}
   The semantics $\countertracesemanticsnoparam\in\tracetype\to\tracetype$ is defined as:
@@ -64,10 +63,6 @@ We extend the maximal trace semantics $\tracesemanticsnoparam$ to include the gl
   &\countertracesemanticsnoparam \semanticsof{\passignstmt}\defsetoftraces \DefeQ \\
   % \setdef{\defstate\in\state}{\defvalue \in \aexpsemantics \land \updatemem{\defstate}{\defvariable}{\defvalue} \in \defsetoftraces }
   &\quad \setdef{\concat{\defstate \updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace}}{\defstate \in \state \land \defvalue \in \aexpsemantics \defstate \land \deftrace\in \finiteoremptyinfinitesequences \land \concat{\updatemem{\defstate}{\defvariable}{\defvalue}}{\deftrace} \in \defsetoftraces}
-  \\
-  &\countertracesemanticsnoparam \semanticsof{\passertstmt}\defsetoftraces \DefeQ
-  % \bexpsemantics\defsetoftraces
-  \setdef{\concat{\defstate}{\deftrace}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \defsetoftraces}
   \\
   &\countertracesemanticsnoparam \semanticsof{\pifstmt}\defsetoftraces \DefeQ
   \\
@@ -100,7 +95,7 @@ Therefore, the global loop counter $\counter$ contains the number of iterations 
 % The hierarchy of semantics applies accordingly from the maximal trace semantics.
 % Thus, from the semantics abstractions we obtain the collecting semantics $\countercollectingsemanticsnoparam \defeq \{ \countertracesemanticsnoparam \}$, the dependency semantics $\counterdependencysemanticsnoparam \defeq \dependencyabstraction(\countercollectingsemanticsnoparam)$, and the output semantics $\counteroutputsemanticsnoparam \defeq \outputabstraction(\counterdependencysemanticsnoparam)$.
 
-\begin{marginlisting}[*-23]
+\begin{marginlisting}[*-24]
   \caption{Program \add, computing the sum of two numbers \texttt{x} and \texttt{y} into \texttt{z}.}
   \labprog{add}
   \vspace{15pt}
@@ -467,13 +462,14 @@ The concretization $\backwardconcretization$ restores all possible input states 
 % To some extent, $\counter=0$ could be seen as a single output bucket, which intuitively is compatible and covers all the possible output states.
 %
 % The soundness of the abstract semantics is adjusted accordingly, to handle the absence of the output buckets.
+\newpage
 For the backward semantics $\counterbackwardsemanticsnoparam$ to be sound, we require the concretization $\backwardconcretization$ to over-approximate the backward co-reachability semantics $\counterbackwardreachabilitysemanticsnoparam$.
 Formally, for all programs $\defprogram$, it should hold that:
 \begin{equation}
   \labeq{sound-abstract-dependency-semantics}
   \counterbackwardreachabilitysemantics\SubseteQ\backwardconcretization(\counterbackwardsemantics)
 \end{equation}
-%
+
 The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allows any sound global loop bound analysis $\counterbackwardsemanticsnoparam$ to verify the $\defbound$-bounded impact property $\boundedrange$.
 % Note that, originally in \refdef*{sound-over-approximation} we required the concretization to be a sound over-approximation of the output-abstraction semantics.
 % However, in the context of the global loop bound analysis, the output-abstraction semantics is not needed, as the output observer is the identity function.
@@ -489,9 +485,6 @@ The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allo
     \\
     &\counterbackwardsemanticsnoparam \semanticsof{\assignstmt}\defabstractvalue \DefeQ
       \abstractdomainsubstitute{\defvariable}{\defaexp}\defabstractvalue
-    \\
-    &\counterbackwardsemanticsnoparam \semanticsof{\assertstmt}\defabstractvalue \DefeQ
-      \abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue
     \\
     &\counterbackwardsemanticsnoparam \semanticsof{\ifstmt[\defstmt][\defstmt']}\defabstractvalue \DefeQ
       \\
@@ -517,6 +510,7 @@ The soundness condition, \cf{} \refeq{sound-abstract-dependency-semantics}, allo
     \numberthis \labeq{backward-init}
 \end{align*}
 \end{figure}
+
 A possible candidate semantics for the global loop bound analysis $\counterbackwardsemanticsnoparam\in\counterbackwardtype$ is defined in \reffig{backward-semantics}.
 The semantics $\counterbackwardsemanticsnoparam$ is a \textit{backward co-reachability semantics} instrumented to increment the loop counter $\counter$ at each loop iteration, \cf{} \refeq{backward-incr}.
 The loop counter $\counter$ is handled semantically in the abstract domain without loss of precision, initialized to $0$ at the program exit, \cf{} \refeq{backward-init}.
@@ -532,10 +526,12 @@ The following result states the soundness of the backward semantics defined in \
     \counterbackwardreachabilitysemantics \SubseteQ \backwardconcretization(\counterbackwardsemantics)
   \end{equation*}
 \end{lemma}
-\begin{proof}[Proof]
-  We prove by induction on the syntax of the program that the global loop bound semantics $\counterbackwardsemantics$, \cf{} \reffig{backward-semantics}, is a sound over-approximation of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$, \cf{} \refdef*{backwardreachability-semantics}. Regarding the base cases, we have:
+
+\begin{proof}
+  We prove by induction on the syntax of the program that the global loop bound semantics $\counterbackwardsemantics$, \cf{} \reffig{backward-semantics}, is a sound over-approximation of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$, \cf{} \refdef{backwardreachability-semantics}. Regarding the base cases, we have:
+
   % \begin{figure*}
-  \siderefbox{def}{counter-semantics}
+  % \siderefbox{def}{counter-semantics}
   \begin{align*}
     &(\skipstmt) \\
     &\quad
@@ -562,6 +558,12 @@ The following result states the soundness of the backward semantics defined in \
 %   \end{align*}
 % \end{figure*}
 % \begin{figure*}
+
+\siderefbox{eq}{counter-backward-concretization}
+\siderefbox{eq}{sound-abstract-dependency-semantics}
+\siderefbox{def}{backwardreachability-semantics}
+\siderefbox{def}{counter-semantics}
+
   \begin{align*}
     &(\assignstmt) \\
     &\quad
@@ -581,33 +583,9 @@ The following result states the soundness of the backward semantics defined in \
     &\quad
       = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\assignstmt} \defabstractvalue)
   \end{align*}
+
 % \end{figure*}
 % \begin{figure*}
-\siderefbox{eq}{counter-backward-concretization}
-\siderefbox{eq}{sound-abstract-dependency-semantics}
-\siderefbox{def}{backwardreachability-semantics}
-\siderefbox{def}{counter-semantics}
-  \begin{align*}
-    &(\assertstmt) \\
-    &\quad
-      \counterbackwardreachabilitysemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue) && \tag{by \refdefshort{backwardreachability-semantics}} \\
-    &\quad
-      =\{\setdef{\retrieveinput\deftrace}{\deftrace\in\countertracesemanticsnoparam \semanticsof{\assertstmt} \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by \refdefshort{counter-semantics}} \\
-    &\quad
-      =\{\setdef{\retrieveinput{(\concat{\defstate}{\deftrace})}}{\defstate \in \state \land \deftrace \in \finiteoremptyinfinitesequences \land \bexpsemantics\defstate \land \concat{\defstate}{\deftrace} \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by $\deftrace = \emptysequence$} \\
-    &\quad
-      =\{\setdef{\retrieveinput{(\defstate)}}{\defstate \in \state \land \bexpsemantics\defstate \land \defstate \in \abstractdomainconcretization(\defabstractvalue)}\} && \tag{by set property} \\
-    &\quad
-      =\{\setdef{\retrieveinput{(\defstate)}}{\defstate \in \abstractdomainconcretization(\defabstractvalue) \land \bexpsemantics\defstate}\} && \tag{by $\retrieveinput{(\defstate)} = \defstate$} \\
-    &\quad
-      =\{\setdef{\defstate\in\abstractdomainconcretization(\defabstractvalue)}{\bexpsemantics\defstate}\} && \tag{by \refdefshort{concretization-of-conjunctions-of-linear-constraints}} \\
-    &\quad
-      \subseteq \setof{\abstractdomainconcretization(\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue)} && \tag{by $\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue$} \\
-    &\quad
-      = \backwardconcretization(\abstractdomainfilter\semanticsof{\defbexp}\defabstractvalue) && \tag{by \reffigshort{backward-semantics}} \\
-    &\quad
-      = \backwardconcretization(\counterbackwardsemanticsnoparam \semanticsof{\assertstmt} \defabstractvalue)
-  \end{align*}
   \begin{align*}
   &(\progstmt) \\
   &\quad

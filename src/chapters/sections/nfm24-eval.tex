@@ -173,6 +173,7 @@ The input variable $\texttt{flight\_cost\_usd}$ has the biggest impact on the ou
 
 These results confirm the user expectations about the proposed program from ChatGPT: the flight cost yields the biggest impact as it cannot be shared among friends.
 
+\newpage
 
 \section{Termination Analysis (A)}
 \labsec{termination-analysis-A}
@@ -206,27 +207,6 @@ The analysis results are illustrated in~\reftab{termination-analysis}, they show
 Modifying the value of $\texttt{x}$ can result in the program terminating within any of the other 50 iteration ranges.
 On the other hand, perturbations on $\texttt{y}$ can only result in the program terminating within 10 different iteration ranges.
 Such difference is motivated by the fact that $\texttt{y}$ is only used to determine the number of iterations in the case where $\texttt{y}$ is greater than 50, otherwise it is not used at all. Therefore, two values of $\texttt{y}$, \eg, $y_0$ and $y_1$, only result in two different ranges of iterations required to make the program terminate if either both of them are below $50$ or $y_0 < 50\land y_1 \ge 50$ or $y_0\ge50\land y_1 <50$, not in all the cases.
-
-\begin{marginlisting}[*-14]
-  \caption{Example program from termination analysis.}
-  \labprog{timing-analysis}
-  \vspace{15pt}
-\begin{lstlisting}[
-    language=customPython,
-    style=mystyle,
-    escapechar=\%,
-    ]
- def example(x, y):
-   counter = 0
-   while x >= 0:
-     if y <= 50:
-       x += 1
-     else
-       x -= 1
-     y += 1
-     counter += 1
-\end{lstlisting}
-\end{marginlisting}
 
 \begin{margintable}
   \caption{Quantitative input usage for \refprog{timing-analysis}.}

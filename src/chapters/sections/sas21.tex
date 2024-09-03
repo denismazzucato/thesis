@@ -1554,7 +1554,7 @@ Partitioning may continue until the volume of the partition is below a certain t
 Finally, whenever the partition is smaller than $\lowerbound$ (\cf{} \refline{lower}), we exclude it from the set of partitions to be analyzed until more resources become available (\cf{} \refline{excluded}).
 Note that, the forward analysis does not need expressive and slow abstract domain since it does not need to precisely handle polyhedral constraints.
 
-\begin{marginalgorithm}[*-13]
+\begin{marginalgorithm}
   \caption{Parallel Implementation $\parallelqlibra$}
   \labalg{parallel-qlibra}
 \begin{lstlisting}[
