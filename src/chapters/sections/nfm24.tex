@@ -69,13 +69,13 @@ to quantify the impact of the input variables $\definputvariables$ on the outcom
   \end{align*}
   where the comparison operator $\comparison$ is either $\le$ or $\ge$.
 \end{definition}
-\index{$k$-Bounded Impact Property@Impact Property}
+\index{$k$-Bounded Impact Property}
 
 
 We allow the measured impact to be either less than or equal to ($\le$) or greater than or equal to ($\ge$) the threshold $\defbound$.
 With such a definition, we allow abstractions of program semantics to return an always greater or, respectively, an always smaller impact than the actual one and thus provide a sound over-approximation of the impact property.
 
-\index{Property!Validation}
+\index{Property Validation}
 \begin{remark}
   A program $\defprogram$ satisfies the $\defbound$-bounded impact property $\genbounded$ if and only if the collecting semantics of $\defprogram$ implies $\genbounded$, formally:
   \begin{align*}
@@ -454,7 +454,7 @@ Formally, the $\outcomesname$ impact quantifier is defined as follows:
       }}
   \end{align*}
 \end{definition}
-\index{\outcomesname Impact Quantifier@Impact Quantifier!\outcomesname}
+\index{Impact Quantifier!$ \outcomes $}
 
 
 \begin{margintable}[*-5]
@@ -573,7 +573,7 @@ The output semantics $\outputsemanticsnoparam$ is sound and complete for validat
 \siderefbox{def}{output-abstraction-semantics}
 \siderefbox{def}{abstraction-dependency-semantics}
 \siderefbox{def}{abstraction-output-abstraction-semantics}
-\index{Property!Validation!\outcomesname}
+\index{Property Validation!$ \outcomes $}
 \begin{lemma}[$\boundedoutcomes$ Validation]\lablemma{outcomes-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDOUTCOMES \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDOUTCOMES))
@@ -745,7 +745,7 @@ The difference of extreme values is computed by a distance measure $\distance$ c
       })
   \end{align*}
 \end{definition}
-\index{\rangename Impact Quantifier@Impact Quantifier!\rangename}
+\index{Impact Quantifier!$ \range $}
 
 The above quantifier employs the auxiliary function $\distance$. For instance, such distance could be instantiated as the Euclidean distance: $\distance(X) \defeq \max_{x, x' \in X} \sqrt{\sum_k (x - x')^2}$ if $X$ is non-empty, otherwise $\distance(X) \defeq 0$. From here, we consider the Euclidean distance as the default distance measure.
 
@@ -778,7 +778,7 @@ The output semantics $\outputsemanticsnoparam$ is sound and complete for validat
 \siderefbox{def}{output-abstraction-semantics}
 \siderefbox{def}{abstraction-dependency-semantics}
 \siderefbox{def}{abstraction-output-abstraction-semantics}
-\index{Property!Validation!\rangename}
+\index{Property Validation!$ \range $}
 \begin{lemma}[$\boundedrange$ Validation]\lablemma{range-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDRANGE \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDRANGE))
@@ -886,7 +886,7 @@ Formally, the $\qusedname$ impact quantifier is defined as follows:
   \end{align*}
   where $I_{\deftrace}(\defsetoftraces)$ is the set of input states of traces in $\defsetoftraces$ that share the same output abstraction as $\deftrace$ and $Q_\definputvariables(\defsetofstates)$ is the set of states that are variations from states in $\defsetofstates$ only in the variables $\definputvariables$.
 \end{definition}
-\index{\qusedname Impact Quantifier@Impact Quantifier!\qusedname}
+\index{Impact Quantifier!$ \qused $}
 
 
 \begin{example}
@@ -1130,7 +1130,7 @@ Next, we show the validation of the $\defbound$-bounded impact property when ins
 \siderefbox{def}{output-abstraction-semantics}
 \siderefbox{def}{abstraction-dependency-semantics}
 \siderefbox{def}{abstraction-output-abstraction-semantics}
-\index{Property!Validation!\qusedname}
+\index{Property Validation!$ \qused $}
 \begin{lemma}[$\boundedqused$ Validation]\lablemma{qused-validation}
   \begin{align*}
     \collectingsemantics \subseteq \BOUNDEDQUSED \IfF \outputsemantics \subseteq \outputabstraction(\dependencyabstraction(\BOUNDEDQUSED))
@@ -1535,7 +1535,7 @@ Next, we show the soundness of the multi-bucket semantics with respect to the ou
 
 We introduce the concept of \emph{covering} for output buckets to ensure that no potential final state is missed from the analysis.
 
-\index{Covering}
+\index{Output Buckets!Covering}
 \begin{definition}[Covering]\labdef{covering}
   Let $\outputobs\in\stateandbottom\to\stateandbottom$ be the output observer, we say that the output buckets $\buckets\in\vectorbuckets$ \textit{cover} the subset of potential outcomes whenever it holds that:
   \[
@@ -1790,7 +1790,7 @@ We return the maximum number of abstract values that intersect after projections
   \end{equation*}
   where $\presfrombuckets\in\vectorbuckets$ is the result of the abstract semantics $\multisemanticsnoparam$ and $\cardinalitynospaces{J}$ is the cardinality of the set of indices $J$.
 \end{definition}
-\index{Impact Quantifier!Abstract Implementation!Abstract \abstractoutcomesname}
+\index{Impact Quantifier!Abstract Implementation!$ \abstractoutcomes $}
 Note the use of $\max$ instead of $\sup$ as in the concrete counterpart (\refdef*{outcomes}[*-5]) since the number of intersecting abstract values is finite and bounded by $n$, \cf{} the number of output buckets.
 The function $\intersectallfunction$ takes as input an indexed set of abstract values and returns the set of indices of abstract values that intersect together, defined as follows:
 
@@ -1880,7 +1880,7 @@ We designed $\abstractoutcomesname$ to over-approximates the concrete quantifier
 Hence, the next result shows that the abstract impact $\abstractoutcomes$ is a sound over-approximation of the concrete $\outcomes$ \wrt{} the $\le$ operator.
 
 \refdef@{outcomes}[*-4]
-\index{Sound Implementation!Abstract \abstractoutcomesname}
+\index{Sound Implementation!\abstractoutcomes}
 \begin{lemma}[$\abstractoutcomes$ is a Sound Implementation of $\outcomes$]\lablemma{abstractoutcomes-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
@@ -1965,7 +1965,7 @@ Hence, the next result shows that the abstract impact $\abstractoutcomes$ is a s
 
 Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractoutcomes$ and the comparison operator $\le$.
 
-\index{Soundness!Abstract \abstractoutcomesname}
+\index{Soundness!\abstractoutcomes}
 \begin{theorem}[Soundness of $\boundedoutcomesle$] \labthm{soundness-boundedoutcomesle}
   Let $\boundedoutcomesle$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
@@ -2002,7 +2002,7 @@ All the buckets of corresponding intersections are joined together.
 Thus, all but the output variables (\cf{} $\abstractdomainproject[\inputvariables \setminus \defoutputvariables]$) are projected away to find the maximum range of the extreme values of the buckets.
 
 \siderefbox{def}{range}
-\index{Impact Quantifier!Abstract Implementation!Abstract \abstractrangename}
+\index{Impact Quantifier!Abstract Implementation!$ \abstractrange $}
 \begin{definition}[\texorpdfstring{$\abstractrange$}{Abstract Range}]\labdef{abstract-range}
   Let $\definputvariables\in\setof\inputvariables$ be the input variables,  $\numberofbuckets\in\N$ be the number of output buckets, and $\buckets\in\vectorbuckets$ the set of output buckets.
   Let $\defoutputvariables$ be the output variables of interest.
@@ -2064,7 +2064,7 @@ To prove that $\abstractrange$ is a sound implementation of $\range$, we require
 We designed $\abstractrangename$ to over-approximates the concrete quantifier $\rangename$.
 Hence, the next result shows that the abstract impact $\abstractrangename$ is a sound over-approximation of the concrete impact $\rangename$, \cf{} \refdef*{range}[*-16.2], \wrt{} the $\le$ operator.
 
-\index{Sound Implementation!Abstract \abstractrangename}
+\index{Sound Implementation!\abstractrange}
 \begin{lemma}[$\abstractrange$ is a Sound Implementation of $\range$]\lablemma{abstractrange-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
@@ -2132,7 +2132,7 @@ Hence, the next result shows that the abstract impact $\abstractrangename$ is a 
 
 Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractrange$ and the comparison operator $\le$.
 
-\index{Soundness!Abstract \abstractrangename}
+\index{Soundness!\abstractrange}
 \begin{theorem}[Soundness of $\boundedrangele$] \labthm{soundness-boundedrangele}
   Let $\boundedrangele$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,
@@ -2177,7 +2177,7 @@ The result is a measure of the influence of the input variables on the output of
   \begin{align*}
     l_{\defvariable} \DefeQ& \abstractdomaincount(\abstractdomainproject[\inputvariables \setminus \{\defvariable\}](\abstractdomaintop))
   \end{align*}
-\end{definition}\index{Impact Quantifier!Abstract Implementation!Abstract \abstractqusedname}
+\end{definition}\index{Impact Quantifier!Abstract Implementation!$ \abstractqused $}
 
 \begin{example}\labexample{abstract-qused}
   We show the computation of $\abstractqused$ for the program \refprog*{landing-alarm-system}.
@@ -2249,7 +2249,7 @@ Note that, the concrete counterpart of the abstract $\abstractdomaincount$ is th
 We designed $\abstractqused$ to under-approximate the concrete quantifier $\qusedname$.
 Hence, the next result shows that the abstract impact $\abstractqusedname$ is a sound over-approximation of the concrete impact $\qusedname$, \cf{} \refdef*{qused}[*-3] \wrt{} the $\ge$ operator.
 
-\index{Sound Implementation!Abstract \abstractqused}
+\index{Sound Implementation!\abstractqused}
 \begin{lemma}[$\abstractqused$ is a Sound Implementation of $\qused$]\lablemma{abstractqused-is-sound}
   Let $\definputvariables\in\setof\inputvariables$ be the input variable of interest, $\abstractdomain$ the abstract domain, $\backwardsemanticsnoparam$ the family of semantics, and $\buckets\in\vectorbuckets$ the starting output buckets.
   Whenever the following conditions hold:
@@ -2325,7 +2325,7 @@ Hence, the next result shows that the abstract impact $\abstractqusedname$ is a 
 
 Next, we show \nrefthm{soundness} instantiated with the abstract implementation $\abstractqused$ and the comparison operator $\ge$.
 
-\index{Soundness!Abstract \abstractqusedname}
+\index{Soundness!\abstractqused}
 \begin{theorem}[Soundness of $\boundedqusedge$] \labthm{soundness-boundedqusedge}
   Let $\boundedqusedge$ be the property of interest we want to verify for the program $\defprogram$ and the input variable $\definputvariables\in\setof\inputvariables$.
   Whenever,

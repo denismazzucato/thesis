@@ -108,7 +108,7 @@ An \emph{equivalence} relation is a binary relation which is reflexive, symmetri
 
 \subsection{Ordered Sets}
 \labsec{ordered-sets}
-\index{Ordered Sets}
+\index{Sets!Ordered}
 
 A partially ordered set (poset in short) is defined as sets equipped with a partial order relation.
 
@@ -490,7 +490,6 @@ Next, we show how to lift an ordered set via \emph{pointwise lifting} to define 
 
 \subsection{Properties}
 \labsec{properties}
-\index{Properties}
 
 Properties (\eg, ``to be an even natural number'' or ``to be a number of the sequence of Fibonacci'') by extension are the sets of elements that satisfy the property (\eg, $2\N \defeq \setdef{x \in \N}{\exists k \in \N.\spacer x = 2k}$ or $B \defeq \setdef{\textsc{fib}(n)}{n\in\N}$). Therefore, if $Q$ is a property, then $x \in Q$ means that $x$ satisfies the property $Q$ (\eg, $2 \in 2\N$ or $12 \notin B$).
 
@@ -788,7 +787,7 @@ We write $\tracesemantics$ to denote the trace semantics of a particular program
 The same notation convention applies to all the semantics we study in this thesis. Hence, the collecting semantics of a program $\defprogram$ is denoted by $\collectingsemantics$.
 
 \paragraph{Property Validation.}
-\index{Property!Validation}
+\index{Property Validation}
 
 A program $\defprogram$ with semantics $\tracesemantics$ satisfies a property $\defproperty \in \collectingtype$ if and only if the property $\defproperty$ is implied by the collecting semantics $\collectingsemantics\in\collectingtype$.
 
@@ -2153,7 +2152,7 @@ The \emph{reduced product} domain $\productdomain$ is defined as:
   \item the widening $\tuple{\defabstractvalue_1}{\defabstractvalue_2} \productdomainwidening \tuple{\defotherabstractvalue_1}{\defotherabstractvalue_2} \DefeQ \tuple{\defabstractvalue_1 \abstractdomainwidening_1 \defotherabstractvalue_1}{\defabstractvalue_2 \abstractdomainwidening_2 \defotherabstractvalue_2}$.
 \end{itemize}
 \end{definition}
-\index{Reduced Product Domain}
+\index{Abstract Domain!Reduced Product Domain}
 
 Note that, the reduced product defined above applies the reduction operator $\productdomainreduce$ after joins and meets but refrains from applying it after a widening. The reason is that the widening operator ensures termination on each individual domain, this is not any more guaranteed when applying the reduction operator between widening steps. The problem is that the reduction operator might refine the abstract elements in such a way that the widening operator does not terminate anymore. For instance, if the reduction provides finite interval bounds, the widening operator of the interval abstract domain may push these bounds to infinity indefinitely, without ever reaching a fixpoint.
 

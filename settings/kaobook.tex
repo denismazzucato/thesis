@@ -25,7 +25,8 @@
 
 \graphicspath{{figures/}} % Paths in which to look for images
 
-\makeindex[columns=3, title=Alphabetical Index, intoc] % Make LaTeX produce the files required to compile the index
+\indexsetup{othercode=\small} % Set the font size of the index content to \small
+\makeindex[columns=3, columnsep=1em, columnseprule, title=Alphabetical Index, intoc] % Make LaTeX produce the files required to compile the index
 
 \makeglossaries % Make LaTeX produce the files required to compile the glossary
 \input{settings/glossary} % Include the glossary definitions
