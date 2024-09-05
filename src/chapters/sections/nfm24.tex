@@ -2363,7 +2363,7 @@ In words, whenever the abstract implementation $\abstractqused$ returns a strict
 \labsec{nfm24-related-work}
 
 
-This chapter draws inspiration from \sidetextcite{Barowy2014}, where an empirical analysis explores the use of data for debugging spreadsheet applications through stochastic sampling.
+The study of quantitative properties was inspired by \sidetextcite{Barowy2014}, where an empirical analysis explores the use of data for debugging spreadsheet applications through stochastic sampling.
 \sidetextcite{Urban2018} proposed a unified view of existing information flow analyses based on abstract interpretation, establishing the theoretical foundations for understanding the use of input variables.
 Our approach introduces a novel quantitative perspective on input data usage.
 In this section, we compare our work with the existing literature, including non-interference, a foundational property for information flow analysis, entropy measures of quantitative information flow, and probabilistic programming languages.
@@ -2374,7 +2374,7 @@ In this section, we compare our work with the existing literature, including non
 \paragraph{Abstract Non-Interference.}
 \index{Abstract Non-Interference}
 
-Quantitative input data usage, which evolves from its qualitative counterpart, is inspired by work on abstract non-interference \sidecite{Giacobazzi2018}.
+Quantitative input data usage, which evolves from its qualitative counterpart, is related to work on abstract non-interference \sidecite{Giacobazzi2018}.
 Notably, \sidetextcite{Giacobazzi2004} introduced a domain-theoretic characterization of the most precise attacker who cannot violate abstract non-interference.
 Later, \sidetextcite{Mastroeni2013} instantiated various policies, leading to different notions of abstract non-interference for language-based security.
 This work paved the way for the development of a unifying framework that weakens the non-interference property into abstract non-interference \cite{Giacobazzi2018}.
@@ -2382,17 +2382,17 @@ More recently, \sidetextcite{Mastroeni2023} explored the connection between doma
 From abstract non-interference, our work adopts the concept of state abstractions, \cf{} \nrefdef{output-observer}.
 
 \paragraph{Quantitative Information Flow.} \index{Quantitative Information Flow}
-Given the connection between \emph{qualitative} input usage and information flow analysis \sidecite[][{Chapters 8, 9, and 10}]{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to look into \emph{quantitative} information flow, formerly introduced by \sidetextcite{Denning1982,Gray1991}.
+Given the connection between \emph{qualitative} input usage and information flow analysis \sidecite[][Section 8]{Urban2018}, to design a quantitative input usage analysis that fits our purposes, it may come natural to look into \emph{quantitative} information flow, formerly introduced by \sidetextcite{Denning1982,Gray1991}.
 Such analyses measure information leakage about a secret through the concept of entropy, based on observations of the program's output values.
-Remarkably, this similarity between entropy and our notion of impact is even more evident
-in the work proposed by \sidetextcite{K_opf2013} which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
+This similarity between entropy and our notion of impact is even more evident
+in the work proposed by \sidetextcite{K_opf2013}, which quantifies an upper bound of the entropy of a program's input variables by computing an over-approximation of the set of input-output observations, sometimes called equivalence classes. They employ Shannon entropy, min-entropy, and other entropies through the enumeration of these equivalence classes and their respective sizes. The equivalence classes are partitions of the input space in which two input assignments belong to the same class whenever the program produces an equivalent output.
 For example, the equivalence classes of the \refprog*{landing-alarm-system}, referred to as program $\landingprogram$, are $\entropypartitions[\landingprogram]=\setdef{\setdef{\tuple{x}{y}}{\landingprogram(x, y)=\defoutput}}{\defoutput\in\{0, 1, 2, 3\}}
 =\{\{\tuple{1}{1}\}, \{\tuple{1}{2}\}, \{\tuple{1}{3}\}, \{\tuple{-4}{1}, \tuple{-4}{2}, \tuple{-4}{3}\}\}$.
-Next, we show how our impact quantifiers arose from the adaptation of entropy measures to our needs in three successive attempts.
+Next, we show three successive attempts of adaptation of entropy measures to our needs.
 
 \newcommand{\shannonentropy}{H}
 \newcommand{\probability}{E_\defprogram}
-Initially, we notice that Shannon-entropy computes the average uncertainty of input values based on observations of the program's outcomes, while min-entropy, defined as:
+First of all, note that Shannon-entropy computes the average uncertainty of input values based on observations of the program's outcomes, while min-entropy, defined as:
 \newcommand{\minentropy}{{H_\infty}}
 \begin{align}
   \labeq{min-entropy}
@@ -2401,17 +2401,17 @@ Initially, we notice that Shannon-entropy computes the average uncertainty of in
 \end{align}
 computes the worst-case uncertainty,
 where $\exampleinput$ is the set of all input values of a given program \defprogram.
-As a first attempt, we consider min-entropy as closer to our needs since our aim is to discover the worst-case impact, \ie, the case in which a variable contributes the most.
+As a first attempt, we can consider min-entropy as it is closer to our need of discovering the worst-case impact, \ie, the case in which a variable contributes the most.
 By computing min-entropy on the program \landingprogram, we obtain $\minentropy(\landingprogram)=0.58$, indicating that the input is highly guessable.
 Indeed, when the risk level is 3, the potential values of input variables are ${\texttt{angle}}=-4$ and ${\texttt{speed}}\in{1, 2, 3}$; for all other output values, the input values are completely determined.
 Unfortunately, min-entropy lacks granularity and measures the uncertainty of the input variables collectively. Instead, our aim is to quantify the individual contributions.
 
-To address the previous issue, as a second attempt we exploit low and high labels for input variables, where the former are considered as public, available to the attacker, and the latter as secret \sidecite{K_opf2010}.
+To address the previous issue, as a second attempt we can exploit low and high labels for input variables, where the former are considered as public, available to the attacker, and the latter as secret \sidecite{K_opf2010}.
 To assess the impact of each input variable, we prioritize one high variable at a time, considering all others as low variables.
 Subsequently, we compute the min-entropy of the labelled program to quantify the extent of the impact.
 We define $\landingprogram^{\texttt{angle}}(x)\defeq \langle\landingprogram(x, 1), \landingprogram(x, 2), \landingprogram(x, 3)\rangle$ which represents the sequence of programs where ${\texttt{angle}}$ is high and ${\texttt{speed}}$ is low.
 Similarly, $\landingprogram^{\texttt{speed}}(y)\defeq\langle\landingprogram(-4, y), \landingprogram(1, y)\rangle$ where ${\texttt{speed}}$ is high and ${\texttt{angle}}$ is low.
-Computing $\minentropy(\landingprogram^{\texttt{angle}})$ and $\minentropy(\landingprogram^{\texttt{speed}})$ yields 0 on both because all equivalence classes consist of singletons, meaning the number of inputs equals the number of outputs. Thus, there's no uncertainty in the value of ${\texttt{angle}}$ given outputs of $\landingprogram^{\texttt{angle}}$, or in the value of ${\texttt{speed}}$ given outputs of $\landingprogram^{\texttt{speed}}$.
+Computing $\minentropy(\landingprogram^{\texttt{angle}})$ and $\minentropy(\landingprogram^{\texttt{speed}})$ yields 0 on both because all equivalence classes consist of singletons, meaning the number of inputs equals the number of outputs. Thus, there is no uncertainty in the value of ${\texttt{angle}}$ given outputs of $\landingprogram^{\texttt{angle}}$, or in the value of ${\texttt{speed}}$ given outputs of $\landingprogram^{\texttt{speed}}$.
 Indeed, observing the output $\langle 3, 3, 3\rangle$ from the program $\landingprogram^{\texttt{angle}}$ implies that ${\texttt{angle}}$ is $-4$, while observing $\langle 0, 1, 2 \rangle$ implies that ${\texttt{angle}}$ is $1$. The same applies to $\landingprogram^{\texttt{speed}}$ where observing $\langle 3, 0 \rangle$ implies ${\texttt{speed}}=1$, $\langle 3, 1\rangle$ implies ${\texttt{speed}}=2$, and $\langle 3, 2\rangle$ implies ${\texttt{speed}}=3$.
 However, this approach does not isolate the contributions of high variables; these outcomes are combined into a tuple of values through the return statement and thus evaluated together. Consequently, min-entropy cannot distinguish the contribution of each input variable independently.
 
@@ -2421,29 +2421,24 @@ $\landingprogram(x, 1), \landingprogram(x, 2),$ and $\landingprogram(x, 3)$ for 
 These programs are referred to as $\landingprogram^{\texttt{angle}}_y$ and $\landingprogram^{\texttt{speed}}_x$ respectively.
 Therefore, the third attempt defines $\outcomesentropy(\landingprogram^{\texttt{angle}})\DefeQ \max \setdef{ \cardinalitynospaces{\entropypartitions[\landingprogram^{\texttt{angle}}_y]}}{y\in\{1, 2, 3\}}$ and $\outcomesentropy(\landingprogram^{\texttt{speed}})\DefeQ \max \setdef{\cardinalitynospaces{\entropypartitions[\landingprogram^{\texttt{speed}}_x]}}{x\in\{-4, 1\}}$ retaining the maximum to obtain the worst-case scenario.
 As a result, $\outcomesentropy(\landingprogram^{\texttt{angle}})=2$ and $\outcomesentropy(\landingprogram^{\texttt{speed}})=3$. This means that variations of the value of ${\texttt{angle}}$ result in at most 2 different outputs, while variations of the value of ${\texttt{speed}}$ result in at most 3.
-Effectively, this is the first notion of impact derived from min-entropy capable of discriminating the contribution of each input variable on the program computation, exploiting the number of reachable outcomes from variations of the value of the input variable under consideration.
+This is the first notion of impact derived from min-entropy that is capable of discriminating the contribution of each input variable on the program computation, exploiting the number of reachable outcomes from variations of the value of the input variable under consideration.
 Indeed, $\outcomesentropy(\defprogram^\definputvariables)=\outcomes(\defprogram)$ holds for a generic program $\defprogram$.
 
-Overall, entropy measures and the approach proposed by \sidetextcite{K_opf2013,K_opf2010} can be adapted to our needs. Nevertheless, their analysis grows exponentially with the number of low variables, which in our adaptation corresponds to the number of inputs, minus one. To address this limitation, we leverage an over-approximation of input-output observations of the program, focusing solely on the low variables. By doing so, we obtain the set of input configurations that lead to the same output value by variation on the value of high variables.
+Overall, entropy measures and the approach proposed by \sidetextcite{K_opf2013,K_opf2010} can be adapted to our needs. Nevertheless, their analysis grows exponentially with the number of low variables, which in our adaptation corresponds to the number of inputs, minus one. To address this limitation, in this chapter we leveraged an over-approximation of input-output observations of the program, focusing solely on the low variables. By doing so, we obtain the set of input configurations that lead to the same output value by variation on the value of high variables.
 As a result, our approach performs the backward analysis only one time per output bucket, independently of the number of low variables.
 A similar technique could also be used to mitigate such explosion in their work.
 
 In quantitative information flow, other notable works include \sidetextcite{Chothia2014}, who proposed a statistical approach to quantify information leakage in Java programs.
 \sidetextcite{Phan2012,Phan2014,Saha2023} employed symbolic execution techniques and model counting to obtain sound bounds on program entropy.
+\sidetextcite{McCamant2008} retrieves the channel capacity, which represents the worst-case potential for information leakage.
 Other static analyses, such as those by \sidetextcite{Assaf2017} and \sidetextcite{Clark2007}, are based on abstract interpretation.
 \sidetextcite{Girol2024} introduced a quantitative version of non-exploitability called robust reachability, measuring the difficulty of triggering bugs via symbolic execution and model counting.
-
-The key difference between our framework and existing work lies in the type of information we measure.
-Our analysis quantifies the effect of each input variable on the program's outcome, focusing on numerical properties.
-In contrast, quantitative information flow typically measures the amount of information (in bits) transferred from input variables to the program's outcome, a metric more relevant to security properties.
-For example, \sidetextcite{Assaf2017} counts how many bits of input information are used to compute the result; \sidetextcite{Smith2009} calculates the probability of guessing a private variable's value from input variables; and \sidetextcite{McCamant2008} retrieves the channel capacity, which represents the worst-case potential for information leakage.
-Most of these approaches are based on entropy measures, which are orthogonal to our approach.
-Recent developments include \sidetextcite{Zhang2022}, who developed a calculus based on the strongest-postcondition style for quantitative reasoning about information flow, and \sidetextcite{Henzinger2023}, who generalized the hierarchy of safety and liveness properties to quantitative safety and liveness.
+Other recent developments include \sidetextcite{Zhang2022}, who presented a calculus based on strongest-postconditions style for quantitative reasoning about information flow, and \sidetextcite{Henzinger2023}, who generalized the hierarchy of safety and liveness properties to quantitative safety and liveness.
 Our framework, inspired by the qualitative input data usage property, diverges in that it assesses the numerical impact of input variables on program outcomes, distinguishing it from traditional information flow approaches that focus on counting bits or probabilities.
 
 Qualitative input data usage and non-interference also relate to \textit{Data Leakage} \sidecite[][Chapter~4]{Brownlee2020}.
 This concept is particularly relevant to data science software, addressing leakage issues that arise from the training and test datasets during the process of training neural networks.
-A series of papers by \sidetextcite{Drobnjakovic2024,Subotic2022a,Subotic2022b} focus on verifying data leakage within code notebooks and external libraries such as NumPy or pandas, presenting new challenges in formal verification.
+A series of papers by \sidetextcite{Drobnjakovic2024,Subotic2022a,Subotic2022b} focus on verifying data leakage within data science notebooks and external libraries such as NumPy or pandas, presenting new challenges in formal verification.
 An adaptation of their work could potentially encompass a notion of quantitative data leakage, which would be a valuable direction for further research.
 
 \paragraph{Hyperproperties.}
@@ -2453,9 +2448,8 @@ Hyperproperties relate different sets of program executions and can express secu
 \textcite{Clarkson2010} categorized hyperproperties into safety and liveness, respectively termed hypersafety and hyperliveness.
 The $k$-hypersafety properties are those that require sets of $k$ traces to be disproved, a category verifiable with traditional safety property techniques by $k$-times self-composition \sidecite{Barthe2011,Terauchi2005}.
 Note, however, that direct approaches using self-composition can be computationally expensive \sidecite{Antonopoulos2017}.
-In our work, we prefer ``program properties`` to the term ``hyperproperties'' because a different abstract interpretation theory is not needed to verify them \sidecite{Cousot2019},
-the classical approach for trace properties \sidecite{Cousot1977} is sufficient.
-However, it is worth noting that the $\defbound$-bounded impact property is a hyperproperty.
+In our work, we prefer ``program properties`` to the term ``hyperproperties'' because a different abstract interpretation theory is not needed to verify them \sidecite{Cousot2019}.
+That said, using the terminology of \textcite{Clarkson2010}, our $\defbound$-bounded impact property is a hyperproperty.
 More specifically, when applied to the \rangename{} quantifier, $\boundedrange$ is a 2-hypersafety property, as it requires 2 traces to be disproved, \ie, two traces yielding extreme values for the output variable.
 Conversely, when applied to the \outcomesname{} quantifier, $\boundedoutcomes$ is a $(k+1)$-hypersafety property, as it requires $k+1$ traces to be disproved, \ie, where the $k+1$ trace all yield a different output value.
 
@@ -2467,8 +2461,10 @@ The problem of computing an explicit representation of the probability distribut
 Recent advances in verifying probabilistic programs have been significant.
 Martingale theory certificates have played a crucial role in automating the proof of quantitative termination and safety in probabilistic programs \sidecite{Chatterjee2017,Chatterjee2022,Takisaka2021,Wang2024}.
 Probabilistic programs have also been studied in the context of cost analyses \sidecite{Chatterjee2024,Wang2021a}.
+\sidetextcite{Schr_oer2023} introduced a deductive framework for expectation-based reasoning about probabilistic programs.
 Other approaches involve the weakest pre-expectation calculus \sidecite{Kaminski2016}, a probabilistic extension of the classical weakest precondition calculus.
-Symbolic execution techniques have been adapted for probabilistic programs, enabling a detailed exploration of program paths under various stochastic scenarios \sidecite{Sankaranarayanan2013,Beutner2022}.
+Symbolic execution techniques have been adapted for probabilistic programs, enabling a detailed exploration of program paths under various stochastic scenarios \sidecite{Sankaranarayanan2013,Beutner2022}, and probabilistic model checking has been used to verify temporal and quantitative properties of probabilistic programs \sidecite{Hensel2022,Winkler2023}.
+Static analysis is also used to verify inference algorithm's correctness and assumptions \sidecite{Lee2020}, and to even improve the gradient estimator \sidecite{Lee2023}.
 In our work, we assume non-determinism is uniformly distributed, which simplifies the settings.
 However, by applying probabilistic semantics \sidecite{Cousot2012a}, we could extend our quantifiers to probabilistic measures, providing statistical bounds on the impact of input variables on the probabilistic program's output.
 

@@ -46,7 +46,7 @@ echo "Copied main.tex"
 run_sed '1s/.*/\\def\\customcitkey{}\\def\\absintkey{}/' src/chapters/kaobook.tex
 echo "Reverted kaobook.tex to \\\def\\\customcitkey{} on the first line."
 
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -draftmode -file-line-error thesis
 echo "Finished first compilation"
 # Compile nomenclature
 makeindex pdf/thesis.nlo -s nomencl.ist -o pdf/thesis.nls
@@ -55,7 +55,7 @@ echo "Finished nomenclature"
 makeindex pdf/thesis
 echo "Finished index"
 # Compile bibliography
-biber pdf/thesis
+biber pdf/thesis -D
 echo "Finished bibliography"
 # print the file pdf/theis.bbl
 cat pdf/thesis.bbl
@@ -69,14 +69,14 @@ echo "Citation key: $CITATION_KEY"
 run_sed "1s/.*/\\\def\\\customcitkey{$CITATION_KEY}\\\def\\\absintkey{$ABSINTKEY}/" src/chapters/kaobook.tex
 echo "Updated kaobook.tex with \\\def\\\customcitkey{$CITATION_KEY} on the first line."
 
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -draftmode -file-line-error thesis
 echo "Finished second compilation"
 # Compile glossary
 cd pdf
 makeglossaries thesis
 echo "Finished glossary"
 cd ..
-pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
+pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -draftmode -file-line-error thesis
 echo "Finished third compilation"
 pdflatex -interaction=nonstopmode --synctex=1 --output-directory=pdf -file-line-error thesis
 echo "Finished fourth compilation"

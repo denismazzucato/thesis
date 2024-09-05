@@ -4116,7 +4116,7 @@ Min_e2017@inproceedings{Cousot1977,
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
-@inproceedings{Heizmann2013,
+@inproceedings{Heizmann2013a,
   author       = {Matthias Heizmann and
                   Jochen Hoenicke and
                   Jan Leike and
@@ -5198,28 +5198,7 @@ keywords = {static analysis, software testing, concolic execution, Symbolic exec
    url = {https://dl.acm.org/doi/10.1145/3459637.3482342},
    year = {2021},
 }
-@article{Pal2022,
-   abstract = {We propose a symbolic representation for support vector machines (SVMs) by
-means of abstract interpretation, a well-known and successful technique for
-designing and implementing static program analyses. We leverage this
-abstraction in two ways: (1) to enhance the interpretability of SVMs by
-deriving a novel feature importance measure, called abstract feature importance
-(AFI), that does not depend in any way on a given dataset of the accuracy of
-the SVM and is very fast to compute, and (2) for verifying stability, notably
-individual fairness, of SVMs and producing concrete counterexamples when the
-verification fails. We implemented our approach and we empirically demonstrated
-its effectiveness on SVMs based on linear and non-linear (polynomial and radial
-basis function) kernels. Our experimental results show that, independently of
-the accuracy of the SVM, our AFI measure correlates much more strongly with the
-stability of the SVM to feature perturbations than feature importance measures
-widely available in machine learning software such as permutation feature
-importance. It thus gives better insight into the trustworthiness of SVMs.},
-   author = {Abhinandan Pal and Francesco Ranzato and Caterina Urban and Marco Zanella},
-   month = {10},
-   title = {Abstract Interpretation-Based Feature Importance for SVMs},
-   url = {https://arxiv.org/abs/2210.12456v1},
-   year = {2022},
-}
+
 
 @inproceedings{Kwiatkowska2016,
   author       = {Marta Kwiatkowska},
@@ -5454,5 +5433,505 @@ month = {sep}
   url          = {https://tel.archives-ouvertes.fr/tel-01176641},
   timestamp    = {Tue, 21 Jul 2020 00:40:37 +0200},
   biburl       = {https://dblp.org/rec/phd/hal/Urban15.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@article{Hensel2022
+  author       = {Christian Hensel and
+                  Sebastian Junges and
+                  Joost{-}Pieter Katoen and
+                  Tim Quatmann and
+                  Matthias Volk},
+  title        = {The probabilistic model checker Storm},
+  journal      = {Int. J. Softw. Tools Technol. Transf.},
+  volume       = {24},
+  number       = {4},
+  pages        = {589--610},
+  year         = {2022},
+  url          = {https://doi.org/10.1007/s10009-021-00633-z},
+  doi          = {10.1007/S10009-021-00633-Z},
+  timestamp    = {Mon, 05 Feb 2024 20:23:55 +0100},
+  biburl       = {https://dblp.org/rec/journals/sttt/HenselJKQV22.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{Winkler2023,
+  author       = {Tobias Winkler and
+                  Christina Gehnen and
+                  Joost{-}Pieter Katoen},
+  title        = {Model Checking Temporal Properties of Recursive Probabilistic Programs},
+  journal      = {Log. Methods Comput. Sci.},
+  volume       = {19},
+  number       = {4},
+  year         = {2023},
+  url          = {https://doi.org/10.46298/lmcs-19(4:24)2023},
+  doi          = {10.46298/LMCS-19(4:24)2023},
+  timestamp    = {Tue, 23 Jan 2024 09:45:22 +0100},
+  biburl       = {https://dblp.org/rec/journals/lmcs/WinklerGK23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@article{Schr_oer2023,
+  author       = {Philipp Schr{\"{o}}er and
+                  Kevin Batz and
+                  Benjamin Lucien Kaminski and
+                  Joost{-}Pieter Katoen and
+                  Christoph Matheja},
+  title        = {A Deductive Verification Infrastructure for Probabilistic Programs},
+  journal      = {Proc. {ACM} Program. Lang.},
+  volume       = {7},
+  number       = {{OOPSLA2}},
+  pages        = {2052--2082},
+  year         = {2023},
+  url          = {https://doi.org/10.1145/3622870},
+  doi          = {10.1145/3622870},
+  timestamp    = {Sun, 10 Dec 2023 17:01:16 +0100},
+  biburl       = {https://dblp.org/rec/journals/pacmpl/SchroerBKKM23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{Lee2020,
+  author       = {Wonyeol Lee and
+                  Hangyeol Yu and
+                  Xavier Rival and
+                  Hongseok Yang},
+  title        = {Towards verified stochastic variational inference for probabilistic
+                  programs},
+  journal      = {Proc. {ACM} Program. Lang.},
+  volume       = {4},
+  number       = {{POPL}},
+  pages        = {16:1--16:33},
+  year         = {2020},
+  url          = {https://doi.org/10.1145/3371084},
+  doi          = {10.1145/3371084},
+  timestamp    = {Sun, 12 Feb 2023 18:49:14 +0100},
+  biburl       = {https://dblp.org/rec/journals/pacmpl/LeeYRY20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{Lee2023,
+  author       = {Wonyeol Lee and
+                  Xavier Rival and
+                  Hongseok Yang},
+  title        = {Smoothness Analysis for Probabilistic Programs with Application to
+                  Optimised Variational Inference},
+  journal      = {Proc. {ACM} Program. Lang.},
+  volume       = {7},
+  number       = {{POPL}},
+  pages        = {335--366},
+  year         = {2023},
+  url          = {https://doi.org/10.1145/3571205},
+  doi          = {10.1145/3571205},
+  timestamp    = {Fri, 10 Feb 2023 23:34:54 +0100},
+  biburl       = {https://dblp.org/rec/journals/pacmpl/LeeRY23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@inproceedings{Biswas2023,
+  author       = {Sumon Biswas and
+                  Hridesh Rajan},
+  title        = {Fairify: Fairness Verification of Neural Networks},
+  booktitle    = {45th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2023, Melbourne, Australia, May 14-20, 2023},
+  pages        = {1546--1558},
+  publisher    = {{IEEE}},
+  year         = {2023},
+  url          = {https://doi.org/10.1109/ICSE48619.2023.00134},
+  doi          = {10.1109/ICSE48619.2023.00134},
+  timestamp    = {Wed, 19 Jul 2023 10:09:12 +0200},
+  biburl       = {https://dblp.org/rec/conf/icse/BiswasR23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{Chen2024,
+  author       = {Zhenpeng Chen and
+                  Jie M. Zhang and
+                  Max Hort and
+                  Mark Harman and
+                  Federica Sarro},
+  title        = {Fairness Testing: {A} Comprehensive Survey and Analysis of Trends},
+  journal      = {{ACM} Trans. Softw. Eng. Methodol.},
+  volume       = {33},
+  number       = {5},
+  pages        = {137:1--137:59},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3652155},
+  doi          = {10.1145/3652155},
+  timestamp    = {Thu, 04 Jul 2024 22:03:36 +0200},
+  biburl       = {https://dblp.org/rec/journals/tosem/ChenZHHS24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{Ghosh2021,
+  author       = {Bishwamittra Ghosh and
+                  Debabrota Basu and
+                  Kuldeep S. Meel},
+  title        = {Justicia: {A} Stochastic {SAT} Approach to Formally Verify Fairness},
+  booktitle    = {Thirty-Fifth {AAAI} Conference on Artificial Intelligence, {AAAI}
+                  2021, Thirty-Third Conference on Innovative Applications of Artificial
+                  Intelligence, {IAAI} 2021, The Eleventh Symposium on Educational Advances
+                  in Artificial Intelligence, {EAAI} 2021, Virtual Event, February 2-9,
+                  2021},
+  pages        = {7554--7563},
+  publisher    = {{AAAI} Press},
+  year         = {2021},
+  url          = {https://doi.org/10.1609/aaai.v35i9.16925},
+  doi          = {10.1609/AAAI.V35I9.16925},
+  timestamp    = {Sat, 30 Sep 2023 09:33:08 +0200},
+  biburl       = {https://dblp.org/rec/conf/aaai/GhoshBM21.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{Ghosh2022,
+  author       = {Bishwamittra Ghosh and
+                  Debabrota Basu and
+                  Kuldeep S. Meel},
+  title        = {Algorithmic Fairness Verification with Graphical Models},
+  booktitle    = {Thirty-Sixth {AAAI} Conference on Artificial Intelligence, {AAAI}
+                  2022, Thirty-Fourth Conference on Innovative Applications of Artificial
+                  Intelligence, {IAAI} 2022, The Twelveth Symposium on Educational Advances
+                  in Artificial Intelligence, {EAAI} 2022 Virtual Event, February 22
+                  - March 1, 2022},
+  pages        = {9539--9548},
+  publisher    = {{AAAI} Press},
+  year         = {2022},
+  url          = {https://doi.org/10.1609/aaai.v36i9.21187},
+  doi          = {10.1609/AAAI.V36I9.21187},
+  timestamp    = {Sat, 30 Sep 2023 09:33:08 +0200},
+  biburl       = {https://dblp.org/rec/conf/aaai/GhoshBM22.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{George2020,
+  author       = {Philips George John and
+                  Deepak Vijaykeerthy and
+                  Diptikalyan Saha},
+  editor       = {Ryan P. Adams and
+                  Vibhav Gogate},
+  title        = {Verifying Individual Fairness in Machine Learning Models},
+  booktitle    = {Proceedings of the Thirty-Sixth Conference on Uncertainty in Artificial
+                  Intelligence, {UAI} 2020, virtual online, August 3-6, 2020},
+  series       = {Proceedings of Machine Learning Research},
+  volume       = {124},
+  pages        = {749--758},
+  publisher    = {{AUAI} Press},
+  year         = {2020},
+  url          = {http://proceedings.mlr.press/v124/george-john20a.html},
+  timestamp    = {Tue, 07 May 2024 20:09:01 +0200},
+  biburl       = {https://dblp.org/rec/conf/uai/JohnVS20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Sun2021,
+  author       = {Bing Sun and
+                  Jun Sun and
+                  Ting Dai and
+                  Lijun Zhang},
+  editor       = {Marieke Huisman and
+                  Corina S. Pasareanu and
+                  Naijun Zhan},
+  title        = {Probabilistic Verification of Neural Networks Against Group Fairness},
+  booktitle    = {Formal Methods - 24th International Symposium, {FM} 2021, Virtual
+                  Event, November 20-26, 2021, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {13047},
+  pages        = {83--102},
+  publisher    = {Springer},
+  year         = {2021},
+  url          = {https://doi.org/10.1007/978-3-030-90870-6\_5},
+  doi          = {10.1007/978-3-030-90870-6\_5},
+  timestamp    = {Thu, 11 Jul 2024 09:52:27 +0200},
+  biburl       = {https://dblp.org/rec/conf/fm/SunSDZ21.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+
+
+
+
+@inproceedings{Chalupa2023,
+  author       = {Marek Chalupa and
+                  Thomas A. Henzinger},
+  editor       = {Sriram Sankaranarayanan and
+                  Natasha Sharygina},
+  title        = {Bubaak: Runtime Monitoring of Program Verifiers - (Competition Contribution)},
+  booktitle    = {Tools and Algorithms for the Construction and Analysis of Systems
+                  - 29th International Conference, {TACAS} 2023, Held as Part of the
+                  European Joint Conferences on Theory and Practice of Software, {ETAPS}
+                  2022, Paris, France, April 22-27, 2023, Proceedings, Part {II}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {13994},
+  pages        = {535--540},
+  publisher    = {Springer},
+  year         = {2023},
+  url          = {https://doi.org/10.1007/978-3-031-30820-8\_32},
+  doi          = {10.1007/978-3-031-30820-8\_32},
+  timestamp    = {Sat, 13 May 2023 01:07:18 +0200},
+  biburl       = {https://dblp.org/rec/conf/tacas/ChalupaH23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Sch_ussele2024,
+  author       = {Frank Sch{\"{u}}ssele and
+                  Manuel Bentele and
+                  Daniel Dietsch and
+                  Matthias Heizmann and
+                  Xinyu Jiang and
+                  Dominik Klumpp and
+                  Andreas Podelski},
+  editor       = {Bernd Finkbeiner and
+                  Laura Kov{\'{a}}cs},
+  title        = {Ultimate Automizer and the Abstraction of Bitwise Operations - (Competition
+                  Contribution)},
+  booktitle    = {Tools and Algorithms for the Construction and Analysis of Systems
+                  - 30th International Conference, {TACAS} 2024, Held as Part of the
+                  European Joint Conferences on Theory and Practice of Software, {ETAPS}
+                  2024, Luxembourg City, Luxembourg, April 6-11, 2024, Proceedings,
+                  Part {III}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14572},
+  pages        = {418--423},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-57256-2\_31},
+  doi          = {10.1007/978-3-031-57256-2\_31},
+  timestamp    = {Sat, 08 Jun 2024 13:13:56 +0200},
+  biburl       = {https://dblp.org/rec/conf/tacas/SchusseleBDHJKP24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{Heizmann2013b,
+  author       = {Matthias Heizmann and
+                  Jochen Hoenicke and
+                  Andreas Podelski},
+  editor       = {Natasha Sharygina and
+                  Helmut Veith},
+  title        = {Software Model Checking for People Who Love Automata},
+  booktitle    = {Computer Aided Verification - 25th International Conference, {CAV}
+                  2013, Saint Petersburg, Russia, July 13-19, 2013. Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {8044},
+  pages        = {36--52},
+  publisher    = {Springer},
+  year         = {2013},
+  url          = {https://doi.org/10.1007/978-3-642-39799-8\_2},
+  doi          = {10.1007/978-3-642-39799-8\_2},
+  timestamp    = {Wed, 07 Dec 2022 23:12:58 +0100},
+  biburl       = {https://dblp.org/rec/conf/cav/HeizmannHP13.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Metta2024,
+  author       = {Ravindra Metta and
+                  Hrishikesh Karmarkar and
+                  Kumar Madhukar and
+                  R. Venkatesh and
+                  Supratik Chakraborty},
+  editor       = {Bernd Finkbeiner and
+                  Laura Kov{\'{a}}cs},
+  title        = {{PROTON:} PRObes for Termination Or Not (Competition Contribution)},
+  booktitle    = {Tools and Algorithms for the Construction and Analysis of Systems
+                  - 30th International Conference, {TACAS} 2024, Held as Part of the
+                  European Joint Conferences on Theory and Practice of Software, {ETAPS}
+                  2024, Luxembourg City, Luxembourg, April 6-11, 2024, Proceedings,
+                  Part {III}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14572},
+  pages        = {393--398},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-57256-2\_27},
+  doi          = {10.1007/978-3-031-57256-2\_27},
+  timestamp    = {Sat, 08 Jun 2024 13:13:56 +0200},
+  biburl       = {https://dblp.org/rec/conf/tacas/MettaKMVC24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Brain2015,
+  author       = {Martin Brain and
+                  Saurabh Joshi and
+                  Daniel Kroening and
+                  Peter Schrammel},
+  editor       = {Sandrine Blazy and
+                  Thomas P. Jensen},
+  title        = {Safety Verification and Refutation by k-Invariants and k-Induction},
+  booktitle    = {Static Analysis - 22nd International Symposium, {SAS} 2015, Saint-Malo,
+                  France, September 9-11, 2015, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {9291},
+  pages        = {145--161},
+  publisher    = {Springer},
+  year         = {2015},
+  url          = {https://doi.org/10.1007/978-3-662-48288-9\_9},
+  doi          = {10.1007/978-3-662-48288-9\_9},
+  timestamp    = {Fri, 09 Apr 2021 18:41:36 +0200},
+  biburl       = {https://dblp.org/rec/conf/sas/Brain0KS15.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{Mal_ik2023,
+  author       = {Viktor Mal{\'{\i}}k and
+                  Frantisek Necas and
+                  Peter Schrammel and
+                  Tom{\'{a}}s Vojnar},
+  editor       = {Sriram Sankaranarayanan and
+                  Natasha Sharygina},
+  title        = {2LS: Arrays and Loop Unwinding - (Competition Contribution)},
+  booktitle    = {Tools and Algorithms for the Construction and Analysis of Systems
+                  - 29th International Conference, {TACAS} 2023, Held as Part of the
+                  European Joint Conferences on Theory and Practice of Software, {ETAPS}
+                  2022, Paris, France, April 22-27, 2023, Proceedings, Part {II}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {13994},
+  pages        = {529--534},
+  publisher    = {Springer},
+  year         = {2023},
+  url          = {https://doi.org/10.1007/978-3-031-30820-8\_31},
+  doi          = {10.1007/978-3-031-30820-8\_31},
+  timestamp    = {Wed, 17 May 2023 21:55:33 +0200},
+  biburl       = {https://dblp.org/rec/conf/tacas/MalikNSV23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Beyer2024,
+  author       = {Dirk Beyer},
+  editor       = {Bernd Finkbeiner and
+                  Laura Kov{\'{a}}cs},
+  title        = {State of the Art in Software Verification and Witness Validation:
+                  {SV-COMP} 2024},
+  booktitle    = {Tools and Algorithms for the Construction and Analysis of Systems
+                  - 30th International Conference, {TACAS} 2024, Held as Part of the
+                  European Joint Conferences on Theory and Practice of Software, {ETAPS}
+                  2024, Luxembourg City, Luxembourg, April 6-11, 2024, Proceedings,
+                  Part {III}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14572},
+  pages        = {299--329},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-57256-2\_15},
+  doi          = {10.1007/978-3-031-57256-2\_15},
+  timestamp    = {Sat, 08 Jun 2024 13:13:56 +0200},
+  biburl       = {https://dblp.org/rec/conf/tacas/Beyer24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Na_im2024,
+  author       = {Na{\"{i}}m Moussaoui Remil and
+                  Caterina Urban and
+                  Antoine Min{\'{e}}},
+  editor       = {Nikolaj S. Bj{\o}rner and
+                  Marijn Heule and
+                  Andrei Voronkov},
+  title        = {Automatic Detection of Vulnerable Variables for {CTL} Properties of
+                  Programs},
+  booktitle    = {{LPAR} 2024: Proceedings of 25th Conference on Logic for Programming,
+                  Artificial Intelligence and Reasoning, Port Louis, Mauritius, May
+                  26-31, 2024},
+  series       = {EPiC Series in Computing},
+  volume       = {100},
+  pages        = {116--126},
+  publisher    = {EasyChair},
+  year         = {2024},
+  url          = {https://doi.org/10.29007/dnpx},
+  doi          = {10.29007/DNPX},
+  timestamp    = {Tue, 25 Jun 2024 16:52:02 +0200},
+  biburl       = {https://dblp.org/rec/conf/lpar/RemilUM24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{Pal2024,
+  author       = {Abhinandan Pal and
+                  Francesco Ranzato and
+                  Caterina Urban and
+                  Marco Zanella},
+  editor       = {Rayna Dimitrova and
+                  Ori Lahav and
+                  Sebastian Wolff},
+  title        = {Abstract Interpretation-Based Feature Importance for Support Vector
+                  Machines},
+  booktitle    = {Verification, Model Checking, and Abstract Interpretation - 25th International
+                  Conference, {VMCAI} 2024, London, United Kingdom, January 15-16, 2024,
+                  Proceedings, Part {I}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14499},
+  pages        = {27--49},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-50524-9\_2},
+  doi          = {10.1007/978-3-031-50524-9\_2},
+  timestamp    = {Fri, 26 Jan 2024 07:55:26 +0100},
+  biburl       = {https://dblp.org/rec/conf/vmcai/PalRUZ24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+
+@inproceedings{Marques2021,
+  author       = {Jo{\~{a}}o Marques{-}Silva and
+                  Thomas Gerspacher and
+                  Martin C. Cooper and
+                  Alexey Ignatiev and
+                  Nina Narodytska},
+  editor       = {Marina Meila and
+                  Tong Zhang},
+  title        = {Explanations for Monotonic Classifiers},
+  booktitle    = {Proceedings of the 38th International Conference on Machine Learning,
+                  {ICML} 2021, 18-24 July 2021, Virtual Event},
+  series       = {Proceedings of Machine Learning Research},
+  volume       = {139},
+  pages        = {7469--7479},
+  publisher    = {{PMLR}},
+  year         = {2021},
+  url          = {http://proceedings.mlr.press/v139/marques-silva21a.html},
+  timestamp    = {Wed, 25 Aug 2021 17:11:17 +0200},
+  biburl       = {https://dblp.org/rec/conf/icml/0001GCIN21.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
