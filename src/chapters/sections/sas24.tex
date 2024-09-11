@@ -257,7 +257,7 @@ The range quantifier instrumented with the global loop counter $\counter$ as out
     })
 \end{align*}
 \end{definition}
-\index{Impact Quantifier!$ \counterrange $}
+\index{Impact Quantifier!$ \range $}
 
 Let $\boundedrange$ be the $\defbound$-bounded impact property with loop iterations when instantiated with the $\rangename$ impact quantifier. Formally:
 \begin{align*}
@@ -301,7 +301,7 @@ Regarding \refexample{add}, the left and right columns of \reftab{add-trace} con
 
 Next, we show that the dependency semantics $\counterdependencysemanticsnoparam$ is sound and complete for validating $\boundedrange$.
 \siderefbox{def}{dependency-semantics}
-\index{Property Validation!$ \counterrange $}
+\index{Property Validation!$ \range $}
 \begin{lemma}\lablemma{counter-range-validation}
   \begin{align*}
     \countercollectingsemantics \subseteq \BOUNDEDRANGE \IfF \counterdependencysemantics \subseteq \dependencyabstraction(\BOUNDEDRANGE)
@@ -520,7 +520,6 @@ The rest of the semantics is classical.
 The following result states the soundness of the backward semantics defined in \reffig{backward-semantics}.
 %
 
-\index{Soundness!Global Loop Bound}
 \begin{lemma}[Soundness of $\counterbackwardsemanticsnoparam$]\lablemma{candidate-backward}
   For all programs $\defprogram$, the semantics $\counterbackwardsemantics\in\counterbackwardtype$ defined in~\reffig{backward-semantics} is a \textup{sound over-approximation} of the backward co-reachability semantics $\counterbackwardreachabilitysemantics$:
   \begin{equation*}
