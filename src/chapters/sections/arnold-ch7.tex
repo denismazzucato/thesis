@@ -1,0 +1,32 @@
+\setchapterpreamble[u]{\margintoc}¡
+
+\chapter{Experimental Evaluation on Neural Networks}
+\labch{evaluation-on-neural-networks}
+
+\marginemptybox{7cm}
+
+In this chapter, we investigate whether our two impact quantifiers for neural networks, \cf{} \changesname{} and \qlibraname{}, successfully quantify variations in the usage of input features. Specifically, \refsec{eval-changes} evaluates the effectiveness of \changesname{} by comparing it to two \emph{feature importance metrics}, which are commonly used to evaluate the relevance of input features in making predictions within a machine learning model. \refsec{eval-qlibra} evaluates \qlibraname{} on neural networks trained on the Adult dataset\sidenote{\label{adult-url}\rurl{archive.ics.uci.edu/ml/datasets/adult}} from the UCI Machine Learning Repository to discover the amount of fair input space. This chapter is partially based on the evaluation section of the work presented at the 28th Static Analysis Symposium (SAS) 2021~\sidecite[][Section 3]{Mazzucato2021}.
+
+\frenchdiv
+
+\emph{
+  Dans ce chapitre, nous examinons si nos deux quantificateurs d'impact pour les réseaux neuronaux, \cf{} \changesname{} et \qlibraname{}, permettent de quantifier efficacement les variations dans l'utilisation des caractéristiques d'entrée. Plus précisément, \refsec{eval-changes} évalue l'efficacité de \changesname{} en le comparant à deux \emph{mesures d'importance des caractéristiques}, qui sont couramment utilisées pour évaluer la pertinence des caractéristiques d'entrée dans les prédictions d'un modèle d'apprentissage automatique. \refsec{eval-qlibra} évalue \qlibraname{} sur des réseaux neuronaux entraînés sur le jeu de données Adult\sidenotemark[\ref{adult-url}] de la UCI Machine Learning Repository pour découvrir la quantité d'espace d'entrée équitable. Ce chapitre est partiellement basé sur la section d'évaluation du travail présenté lors du 28e Symposium sur l'analyse statique (SAS) 2021~\cite[Section 3]{Mazzucato2021}.
+}
+
+
+
+
+
+
+
+\section{Summary}
+
+This chapter, presenting the evaluation of our quantitative framework on neural networks, concludes part of quantitative verification for extensional properties.
+We have shown a quantitative framework to quantify the impact of input variables on the output of a program and applied it to the context of neural networks.
+In the next part, we will study how to extend this framework to intensional properties, which are properties that depend on the internal state of the program.
+We will quantify the impact of input variables on the number of iterations of a program.
+
+
+\frenchdiv
+
+\emph{Ce chapitre, qui présente l'évaluation de notre cadre quantitatif sur les réseaux neuronaux, conclut la partie dédiée à la vérification quantitative des propriétés extensionnelles. Nous avons montré un cadre quantitatif permettant de mesurer l'impact des variables d'entrée sur le résultat d'un programme et l'avons appliqué au contexte des réseaux neuronaux. Dans la prochaine partie, nous étudierons comment étendre ce cadre aux propriétés intentionnelles, qui sont des propriétés dépendant de l'état interne du programme. Nous quantifierons l'impact des variables d'entrée sur le nombre d'itérations d'un programme.}

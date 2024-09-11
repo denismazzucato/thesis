@@ -1247,19 +1247,6 @@ As expected, adding more CPUs always improves \libra{} running time. The most li
 \reftab{cpus} additionally shows the estimated percentage of bias detected with each abstract domain, \ie, \libra{} is able to certify fairness for about $95\%$ of the neural network input space. Note that, the bias estimate depends on the partitioning of the input space computed by the pre-analysis, \cf{} \refsec{parallel-implementation-qlibra}. This explains the different percentages found even by runs with the same abstract domain. Within the same column, the difference is at most $0.14\%$ on average.
 
 
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=\textwidth]{figures/old}
-  \caption{Former Task Scheduling}
-  \labfig{old}
-\end{marginfigure}
-
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=\textwidth]{figures/new}
-  \caption{Current Task Scheduling}
-  \labfig{new}
-\end{marginfigure}
 
 Finally, we remark that \emph{the auto-tuning mechanisms is essential for scalability}. We tried repeating this experiment by directly
 running \libra{} with the configuration at which auto-tuning stabilizes, \ie, $\lowerbound = 0.015625$ and $\upperbound = 6$. After six days it still had not completed and we had to interrupt it.
@@ -1280,14 +1267,31 @@ running \libra{} with the configuration at which auto-tuning stabilizes, \ie, $\
 % \end{marginfigure}
 
 
+\begin{marginfigure}[*-7.5]
+  \centering
+  \includegraphics[width=\textwidth]{figures/old}
+  \caption{Former Task Scheduling}
+  \labfig{old}
+\end{marginfigure}
+
+\begin{marginfigure}[*13]
+  \centering
+  \includegraphics[width=\textwidth]{figures/new}
+  \caption{Current Task Scheduling}
+  \labfig{new}
+\end{marginfigure}
+
+
 Note that, while implementing our quantitative extension to \libra, we also improved greatly the parallelization of the tool.
-In the original version of \libra (originally presented in \sidecite[*-16]{Urban2020}, without our quantitative extension), feasible partitions are first grouped by activation pattern, \ie, activation patterns that fix more \relu s are merged with those that fix fewer \relu s.
-This way, in principle, the amount of work that the backward analysis has to do is reduced: it only needs to run once for each activation pattern, and can then perform all the checks for bias on each feasible partition. In practice, the abstract domains used in the original implementation prevented the parallelization of all bias checks, which were thus run sequentially. This prevented \libra from exploiting multi-core architectures effectively. %\\
+In the original version of \libra{} (originally presented in \sidecite[*-12]{Urban2020}, without our quantitative extension), feasible partitions are first grouped by activation pattern, \ie, activation patterns that fix more \relu s are merged with those that fix fewer \relu s.
+This way, in principle, the amount of work that the backward analysis has to do is reduced: it only needs to run once for each activation pattern, and can then perform all the checks for bias on each feasible partition. In practice, the abstract domains used in the original implementation prevented the parallelization of all bias checks, which were thus run sequentially. This prevented \libra{} from exploiting multi-core architectures effectively. %\\
 % (cf. the task schedules shown in Figure~\ref{fig:old} and Figure~\ref{fig:new} in Appendix~\ref{apx:optimization}).\\
 %
 After our extension, we optimize the backward analysis in order to possibly repeat the analysis for the same activation pattern but allowing it to parallelize the bias checks.
 \reffig{old} and \reffig{new} compare the previous and current backward analysis task scheduling on the same analysis instance. Each row in the Gantt diagrams shows computations of the same thread. Blue bars stand for activation pattern computations, while red bars indicate bias check computations, these two bars alternate throughout the whole backward computation for each processor (if possible).
 As shown in \reffig{old}, the running time was determined almost completely by the task with the most associated bias checks, leaving all the other threads idle from the very beginning. The diagram in \reffig{new} is more compact, meaning that threads are always running jobs uniformly. Consequently, the backward analysis running time decreases from about $22$ to only $5$ minutes.
+
+
 
 \section{Summary}
 

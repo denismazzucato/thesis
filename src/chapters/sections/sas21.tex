@@ -1667,7 +1667,7 @@ In this section, we discuss related work on the verification of neural networks 
 \paragraph{Verification of Neural Networks.}
 \index{Neural Networks!Verification}
 
-The interest in the verification of neural networks has significantly increased over the last decade. For an introduction to the topic, refer to Albarghouthi's tutorial \sidecite{Albarghouthi2021}.
+The interest in the verification of neural networks has significantly increased over the last decade. For an introduction to the topic, refer to Albarghouthi's tutorial \cite{Albarghouthi2021}.
 The most common investigated problem in this domain is to verify the robustness of neural networks against minimal input perturbations \sidecite{Goodfellow2016}.
 This research area is highly diverse and work in the field usually employ a variety of techniques, including SMT-based methods \sidecite{Katz2017,Katz2019,Pulina2011a,Pulina2011b,Pulina2012}, mixed-integer programming \sidecite{Botoeva2020,Lomuscio2017,Tjeng2019}, branch-and-bound algorithms \sidecite{Bunel2018,Palma2021,Ehlers2017}, over-approximation of non-linear activation functions \sidecite{Singh2019,Weng2018,Zhang2018b}, and symbolic propagation \sidecite{Henriksen2020,Wang2018b,Wang2021b}.
 For a comprehensive survey of the field, see \sidetextcite{K_onig2024} and \sidetextcite{Huang2020}.
@@ -1679,6 +1679,7 @@ See \sidetextcite{Chen2024} for a comprehensive survey on fairness testing.
 On the other hand, some works \sidecite{Bastani2019,Ghosh2021,Ghosh2022} provide stochastic guarantees on the fairness of machine learning models, while others employ abstract interpretation \sidecite{Urban2020,Mazzucato2021} and SMT based techniques \sidecite{Biswas2023,George2020} to verify fairness properties in neural networks, offering formal guarantees.
 Additionally, \sidetextcite{Albarghouthi2017b} encodes the fairness problem as a probabilistic program property, verified using an SMT solver, and \sidetextcite{Sun2021} similarly employ probabilistic verification by learning Markov Chains.
 Furthermore, \sidetextcite{Albarghouthi2019} proposes a technique to repair biases in neural networks.
+Finally, the most similar work to our quantifier \qlibraname{} is \sidetextcite{Kim2025}, which quantifies the fairness of input variables based on interval symbolic propagation.
 
 Recent formal developments~\sidecite{Ranzato2020,Ranzato2021,Pal2024} are expanding this research to other machine learning models, such as decision trees and support vector machines, by developing formal methods to analyze input variable usage. Quantitative analyses have the potential to enhance these techniques by leveraging a broader spectrum of possible results.
 

@@ -1,0 +1,47 @@
+\setchapterpreamble[u]{\margintoc}
+
+\chapter{Implementation}
+\labch{showcase}
+
+\marginemptybox{3.9cm}
+
+In this chapter, we demonstrate the potential applications of our quantitative input data usage analysis, by evaluating an automatic proof-of-concept tool of our static analysis, called \impatto\sidenote{\label{impatto}\impattourl}, on six different demonstrative programs:
+a simplified program from the Reinhart and Rogoff article (\cf{} \refsec{rr}),
+a program extracted from a recent OpenAI keynote (\cf{} \refsec{gpt-4-turbo}),
+two programs from the software verification competition SV-Comp (\cf{} \refsec{termination-analysis-A} and \refsec{app:termination-analysis-B}),
+a program computing a linear expression via repeated additions (\cf{} \refsec{linear-loops}),
+and \refprog{landing-alarm-system} computing the landing risk coefficient for an alarm system (\cf{} \refsec{landing-risk}).
+The tool \impatto{} is implemented in Python 3 and uses the \interproc\sidenote{\label{interproc}\rurl{github.com/jogiet/interproc}} abstract interpreter to perform the backward analysis.
+We exploit this tool to automatically derive a sound quantification of the input data usage of each use case.
+As each impact result must be interpreted with respect to what the program computes, we analyze each use case separately.
+
+The impact quantifiers considered in this chapter are \outcomesname{} and \rangename{}.
+The \qusedname{} quantifier has not been considered in the evaluation since we consider a continuous input space in most of the use cases: in such instance $\qusedname$ would either return $+\infty$ or $0$ for each variable as it would discover that either are missing an infinite amount of input values or none at all.
+
+An artifact of \impatto, including the source code and the six use cases is available on Zenodo\sidenote{\impattozenodo}.
+This chapter is based on the evaluation section of the work published at NASA Formal Methods Symposium (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. In the next chapters, we will apply our quantitative framework in the context of neural networks.
+
+
+\frenchdiv
+
+\emph{Dans ce chapitre, nous démontrons les applications potentielles de notre analyse quantitative de l'utilisation des données d'entrée en évaluant un outil de preuve de concept automatique de notre analyse statique, appelé \impatto\sidenotemark[\ref{impatto}], sur six programmes démonstratifs différents : un programme simplifié tiré de l'article de Reinhart et Rogoff (\cf{} \refsec{rr}), un programme extrait d'une récente keynote d'OpenAI (\cf{} \refsec{gpt-4-turbo}), deux programmes issus de la compétition de vérification logicielle SV-Comp (\cf{} \refsec{termination-analysis-A} et \refsec{app:termination-analysis-B}), un programme calculant une expression linéaire via des additions répétées (\cf{} \refsec{linear-loops}), et \refprog{landing-alarm-system} calculant le coefficient de risque d'atterrissage pour un système d'alarme (\cf{} \refsec{landing-risk}). L'outil \impatto{} est implémenté en Python 3 et utilise l'interpréteur abstrait \interproc\sidenotemark[\ref{interproc}] pour effectuer l'analyse rétrograde. Nous exploitons cet outil pour dériver automatiquement une quantification correcte de l'utilisation des données d'entrée pour chaque cas d'utilisation. Comme chaque résultat d'impact doit être interprété en fonction de ce que le programme calcule, nous analysons chaque cas d'utilisation séparément.
+}
+
+\emph{
+Les quantificateurs d'impact considérés dans ce chapitre sont \outcomesname{} et \rangename{}. Le quantificateur \qusedname{} n'a pas été pris en compte dans l'évaluation car nous considérons un espace d'entrée continu dans la plupart des cas d'utilisation : dans un tel cas, $\qusedname$ renverrait soit $+\infty$, soit $0$ pour chaque variable, car il découvrirait soit un nombre infini de valeurs d'entrée manquantes, soit aucune.
+}
+
+\emph{
+Un artefact de \impatto, incluant le code source et les six cas d'utilisation, est disponible sur Zenodo\sidenote{\impattozenodo}. Ce chapitre est basé sur la section d'évaluation du travail publié au NASA Formal Methods Symposium (NFM) 2024 \sidecite[][Section 5]{Mazzucato2024b}. Dans les prochains chapitres, nous appliquerons notre cadre quantitatif dans le contexte des réseaux neuronaux.
+}
+
+
+
+
+
+
+\section{Summary}
+
+This chapter evaluated our approach for the quantification of the influence of input variables on the output computation of a program. Next, we apply the quantitative framework to the context of neural networks.
+
+\emph{Ce chapitre a évalué notre approche pour la quantification de l'influence des variables d'entrée sur le calcul du résultat d'un programme. Ensuite, nous appliquerons le cadre quantitatif au contexte des réseaux neuronaux.}

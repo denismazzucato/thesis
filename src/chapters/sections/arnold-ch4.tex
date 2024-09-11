@@ -1,0 +1,41 @@
+\pagelayout{wide} % No margins
+\addpart{Quantitative Verification of Extensional Properties}
+\labpart{extensional}
+\pagelayout{margin} % Restore margins
+
+\setchapterpreamble[u]{\margintoc}
+%
+
+
+\chapter{Quantitative Input Data Usage}
+\labch{quantitative-input-data-usage}
+\index{Quantitative Input Data Usage}
+
+\marginemptybox{5.8cm}
+
+In this chapter, we present a quantitative notion of input data usage, extending the definition introduced in the previous chapter.
+We define three different quantifiers for the impact of the input variables on the program outcome, and we formalize a static analysis for verifying the resulting quantitative impact property.
+At the end, we present the abstract versions of these quantifiers and show how they can be used to verify the corresponding quantitative property.
+This chapter is based on work published at NASA Formal Methods Symposium (NFM) 2024 \sidecite{Mazzucato2024b}.
+Later in this thesis, we will apply our quantitative framework in the context of neural networks and timing side-channel attacks.
+
+\frenchdiv
+
+\emph{Dans ce chapitre, nous présentons une notion quantitative de l'utilisation des données d'entrée, en étendant la définition introduite dans le chapitre précédent. Nous définissons trois quantificateurs différents pour mesurer l'impact des variables d'entrée sur le résultat du programme, et nous formalisons une analyse statique pour vérifier la propriété d'impact quantitatif qui en résulte. Enfin, nous présentons les versions abstraites de ces quantificateurs et montrons comment ils peuvent être utilisés pour vérifier la propriété quantitative correspondante. Ce chapitre est basé sur des travaux publiés au NASA Formal Methods Symposium (NFM) 2024 \cite{Mazzucato2024b}. Plus tard dans cette thèse, nous appliquerons notre cadre quantitatif dans le contexte des réseaux neuronaux et des attaques par canaux auxiliaires temporels.}
+
+
+
+
+
+\section{Summary}
+\labsec{quantitative-input-data-usage-summary}
+
+In this chapter, we introduced the quantifiers $\outcomes$, $\range$, and $\qused$ to measure the impact of input variables on the output of a program.
+We developed a theoretical framework to verify the $\defbound$-bounded impact property of a program and showed the abstract version of the quantifiers.
+In the next chapter, we present the evaluation of the quantifiers on a set of use cases.
+Later, we will show how we handle the quantification of the impact of input variables in the context of neural network models.
+
+
+\frenchdiv
+
+\emph{Dans ce chapitre, nous avons introduit les quantificateurs $\outcomes$, $\range$, et $\qused$ pour mesurer l'impact des variables d'entrée sur le résultat d'un programme. Nous avons développé un cadre théorique pour vérifier la propriété d'impact borné par $\defbound$ d'un programme et montré la version abstraite des quantificateurs. Dans le prochain chapitre, nous présenterons l'évaluation des quantificateurs sur un ensemble de cas d'utilisation. Plus tard, nous montrerons comment nous abordons la quantification de l'impact des variables d'entrée dans le contexte des modèles de réseaux neuronaux.}
