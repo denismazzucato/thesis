@@ -112,5 +112,6 @@ echo "Copied thesis.pdf to root directory"
 cp thesis.pdf ../denismazzucato.github.io/thesis.pdf
 cp thesis.pdf ../denismazzucato.github.io/phdthesis24.pdf
 echo "Copied thesis.pdf to denismazzucato.github.io"
+echo "Copied thesis.pdf to denismazzucato.github.io/phdthesis24.pdf"
 
 echo "Done"
