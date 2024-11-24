@@ -1297,13 +1297,21 @@ As shown in \reffig{old}, the running time was determined almost completely by t
 
 \section{Summary}
 
-This chapter, presenting the evaluation of our quantitative framework on neural networks, concludes part of quantitative verification for extensional properties.
-We have shown a quantitative framework to quantify the impact of input variables on the output of a program and applied it to the context of neural networks.
-In the next part, we will study how to extend this framework to intensional properties, which are properties that depend on the internal state of the program.
-We will quantify the impact of input variables on the number of iterations of a program.
+This chapter has demonstrated the effectiveness of our quantitative framework in analyzing neural networks, marking the conclusion of our exploration of quantitative verification for extensional properties.
+In particular, the introduction of the reduced product domain significantly enhances precision, achieving higher input space coverage with minimal impact on running time.
+Additionally, the increased efficiency of the parallel task scheduling in the backward analysis reduces the running time of the tool by a factor of $4$, allowing bigger neural networks to be analyzed in a reasonable time frame.
+The budget configuration mechanism permits the user to trade off between precision and scalability, while the auto-tuning mechanism ensures that the tool can be pushed to its limits without requiring manual intervention.
+
+In the next part, we shift focus to intensional properties--those influenced by the internal state of a program. We will explore how this framework can be extended to quantify the impact of input variables on internal behaviors, such as the number of iterations in a program's execution.
 
 
 \frenchdiv
 
 
-\emph{Ce chapitre, qui présente l'évaluation de notre cadre quantitatif sur les réseaux de neurones, conclut la partie dédiée à la vérification quantitative des propriétés extensionnelles. Nous avons montré un cadre quantitatif permettant de mesurer l'impact des variables d'entrée sur le résultat d'un programme et l'avons appliqué au contexte des réseaux de neurones. Dans la prochaine partie, nous étudierons comment étendre ce cadre aux propriétés intentionnelles, qui sont des propriétés dépendant de l'état interne du programme. Nous quantifierons l'impact des variables d'entrée sur le nombre d'itérations d'un programme.}
+\emph{Ce chapitre a démontré l'efficacité de notre cadre quantitatif pour l'analyse des réseaux neuronaux, marquant ainsi la conclusion de notre exploration de la vérification quantitative pour les propriétés extensionnelles.
+En particulier, l'introduction du domaine produit réduit améliore significativement la précision, permettant une meilleure couverture de l'espace des entrées avec un impact minimal sur le temps d'exécution.
+De plus, l'efficacité accrue de la planification des tâches parallèles dans l'analyse rétrograde réduit le temps d'exécution de l'outil par un facteur de $4$, permettant l'analyse de réseaux neuronaux de plus grande taille dans des délais raisonnables.
+Le mécanisme de configuration budgétaire permet à l'utilisateur de trouver un compromis entre précision et scalabilité, tandis que le mécanisme d'auto-ajustement garantit que l'outil peut être poussé à ses limites sans intervention manuelle.}
+
+\emph{
+Dans la prochaine partie, nous nous concentrerons sur les propriétés intentionnelles — celles influencées par l'état interne d'un programme. Nous explorerons comment ce cadre peut être étendu pour quantifier l'impact des variables d'entrée sur les comportements internes, tels que le nombre d'itérations dans l'exécution d'un programme.}

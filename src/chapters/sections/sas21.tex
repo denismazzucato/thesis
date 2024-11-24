@@ -41,7 +41,8 @@ An input value is a $\cardinalitynospaces{\inputlayer}$-dimensional vector $\net
 \end{align*}
 where $\weight_{j,k}^{i}$ is the weight connecting node $\node[i-1][k]$ in layer $\hiddenlayer{i-1}$ to node $\node$ in layer $\hiddenlayer{i}$, and $\bias_{j}^{i}$ is the bias of node $\node$ in layer $\hiddenlayer{i}$. Weights and biases are learned during the training phase of the network. In the following, we consider networks that have been previously trained.
 
-For the rest of this chapter, the letter $\defmodel$ denotes a neural network model. The trace semantics of a neural network model is denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$.
+For the rest of this chapter, the letter $\defmodel$ denotes a neural network model. The trace semantics of a neural network model, denoted by $\tracesemanticsnoparam\semanticsof{\defmodel}\in\tracetype$, is obtained by propagating a given input vector, step by step, through the list of nodes until the output layer is reached.
+
 Note that, for the models we consider in this thesis, we have that the output of the network is deterministic for each input configuration, and that all the traces terminate after a specific number of steps, which is exactly the number of nodes in the network.
 
 \subsection{Classification Task}
@@ -1380,8 +1381,9 @@ We call this input partition \emph{fair}.
 \end{marginfigure}
 
 \begin{example}
-  \reffig{fair-partitions} show a potential partition of the input space into $P_1$ and $P_2$ and $P_3$, fair for the input variables $\{y\}$.
-  All possible permutations in the $y$-axis of any input value $(x_0, y_0)$ result in a point $(x_0, y')$ that still belongs to the same partition of $(x_0, y_0)$.
+  \reffig{fair-partitions} show a potential partition of the input space into $P_1$ and $P_2$ and $P_3$, fair for the input variables $\definputvariables=\{y\}$.
+  Note that, the outcomes of the neural network (represented by colors in \reffig{fair-partitions}) do not play a role in the definition of fair partitions.
+  Indeed, an input partition $P$ is fair with respect to the input variable $y$ if all possible permutations of the $y$-axis of any input value $(x_0, y_0) \in P$ result in a point $(x_0, y')$ that still belongs to $P$.
 \end{example}
 
 Given a fair input partition $\definputpartitions$ of $\reducedstate$, we can verify whether a program $\defprogram$ has an impact of $\defbound$ for each element $\definputpartition\in\definputpartitions$, \emph{independently}, and aggregate the results.

@@ -42,7 +42,7 @@ holds whenever all the input variables in $\definputvariables$ are not used by t
   Locations are not considered in the equality between states.
 }
 \index{Unused!Predicate}
-\begin{definition}[Unused]\labdef{unused-predicate}
+\begin{definition}[Unused \cite{Urban2018}]\labdef{unused-predicate}
   Given a program $\defprogram$ and the set of input variables of interest $\definputvariables\in\setof\inputvariables$, the variables $\definputvariables$ are \emph{unused} if and only if the following predicate holds:
   \begin{eqnarray*}
     \lefteqn{\unusedwrapper(\tracesemantics) \DefifF} \\
@@ -567,7 +567,7 @@ Later, we will define the quantitative measure of input data usage, and use the 
 
 \index{Abstract Non-Interference}
 \marginnote[*-2]{
-\begin{definitionshort}[Abstract Non-Interference]\labdef{ani-predicate}
+\begin{definitionshort}[Abstract Non-Interference \cite{Giacobazzi2018}]\labdef{ani-predicate}
   The abstract non-interference predicate $\aniwrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
   \begin{gather*}
       \aniselect(\retrieveinput{\defseq}) = \aniselect(\retrieveinput{\defseq'})
@@ -582,7 +582,7 @@ where $\aniselect$ and $\aniobserver$ are upper closure operators on program sta
 We define the abstraction of output states, called output observer, as an upper closure operator over states.
 
 \index{Output Observer}
-\begin{definition}[Output Observer]\labdef{output-observer}
+\begin{definition}[Output Observer \cite{Giacobazzi2018}]\labdef{output-observer}
   Given a program $\defprogram$, an \emph{output observer} $\aniobserver\in \stateandbottom \to \stateandbottom$ is an upper closure operator (\refdef*{upper-closure-operator}[*2.7]) that abstracts the output states.
 \end{definition}
 
@@ -762,6 +762,9 @@ With the use of the next example, we show that non-determinism may affect the ab
   \end{align*}
   where the output states are different, but the input states are the same.
   Indeed, $\aniwrapper$ does not take into account that such variation in the outcome may be due to the non-determinism and classifies the variable \texttt{sci} as an interfering variable.
+  \marginnote{
+    Note that, the abstract non-interference predicate $\aniwrapper$ instantiated with the input-output abstractions of \refexample{ani-non-determinism} is the standard non-interference predicate without abstractions.
+  }
   \end{example}
 
 We formally show that abstract non-interference matches the abstract unused predicate when the program is deterministic, assuming the input abstraction forgets the values of the variables in $\definputvariables$, returning $\top$ otherwise.
@@ -778,7 +781,7 @@ We formally show that abstract non-interference matches the abstract unused pred
       \top & \text{otherwise}
     \end{cases}
   \end{align*}
-  then, it holds that:
+  then, it holds that, for any output observer $\aniobserver$:
   \begin{align*}
     \aniwrapper(\tracesemantics) \IfF \unusediowrapper(\tracesemantics)
   \end{align*}
@@ -786,21 +789,21 @@ We formally show that abstract non-interference matches the abstract unused pred
 \begin{proof}
   % By hypothesis, the program $\defprogram$ is deterministic. Thus, whenever two traces $\deftrace,\deftrace' \in \tracesemantics$ share the same input state, they also share the same output state, \ie, $\retrieveinput\deftrace = \retrieveinput\deftrace' \implies \retrieveoutput\deftrace = \retrieveoutput\deftrace'$.
   To show ($\implies$), we assume $\aniwrapper$.
-  Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariables$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$.
+  Thus, for any two traces $\deftrace, \deftrace'\in\tracesemantics$, it holds that whenever $\aniselecti(\retrieveinput\deftrace) = \aniselecti(\retrieveinput{\deftrace'})$, then $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$. By definition of $\aniselecti$, we obtain that the output abstractions match whenever $\retrieveinput\deftrace(\texttt{j}) = \retrieveinput{\deftrace'}(\texttt{j})$ for all variables $\texttt{j} \neq \definputvariables$. This hypothesis can be rewritten as $\retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'}$.
   To prove $\unusediowrapper$,
   let $\deftrace\in\tracesemantics$ be any trace and $\defvalue\in\valuesofvariables$ be any value.
   We assume $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, otherwise the implication is vacuously true.
-  We need to show that there exists a trace $\deftrace'\in\tracesemantics$ such that: $(i)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(ii)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $(iii)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  We need to show that there exists a trace $\deftrace'\in\tracesemantics$ such that: $(i)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(ii)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'}$, and $(iii)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
   The proof proceeds by absurd: we assume that for all traces $\deftrace'$ it holds that $\neg(i) \lor \neg(ii) \lor \neg(iii)$.
   By definition of the logical implication\sidenote{$\neg A \lor B \equiv A \implies B$.}, we have that $\neg(\neg(i) \lor \neg(ii)) \implies \neg(iii)$, thus $(i) \land (ii) \implies \neg(iii)$.
-  Hence, for all traces $\deftrace'\in\tracesemantics$ we assume $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, respectively $(i)$ and $(ii)$.
+  Hence, for all traces $\deftrace'\in\tracesemantics$ we assume $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$ and $\retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'}$, respectively $(i)$ and $(ii)$.
   As a consequence, to conclude ($\implies$) we need to show an absurd based on the hypothesis that the output abstraction does not match, \ie, $\aniobserver(\retrieveoutput\deftrace) \neq \aniobserver(\retrieveoutput{\deftrace'})$.
   Clearly, from $\aniwrapper$ applied to $(ii)$ we have that the outputs match, contradicting the hypothesis. Thus, $\unusediowrapper$ holds\sidenote{
   Note that, to show ($\implies$) we do not need the assumption that $\defprogram$ is deterministic.}.
 
   To show ($\Leftarrow$), we assume $\unusediowrapper$.
-  For any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, it holds that whenever $(a)$ $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $(b)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(c)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, and $(d)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
-  To prove $\aniwrapper$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithouti} \retrieveinput{\deftrace'}$, otherwise $\aniwrapper$ vacuously holds. We need to show that the output abstraction of the two traces match, \ie, $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
+  For any trace $\deftrace\in\tracesemantics$ and value $\defvalue\in\valuesofvariables$, it holds that whenever $(a)$ $\retrieveinput{\deftrace}(\definputvariables) \neq \defvalue$, then it exists a trace $\deftrace'\in\tracesemantics$ such that $(b)$ $\retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, $(c)$ $\retrieveinput\deftrace \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'}$, and $(d)$ $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$ hold.
+  To prove $\aniwrapper$, we assume that for any two traces $\deftrace, \deftrace'\in\tracesemantics$ it holds that $\retrieveinput{\deftrace} \stateeq{\inputvariableswithoutw} \retrieveinput{\deftrace'}$, otherwise $\aniwrapper$ vacuously holds. We need to show that the output abstraction of the two traces match, \ie, $\aniobserver(\retrieveoutput\deftrace) = \aniobserver(\retrieveoutput{\deftrace'})$.
   Let $\defvalue\in\valuesofvariables$ be any value.
   \begin{enumerate}
     \item If $\retrieveinput{\deftrace}(\definputvariables) = \retrieveinput{\deftrace'}(\definputvariables) = \defvalue$, then by determinism of $\defprogram$ it follows that $(d)$, \cf{} $\retrieveoutput\deftrace = \retrieveoutput{\deftrace'}$, must hold.
@@ -896,6 +899,8 @@ We formally show that abstract non-interference matches the abstract unused pred
   \reffig{determinized} shows the traces in a graphical representation.
   In such instance, the semantics is deterministic as it is not possible anymore to have two traces with the same input states and different output states.
   Thus, the predicate $\aniwrapper$ and $\unusediowrapper$ are equivalent in such instance.
+  The two would also be equivalent by considering a concrete semantics where for each input a set of states is returned.
+  In this case, the abstract non-interference predicate would consider two identical outputs when their set of states is the same.
 \end{example}
 
 Combining both non-interference and input data usage into the abstract notion of $\unusediowrapper$ permits instances of abstract non-interference to work in the context of non-deterministic programs.
@@ -906,7 +911,7 @@ When such property is plugged into $\unusediowrapper$, it convenes a non-exploit
 
 
 \marginnote[*-2]{
-\begin{definitionshort}[Non-Exploitability]\labdef{ne-predicate}
+\begin{definitionshort}[Non-Exploitability \cite{Parolini2024}]\labdef{ne-predicate}
   Let $\definputvariables\in\setof\inputvariables$ be the set of public input variables.
   The \emph{non-exploitability} predicate $\newrapper$ holds if, for any two traces $\defseq$ and $\defseq'$:
   \begin{align*}
