@@ -115,3 +115,9 @@ echo "Copied thesis.pdf to denismazzucato.github.io"
 echo "Copied thesis.pdf to denismazzucato.github.io/phdthesis24.pdf"
 
 echo "Done"
+
+echo "Number of colored pages:"
+gs -o - -sDEVICE=inkcov thesis.pdf | grep -v "^ 0.00000  0.00000  0.00000" | grep "^ " | wc -l
+
+echo "Number of pages:"
+pdfinfo thesis.pdf | grep Pages

@@ -65,11 +65,14 @@
 \newcommand*{\tracearrow}{\rightarrow\dots\rightarrow}
 \newcommand*{\nonterminatingtracearrow}{\rightarrow\dots}
 \newcommandx{\tracetuple}[2]{(#1, #2)}
-\newcommand*{\loc}[1][0]{\blue{l_{#1}}}
+% \newcommand*{\loc}[1][0]{\blue{l_{#1}}}
+\newcommand*{\loc}[1][0]{{l_{#1}}}
 \newcommand*{\locinit}{\loc[0]}
 \newcommand*{\locend}{\loc[\omega]}
 
 \newcommand{\smallloc}{{}^{\loc[{}]}}
 \newcommand{\bigloc}{\loc[{}]}
-\newcommand{\otherloc}{\blue{l'}}
-\newcommand{\locs}{\blue{\mathbb{L}}}
+% \newcommand{\otherloc}{\blue{l'}}
+\newcommand{\otherloc}{{l'}}
+% \newcommand{\locs}{\blue{\mathbb{L}}}
+\newcommand{\locs}{{\mathbb{L}}}
